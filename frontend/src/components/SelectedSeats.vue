@@ -2,6 +2,7 @@
 import { RefreshCw, ShieldCheck, Ticket, X } from '@lucide/vue'
 import { computed } from 'vue'
 import type { Seat, TicketSession } from '../types'
+import { formatCny } from '../utils/money'
 
 const props = defineProps<{
   selectedSeats: Seat[]
@@ -43,7 +44,7 @@ const totalAmount = computed(() =>
         @click="$emit('remove', seat)"
       >
         <span><Ticket :size="16" aria-hidden="true" />{{ seat.label }}</span>
-        <small>{{ seat.zone }} · ¥{{ seat.price }}</small>
+        <small>{{ seat.zone }} · {{ formatCny(seat.price) }}</small>
         <X :size="15" aria-hidden="true" />
       </button>
     </div>
@@ -64,7 +65,7 @@ const totalAmount = computed(() =>
       </div>
       <div class="selection-total">
         <span>合计</span>
-        <strong>¥{{ totalAmount.toLocaleString('zh-CN') }}</strong>
+        <strong>{{ formatCny(totalAmount) }}</strong>
       </div>
     </div>
 

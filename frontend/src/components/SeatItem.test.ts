@@ -11,7 +11,7 @@ const availableSeat: Seat = {
   number: 1,
   status: 'AVAILABLE',
   zone: '星光区',
-  price: 1280,
+  price: 128000,
 }
 
 describe('SeatItem', () => {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ArrowRight, Clock3, DoorOpen, MapPin } from '@lucide/vue'
 import type { TicketSession } from '../types'
+import { formatCny } from '../utils/money'
 
 defineProps<{ session: TicketSession }>()
 defineEmits<{ select: [session: TicketSession] }>()
@@ -25,7 +26,7 @@ defineEmits<{ select: [session: TicketSession] }>()
       余票{{ session.availability }}
     </div>
     <div class="session-card__action">
-      <span>¥{{ session.priceFrom }} 起</span>
+      <span>{{ formatCny(session.priceFrom) }} 起</span>
       <button
         class="primary-button primary-button--small"
         type="button"

@@ -3,6 +3,7 @@ import { ArrowLeft, CreditCard, Hourglass, RotateCcw, X } from '@lucide/vue'
 import OrderSummary from '../components/OrderSummary.vue'
 import { isMockMode } from '../api/ticketApi'
 import type { Seat, TicketEvent, TicketOrder, TicketSession } from '../types'
+import { formatCny } from '../utils/money'
 
 defineProps<{
   order: TicketOrder
@@ -51,7 +52,7 @@ defineEmits<{
       <button class="primary-button order-pay-button" type="button" :disabled="busy" @click="$emit('pay')">
         <span v-if="busy" class="button-spinner"></span>
         <CreditCard v-else :size="19" aria-hidden="true" />
-        {{ busy ? '正在确认订单…' : '模拟支付 ¥' + order.totalAmount.toLocaleString('zh-CN') }}
+        {{ busy ? '正在确认订单…' : '模拟支付 ' + formatCny(order.totalAmount) }}
       </button>
       <button class="secondary-button" type="button" :disabled="busy" @click="$emit('cancel')">
         <X :size="18" aria-hidden="true" />

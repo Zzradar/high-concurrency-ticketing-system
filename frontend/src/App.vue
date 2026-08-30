@@ -109,10 +109,11 @@ function toggleSeat(seat: Seat) {
   selectedSeatIds.value = [...selectedSeatIds.value, seat.id]
 }
 
-async function refreshSeats() {
+async function refreshSeats(preserveError = false) {
   if (!currentSession.value) return
+  const preservedError = preserveError ? errorMessage.value : ''
   loading.value = true
-  errorMessage.value = ''
+  if (!preserveError) errorMessage.value = ''
   try {
     seats.value = await ticketApi.getSeats(currentSession.value.id)
     const selectableIds = new Set(
@@ -123,6 +124,7 @@ async function refreshSeats() {
   } catch (error) {
     showError(error, '座位状态刷新失败，请稍后重试。')
   } finally {
+    if (preservedError) errorMessage.value = preservedError
     loading.value = false
   }
 }
@@ -142,16 +144,17 @@ async function submitReservation() {
     showNotice('座位锁定成功，请在 15 分钟内支付')
   } catch (error) {
     showError(error, '预订提交失败，请刷新座位后重试。')
-    await refreshSeats()
+    await refreshSeats(true)
   } finally {
     busy.value = false
   }
 }
 
-async function refreshOrder() {
+async function refreshOrder(preserveError = false) {
   if (!currentOrder.value) return
+  const preservedError = preserveError ? errorMessage.value : ''
   busy.value = true
-  errorMessage.value = ''
+  if (!preserveError) errorMessage.value = ''
   try {
     currentOrder.value = await ticketApi.getOrder(currentOrder.value.id)
     if (currentSession.value) {
@@ -160,6 +163,7 @@ async function refreshOrder() {
   } catch (error) {
     showError(error, '订单状态查询失败，请稍后重试。')
   } finally {
+    if (preservedError) errorMessage.value = preservedError
     busy.value = false
   }
 }
@@ -174,7 +178,7 @@ async function payOrder() {
     showNotice('支付成功，订单与座位状态已同步确认')
   } catch (error) {
     showError(error, '支付请求结果未知，正在重新查询订单。')
-    await refreshOrder()
+    await refreshOrder(true)
   } finally {
     busy.value = false
   }

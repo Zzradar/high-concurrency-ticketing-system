@@ -18,11 +18,39 @@ export class TicketApiError extends Error {
   }
 }
 
+interface ApiErrorPayload {
+  code?: unknown
+  message?: unknown
+}
+
+export const DEMO_USER_ID = 'U-1001'
+export const apiRequestHeaders = {
+  'Content-Type': 'application/json',
+  'X-User-Id': DEMO_USER_ID,
+} as const
+
+export function normalizeApiError(error: unknown): unknown {
+  if (!axios.isAxiosError<ApiErrorPayload>(error)) return error
+
+  const code = error.response?.data?.code
+  const message = error.response?.data?.message
+  if (typeof code === 'string' && typeof message === 'string') {
+    return new TicketApiError(message, code)
+  }
+
+  return error
+}
+
 const http = axios.create({
   baseURL: '/api',
   timeout: 8000,
-  headers: { 'Content-Type': 'application/json' },
+  headers: apiRequestHeaders,
 })
+
+http.interceptors.response.use(
+  (response) => response,
+  (error: unknown) => Promise.reject(normalizeApiError(error)),
+)
 
 export const isMockMode = import.meta.env.VITE_USE_MOCK_API !== 'false'
 
@@ -64,7 +92,7 @@ const sessionsSeed: Record<string, TicketSession[]> = {
       venue: '上海体育场 · 主场馆',
       gateTime: '17:30',
       status: 'ON_SALE',
-      priceFrom: 580,
+      priceFrom: 58000,
       availability: '紧张',
     },
     {
@@ -76,7 +104,7 @@ const sessionsSeed: Record<string, TicketSession[]> = {
       venue: '上海体育场 · 主场馆',
       gateTime: '17:30',
       status: 'ON_SALE',
-      priceFrom: 580,
+      priceFrom: 58000,
       availability: '充足',
     },
     {
@@ -88,7 +116,7 @@ const sessionsSeed: Record<string, TicketSession[]> = {
       venue: '上海体育场 · 主场馆',
       gateTime: '17:30',
       status: 'ON_SALE',
-      priceFrom: 580,
+      priceFrom: 58000,
       availability: '充足',
     },
   ],
@@ -102,7 +130,7 @@ const sessionsSeed: Record<string, TicketSession[]> = {
       venue: '浦东体育中心 · 一号馆',
       gateTime: '17:00',
       status: 'ON_SALE',
-      priceFrom: 380,
+      priceFrom: 38000,
       availability: '紧张',
     },
     {
@@ -114,7 +142,7 @@ const sessionsSeed: Record<string, TicketSession[]> = {
       venue: '浦东体育中心 · 一号馆',
       gateTime: '17:30',
       status: 'ON_SALE',
-      priceFrom: 380,
+      priceFrom: 38000,
       availability: '充足',
     },
   ],
@@ -133,13 +161,24 @@ function createSeats(sessionId: string): Seat[] {
   const unavailableHeld = new Set(['A03', 'B07', 'D04', 'F09'])
   const unavailableSold = new Set(['A08', 'C05', 'C06', 'E02', 'E03'])
   const rows = ['A', 'B', 'C', 'D', 'E', 'F']
+  const isBasketball = sessionId.startsWith('ses-basketball-')
 
   return rows.flatMap((row, rowIndex) =>
     Array.from({ length: 10 }, (_, index) => {
       const number = index + 1
       const label = row + String(number).padStart(2, '0')
       const zone = rowIndex < 2 ? '星光区' : rowIndex < 4 ? '看台 A 区' : '看台 B 区'
-      const price = rowIndex < 2 ? 1280 : rowIndex < 4 ? 880 : 580
+      const price = isBasketball
+        ? rowIndex < 2
+          ? 88000
+          : rowIndex < 4
+            ? 58000
+            : 38000
+        : rowIndex < 2
+          ? 128000
+          : rowIndex < 4
+            ? 88000
+            : 58000
       return {
         id: sessionId + '-' + label,
         sessionId,
@@ -293,6 +332,13 @@ async function mockExpireOrder(orderId: string) {
   return clone(order)
 }
 
+export function buildReservationRequest(sessionId: string, seatIds: string[]) {
+  return {
+    sessionId,
+    seatIds,
+  }
+}
+
 export const ticketApi = {
   async getEvents(): Promise<TicketEvent[]> {
     if (isMockMode) return mockGetEvents()
@@ -308,10 +354,12 @@ export const ticketApi = {
   },
   async createReservation(sessionId: string, seatIds: string[]): Promise<ReservationResult> {
     if (isMockMode) return mockCreateReservation(sessionId, seatIds)
-    return (await http.post<ReservationResult>('/reservations', {
-      session_id: sessionId,
-      seat_ids: seatIds,
-    })).data
+    return (
+      await http.post<ReservationResult>(
+        '/reservations',
+        buildReservationRequest(sessionId, seatIds),
+      )
+    ).data
   },
   async getOrder(orderId: string): Promise<TicketOrder> {
     if (isMockMode) return mockGetOrder(orderId)

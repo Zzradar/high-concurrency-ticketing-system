@@ -28,7 +28,7 @@ export interface TicketSession {
   venue: string
   gateTime: string
   status: SessionStatus
-  priceFrom: number
+  priceFrom: number // 整数“分”
   availability: '充足' | '紧张' | '售罄'
 }
 
@@ -40,7 +40,7 @@ export interface Seat {
   number: number
   status: SeatStatus
   zone: string
-  price: number
+  price: number // 整数“分”
 }
 
 export interface Reservation {
@@ -60,7 +60,7 @@ export interface TicketOrder {
   sessionId: string
   seatIds: string[]
   status: OrderStatus
-  totalAmount: number
+  totalAmount: number // 整数“分”
   expiresAt: string
   createdAt: string
   paidAt?: string

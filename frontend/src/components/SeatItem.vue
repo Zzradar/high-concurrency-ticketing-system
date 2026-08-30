@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Seat } from '../types'
+import { formatCny } from '../utils/money'
 
 const props = defineProps<{
   seat: Seat
@@ -29,8 +30,8 @@ const statusLabel = {
     type="button"
     :disabled="seat.status !== 'AVAILABLE'"
     :aria-pressed="selected"
-    :aria-label="seat.label + '，' + (selected ? '已选择' : statusLabel[seat.status]) + '，' + seat.price + '元'"
-    :title="seat.label + ' · ' + seat.zone + ' · ¥' + seat.price"
+    :aria-label="seat.label + '，' + (selected ? '已选择' : statusLabel[seat.status]) + '，' + formatCny(seat.price)"
+    :title="seat.label + ' · ' + seat.zone + ' · ' + formatCny(seat.price)"
     @click="handleClick"
   >
     <span class="seat-item__back"></span>

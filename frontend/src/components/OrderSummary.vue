@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { CheckCircle2, Clock3, ShieldCheck, XCircle } from '@lucide/vue'
 import type { OrderStatus, Seat, TicketEvent, TicketOrder, TicketSession } from '../types'
+import { formatCny } from '../utils/money'
 
 const props = defineProps<{
   order: TicketOrder
@@ -98,7 +99,7 @@ onBeforeUnmount(() => {
         <span>订单号</span>
         <strong>{{ order.id }}</strong>
         <span>预订金额</span>
-        <b>¥{{ order.totalAmount.toLocaleString('zh-CN') }}</b>
+        <b>{{ formatCny(order.totalAmount) }}</b>
       </div>
     </div>
 
