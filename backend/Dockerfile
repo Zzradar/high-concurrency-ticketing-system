@@ -13,6 +13,7 @@ RUN apt-get update \
         libjsoncpp-dev \
         libpq-dev \
         libssl-dev \
+        python3 \
         uuid-dev \
         zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
