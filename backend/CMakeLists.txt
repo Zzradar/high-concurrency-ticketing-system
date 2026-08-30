@@ -39,6 +39,15 @@ endif()
 add_executable(ticketing_backend
     src/main.cpp
     src/controllers/HealthController.cpp
+    src/controllers/EventController.cpp
+    src/repositories/EventRepository.cpp
+    src/services/EventService.cpp
+    src/controllers/SessionController.cpp
+    src/repositories/SessionRepository.cpp
+    src/services/SessionService.cpp
+    src/controllers/SeatController.cpp
+    src/repositories/SeatRepository.cpp
+    src/services/SeatService.cpp
 )
 
 target_include_directories(ticketing_backend PRIVATE src)
@@ -55,5 +64,9 @@ if(BUILD_TESTING)
     add_test(
         NAME schema_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/schema_contract_test.py"
+    )
+    add_test(
+        NAME read_api_source_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/read_api_source_contract_test.py"
     )
 endif()

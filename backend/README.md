@@ -1,8 +1,9 @@
-# Ticketing backend MVP — phase 1
+# Ticketing backend MVP — phase 2
 
 This directory contains the C++20 + Drogon + PostgreSQL foundation for the
-ticketing MVP. Phase 1 intentionally exposes only `GET /health`; ticketing
-controllers and workflows belong to later phases.
+ticketing MVP. Phase 2 adds the PostgreSQL-backed read path for events,
+sessions, and session-seat inventory. Reservation and order workflows remain
+out of scope.
 
 ## Layout
 
@@ -19,16 +20,31 @@ backend/
 │   ├── seeds/001_demo_seed.sql
 │   └── tests/001_verify_seed.sql
 ├── src/
+│   ├── common/ApiResponse.h
 │   ├── controllers/
-│   │   ├── HealthController.cpp
-│   │   └── HealthController.h
+│   ├── dto/TicketDtos.h
+│   ├── repositories/
+│   ├── services/
 │   └── main.cpp
-└── tests/schema_contract_test.py
+└── tests/
+    ├── schema_contract_test.py
+    ├── read_api_source_contract_test.py
+    └── http_integration_test.py
 ```
 
-Future business code should be added only when its phase starts. Controllers,
-services, and repositories should be introduced as real behavior requires them,
-instead of adding empty abstractions now.
+The implemented HTTP surface is intentionally limited to:
+
+```text
+GET /health
+GET /events
+GET /events/{eventId}
+GET /events/{eventId}/sessions
+GET /sessions/{sessionId}/seats
+```
+
+The read modules follow `Controller -> Service -> Repository -> PostgreSQL`.
+Physical `Seat` rows are joined with `SessionSeat` inventory; API seat IDs are
+the `session_seats.id` values used by later reservation requests.
 
 ## Run with Docker Compose
 
@@ -44,6 +60,16 @@ Expected health response:
 ```json
 {"database":"up","status":"ok"}
 ```
+
+After Compose reports both services healthy, run the strict HTTP integration
+test from `backend/`:
+
+```bash
+python3 tests/http_integration_test.py
+```
+
+This test fails when the backend is unreachable. It is deliberately not part
+of build-stage CTest, where no HTTP server is running.
 
 PostgreSQL listens on `localhost:5432` with local-only development credentials:
 
@@ -77,6 +103,9 @@ cmake --build build --parallel
 ctest --test-dir build --output-on-failure
 ./build/ticketing_backend config/config.json
 ```
+
+CTest contains only offline schema and source-contract checks. The running
+HTTP integration test must be executed separately after the service starts.
 
 Alternatively, CMake can fetch the pinned Drogon v1.9.13 source:
 
