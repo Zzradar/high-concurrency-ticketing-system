@@ -7,10 +7,10 @@
 ## 1. 当前 API 运行方式
 
 - API 封装位于 frontend/src/api/ticketApi.ts。
-- Axios 的 baseURL 为 **/api**，超时时间为 **8000 ms**，请求头为 **Content-Type: application/json**。
+- Axios 的 baseURL 为 **/api**，超时时间为 **8000 ms**，请求统一携带 **Content-Type: application/json** 和 Demo 用户请求头 **X-User-Id: U-1001**。
 - 开发环境会把 **/api** 代理到 **http://localhost:8080**，并移除路径前缀 **/api**。例如浏览器请求 **/api/events**，C++ 后端实际接收 **/events**。
 - 当 **VITE_USE_MOCK_API** 不等于字符串 **false** 时使用 mock；仓库中的 .env.example 当前为 **true**。
-- 真实 API 响应当前直接读取 Axios 的 response.data，没有统一的 data/code/message 外层包装，也没有响应字段转换。
+- 真实 API 成功响应直接读取 Axios 的 response.data，不使用统一 data 外层包装，也不做响应字段转换。失败响应提取 `code` 和 `message`，并转换为兼容现有处理逻辑的 TicketApiError。
 - 当前实际代码存在 7 个真实后端调用：
 
 | 前端方法 | HTTP |
@@ -40,7 +40,7 @@ expireOrderForDemo 仅用于 mock 演示；真实 API 模式会直接报 MOCK_ON
 页面中的以下内容目前是纯前端常量，不来自接口：
 
 - 品牌名称、页头步骤和说明文案。
-- 当前用户展示值 **U-1001**。
+- 当前用户展示值和 Demo 请求头用户值 **U-1001**。
 - 活动页“本周精选 2 场活动正在售票”中的数字 2。
 - 舞台文字、座位状态中文说明、状态提示文案。
 - 最多选择 6 个座位的前端限制。
@@ -68,7 +68,7 @@ expireOrderForDemo 仅用于 mock 演示；真实 API 模式会直接报 MOCK_ON
 
 | 字段 | TypeScript 类型 | mock 示例 | 当前实际用途 |
 | --- | --- | --- | --- |
-| id | string | ses-concert-1001 | 选择场次后加载座位；创建预订时作为 session_id |
+| id | string | ses-concert-1001 | 选择场次后加载座位；创建预订时作为 sessionId |
 | eventId | string | evt-concert-2026 | 模型和 mock 中存在；当前页面不直接读取 |
 | date | string | 10月01日 | 场次卡、选座摘要和订单页直接展示 |
 | time | string | 19:30 | 场次卡、选座摘要和订单页直接展示 |
@@ -76,7 +76,7 @@ expireOrderForDemo 仅用于 mock 演示；真实 API 模式会直接报 MOCK_ON
 | venue | string | 上海体育场 · 主场馆 | 场次卡、选座页和订单页展示 |
 | gateTime | string | 17:30 | 场次卡展示入场时间 |
 | status | ON_SALE 或 SOLD_OUT | ON_SALE | SOLD_OUT 时禁用“进入选座” |
-| priceFrom | number | 580 | 场次卡显示“¥580 起” |
+| priceFrom | number | 58000 | 单位为分；场次卡格式化显示“¥580 起” |
 | availability | 充足、紧张或售罄 | 紧张 | 场次卡显示余票提示和颜色 |
 
 date、time、weekday、gateTime 当前都是已经格式化的展示字符串，不是前端计算结果。
@@ -85,14 +85,14 @@ date、time、weekday、gateTime 当前都是已经格式化的展示字符串�
 
 | 字段 | TypeScript 类型 | mock 示例 | 当前实际用途 |
 | --- | --- | --- | --- |
-| id | string | ses-concert-1001-A01 | 本地选择主键；POST /reservations 提交 seat_ids；订单 seatIds 关联 |
+| id | string | ses-concert-1001-A01 | 本地选择主键；POST /reservations 提交 seatIds；订单 seatIds 关联 |
 | sessionId | string | ses-concert-1001 | 模型和 mock 中存在；当前组件不直接读取 |
 | label | string | A01 | 已选座位列表、订单座位和无障碍文本 |
 | row | string | A | SeatGrid 分组 |
 | number | number | 1 | 单个座位图中显示的数字 |
 | status | AVAILABLE、HELD 或 SOLD | AVAILABLE | 决定能否点击和显示样式 |
 | zone | string | 星光区 | 已选座位摘要和 title 展示 |
-| price | number | 1280 | 单座价格、本地合计和创建订单 mock 金额 |
+| price | number | 128000 | 单位为分；用于单座价格、本地合计和创建订单 mock 金额，展示时统一格式化为人民币元 |
 
 #### Seat 状态语义
 
@@ -129,7 +129,7 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
 | sessionId | string | ses-concert-1001 | 模型和 mock 中存在；页面未用它重新获取场次 |
 | seatIds | string[] | [ses-concert-1001-A01] | 从当前 seats 中筛选订单座位并展示 label |
 | status | PENDING_PAYMENT、PAID、CANCELLED 或 EXPIRED | PENDING_PAYMENT | 控制订单状态文案、按钮和样式 |
-| totalAmount | number | 1280 | 订单金额和支付按钮展示 |
+| totalAmount | number | 128000 | 单位为分；订单金额和支付按钮统一格式化为人民币元展示 |
 | expiresAt | string | 2026-08-30T05:30:00.000Z | 与 Date.now() 计算显示倒计时；归零后触发订单查询 |
 | createdAt | string | 2026-08-30T05:15:00.000Z | 模型中存在；页面未读取 |
 | paidAt | string，可选 | 2026-08-30T05:17:00.000Z | 支付成功 mock 返回；页面未读取 |
@@ -145,18 +145,27 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
 | 点击“进入选座” | 保存整个 session 为 currentSession，清空本地选择并加载座位 | GET /sessions/{session.id}/seats |
 | 点击 AVAILABLE 座位 | 只在 selectedSeatIds 中增删 seat.id；最多 6 个 | **无接口调用** |
 | 点击刷新座位 | 重新获取 Seat[]；仅保留最新仍为 AVAILABLE 的已选 id | GET /sessions/{session.id}/seats |
-| 点击“提交预订” | 提交 currentSession.id 和 selectedSeatIds | POST /reservations，请求体为 session_id、seat_ids |
+| 点击“提交预订” | 提交 currentSession.id 和 selectedSeatIds | POST /reservations，请求体为 sessionId、seatIds |
 | 预订成功 | 保存 result.order，重新获取座位图，再进入订单页 | POST 响应 ReservationResult；随后 GET /sessions/{session.id}/seats |
-| 预订失败 / 座位冲突 | 准备显示错误，然后立即刷新 seats 并过滤失效选择 | POST 失败；随后 GET /sessions/{session.id}/seats |
+| 预订失败 / 座位冲突 | 显示错误，立即刷新 seats 并过滤失效选择；刷新过程保留本次预订错误提示 | POST 失败；随后 GET /sessions/{session.id}/seats |
 | 点击订单“刷新状态” | 更新 currentOrder，并同步刷新座位 | GET /orders/{order.id}；随后 GET /sessions/{session.id}/seats |
 | 倒计时归零 | 倒计时组件只发出 expiryReached，不自行把订单设为 EXPIRED | GET /orders/{order.id}，以后端状态为准 |
 | 点击“模拟支付” | 用返回值替换 currentOrder，再刷新 seats | POST /orders/{order.id}/pay；随后 GET seats |
 | 点击“取消订单” | 用返回值替换 currentOrder，再刷新 seats | POST /orders/{order.id}/cancel；随后 GET seats |
 | 点击“模拟订单超时” | 仅 mock 模式调用本地 expireOrderForDemo | 不对应真实后端接口 |
 
-支付请求出错时，前端不会直接认定支付失败，而是调用 GET /orders/{orderId} 重新查询结果。
+支付请求出错时，前端不会直接认定支付失败，而是显示“支付请求结果未知”并调用 GET /orders/{orderId} 重新查询结果；刷新订单过程会保留本次支付提示。
 
 ## 5. 当前前端期望的接口契约
+
+所有真实 API 请求统一携带 `X-User-Id: U-1001`。成功响应的 JSON 直接作为 `response.data` 使用；业务失败响应统一为：
+
+    {
+      "code": "SEAT_CONFLICT",
+      "message": "Selected seats are no longer available"
+    }
+
+Axios 响应拦截器会提取字符串类型的 `code` 和 `message`，转换为 TicketApiError；无法匹配该结构的异常仍交给现有通用错误处理逻辑。
 
 ### 5.1 GET /events
 
@@ -200,7 +209,7 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
         "venue": "上海体育场 · 主场馆",
         "gateTime": "17:30",
         "status": "ON_SALE",
-        "priceFrom": 580,
+        "priceFrom": 58000,
         "availability": "紧张"
       }
     ]
@@ -225,7 +234,7 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
         "number": 1,
         "status": "AVAILABLE",
         "zone": "星光区",
-        "price": 1280
+        "price": 128000
       },
       {
         "id": "ses-concert-1001-A03",
@@ -235,7 +244,7 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
         "number": 3,
         "status": "HELD",
         "zone": "星光区",
-        "price": 1280
+        "price": 128000
       }
     ]
 
@@ -243,17 +252,17 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
 
 ### 5.4 POST /reservations
 
-对应点击“提交预订”。当前请求 JSON 使用 snake_case：
+对应点击“提交预订”。当前请求 JSON 使用 camelCase：
 
     {
-      "session_id": "ses-concert-1001",
-      "seat_ids": [
+      "sessionId": "ses-concert-1001",
+      "seatIds": [
         "ses-concert-1001-A01",
         "ses-concert-1001-A02"
       ]
     }
 
-当前请求不包含 userId、价格或前端计算的 totalAmount。前端要求后端以 session_id 和 seat_ids 为准，原子确认全部座位。
+当前请求不包含 userId、价格或前端计算的 totalAmount；用户由 `X-User-Id` 请求头提供。前端要求后端以 sessionId 和 seatIds 为准，原子确认全部座位。
 
 成功时前端期望 response.data 直接为 ReservationResult：
 
@@ -280,7 +289,7 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
           "ses-concert-1001-A02"
         ],
         "status": "PENDING_PAYMENT",
-        "totalAmount": 2560,
+        "totalAmount": 256000,
         "expiresAt": "2026-08-30T05:30:00.000Z",
         "createdAt": "2026-08-30T05:15:00.000Z"
       }
@@ -307,7 +316,7 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
         "ses-concert-1001-A02"
       ],
       "status": "PENDING_PAYMENT",
-      "totalAmount": 2560,
+      "totalAmount": 256000,
       "expiresAt": "2026-08-30T05:30:00.000Z",
       "createdAt": "2026-08-30T05:15:00.000Z"
     }
@@ -330,7 +339,7 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
         "ses-concert-1001-A02"
       ],
       "status": "PAID",
-      "totalAmount": 2560,
+      "totalAmount": 256000,
       "expiresAt": "2026-08-30T05:30:00.000Z",
       "createdAt": "2026-08-30T05:15:00.000Z",
       "paidAt": "2026-08-30T05:17:00.000Z"
@@ -354,7 +363,7 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
         "ses-concert-1001-A02"
       ],
       "status": "CANCELLED",
-      "totalAmount": 2560,
+      "totalAmount": 256000,
       "expiresAt": "2026-08-30T05:30:00.000Z",
       "createdAt": "2026-08-30T05:15:00.000Z"
     }
@@ -398,37 +407,43 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 4. 倒计时仅用于展示；是否过期由 GET /orders/{orderId} 的返回状态决定。
 5. 支付或取消后，前端既采用返回的 TicketOrder，也会重新获取 Seat[]，不自行推断座位最终状态。
 
-## 7. 联调前需要确认的问题
+## 7. 已收敛事实与联调前待确认问题
 
-以下均来自当前代码现状，只提出问题，不在本文中决定答案：
+### 7.1 已落地的契约事实
 
-1. **请求与响应命名风格不一致。** POST /reservations 请求使用 session_id、seat_ids，所有响应类型使用 eventId、sessionId、seatIds、expiresAt 等 camelCase。真实 API 层没有字段转换，需要确认 C++ 后端响应是否直接返回 camelCase。
-2. **没有统一错误响应契约。** mock 使用 TicketApiError.code，例如 SEAT_CONFLICT、ORDER_NOT_FOUND、ORDER_NOT_PAYABLE、ORDER_NOT_CANCELLABLE；真实 Axios 错误当前不会自动转换为 TicketApiError。需要确认 HTTP 状态码和错误 JSON 结构。
-3. **冲突提示可能被刷新流程清空。** 预订失败后先设置错误，再调用 refreshSeats；refreshSeats 开头会清空 errorMessage。因此虽然代码会刷新座位并过滤失效选择，用户未必能持续看到具体冲突原因。
-4. **支付错误提示也可能被查询流程清空。** payOrder 出错后设置“支付请求结果未知”，随后 refreshOrder 会先清空 errorMessage。
-5. **Reservation 返回但未保存。** ReservationResult 类型要求 reservation，App 只读取 order；需要确认后端是否仍按当前类型完整返回，以及后续是否需要展示 reservation。
-6. **订单页不能仅靠 GET /orders/{orderId} 独立恢复。** 页面展示依赖内存中的 currentEvent、currentSession 和完整 seats；刷新浏览器后这些状态会丢失。当前没有 Router、订单详情深链或按 eventId/sessionId 自动补查的逻辑。
-7. **当前没有 GET /events/{eventId} 调用。** 活动详情完全来自 GET /events 返回的列表对象。是否需要活动详情接口属于后续确认项，不能按现有前端视为必需接口。
-8. **时间字段格式混合。** TicketSession 的 date、time、weekday、gateTime 是展示字符串；Order/Reservation 的 expiresAt、createdAt、paidAt 是可被 Date.parse 的时间字符串。需要确认时区、ISO 8601 格式和服务端时间语义。
-9. **金额单位未明确。** price、priceFrom、totalAmount 当前按“元”直接展示为 number，没有小数处理；需要确认后端单位是元还是分。
-10. **availability 是中文枚举。** 当前类型只接受充足、紧张、售罄，且样式类直接拼接该值；需要确认它是否由后端提供、如何计算，以及它与 Session.status 的关系。
-11. **Event.status 当前未生效。** 类型允许 COMING_SOON，但活动卡始终显示“正在售票”，也不会根据 status 禁用进入流程。
-12. **用户身份没有进入请求。** 页面固定显示 U-1001，mock 在 Reservation 中固定写入 U-1001，POST /reservations 不提交 userId；联调前需要确认身份由认证上下文、请求头还是其他方式提供。
-13. **每单最多 6 座目前只在前端限制。** 后端是否使用相同限制以及超限错误如何返回尚未定义。
-14. **mock 价格存在不一致。** 篮球场次 priceFrom 为 380，但通用 createSeats 生成的最低 seat.price 为 580。
-15. **cover 当前是前端静态路径。** GET /events mock 返回 /images/...；真实后端应返回何种可访问 URL 或资源标识尚未确认。
-16. **空列表、分页和排序没有契约。** 当前所有 GET 都假定直接返回完整数组，没有分页参数、分页元数据或排序字段。
-17. **支付和取消的幂等性、并发冲突响应未约定。** 当前前端只依赖成功时返回最新 TicketOrder，失败时再查询订单；具体 HTTP 语义需要联调前确认。
+1. POST /reservations 请求体字段统一为 camelCase：sessionId、seatIds；成功响应字段同样使用 camelCase。
+2. price、priceFrom、totalAmount 均为整数分。前端通过统一格式化函数转换为人民币元展示，例如 128000 分显示为 ¥1,280。
+3. 所有 Axios 请求统一携带 Demo 用户请求头 X-User-Id: U-1001，预订请求体不重复提交 userId。
+4. 真实 API 业务错误统一提取 code 和 message，解析为 TicketApiError，并兼容当前通用异常处理。
+5. 预订失败后刷新座位时保留本次预订错误提示；支付结果未知后刷新订单时保留本次支付提示。
+6. Reservation 和 Order 的 expiresAt、createdAt、paidAt 使用可由 Date.parse 解析的 ISO 8601 字符串。
+7. 每单最多 6 个座位；SELECTED 仍是纯前端本地选择状态。
+8. Mock 已使用分为单位，并已使篮球场次 priceFrom 与该场次最低 seat.price 一致。
+
+### 7.2 仍需联调确认的问题
+
+1. **Reservation 返回但未保存。** ReservationResult 包含 reservation，App 当前只保存 order；后端仍需按当前类型完整返回。
+2. **订单页不能仅靠 GET /orders/{orderId} 独立恢复。** 页面展示依赖内存中的 currentEvent、currentSession 和完整 seats；刷新浏览器后这些状态会丢失。
+3. **availability 是中文枚举。** 当前类型只接受充足、紧张、售罄，且样式类直接拼接该值；需要确认它由后端如何计算，以及它与 Session.status 的关系。
+4. **Event.status 当前未生效。** 类型允许 COMING_SOON，但活动卡始终显示“正在售票”，也不会根据 status 禁用进入流程。
+5. **cover 当前是前端静态路径。** GET /events mock 返回 /images/...；真实后端应返回何种可访问 URL 或资源标识尚未确认。
+6. **空列表、分页和排序没有契约。** 当前所有 GET 都假定直接返回完整数组，没有分页参数、分页元数据或排序字段。
+7. **支付和取消的幂等性与并发 HTTP 语义仍需确认。** 当前前端依赖成功时返回最新 TicketOrder，失败时重新查询订单。
+
+当前前端没有 GET /events/{eventId} 调用，活动详情复用 GET /events 返回的完整 TicketEvent；该接口不属于当前 MVP 对接清单。
 
 ## 8. 后端最小对接清单
 
 在不修改当前前端代码的前提下，后端至少需要满足：
 
 - 接受开发代理转发后的 /events、/sessions、/reservations、/orders 路径。
-- 返回未经外层包装、字段为 camelCase 的 JSON。
-- POST /reservations 接受 snake_case 的 session_id 和 seat_ids。
+- 所有 HTTP JSON 字段使用 camelCase；POST /reservations 接受 sessionId 和 seatIds。
+- 所有请求通过 X-User-Id 请求头接收 Demo 用户 U-1001。
+- 成功响应直接返回本文所列 JSON，不增加 data 外层包装。
+- 业务失败响应返回字符串类型的 code 和 message。
+- price、priceFrom、totalAmount 使用整数分。
 - 使用本文列出的精确状态字符串。
-- expiresAt 必须能被浏览器 Date.parse 正确解析。
+- expiresAt、createdAt、paidAt 使用可被浏览器 Date.parse 正确解析的 ISO 8601 字符串。
 - 创建、支付、取消和订单查询返回完整 TicketOrder；创建预订返回 ReservationResult。
 - 座位竞争、支付、取消或超时处理后，GET seats 和 GET order 能返回一致的最终状态。
 
