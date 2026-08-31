@@ -115,7 +115,7 @@ MVP 不拆微服务。
 ```text
 Phase 1  工程骨架 + PostgreSQL Schema + Seed                 已完成
 Phase 2  四个只读接口 + PostgreSQL 查询 + Vite /api 链路    已完成
-Phase 3  POST /reservations + 幂等 + 原子锁座                待实现
+Phase 3  POST /reservations + 幂等 + 原子锁座                已完成
 Phase 4  GET /orders/{orderId} + 超时释放 Worker             待实现
 Phase 5  支付 + 取消 + 支付/取消/超时状态竞争                待实现
 Phase 6  完整并发、故障与服务重启恢复测试                    待实现
@@ -132,8 +132,8 @@ GET /sessions/{sessionId}/seats
 ```
 
 当前 Vue 页面实际调用活动列表、活动场次列表和场次座位图接口，尚未调用已经存在的
-`GET /events/{eventId}`。Phase 3 及之后的写入、订单和 Worker 能力均不能描述为
-已经完成。
+`GET /events/{eventId}`。Phase 3 后端预订能力已经完成；Phase 4 及之后的订单查询、
+Worker、支付和取消能力仍未实现。
 
 ---
 
@@ -225,12 +225,13 @@ Seat 本身不保存“已售”状态。
 
 Reservation 与多个 SessionSeat 关联。
 
-Phase 3 计划通过新的 `002_*.sql` migration 为 Reservation 增加
-`idempotency_key`，并增加 `(user_id, idempotency_key)` 联合唯一约束。
+Phase 3 通过 `002_add_reservation_idempotency.sql` 为 Reservation 增加可空的
+`idempotency_key TEXT`、1～128 字符检查，以及
+`(user_id, idempotency_key)` 联合唯一约束。
 `reservations.id` 仍是主键；联合唯一约束只是限制同一用户的同一逻辑请求最多
 创建一条 Reservation，不会把两个字段改成主键。已验证的
 `001_initial_schema.sql` 与现有 Seed 不修改，Seed Reservation 未来允许没有幂等键。
-具体列定义和 SQL 在 Phase 3 实施时最终确定。
+真实 `POST /reservations` 必须提供非空幂等键；旧 Seed 行继续使用 NULL。
 
 ### 4.6 Order
 
@@ -298,15 +299,15 @@ seatIds 不重复
 
 之后可以按 `(user_id, idempotency_key)` 查询已完成结果。已经存在且业务请求一致
 时，返回原来的 Reservation + Order；同一 Key 对应不同 `sessionId / seatIds`
-时必须拒绝，稳定错误码在 Phase 3 实施前确定。
+时返回 `409 IDEMPOTENCY_CONFLICT`。
 
 新请求的全部数据库步骤必须使用同一个 Drogon Transaction 对象：
 
-1. 查询 Session，确认存在且 `status = ON_SALE`。
-2. 不锁 Session 行；按 `SessionSeat.id` 升序取得所有目标 `session_seats` 的行级更新锁。
-3. 基于锁定后的最新数据确认取得数量等于请求数量、全部属于指定 Session、状态全部为 AVAILABLE。
-4. 从锁定行读取正式价格，并以数据库当前时间一次计算统一的 `expires_at = 当前时间 + 15 分钟`。
-5. 创建 ACTIVE Reservation。
+1. 验证用户存在，再查询 Session，确认存在且 `status = ON_SALE`，但不锁 Session 行。
+2. 先用 `INSERT Reservation ... ON CONFLICT (user_id, idempotency_key) DO NOTHING RETURNING ...` 取得唯一幂等执行资格。
+3. INSERT 返回 0 行时回滚当前事务，通过普通 DbClient 读取胜出事务的完整结果；请求一致返回 200，不一致返回 `IDEMPOTENCY_CONFLICT`。
+4. 只有 INSERT 返回 1 行的执行者，才按 `SessionSeat.id` 升序取得目标 `session_seats` 的行级更新锁。
+5. 基于锁定后的最新数据确认取得数量等于请求数量、全部属于指定 Session、状态全部为 AVAILABLE，并读取正式价格。
 6. 将全部 SessionSeat 从 AVAILABLE 更新为 HELD，并写入 `current_reservation_id`。
 7. 写入 `reservation_session_seats`，把锁座时价格保存为 `reserved_price` 快照。
 8. 以全部 `reserved_price` 之和创建 PENDING_PAYMENT Order，并复用同一个 `expires_at`。
@@ -314,8 +315,10 @@ seatIds 不重复
 
 这些 SQL 不是多个 HTTP 请求，也不能分别通过普通连接池客户端执行。最后一条
 INSERT 成功不代表整个事务已成功；任一步失败或 COMMIT 失败都必须回滚，不能向
-客户端返回成功。Drogon 1.9.13 的具体 Transaction 提交回调方式在编码时以实际
-headers/source 为准，本设计不提前写未经验证的 API 签名。
+客户端返回成功。实际 Drogon 1.9.13 使用 `newTransactionAsync` 创建事务，
+`setCommitCallback` 接收最终提交结果；Transaction 没有公开 `commit()`，最后一个
+引用释放时析构并提交。实现只在所有 SQL 成功后设置 commit callback，再清空共享
+状态中的 Transaction 引用，既触发实际 COMMIT，也打断 shared_ptr 环。
 
 数据库行锁与 HELD 是不同概念：行锁只在事务执行期间存在并在提交/回滚后释放；
 HELD 是可持续约 15 分钟的正式业务状态。事务提交后行锁已经释放，但座位继续保持
@@ -347,7 +350,7 @@ PostgreSQL 事务和 SessionSeat 行锁解决。
 但不能只依赖“先 SELECT、再 INSERT”，因为两个并发重试都可能查询到不存在，
 随后同时插入。
 
-最终保护是 PostgreSQL 的 `(user_id, idempotency_key)` 联合唯一约束：
+最终保护和并发仲裁是 PostgreSQL 的 `(user_id, idempotency_key)` 联合唯一约束：
 
 ```text
 U-1001 + key-A  合法
@@ -356,10 +359,12 @@ U-2001 + key-A  合法
 再次插入 U-1001 + key-A  被唯一约束拒绝
 ```
 
-并发唯一冲突必须恢复并返回第一次操作的 Reservation + Order，而不是生成新结果。
-同一个 Key 被用于不同 `sessionId / seatIds` 时必须拒绝。如何在 Drogon 事务中处理
-唯一冲突并安全恢复结果，以及该场景使用什么稳定错误码，在 Phase 3 编码前结合
-实际 SQL 和框架 API 最终确定。
+新事务必须先执行 `INSERT ... ON CONFLICT DO NOTHING RETURNING`。返回 1 行的事务获得
+唯一执行资格后才锁座；返回 0 行的事务不锁座、不创建 Order，显式回滚后读取胜出
+事务已经提交的 Reservation + Order。相同请求返回原结果；同一个 Key 对应不同
+`sessionId / sorted seatIds` 时返回 `409 IDEMPOTENCY_CONFLICT`。不采用先锁座、最后
+INSERT 再捕获唯一异常的主流程，也不引入进程内 mutex、advisory lock、Redis lock
+或 Serializable 隔离级别完成同一件事。
 
 ### 6.3 多座位主方案选择
 
@@ -544,7 +549,7 @@ GET /events/{eventId}/sessions
 GET /sessions/{sessionId}/seats
 ```
 
-Phase 3 待实现：
+Phase 3 已完成并验证：
 
 ```text
 POST /reservations
@@ -609,7 +614,7 @@ A03
 - 只有一条 Reservation。
 - 只有一条 Order。
 - 重复请求获得同一业务结果，而不是座位冲突或新订单。
-- 同一个 Key 改为其他 Session 或座位时被拒绝；具体错误码待 Phase 3 确定。
+- 同一个 Key 改为其他 Session 或座位时返回 `IDEMPOTENCY_CONFLICT`。
 
 ### 12.4 数据库不变量
 
@@ -792,6 +797,6 @@ MVP 完成时必须能够完整演示：
 4. 取消和超时能够正确释放座位。
 5. 服务重启不会导致超时订单永久占座。
 
-只要以上业务闭环和并发正确性成立，才认为核心 MVP 完成。当前 Phase 1 和 Phase 2
-已经完成；Reservation、订单、Worker、支付/取消以及完整并发恢复验证仍属于后续
-阶段，不能因为读取链路已经可运行而标记为完成。
+只要以上业务闭环和并发正确性成立，才认为核心 MVP 完成。当前 Phase 1～3 已经
+完成；订单查询、Worker、支付/取消以及完整故障恢复验证仍属于后续阶段，不能因为
+Reservation 已经可运行就把完整 MVP 标记为完成。

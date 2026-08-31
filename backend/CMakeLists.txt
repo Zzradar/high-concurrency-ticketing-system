@@ -48,6 +48,9 @@ add_executable(ticketing_backend
     src/controllers/SeatController.cpp
     src/repositories/SeatRepository.cpp
     src/services/SeatService.cpp
+    src/controllers/ReservationController.cpp
+    src/repositories/ReservationRepository.cpp
+    src/services/ReservationService.cpp
 )
 
 target_include_directories(ticketing_backend PRIVATE src)
@@ -68,5 +71,13 @@ if(BUILD_TESTING)
     add_test(
         NAME read_api_source_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/read_api_source_contract_test.py"
+    )
+    add_test(
+        NAME phase3_schema_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase3_schema_contract_test.py"
+    )
+    add_test(
+        NAME reservation_source_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/reservation_source_contract_test.py"
     )
 endif()

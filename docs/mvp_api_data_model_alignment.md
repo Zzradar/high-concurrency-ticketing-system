@@ -33,6 +33,12 @@ GET /events/{eventId}/sessions
 GET /sessions/{sessionId}/seats
 ```
 
+Phase 3 后端还已经实现并通过真实事务与并发测试：
+
+```text
+POST /reservations
+```
+
 当前 Vue 页面实际调用其中三个列表接口：
 
 ```text
@@ -43,12 +49,6 @@ GET /sessions/{sessionId}/seats
 
 `GET /events/{eventId}` 已经是正式后端接口，但当前页面选择活动时仍复用
 `GET /events` 返回的 `TicketEvent`，尚未调用活动详情接口。
-
-Phase 3 待实现：
-
-```text
-POST /reservations
-```
 
 后续阶段待实现：
 
@@ -122,14 +122,16 @@ Phase 3 已确定继续使用：
 ```text
 SEAT_CONFLICT
 SESSION_NOT_FOUND
+SESSION_NOT_AVAILABLE
+IDEMPOTENCY_CONFLICT
 INVALID_ARGUMENT
 INTERNAL_ERROR
 ```
 
 订单阶段还需要 `ORDER_NOT_FOUND`、`ORDER_NOT_PAYABLE`、
 `ORDER_NOT_CANCELLABLE` 等错误语义。`Idempotency-Key` 缺失，以及同一个 Key
-被用于不同 `sessionId / seatIds` 时必须拒绝，但具体稳定错误码在 Phase 3
-实施前最终确定，本轮不新增并冻结错误码。
+被用于不同 `sessionId / seatIds` 时返回 `409 IDEMPOTENCY_CONFLICT`。Session 存在
+但不处于 `ON_SALE` 时返回 `409 SESSION_NOT_AVAILABLE`。
 
 ## 5. 时间规范
 
@@ -195,15 +197,15 @@ X-User-Id: U-1001
 
 用户身份不放在 `POST /reservations` 请求体中，以避免业务请求任意指定其他用户身份。
 
-Phase 3 计划为 `POST /reservations` 增加：
+Phase 3 后端 `POST /reservations` 已要求：
 
 ```text
 Idempotency-Key: <unique logical reservation request key>
 ```
 
 该 Header 标识“一次逻辑预订操作”，与 `X-User-Id` 共同确定请求幂等范围。
-当前前端代码尚未生成或发送 `Idempotency-Key`；这是 Phase 3 联调前需要补齐的
-未来契约，不能描述为已经落地的前端事实。
+当前前端代码尚未生成或发送 `Idempotency-Key`；这是后续前端联调需要补齐的
+契约，不能描述为已经落地的前端事实。
 
 ## 8. 前端对象与后端领域模型
 
@@ -398,10 +400,11 @@ created_at
 
 并通过关联表记录该 Reservation 包含哪些 SessionSeat。
 
-Phase 3 将通过新的 `002_*.sql` migration 计划新增：
+Phase 3 通过 `002_add_reservation_idempotency.sql` 新增：
 
 ```text
-idempotency_key
+idempotency_key TEXT NULL
+CHECK (idempotency_key IS NULL OR char_length(idempotency_key) BETWEEN 1 AND 128)
 UNIQUE (user_id, idempotency_key)
 ```
 
@@ -410,8 +413,8 @@ UNIQUE (user_id, idempotency_key)
 不同用户可以使用相同 Key，同一用户也可以用不同 Key 发起不同预订。
 
 已经验证过的 `001_initial_schema.sql` 不修改。现有 Seed Reservation 并非由真实
-HTTP 请求创建，未来允许其 `idempotency_key` 为空；列定义、约束和索引的具体
-SQL 在 Phase 3 实施时最终确定。本阶段不创建 `002` migration，也不修改 Seed。
+HTTP 请求创建，其 `idempotency_key` 保持 NULL；真实 POST 请求必须提供 1～128
+字符的非空 Key。现有 `001` migration 与 Seed 不修改。
 
 状态：
 
@@ -520,16 +523,23 @@ Body：
 `sessionId / seatIds` 的重试必须返回第一次创建的同一 Reservation 和 Order，
 不能再创建第二份业务数据。用户主动重新选择座位并发起新预订时必须使用新 Key。
 
-如果同一 Key 后续对应不同的 `sessionId` 或 `seatIds`，后端必须拒绝，不能创建
-新订单。MVP 可以通过 `reservations.session_id` 与
+如果同一 Key 后续对应不同的 `sessionId` 或规范化后的 `seatIds`，后端必须返回
+`409 IDEMPOTENCY_CONFLICT`，不能创建新订单。MVP 可以通过 `reservations.session_id` 与
 `reservation_session_seats` 恢复首次请求的业务内容，不要求额外保存完整请求正文；
-该拒绝场景的稳定错误码在 Phase 3 实施前最终确定。
+座位数组先按 `SessionSeat.id` 升序排序，因此相同集合的不同输入顺序属于同一请求。
+
+Fast path 未命中后，事务先验证用户和 Session，再执行
+`INSERT Reservation ... ON CONFLICT (user_id, idempotency_key) DO NOTHING RETURNING`。
+只有返回 1 行的事务才继续锁 SessionSeat；返回 0 行时显式回滚并读取胜出事务的
+完整结果。这样相同 Key 的并发重试在进入座位竞争前完成仲裁，不会退化为
+`SEAT_CONFLICT`。
 
 后端必须保证：
 
 1. `X-User-Id` 和 `Idempotency-Key` 存在，`sessionId` 非空。
 2. `seatIds` 数量为 1～6 且不重复。
-3. Session 存在并且 `status = ON_SALE`。
+3. 用户存在；Session 存在并且 `status = ON_SALE`，否则分别返回
+   `INVALID_ARGUMENT`、`SESSION_NOT_FOUND` 或 `SESSION_NOT_AVAILABLE`。
 4. 实际取得的 SessionSeat 数量等于请求数量，且全部属于 `sessionId`。
 5. 锁定后的全部 SessionSeat 仍为 AVAILABLE。
 6. 多个座位整体成功或整体失败。
@@ -695,14 +705,15 @@ GET /sessions/{sessionId}/seats
 
 已经完成 PostgreSQL 真实查询、C++/Docker/HTTP 集成测试和 Vite `/api` 真实读取链路。
 
-### Phase 3：Reservation（待实现）
+### Phase 3：Reservation（后端已完成）
 
 ```text
 POST /reservations
 ```
 
-范围包括请求幂等、多座位固定顺序原子锁座、Reservation / Order 同事务创建、
-价格快照、失败回滚和并发正确性测试。
+已完成请求幂等、多座位固定顺序原子锁座、Reservation / Order 同事务创建、
+价格快照、失败回滚和真实并发正确性测试。当前前端尚未发送 `Idempotency-Key`，
+所以前端真实 POST 联调仍留到后续阶段。
 
 ### Phase 4：订单查询与超时释放（待实现）
 

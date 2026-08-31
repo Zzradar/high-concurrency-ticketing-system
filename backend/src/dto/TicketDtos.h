@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace ticketing
 {
@@ -89,6 +90,80 @@ struct Seat
         value["status"] = status;
         value["zone"] = zone;
         value["price"] = Json::Int64(price);
+        return value;
+    }
+};
+
+struct Reservation
+{
+    std::string id;
+    std::string userId;
+    std::string sessionId;
+    std::vector<std::string> seatIds;
+    std::string status;
+    std::string expiresAt;
+    std::string createdAt;
+
+    Json::Value toJson() const
+    {
+        Json::Value value;
+        value["id"] = id;
+        value["userId"] = userId;
+        value["sessionId"] = sessionId;
+        value["seatIds"] = Json::Value{Json::arrayValue};
+        for (const auto &seatId : seatIds)
+        {
+            value["seatIds"].append(seatId);
+        }
+        value["status"] = status;
+        value["expiresAt"] = expiresAt;
+        value["createdAt"] = createdAt;
+        return value;
+    }
+};
+
+struct TicketOrder
+{
+    std::string id;
+    std::string reservationId;
+    std::string eventId;
+    std::string sessionId;
+    std::vector<std::string> seatIds;
+    std::string status;
+    std::int64_t totalAmount{};
+    std::string expiresAt;
+    std::string createdAt;
+
+    Json::Value toJson() const
+    {
+        Json::Value value;
+        value["id"] = id;
+        value["reservationId"] = reservationId;
+        value["eventId"] = eventId;
+        value["sessionId"] = sessionId;
+        value["seatIds"] = Json::Value{Json::arrayValue};
+        for (const auto &seatId : seatIds)
+        {
+            value["seatIds"].append(seatId);
+        }
+        value["status"] = status;
+        value["totalAmount"] = Json::Int64(totalAmount);
+        value["expiresAt"] = expiresAt;
+        value["createdAt"] = createdAt;
+        return value;
+    }
+};
+
+struct ReservationResult
+{
+    Reservation reservation;
+    TicketOrder order;
+
+    Json::Value toJson() const
+    {
+        Json::Value value;
+        value["reservation"] = reservation.toJson();
+        value["order"] = order.toJson();
         return value;
     }
 };

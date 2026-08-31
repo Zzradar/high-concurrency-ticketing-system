@@ -1,9 +1,9 @@
-# Ticketing backend MVP — phase 2
+# Ticketing backend MVP — phase 3
 
 This directory contains the C++20 + Drogon + PostgreSQL foundation for the
-ticketing MVP. Phase 2 adds the PostgreSQL-backed read path for events,
-sessions, and session-seat inventory. Reservation and order workflows remain
-out of scope.
+ticketing MVP. Phase 3 adds idempotent, atomic multi-seat reservations and
+creates the Reservation plus pending Order in one PostgreSQL transaction.
+Order lookup, payment, cancellation, and expiry workers remain out of scope.
 
 ## Layout
 
@@ -16,7 +16,9 @@ backend/
 │   ├── config.json
 │   └── config.docker.json
 ├── db/
-│   ├── migrations/001_initial_schema.sql
+│   ├── migrations/
+│   │   ├── 001_initial_schema.sql
+│   │   └── 002_add_reservation_idempotency.sql
 │   ├── seeds/001_demo_seed.sql
 │   └── tests/001_verify_seed.sql
 ├── src/
@@ -29,7 +31,10 @@ backend/
 └── tests/
     ├── schema_contract_test.py
     ├── read_api_source_contract_test.py
-    └── http_integration_test.py
+    ├── phase3_schema_contract_test.py
+    ├── reservation_source_contract_test.py
+    ├── http_integration_test.py
+    └── reservation_http_integration_test.py
 ```
 
 The implemented HTTP surface is intentionally limited to:
@@ -40,9 +45,11 @@ GET /events
 GET /events/{eventId}
 GET /events/{eventId}/sessions
 GET /sessions/{sessionId}/seats
+POST /reservations
 ```
 
-The read modules follow `Controller -> Service -> Repository -> PostgreSQL`.
+The read and reservation modules follow
+`Controller -> Service -> Repository -> PostgreSQL`.
 Physical `Seat` rows are joined with `SessionSeat` inventory; API seat IDs are
 the `session_seats.id` values used by later reservation requests.
 
@@ -66,9 +73,10 @@ test from `backend/`:
 
 ```bash
 python3 tests/http_integration_test.py
+python3 tests/reservation_http_integration_test.py
 ```
 
-This test fails when the backend is unreachable. It is deliberately not part
+These tests fail when the backend is unreachable. They are deliberately not part
 of build-stage CTest, where no HTTP server is running.
 
 PostgreSQL listens on `localhost:5432` with local-only development credentials:
@@ -119,6 +127,7 @@ database files in this order when PostgreSQL is not managed by Compose:
 
 ```bash
 psql -v ON_ERROR_STOP=1 -U ticketing -d ticketing -f db/migrations/001_initial_schema.sql
+psql -v ON_ERROR_STOP=1 -U ticketing -d ticketing -f db/migrations/002_add_reservation_idempotency.sql
 psql -v ON_ERROR_STOP=1 -U ticketing -d ticketing -f db/seeds/001_demo_seed.sql
 psql -v ON_ERROR_STOP=1 -U ticketing -d ticketing -f db/tests/001_verify_seed.sql
 ```
