@@ -108,6 +108,33 @@ MVP 不拆微服务。
 
 原因是当前最重要的问题是验证预订模型和并发正确性，而不是服务治理。模块化单体既能保持清晰的业务边界，也能减少服务发现、远程调用、分布式事务和部署带来的额外复杂度。
 
+### 3.1 当前实施状态
+
+本文同时记录已落地事实与后续设计，两者不能混为一谈：
+
+```text
+Phase 1  工程骨架 + PostgreSQL Schema + Seed                 已完成
+Phase 2  四个只读接口 + PostgreSQL 查询 + Vite /api 链路    已完成
+Phase 3  POST /reservations + 幂等 + 原子锁座                待实现
+Phase 4  GET /orders/{orderId} + 超时释放 Worker             待实现
+Phase 5  支付 + 取消 + 支付/取消/超时状态竞争                待实现
+Phase 6  完整并发、故障与服务重启恢复测试                    待实现
+Phase 7  Redis/缓存/WebSocket/多实例/MQ 等可选增强           暂缓
+```
+
+当前后端已经实现并验证：
+
+```text
+GET /events
+GET /events/{eventId}
+GET /events/{eventId}/sessions
+GET /sessions/{sessionId}/seats
+```
+
+当前 Vue 页面实际调用活动列表、活动场次列表和场次座位图接口，尚未调用已经存在的
+`GET /events/{eventId}`。Phase 3 及之后的写入、订单和 Worker 能力均不能描述为
+已经完成。
+
 ---
 
 ## 4. 核心领域模型
@@ -198,6 +225,13 @@ Seat 本身不保存“已售”状态。
 
 Reservation 与多个 SessionSeat 关联。
 
+Phase 3 计划通过新的 `002_*.sql` migration 为 Reservation 增加
+`idempotency_key`，并增加 `(user_id, idempotency_key)` 联合唯一约束。
+`reservations.id` 仍是主键；联合唯一约束只是限制同一用户的同一逻辑请求最多
+创建一条 Reservation，不会把两个字段改成主键。已验证的
+`001_initial_schema.sql` 与现有 Seed 不修改，Seed Reservation 未来允许没有幂等键。
+具体列定义和 SQL 在 Phase 3 实施时最终确定。
+
 ### 4.6 Order
 
 表示用户锁座成功后生成的订单。
@@ -248,86 +282,143 @@ MVP 直接从 PostgreSQL 查询。
 
 ### 5.3 提交座位预订
 
-用户一次可以选择一个或多个具体座位。
+Phase 3 的 `POST /reservations` 接收 `X-User-Id`、`Idempotency-Key`，以及只包含
+`sessionId / seatIds` 的请求体。`seatIds` 是 `session_seats.id`，不是物理
+`seats.id`；请求不携带用户 ID、价格或总金额。
 
-例如：
+第一层先做不需要数据库锁的结构校验：
 
 ```text
-A01
-A02
-A03
+X-User-Id 存在
+Idempotency-Key 存在
+sessionId 非空
+seatIds 数量为 1～6
+seatIds 不重复
 ```
 
-后端开始一个数据库事务。
+之后可以按 `(user_id, idempotency_key)` 查询已完成结果。已经存在且业务请求一致
+时，返回原来的 Reservation + Order；同一 Key 对应不同 `sessionId / seatIds`
+时必须拒绝，稳定错误码在 Phase 3 实施前确定。
 
-主要步骤：
+新请求的全部数据库步骤必须使用同一个 Drogon Transaction 对象：
 
-1. 根据固定顺序锁定本次请求涉及的 SessionSeat。
-2. 检查这些座位是否全部为 AVAILABLE。
-3. 如果任意一个座位不可用，则整个事务回滚。
-4. 创建 Reservation。
-5. 将全部座位更新为 HELD，并关联 Reservation。
-6. 创建 PENDING_PAYMENT 状态的 Order。
-7. 写入统一的支付截止时间。
-8. 提交事务。
+1. 查询 Session，确认存在且 `status = ON_SALE`。
+2. 不锁 Session 行；按 `SessionSeat.id` 升序取得所有目标 `session_seats` 的行级更新锁。
+3. 基于锁定后的最新数据确认取得数量等于请求数量、全部属于指定 Session、状态全部为 AVAILABLE。
+4. 从锁定行读取正式价格，并以数据库当前时间一次计算统一的 `expires_at = 当前时间 + 15 分钟`。
+5. 创建 ACTIVE Reservation。
+6. 将全部 SessionSeat 从 AVAILABLE 更新为 HELD，并写入 `current_reservation_id`。
+7. 写入 `reservation_session_seats`，把锁座时价格保存为 `reserved_price` 快照。
+8. 以全部 `reserved_price` 之和创建 PENDING_PAYMENT Order，并复用同一个 `expires_at`。
+9. 提交事务；确认 COMMIT 成功后才返回 `ReservationResult`。
 
-因此一次多座位预订只有两种结果：
+这些 SQL 不是多个 HTTP 请求，也不能分别通过普通连接池客户端执行。最后一条
+INSERT 成功不代表整个事务已成功；任一步失败或 COMMIT 失败都必须回滚，不能向
+客户端返回成功。Drogon 1.9.13 的具体 Transaction 提交回调方式在编码时以实际
+headers/source 为准，本设计不提前写未经验证的 API 签名。
 
-- 全部成功。
-- 全部失败。
-
-不存在只成功部分座位的情况。
+数据库行锁与 HELD 是不同概念：行锁只在事务执行期间存在并在提交/回滚后释放；
+HELD 是可持续约 15 分钟的正式业务状态。事务提交后行锁已经释放，但座位继续保持
+HELD，直到支付、取消或超时释放流程改变业务状态。
 
 ---
 
 ## 6. 并发预订方案
 
-### 6.1 核心原则
+### 6.1 请求幂等与座位竞争是两个问题
 
-数据库负责最终座位归属。
+请求幂等处理同一次逻辑操作因网络超时、响应丢失、客户端重试或重复点击而被多次
+发送的问题。例如第一次请求已经成功但客户端未收到响应，使用同一
+`Idempotency-Key` 重试时不能再创建第二份 Reservation / Order。
 
-不能采用：
-
-```text
-先查询座位是否 AVAILABLE
-然后在应用层判断
-再执行 UPDATE
-```
-
-这种流程存在并发竞争窗口。
-
-正确方案是把座位竞争放在数据库事务中处理。
-
-### 6.2 多座位统一锁定顺序
-
-当一次预订涉及多个座位时，所有请求都按照固定顺序处理，例如按照 SessionSeat ID 从小到大排序。
-
-这样可以降低以下场景产生死锁的概率：
+座位竞争处理不同合法请求争抢同一库存的问题。例如：
 
 ```text
-请求 A：先锁 A01，再锁 A02
-请求 B：先锁 A02，再锁 A01
+用户甲：A01 + A02
+用户乙：A02 + A03
 ```
 
-统一顺序后，所有请求都按照：
+两者本来就是不同业务操作，幂等键不能解决对 A02 的竞争；该问题必须由
+PostgreSQL 事务和 SessionSeat 行锁解决。
+
+### 6.2 幂等的应用层快速路径与数据库最终保护
+
+应用层可以先查询 `(user_id, idempotency_key)`，快速返回已经完成的相同请求。
+但不能只依赖“先 SELECT、再 INSERT”，因为两个并发重试都可能查询到不存在，
+随后同时插入。
+
+最终保护是 PostgreSQL 的 `(user_id, idempotency_key)` 联合唯一约束：
 
 ```text
-A01 → A02
+U-1001 + key-A  合法
+U-1001 + key-B  合法
+U-2001 + key-A  合法
+再次插入 U-1001 + key-A  被唯一约束拒绝
 ```
 
-获取数据库行锁。
+并发唯一冲突必须恢复并返回第一次操作的 Reservation + Order，而不是生成新结果。
+同一个 Key 被用于不同 `sessionId / seatIds` 时必须拒绝。如何在 Drogon 事务中处理
+唯一冲突并安全恢复结果，以及该场景使用什么稳定错误码，在 Phase 3 编码前结合
+实际 SQL 和框架 API 最终确定。
 
-### 6.3 最终数据保护
+### 6.3 多座位主方案选择
 
-除事务和行锁外，还需要通过数据库约束保证数据模型本身不会出现非法状态。
+只使用带 `status = 'AVAILABLE'` 条件的 UPDATE 并检查受影响行数，是主流且正确的
+并发写法，尤其适合单个库存数字或简单单资源竞争，不应被描述为错误方案。
 
-例如：
+当前一次预订最多包含 6 个具体座位，还必须校验 Session 归属、读取价格、保存价格
+快照、创建 Reservation 与 Order，并保证全部成功或全部失败。因此 Phase 3 不把
+“仅依靠条件更新”作为主要方案，而选择：
 
-- `(session_id, seat_id)` 唯一。
-- 一个有效座位不能对应多个有效 Reservation。
-- Order 与 Reservation 保持一对一或明确的受控关系。
+```text
+SELECT ... FOR UPDATE（或等价行级更新锁）
+→ 读取锁定后的最新状态与价格
+→ 全部校验通过
+→ 统一更新
+```
 
-数据库约束作为应用逻辑之外的最后一道保护。
+只要一个座位不存在、属于其他 Session 或已经不是 AVAILABLE，整个事务失败，
+禁止部分座位成功。
+
+### 6.4 锁定对象和固定顺序
+
+竞争对象是 `session_seats`，不是物理 `seats`。所有请求都按
+`SessionSeat.id` 升序取得行锁，不能沿用客户端随机提交顺序。例如客户端传入
+A03、A01、A02，实际锁定顺序仍为 A01、A02、A03。
+
+固定顺序降低多座位事务循环等待和死锁概率。PostgreSQL 能检测死锁，但死锁检测
+不应成为正常业务并发策略。
+
+### 6.5 当前不锁整个 Session
+
+Session 当前只用于确认存在并且 `status = ON_SALE`。MVP 尚无管理员并发关售接口，
+因此每次预订不获取 Session 行锁。热门场次的所有请求都指向同一 Session；如果购买
+互不冲突座位的用户也先锁同一行，会人为形成场次级串行瓶颈。
+
+当前只锁真正竞争的 SessionSeat。以后增加管理员实时关售时，再单独设计“关售与
+正在创建 Reservation”的并发关系。
+
+### 6.6 价格、过期时间与完整状态提交
+
+价格只相信锁定后的 `session_seats.price`。该值写入
+`reservation_session_seats.reserved_price` 后成为订单价格快照，后续库存价格变化
+不会影响已有订单；`orders.total_amount` 等于全部快照价格之和。
+
+Reservation 与 Order 使用数据库当前时间一次计算出的同一个 15 分钟截止时间。
+正式是否过期以后端数据库时间为准，浏览器倒计时只用于展示。
+
+成功事务必须一起提交：
+
+```text
+Reservation ACTIVE
+SessionSeat AVAILABLE → HELD，并指向 Reservation
+reservation_session_seats 保存关联和 reserved_price
+Order PENDING_PAYMENT
+```
+
+禁止先提交 Reservation 再创建 Order，否则可能形成座位已经 HELD 但没有订单的
+孤立状态。现有 `(session_id, seat_id)` 唯一约束、Reservation 与 Order 一对一约束、
+外键和状态检查继续作为应用逻辑之外的最终数据保护。
 
 ---
 
@@ -354,15 +445,19 @@ EXPIRED
 
 不能再次被修改成其他终态。
 
-状态迁移必须通过数据库条件更新或事务控制完成。
-
-例如支付操作只能修改：
+状态迁移必须通过数据库并发控制完成。例如支付操作只能处理：
 
 ```text
 当前状态仍然是 PENDING_PAYMENT 的订单
 ```
 
-这样可以防止支付和超时任务同时执行时互相覆盖。
+这样可以防止支付、取消和超时流程相互覆盖。Phase 5 最终采用 Order 行锁，还是
+使用带 `status = 'PENDING_PAYMENT'` 的条件 UPDATE，将结合具体 SQL 再确定，
+本阶段不提前固定实现方式。
+
+支付接口必须自行使用数据库时间判断 `current_time >= expires_at`，不能依赖 Worker
+已经先把订单改成 EXPIRED 才识别过期。`expires_at` 是时间上的正式业务事实，Worker
+负责最终把关联状态清理一致。
 
 ---
 
@@ -401,9 +496,10 @@ MVP 提供模拟支付接口。
 
 ---
 
-## 10. 超时订单处理
+## 10. 超时订单处理（Phase 4）
 
-MVP 不使用每个订单单独创建内存定时器的方式。
+一旦 Phase 3 创建正式 HELD 座位和 `expires_at`，Phase 4 必须尽快增加独立的过期
+释放 Worker。系统不使用每个订单单独创建进程内定时器的方式。
 
 原因是应用一旦重启，内存定时器就会全部丢失。
 
@@ -413,11 +509,11 @@ MVP 不使用每个订单单独创建内存定时器的方式。
 expires_at
 ```
 
-后台 Worker 周期性扫描：
+后台 Worker 周期性按批次扫描：
 
 ```text
 status = PENDING_PAYMENT
-AND expires_at <= current_time
+AND expires_at <= 数据库当前时间
 ```
 
 找到超时订单后，在数据库事务中：
@@ -425,41 +521,45 @@ AND expires_at <= current_time
 1. Order → EXPIRED。
 2. Reservation → EXPIRED。
 3. SessionSeat：HELD → AVAILABLE。
+4. SessionSeat.current_reservation_id → NULL。
 
-因为过期时间持久化在数据库中，所以应用停止后重新启动，仍然能够继续清理之前已经超时的订单。
+因为过期时间持久化在数据库中，所以应用停止后重新启动，仍然能够继续清理之前
+已经超时的订单。不能把“只有新订单请求到来时才顺便清理旧订单”作为主方案；
+突发票务流量可能产生集中到期，清理工作不能转嫁给后续用户请求。
+
+当前模块化单体可以先运行一个 Worker。未来多 Worker 或多实例时，可以使用
+PostgreSQL `FOR UPDATE SKIP LOCKED`，让 Worker 跳过其他 Worker 已领取的订单并行
+批处理；这是扩展方向，不纳入 Phase 3。
 
 ---
 
-## 11. MVP 主要接口
+## 11. 接口实施范围
 
-### 活动
+已完成并验证：
 
-- 查询活动列表。
-- 查询活动详情。
+```text
+GET /events
+GET /events/{eventId}
+GET /events/{eventId}/sessions
+GET /sessions/{sessionId}/seats
+```
 
-### 场次
+Phase 3 待实现：
 
-- 查询某个活动的场次列表。
-- 查询场次详情。
+```text
+POST /reservations
+```
 
-### 座位
+Phase 4/5 待实现：
 
-- 查询某场次座位图。
+```text
+GET  /orders/{orderId}
+POST /orders/{orderId}/pay
+POST /orders/{orderId}/cancel
+```
 
-### 预订
-
-- 提交一个或多个座位进行预订。
-- 查询预订详情。
-
-### 订单
-
-- 查询订单。
-- 模拟支付。
-- 主动取消。
-
-管理端功能不是 MVP 重点。
-
-活动、场次和座位可以优先通过初始化 SQL 或 Seed 数据准备。
+前端 `expireOrderForDemo` 是 Mock-only 行为，不是后端接口。管理端功能不是 MVP
+重点；活动、场次和座位继续由现有 Schema 与稳定 Seed 提供。
 
 ---
 
@@ -500,7 +600,39 @@ A03
 
 不能出现 A02 同时属于两个有效 Reservation。
 
-### 12.3 取消释放
+### 12.3 相同幂等键并发重试
+
+同一用户使用同一个 `Idempotency-Key`、相同 `sessionId` 和相同 `seatIds` 并发发送。
+
+最终必须满足：
+
+- 只有一条 Reservation。
+- 只有一条 Order。
+- 重复请求获得同一业务结果，而不是座位冲突或新订单。
+- 同一个 Key 改为其他 Session 或座位时被拒绝；具体错误码待 Phase 3 确定。
+
+### 12.4 数据库不变量
+
+除 HTTP 响应外，还要直接查询数据库验证：
+
+```text
+HELD SessionSeat 只能指向一个 Reservation
+一个 Reservation 最多一个 Order
+Order.total_amount = 对应 reserved_price 之和
+Reservation 与 Order 的 expires_at 一致
+失败事务没有残留 Reservation、HELD 座位或孤立 Order
+```
+
+### 12.5 测试数据隔离
+
+现有 Seed 保留为稳定 Demo 基线，其中已有 AVAILABLE、HELD、SOLD、Reservation、
+Order 和真实关联数据。并发测试不能反复污染这些记录。
+
+每轮测试使用专门的测试座位和用户，并在开始前恢复目标 SessionSeat 为 AVAILABLE、
+清理上一轮测试创建的 Order、Reservation 和关联记录。这样 Demo 数据保持稳定，
+并发场景可以确定性重复执行。
+
+### 12.6 取消释放
 
 用户成功锁定 A01 后取消订单。
 
@@ -511,7 +643,7 @@ A03
 - A01 恢复 AVAILABLE。
 - 其他用户之后可以重新预订 A01。
 
-### 12.4 超时释放
+### 12.7 超时释放
 
 创建一个支付时间较短的订单。
 
@@ -523,21 +655,22 @@ A03
 - 把 Reservation 修改为 EXPIRED。
 - 释放所有 HELD 座位。
 
-### 12.5 支付与超时竞争
+### 12.8 支付、取消与超时竞争
 
-让支付操作与超时任务尽可能同时处理同一订单。
+让支付、取消操作与超时任务尽可能同时处理同一订单。
 
 最终只能产生一个合法结果：
 
-- PAID + SOLD。
-- 或 EXPIRED + AVAILABLE。
+- PAID + CONFIRMED + SOLD。
+- CANCELLED + CANCELLED + AVAILABLE。
+- 或 EXPIRED + EXPIRED + AVAILABLE。
 
 不能出现：
 
 - PAID + AVAILABLE。
 - EXPIRED + SOLD。
 
-### 12.6 服务重启恢复
+### 12.9 服务重启恢复
 
 创建即将超时的订单后停止服务。
 
@@ -547,9 +680,9 @@ A03
 
 ---
 
-## 13. MVP 暂不实现的能力
+## 13. 当前暂不实现的能力
 
-第一阶段明确不实现：
+Phase 3 及核心正确性验证阶段明确不实现：
 
 - Redis 座位缓存。
 - Redis 临时锁。
@@ -566,7 +699,8 @@ A03
 - 推荐系统。
 - 复杂后台管理系统。
 
-这些能力都不影响第一阶段验证核心预订模型。
+这些能力都不影响使用 PostgreSQL 事务验证核心预订模型。当前四个只读接口和未来
+Phase 3 预订流程均直接访问 PostgreSQL，不增加 Redis 或应用层缓存。
 
 ---
 
@@ -574,13 +708,28 @@ A03
 
 ### Redis
 
-当座位图查询成为热点后，引入 Redis：
+一个可选增强是页面软占用：用户点击 A01 后立即向后端申请几分钟临时占用，让其他
+用户更早看到该座位正在被选择。这可以改善体验并减少正式 Reservation 阶段的竞争，
+但不是最终防超卖机制；即使未来加入 Redis，`POST /reservations` 的 PostgreSQL
+事务、行锁与约束仍必须存在。
+
+当前暂缓软占用，因为它需要同时增加：
+
+- Redis 与临时占用接口。
+- 取消选择和自动过期。
+- 前端点击异步化、页面关闭与多标签页处理。
+- Redis 与 PostgreSQL 正式状态协调。
+
+Phase 3 优先证明数据库正式 Reservation 在并发下不会把同一 SessionSeat 分给两个
+有效预订，`SELECTED` 继续只存在于浏览器本地。
+
+当读取热点和实际压测结果证明有需要时，再考虑：
 
 - 缓存座位图。
-- 保存可丢失的临时锁座状态。
+- 保存可丢失的页面软占用状态。
 - 限制热门场次请求速率。
 
-正式座位归属仍由 PostgreSQL 决定。
+正式座位归属始终由 PostgreSQL 决定。
 
 ### WebSocket
 
@@ -643,4 +792,6 @@ MVP 完成时必须能够完整演示：
 4. 取消和超时能够正确释放座位。
 5. 服务重启不会导致超时订单永久占座。
 
-只要以上业务闭环和并发正确性成立，就认为 MVP 第一阶段完成。
+只要以上业务闭环和并发正确性成立，才认为核心 MVP 完成。当前 Phase 1 和 Phase 2
+已经完成；Reservation、订单、Worker、支付/取消以及完整并发恢复验证仍属于后续
+阶段，不能因为读取链路已经可运行而标记为完成。

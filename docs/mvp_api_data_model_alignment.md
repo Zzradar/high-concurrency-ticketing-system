@@ -2,38 +2,63 @@
 
 ## 1. 文档目的
 
-本文用于统一当前 Vue 3 前端 Demo 与后续 C++20 + Drogon + PostgreSQL 后端之间的接口契约和数据模型边界。
+本文用于统一当前 Vue 3 前端 Demo、现有 C++20 + Drogon + PostgreSQL
+后端实现，以及后续 MVP 阶段之间的接口契约和数据模型边界。
 
 本文主要依据：
 
 - 当前前端实际代码整理出的《前端接口契约文档》
 - 已确定的《高并发票务预订系统 MVP 技术方案》
 
-目标不是重新设计前端，而是在后端正式开发前，把容易导致返工的关键约定先固定下来。
+目标不是重新设计前端，而是在各后续阶段实施前，把容易导致返工的关键约定先固定下来。
 
 MVP 阶段遵循以下原则：
 
 1. 前端负责展示、交互和本地临时选择状态。
 2. 后端负责正式座位状态、Reservation、Order 和所有业务状态迁移。
 3. PostgreSQL 是 MVP 阶段唯一正式数据源。
-4. Redis、消息队列、WebSocket、多实例部署暂不进入 MVP 第一阶段。
+4. Redis、消息队列、WebSocket、多实例部署不进入当前核心 MVP 阶段。
 5. 接口数量保持最小，以跑通完整预订闭环为目标。
 
-## 2. MVP 固定接口范围
+## 2. MVP 接口范围与当前状态
 
-当前前端实际需要 7 个后端接口，MVP 第一阶段不额外扩展接口。
+接口状态必须区分“后端已经实现”和“当前前端已经实际调用”。
+
+当前后端已经实现并完成 PostgreSQL、HTTP 与 Vite `/api` 读取链路验证：
 
 ```text
-GET  /events
-GET  /events/{eventId}/sessions
-GET  /sessions/{sessionId}/seats
+GET /events
+GET /events/{eventId}
+GET /events/{eventId}/sessions
+GET /sessions/{sessionId}/seats
+```
+
+当前 Vue 页面实际调用其中三个列表接口：
+
+```text
+GET /events
+GET /events/{eventId}/sessions
+GET /sessions/{sessionId}/seats
+```
+
+`GET /events/{eventId}` 已经是正式后端接口，但当前页面选择活动时仍复用
+`GET /events` 返回的 `TicketEvent`，尚未调用活动详情接口。
+
+Phase 3 待实现：
+
+```text
 POST /reservations
+```
+
+后续阶段待实现：
+
+```text
 GET  /orders/{orderId}
 POST /orders/{orderId}/pay
 POST /orders/{orderId}/cancel
 ```
 
-当前前端没有使用 `GET /events/{eventId}`，因此 MVP 暂不实现。
+前端的 `expireOrderForDemo` 仅存在于 Mock 模式，不是正式后端接口。
 
 ## 3. JSON 命名规范
 
@@ -51,7 +76,8 @@ MVP 前后端 HTTP JSON 统一使用 camelCase。
 }
 ```
 
-当前前端 `POST /reservations` 使用 `session_id`、`seat_ids`，正式联调前修改为 `sessionId`、`seatIds`。
+当前前端 `POST /reservations` 已使用 `sessionId`、`seatIds`；Phase 3
+后端继续接受这一 camelCase 请求体，不再引入 snake_case 变体。
 
 后端响应统一使用：
 
@@ -83,17 +109,27 @@ paidAt
 
 HTTP 状态码表达 HTTP 层错误类型；`code` 表达稳定业务错误类型。
 
-MVP 至少定义：
+当前只读后端已经使用：
+
+```text
+EVENT_NOT_FOUND
+SESSION_NOT_FOUND
+INTERNAL_ERROR
+```
+
+Phase 3 已确定继续使用：
 
 ```text
 SEAT_CONFLICT
 SESSION_NOT_FOUND
-ORDER_NOT_FOUND
-ORDER_NOT_PAYABLE
-ORDER_NOT_CANCELLABLE
-ORDER_EXPIRED
 INVALID_ARGUMENT
+INTERNAL_ERROR
 ```
+
+订单阶段还需要 `ORDER_NOT_FOUND`、`ORDER_NOT_PAYABLE`、
+`ORDER_NOT_CANCELLABLE` 等错误语义。`Idempotency-Key` 缺失，以及同一个 Key
+被用于不同 `sessionId / seatIds` 时必须拒绝，但具体稳定错误码在 Phase 3
+实施前最终确定，本轮不新增并冻结错误码。
 
 ## 5. 时间规范
 
@@ -159,20 +195,27 @@ X-User-Id: U-1001
 
 用户身份不放在 `POST /reservations` 请求体中，以避免业务请求任意指定其他用户身份。
 
+Phase 3 计划为 `POST /reservations` 增加：
+
+```text
+Idempotency-Key: <unique logical reservation request key>
+```
+
+该 Header 标识“一次逻辑预订操作”，与 `X-User-Id` 共同确定请求幂等范围。
+当前前端代码尚未生成或发送 `Idempotency-Key`；这是 Phase 3 联调前需要补齐的
+未来契约，不能描述为已经落地的前端事实。
+
 ## 8. 前端对象与后端领域模型
 
 前端对象不能直接一一映射为数据库表。
 
-后端领域模型固定为：
+后端核心关系固定为：
 
 ```text
 Event
   │
   ▼
 Session
-  │
-  ▼
-Seat
   │
   ▼
 SessionSeat
@@ -182,6 +225,8 @@ Reservation
   │
   ▼
 Order
+
+Seat（物理座位） ─────► SessionSeat（场次库存）
 ```
 
 其中 `SessionSeat` 是后端核心领域对象，前端无需直接感知。
@@ -353,6 +398,21 @@ created_at
 
 并通过关联表记录该 Reservation 包含哪些 SessionSeat。
 
+Phase 3 将通过新的 `002_*.sql` migration 计划新增：
+
+```text
+idempotency_key
+UNIQUE (user_id, idempotency_key)
+```
+
+`reservations.id` 继续作为单列主键；`user_id + idempotency_key` 是联合唯一约束，
+不是联合主键。其业务含义是同一用户使用同一幂等键最多创建一条 Reservation，
+不同用户可以使用相同 Key，同一用户也可以用不同 Key 发起不同预订。
+
+已经验证过的 `001_initial_schema.sql` 不修改。现有 Seed Reservation 并非由真实
+HTTP 请求创建，未来允许其 `idempotency_key` 为空；列定义、约束和索引的具体
+SQL 在 Phase 3 实施时最终确定。本阶段不创建 `002` migration，也不修改 Seed。
+
 状态：
 
 ```text
@@ -371,7 +431,8 @@ EXPIRED
 }
 ```
 
-前端第一阶段可以继续只保存 `order`。
+当前 App 可以继续只保存 `order`；后端仍按 `ReservationResult` 返回完整的
+`reservation + order`。
 
 ## 14. Order 对齐
 
@@ -431,30 +492,49 @@ SessionSeat AVAILABLE
 
 这些变化必须由后端事务统一完成。
 
-## 15. POST /reservations 最终契约
+## 15. POST /reservations Phase 3 契约
 
-请求：
+Headers：
+
+```text
+X-User-Id: U-1001
+Idempotency-Key: <unique logical reservation request key>
+```
+
+Body：
 
 ```json
 {
   "sessionId": "ses-concert-1001",
   "seatIds": [
-    "session-seat-id-A01",
-    "session-seat-id-A02"
+    "ses-concert-1001-A01",
+    "ses-concert-1001-A02"
   ]
 }
 ```
 
-用户身份由请求上下文提供，不放入请求体。
+用户身份由 `X-User-Id` 提供，不放入请求体；请求体也不包含价格或前端计算的
+金额。`seatIds` 表示 `session_seats.id`，不是物理 `seats.id`。
+
+`Idempotency-Key` 表示一次逻辑预订操作。相同用户、相同 Key、相同
+`sessionId / seatIds` 的重试必须返回第一次创建的同一 Reservation 和 Order，
+不能再创建第二份业务数据。用户主动重新选择座位并发起新预订时必须使用新 Key。
+
+如果同一 Key 后续对应不同的 `sessionId` 或 `seatIds`，后端必须拒绝，不能创建
+新订单。MVP 可以通过 `reservations.session_id` 与
+`reservation_session_seats` 恢复首次请求的业务内容，不要求额外保存完整请求正文；
+该拒绝场景的稳定错误码在 Phase 3 实施前最终确定。
 
 后端必须保证：
 
-1. 所有 seatIds 均属于同一个 sessionId。
-2. 选择数量符合 MVP 限制。
-3. 所有座位仍为 AVAILABLE。
-4. 多个座位整体成功或整体失败。
-5. Reservation、Order、SessionSeat 状态在同一事务中完成。
-6. totalAmount 由后端根据数据库价格计算，不能相信前端金额。
+1. `X-User-Id` 和 `Idempotency-Key` 存在，`sessionId` 非空。
+2. `seatIds` 数量为 1～6 且不重复。
+3. Session 存在并且 `status = ON_SALE`。
+4. 实际取得的 SessionSeat 数量等于请求数量，且全部属于 `sessionId`。
+5. 锁定后的全部 SessionSeat 仍为 AVAILABLE。
+6. 多个座位整体成功或整体失败。
+7. Reservation、SessionSeat、关联表和 Order 在同一事务中创建或更新。
+8. `totalAmount` 由数据库价格快照计算，不能相信前端金额。
 
 成功返回 ReservationResult：
 
@@ -465,8 +545,8 @@ SessionSeat AVAILABLE
     "userId": "U-1001",
     "sessionId": "ses-concert-1001",
     "seatIds": [
-      "session-seat-id-A01",
-      "session-seat-id-A02"
+      "ses-concert-1001-A01",
+      "ses-concert-1001-A02"
     ],
     "status": "ACTIVE",
     "expiresAt": "2026-10-01T11:45:00Z",
@@ -478,8 +558,8 @@ SessionSeat AVAILABLE
     "eventId": "evt-concert-2026",
     "sessionId": "ses-concert-1001",
     "seatIds": [
-      "session-seat-id-A01",
-      "session-seat-id-A02"
+      "ses-concert-1001-A01",
+      "ses-concert-1001-A02"
     ],
     "status": "PENDING_PAYMENT",
     "totalAmount": 256000,
@@ -580,120 +660,78 @@ MAX_SEATS_PER_RESERVATION = 6
 INVALID_ARGUMENT
 ```
 
-## 19. 前端联调前需要完成的小修改
+## 19. 当前前端事实与 Phase 3 联调差异
 
-正式开发后端前，前端只需要做少量契约收敛，不需要重构页面。
+当前前端已经完成：
 
-必须修改：
-
-1. `POST /reservations` 请求字段统一为 `sessionId`、`seatIds`。
-2. 正式金额统一按“分”处理，并增加统一金额格式化。
-3. 真实 Axios 错误解析统一业务错误结构 `code + message`。
+1. `POST /reservations` 请求体使用 `sessionId`、`seatIds`。
+2. `price`、`priceFrom`、`totalAmount` 按整数“分”处理并统一格式化。
+3. Axios 按 `code + message` 解析业务错误。
 4. 请求统一携带 `X-User-Id: U-1001`。
+5. 预订失败刷新座位、支付结果未知刷新订单时会保留原错误提示。
 
-建议顺手修复：
+当前前端尚未生成或发送 `Idempotency-Key`。Phase 3 联调前需要为每次新的逻辑
+预订操作生成新 Key，并在网络重试时复用同一 Key；不能修改本文去声称这项能力
+已经存在于当前代码。
 
-- 预订失败后错误提示可能被刷新座位流程清空。
-- 支付结果未知时提示可能被订单刷新流程清空。
-
-暂不修改：
-
-- 不引入 Vue Router。
-- 不保存 currentReservation。
-- 不支持浏览器刷新后恢复订单详情。
-- 不增加 GET /events/{eventId}。
-- 不实现 WebSocket。
-- 不修改现有页面结构。
+继续暂缓：Vue Router、保存 `currentReservation`、刷新浏览器后恢复订单详情、
+WebSocket 和页面结构重构。`GET /events/{eventId}` 后端已实现，但当前页面仍不调用。
 
 ## 20. 后端开发阶段划分
 
-### 阶段一：工程和数据库骨架
+### Phase 1：工程与数据库基础（已完成）
 
-完成：
+C++20、Drogon、CMake、Docker Compose、PostgreSQL Schema 和稳定 Demo Seed
+已经建立并通过真实初始化与运行验证。
 
-```text
-C++20
-Drogon
-PostgreSQL
-CMake
-Docker Compose
-```
-
-建立核心数据库 Schema 和 Seed 数据。
-
-### 阶段二：只读接口
-
-先完成：
+### Phase 2：四个只读接口（已完成）
 
 ```text
 GET /events
+GET /events/{eventId}
 GET /events/{eventId}/sessions
 GET /sessions/{sessionId}/seats
 ```
 
-关闭对应前端 Mock，完成第一次真实前后端联调。
+已经完成 PostgreSQL 真实查询、C++/Docker/HTTP 集成测试和 Vite `/api` 真实读取链路。
 
-### 阶段三：Reservation
-
-单独设计和实现：
+### Phase 3：Reservation（待实现）
 
 ```text
 POST /reservations
 ```
 
-重点验证：
+范围包括请求幂等、多座位固定顺序原子锁座、Reservation / Order 同事务创建、
+价格快照、失败回滚和并发正确性测试。
 
-- 多座位原子预订。
-- 并发竞争。
-- 数据库事务。
-- 统一锁顺序。
-- 失败回滚。
-- Reservation 与 Order 同时创建。
-
-### 阶段四：支付和取消
-
-实现：
+### Phase 4：订单查询与超时释放（待实现）
 
 ```text
 GET /orders/{orderId}
+后台过期释放 Worker
+```
+
+### Phase 5：支付与取消（待实现）
+
+```text
 POST /orders/{orderId}/pay
 POST /orders/{orderId}/cancel
 ```
 
-建立完整订单状态机。
+重点处理支付、取消、超时对同一订单的状态竞争。
 
-### 阶段五：超时释放
+### Phase 6：完整可靠性验证（待实现）
 
-增加后台 Worker，处理：
+覆盖完整并发、故障、提交结果不确定、Worker 批处理和服务重启恢复测试。
 
-```text
-PENDING_PAYMENT
-+
-expires_at <= now
-```
+### Phase 7：可选高并发增强（暂缓）
 
-并执行：
+根据实际瓶颈选择 Redis 页面软占用与缓存、WebSocket、多实例和消息队列；
+这些能力不能替代 PostgreSQL 的正式库存并发控制。
 
-```text
-Order -> EXPIRED
-Reservation -> EXPIRED
-SessionSeat -> AVAILABLE
-```
+## 21. 当前阶段边界
 
-### 阶段六：并发正确性测试
-
-重点验证：
-
-1. 大量用户竞争一个座位只能成功一个。
-2. 多座位交叉竞争不能部分成功。
-3. 同一个座位不能属于两个有效 Reservation。
-4. 支付和超时竞争不会产生非法状态。
-5. 已支付座位不会重新 AVAILABLE。
-6. 取消和超时能够可靠释放座位。
-
-## 21. MVP 边界
-
-MVP 第一阶段明确不加入：
+核心 MVP 当前不加入：
 
 ```text
 Redis
