@@ -51,6 +51,11 @@ add_executable(ticketing_backend
     src/controllers/ReservationController.cpp
     src/repositories/ReservationRepository.cpp
     src/services/ReservationService.cpp
+    src/controllers/OrderController.cpp
+    src/repositories/OrderRepository.cpp
+    src/services/OrderService.cpp
+    src/services/OrderExpiryService.cpp
+    src/workers/OrderExpiryWorker.cpp
 )
 
 target_include_directories(ticketing_backend PRIVATE src)
@@ -79,5 +84,13 @@ if(BUILD_TESTING)
     add_test(
         NAME reservation_source_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/reservation_source_contract_test.py"
+    )
+    add_test(
+        NAME order_source_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/order_source_contract_test.py"
+    )
+    add_test(
+        NAME order_expiry_source_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/order_expiry_source_contract_test.py"
     )
 endif()

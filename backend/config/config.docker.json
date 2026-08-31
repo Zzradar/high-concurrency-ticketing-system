@@ -28,5 +28,11 @@
     "upload_path": "uploads",
     "client_max_body_size": "1M",
     "client_max_memory_body_size": "64K"
+  },
+  "custom_config": {
+    "order_expiry_worker": {
+      "batch_size": 100,
+      "interval_seconds": 5.0
+    }
   }
 }

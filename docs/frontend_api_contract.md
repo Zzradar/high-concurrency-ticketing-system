@@ -26,6 +26,8 @@
 当前代码**没有**调用 GET /events/{eventId}。活动详情数据直接复用活动列表中选中的 TicketEvent。  
 expireOrderForDemo 仅用于 mock 演示；真实 API 模式会直接报 MOCK_ONLY，不能视为后端接口契约。
 
+当前后端已实际打通 `GET /orders/{orderId}`；支付和取消接口仍是后续能力。
+
 ## 2. 页面、组件与数据需求
 
 前端没有 Vue Router。App.vue 使用 currentView 在四个视图间切换，刷新浏览器会丢失当前流程状态。
@@ -303,6 +305,11 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 
 - Path：orderId，string，例如 TKT-24082602。
 - Query：当前无。
+- Header：`X-User-Id`，当前 Demo 值为 `U-1001`。
+
+该接口已由 Phase 4 后端实现。只返回当前用户自己的 Order；订单不存在或属于其他
+用户时统一返回 `404` 和 `ORDER_NOT_FOUND`。查询只读取后端正式状态，不顺手执行
+过期写操作。
 
 前端期望 response.data 直接为 TicketOrder：
 
@@ -321,7 +328,9 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
       "createdAt": "2026-08-30T05:15:00.000Z"
     }
 
-当前订单页明确依赖 id、seatIds、status、totalAmount、expiresAt。其他字段存在于类型和 mock，但页面未直接读取。
+当数据库 `paid_at` 非 NULL 时，响应额外包含 UTC ISO 8601 的可选 `paidAt`；NULL 时
+不输出该字段。当前订单页明确依赖 id、seatIds、status、totalAmount、expiresAt。
+其他字段存在于类型和 mock，但页面未直接读取。
 
 ### 5.6 POST /orders/{orderId}/pay
 
@@ -446,4 +455,7 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 - expiresAt、createdAt、paidAt 使用可被浏览器 Date.parse 正确解析的 ISO 8601 字符串。
 - 创建、支付、取消和订单查询返回完整 TicketOrder；创建预订返回 ReservationResult。
 - 座位竞争、支付、取消或超时处理后，GET seats 和 GET order 能返回一致的最终状态。
+
+其中订单查询和超时处理已在 Phase 4 后端实现并完成真实联调；支付与取消仍待后续
+Phase 实现。
 

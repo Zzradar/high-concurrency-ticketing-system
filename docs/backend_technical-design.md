@@ -116,7 +116,7 @@ MVP 不拆微服务。
 Phase 1  工程骨架 + PostgreSQL Schema + Seed                 已完成
 Phase 2  四个只读接口 + PostgreSQL 查询 + Vite /api 链路    已完成
 Phase 3  POST /reservations + 幂等 + 原子锁座                已完成
-Phase 4  GET /orders/{orderId} + 超时释放 Worker             待实现
+Phase 4  GET /orders/{orderId} + 超时释放 Worker             已完成
 Phase 5  服务端 Checkout Session（购票会话）                待实现
 Phase 6  前端购票会话恢复与独立多会话                        待实现
 Phase 7  Redis 临时占座                                      待实现
@@ -131,11 +131,13 @@ GET /events
 GET /events/{eventId}
 GET /events/{eventId}/sessions
 GET /sessions/{sessionId}/seats
+POST /reservations
+GET /orders/{orderId}
 ```
 
 当前 Vue 页面实际调用活动列表、活动场次列表和场次座位图接口，尚未调用已经存在的
-`GET /events/{eventId}`。Phase 3 后端预订能力已经完成；Phase 4 及之后的订单查询、
-Worker、支付和取消能力仍未实现。
+`GET /events/{eventId}`。Phase 3 后端预订能力与 Phase 4 订单查询、超时释放 Worker
+已经完成；支付和取消能力仍未实现。
 
 ---
 
@@ -458,9 +460,9 @@ EXPIRED
 当前状态仍然是 PENDING_PAYMENT 的订单
 ```
 
-这样可以防止支付、取消和超时流程相互覆盖。Phase 8 最终采用 Order 行锁，还是
-使用带 `status = 'PENDING_PAYMENT'` 的条件 UPDATE，将结合具体 SQL 再确定，
-本阶段不提前固定实现方式。
+这样可以防止支付、取消和超时流程相互覆盖。Phase 4 已建立长期锁顺序：先锁
+Order，再锁 Reservation，最后按 `SessionSeat.id` 升序锁 SessionSeat。未来支付和
+取消实现必须沿用该顺序，并以 Order 作为终态竞争的第一仲裁点。
 
 支付接口必须自行使用数据库时间判断 `current_time >= expires_at`，不能依赖 Worker
 已经先把订单改成 EXPIRED 才识别过期。`expires_at` 是时间上的正式业务事实，Worker
@@ -505,8 +507,8 @@ MVP 提供模拟支付接口。
 
 ## 10. 超时订单处理（Phase 4）
 
-一旦 Phase 3 创建正式 HELD 座位和 `expires_at`，Phase 4 必须尽快增加独立的过期
-释放 Worker。系统不使用每个订单单独创建进程内定时器的方式。
+Phase 4 已在模块化单体中实现独立的过期释放 Worker。系统不使用每个订单单独创建
+进程内定时器的方式。
 
 原因是应用一旦重启，内存定时器就会全部丢失。
 
@@ -523,7 +525,12 @@ status = PENDING_PAYMENT
 AND expires_at <= 数据库当前时间
 ```
 
-找到超时订单后，在数据库事务中：
+实际候选查询按 `expires_at ASC, id ASC` 排序并使用可配置 `batch_size`；默认值为
+100。每个候选 Order 使用独立事务，先以 `FOR UPDATE SKIP LOCKED` 锁 Order 并重新
+检查状态和数据库时间，再依次锁 Reservation 和按 ID 升序排列的 SessionSeat。
+
+全部正式关联座位必须仍为 HELD，且 `current_reservation_id` 必须指向目标
+Reservation。校验通过后，在同一数据库事务中：
 
 1. Order → EXPIRED。
 2. Reservation → EXPIRED。
@@ -534,9 +541,14 @@ AND expires_at <= 数据库当前时间
 已经超时的订单。不能把“只有新订单请求到来时才顺便清理旧订单”作为主方案；
 突发票务流量可能产生集中到期，清理工作不能转嫁给后续用户请求。
 
-当前模块化单体可以先运行一个 Worker。未来多 Worker 或多实例时，可以使用
-PostgreSQL `FOR UPDATE SKIP LOCKED`，让 Worker 跳过其他 Worker 已领取的订单并行
-批处理；这是扩展方向，不纳入 Phase 3。
+Worker 通过 Drogon `registerBeginningAdvice` 在应用启动后立即执行一轮，本轮异步
+处理全部完成后，再由 `getLoop()->runAfter()` 等待可配置周期（默认 5 秒）并启动
+下一轮，因此同一 Worker 不会发生轮次重叠。`FOR UPDATE SKIP LOCKED` 已通过双后端
+实例竞争同一过期 Order 的测试；这是本项目的 PostgreSQL 工程选择。
+
+座位释放还会比较正式关联数量与实际更新数量；任何状态、所有权或数量不变量失败，
+当前 Order 的事务都会回滚并记录 ERROR，批次继续处理下一张订单。详细实现见
+[Phase 4 订单过期专项设计](order_expiry_design.md)。
 
 ---
 
@@ -549,18 +561,19 @@ GET /events
 GET /events/{eventId}
 GET /events/{eventId}/sessions
 GET /sessions/{sessionId}/seats
-```
-
-Phase 3 已完成并验证：
-
-```text
 POST /reservations
+GET /orders/{orderId}
 ```
 
-Phase 4/8 待实现：
+Phase 4 后台能力已完成并验证：
 
 ```text
-GET  /orders/{orderId}
+订单超时释放 Worker
+```
+
+Phase 8 待实现：
+
+```text
 POST /orders/{orderId}/pay
 POST /orders/{orderId}/cancel
 ```
@@ -844,6 +857,6 @@ MVP 完成时必须能够完整演示：
 4. 取消和超时能够正确释放座位。
 5. 服务重启不会导致超时订单永久占座。
 
-只要以上业务闭环和并发正确性成立，才认为核心 MVP 完成。当前 Phase 1～3 已经
-完成；订单查询、Worker、支付/取消以及完整故障恢复验证仍属于后续阶段，不能因为
-Reservation 已经可运行就把完整 MVP 标记为完成。
+只要以上业务闭环和并发正确性成立，才认为核心 MVP 完成。当前 Phase 1～4 已经
+完成；支付/取消以及完整故障恢复验证仍属于后续阶段，不能因为 Reservation 和
+过期回收已经可运行就把完整 MVP 标记为完成。

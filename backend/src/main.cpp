@@ -1,7 +1,63 @@
+#include "workers/OrderExpiryWorker.h"
+
 #include <drogon/drogon.h>
 
+#include <cstddef>
 #include <exception>
+#include <limits>
+#include <memory>
+#include <stdexcept>
 #include <string>
+#include <utility>
+
+namespace
+{
+constexpr std::size_t kDefaultOrderExpiryBatchSize = 100;
+constexpr double kDefaultOrderExpiryIntervalSeconds = 5.0;
+
+std::pair<std::size_t, double> loadOrderExpiryWorkerConfig()
+{
+    auto batchSize = kDefaultOrderExpiryBatchSize;
+    auto intervalSeconds = kDefaultOrderExpiryIntervalSeconds;
+    const auto &config =
+        drogon::app().getCustomConfig()["order_expiry_worker"];
+
+    if (config.isNull())
+    {
+        return {batchSize, intervalSeconds};
+    }
+    if (!config.isObject())
+    {
+        throw std::invalid_argument(
+            "custom_config.order_expiry_worker must be an object");
+    }
+
+    if (config.isMember("batch_size"))
+    {
+        const auto &value = config["batch_size"];
+        if (!value.isUInt64() || value.asUInt64() == 0 ||
+            value.asUInt64() > std::numeric_limits<std::size_t>::max())
+        {
+            throw std::invalid_argument(
+                "order_expiry_worker.batch_size must be a positive integer");
+        }
+        batchSize = static_cast<std::size_t>(value.asUInt64());
+    }
+
+    if (config.isMember("interval_seconds"))
+    {
+        const auto &value = config["interval_seconds"];
+        if (!value.isNumeric() || value.asDouble() <= 0.0)
+        {
+            throw std::invalid_argument(
+                "order_expiry_worker.interval_seconds must be positive");
+        }
+        intervalSeconds = value.asDouble();
+    }
+
+    return {batchSize, intervalSeconds};
+}
+}  // namespace
 
 int main(int argc, char *argv[])
 {
@@ -11,6 +67,12 @@ int main(int argc, char *argv[])
     try
     {
         drogon::app().loadConfigFile(configPath);
+        const auto [batchSize, intervalSeconds] =
+            loadOrderExpiryWorkerConfig();
+        auto expiryWorker = std::make_shared<ticketing::OrderExpiryWorker>(
+            batchSize, intervalSeconds);
+        drogon::app().registerBeginningAdvice(
+            [expiryWorker] { expiryWorker->start(); });
         LOG_INFO << "Starting ticketing backend with config: " << configPath;
         drogon::app().run();
     }

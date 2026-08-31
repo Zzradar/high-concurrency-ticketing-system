@@ -3,6 +3,7 @@
 #include <json/json.h>
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -133,6 +134,7 @@ struct TicketOrder
     std::int64_t totalAmount{};
     std::string expiresAt;
     std::string createdAt;
+    std::optional<std::string> paidAt;
 
     Json::Value toJson() const
     {
@@ -150,6 +152,10 @@ struct TicketOrder
         value["totalAmount"] = Json::Int64(totalAmount);
         value["expiresAt"] = expiresAt;
         value["createdAt"] = createdAt;
+        if (paidAt)
+        {
+            value["paidAt"] = *paidAt;
+        }
         return value;
     }
 };

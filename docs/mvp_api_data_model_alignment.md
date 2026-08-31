@@ -39,6 +39,13 @@ Phase 3 后端还已经实现并通过真实事务与并发测试：
 POST /reservations
 ```
 
+Phase 4 后端已经实现并通过真实 HTTP、PostgreSQL 和双 Worker 并发测试：
+
+```text
+GET /orders/{orderId}
+后台过期释放 Worker
+```
+
 当前 Vue 页面实际调用其中三个列表接口：
 
 ```text
@@ -53,7 +60,6 @@ GET /sessions/{sessionId}/seats
 后续阶段待实现：
 
 ```text
-GET  /orders/{orderId}
 POST /orders/{orderId}/pay
 POST /orders/{orderId}/cancel
 ```
@@ -128,8 +134,9 @@ INVALID_ARGUMENT
 INTERNAL_ERROR
 ```
 
-订单阶段还需要 `ORDER_NOT_FOUND`、`ORDER_NOT_PAYABLE`、
-`ORDER_NOT_CANCELLABLE` 等错误语义。`Idempotency-Key` 缺失，以及同一个 Key
+Phase 4 订单查询已经实现 `ORDER_NOT_FOUND`；不存在和不属于当前用户的 Order
+统一使用该错误，避免泄露其他用户订单。支付和取消阶段还需要
+`ORDER_NOT_PAYABLE`、`ORDER_NOT_CANCELLABLE` 等错误语义。`Idempotency-Key` 缺失，以及同一个 Key
 被用于不同 `sessionId / seatIds` 时返回 `409 IDEMPOTENCY_CONFLICT`。Session 存在
 但不处于 `ON_SALE` 时返回 `409 SESSION_NOT_AVAILABLE`。
 
@@ -494,7 +501,9 @@ Reservation EXPIRED
 SessionSeat AVAILABLE
 ```
 
-这些变化必须由后端事务统一完成。
+Phase 4 已在单 Order 独立事务中统一完成超时变化，同时清空
+`SessionSeat.current_reservation_id`。正式关联、HELD 状态和当前 Reservation 所有权
+必须全部匹配，释放数量不一致时整单回滚。
 
 ## 15. POST /reservations Phase 3 契约
 
@@ -582,6 +591,10 @@ Fast path 未命中后，事务先验证用户和 Session，再执行
 
 ## 16. GET /orders/{orderId} 契约
 
+Phase 4 后端已实现该接口。请求必须携带 `X-User-Id`，查询条件同时限定
+`order.id = orderId` 和 `order.user_id = currentUserId`。Order 不存在或属于其他用户
+都返回 `404 ORDER_NOT_FOUND`；GET 只读取正式状态，不执行过期写操作。
+
 返回完整 TicketOrder，至少包含：
 
 ```text
@@ -594,7 +607,7 @@ status
 totalAmount
 expiresAt
 createdAt
-paidAt
+paidAt（数据库非 NULL 时输出）
 ```
 
 当前不要求 Order API 返回完整活动、场次和座位展开对象。
@@ -717,17 +730,18 @@ POST /reservations
 价格快照、失败回滚和真实并发正确性测试。当前前端尚未发送 `Idempotency-Key`，
 所以前端真实 POST 联调仍留到后续阶段。
 
-### Phase 4：订单查询与超时释放（待实现）
+### Phase 4：订单查询与超时释放（后端已完成）
 
 ```text
 GET /orders/{orderId}
 后台过期释放 Worker
 ```
 
-补完整 `PENDING_PAYMENT / ACTIVE / HELD` 的正式生命周期：过期时 Order 进入
+已经补完整 `PENDING_PAYMENT / ACTIVE / HELD` 的正式生命周期：过期时 Order 进入
 EXPIRED、Reservation 进入 EXPIRED、SessionSeat 恢复 AVAILABLE 并清空
-`current_reservation_id`。未来支付接口必须自己检查数据库过期时间，不能只依赖
-Worker 是否已经及时执行。
+`current_reservation_id`。Worker 使用数据库当前时间、可配置批次和周期、单 Order
+事务、Order → Reservation → SessionSeat 固定锁顺序及 `FOR UPDATE SKIP LOCKED`。
+未来支付接口仍必须自己检查数据库过期时间，不能只依赖 Worker 是否已经及时执行。
 
 ### Phase 5：服务端购票会话（待实现）
 

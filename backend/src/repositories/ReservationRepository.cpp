@@ -113,6 +113,7 @@ void ReservationRepository::findCompleteByIdempotency(
                         first["order_expires_at"].as<std::string>(),
                     .createdAt =
                         first["order_created_at"].as<std::string>(),
+                    .paidAt = std::nullopt,
                 },
             };
 
@@ -470,6 +471,7 @@ void ReservationRepository::insertOrder(
                 .totalAmount = row["total_amount"].as<std::int64_t>(),
                 .expiresAt = row["expires_at"].as<std::string>(),
                 .createdAt = row["created_at"].as<std::string>(),
+                .paidAt = std::nullopt,
             });
         },
         [errorPtr](
