@@ -203,7 +203,8 @@ Phase 3 后端 `POST /reservations` 已要求：
 Idempotency-Key: <unique logical reservation request key>
 ```
 
-该 Header 标识“一次逻辑预订操作”，与 `X-User-Id` 共同确定请求幂等范围。
+该 Header 标识“一次逻辑预订操作”，与 `X-User-Id` 共同确定请求幂等范围。它是
+一次关键写操作的身份，不是整个长期购票流程的身份。
 当前前端代码尚未生成或发送 `Idempotency-Key`；这是后续前端联调需要补齐的
 契约，不能描述为已经落地的前端事实。
 
@@ -680,9 +681,10 @@ INVALID_ARGUMENT
 4. 请求统一携带 `X-User-Id: U-1001`。
 5. 预订失败刷新座位、支付结果未知刷新订单时会保留原错误提示。
 
-当前前端尚未生成或发送 `Idempotency-Key`。Phase 3 联调前需要为每次新的逻辑
-预订操作生成新 Key，并在网络重试时复用同一 Key；不能修改本文去声称这项能力
-已经存在于当前代码。
+当前前端尚未生成或发送 `Idempotency-Key`，但 Phase 3 后端本身已经完成。后续
+前端接入不再采用一个全局 `pendingReservationAttempt` 直接承载整轮购票过程，
+而是在 Phase 6 围绕服务端购票会话接入：每次新的关键确认使用对应 Key，同一确认
+的网络重试复用原 Key。不能修改本文去声称这些能力已经存在于当前代码。
 
 继续暂缓：Vue Router、保存 `currentReservation`、刷新浏览器后恢复订单详情、
 WebSocket 和页面结构重构。`GET /events/{eventId}` 后端已实现，但当前页面仍不调用。
@@ -722,25 +724,80 @@ GET /orders/{orderId}
 后台过期释放 Worker
 ```
 
-### Phase 5：支付与取消（待实现）
+补完整 `PENDING_PAYMENT / ACTIVE / HELD` 的正式生命周期：过期时 Order 进入
+EXPIRED、Reservation 进入 EXPIRED、SessionSeat 恢复 AVAILABLE 并清空
+`current_reservation_id`。未来支付接口必须自己检查数据库过期时间，不能只依赖
+Worker 是否已经及时执行。
+
+### Phase 5：服务端购票会话（待实现）
+
+设计购票会话数据模型与状态机，并提供创建、查询、恢复和确认能力。确认入口复用
+Phase 3 的 `ReservationService` 与正式 Reservation 事务能力。本阶段不在本文写死
+精确表字段、完整状态枚举、接口 URL 或参数。
+
+### Phase 6：前端购票会话恢复（待实现）
+
+围绕服务端购票会话支持当前流程恢复、页面刷新恢复、确认结果未知恢复，以及用户
+知情后显式开启第二个独立会话。不采用全局唯一 `pendingReservationAttempt` 作为
+长期业务模型。
+
+### Phase 7：Redis 临时占座（待实现）
+
+增加与购票会话关联、带 TTL 的前置临时占座，改善体验和削减无效竞争。正式库存
+仍由 PostgreSQL 事务、SessionSeat 行锁与约束决定。
+
+### Phase 8：支付、取消与超时竞争（待实现）
 
 ```text
 POST /orders/{orderId}/pay
 POST /orders/{orderId}/cancel
 ```
 
-重点处理支付、取消、超时对同一订单的状态竞争。
+重点处理 `PENDING_PAYMENT → PAID / CANCELLED / EXPIRED` 对同一订单的状态竞争。
+多个关键写接口出现后，再评估是否把 Reservation 专用幂等演进为通用幂等请求
+基础设施；本阶段不新增通用表。
 
-### Phase 6：完整可靠性验证（待实现）
+### Phase 9：按压测决定高峰增强（暂缓）
 
-覆盖完整并发、故障、提交结果不确定、Worker 批处理和服务重启恢复测试。
+只有真实压测证明同步确认出现大量 HTTP 等待、请求积压或数据库过载时，才评估
+限流、排队、异步受理和后台操作 Polling（轮询查询）。未来后台操作编号不等于
+购票会话编号、幂等键或 Order ID。
 
-### Phase 7：可选高并发增强（暂缓）
+完整并发、故障、提交结果不确定、Worker 批处理和服务重启恢复测试随各 Phase
+持续补充，不再作为一个与业务能力分离的单独阶段。
 
-根据实际瓶颈选择 Redis 页面软占用与缓存、WebSocket、多实例和消息队列；
-这些能力不能替代 PostgreSQL 的正式库存并发控制。
+## 21. 后续购票会话对齐
 
-## 21. 当前阶段边界
+当前已实现 API 和数据库模型保持不变，`POST /reservations` 继续是正式接口，不标记
+为废弃。未来新增 Checkout Session（购票会话）后，职责分离如下：
+
+```text
+购票会话
+= 某个用户针对一个具体场次的一轮连续购票过程
+
+Idempotency-Key
+= 该会话中的一次关键写操作
+
+Reservation / Order
+= 正式确认成功后创建的业务资源
+```
+
+未来确认购票会话应复用现有 Phase 3 的固定顺序锁座、PostgreSQL 事务、价格快照、
+Reservation 专用幂等和 COMMIT 确认能力。购票会话 API 尚未实现，因此本节不把任何
+创建、查询、恢复或确认路径列为当前真实接口，也不固定表字段和请求参数。
+
+恢复分三层：已知会话编号时按会话恢复，具体写请求结果未知时按原幂等键恢复，
+本地信息全部丢失时按用户身份恢复进行中会话、待支付订单和最近订单。浏览器保存
+会话编号只是辅助线索，服务器状态是最终事实。
+
+同一会话进入 `SUBMITTING` 后冻结座位集合并持续解析原确认，但不阻塞整个用户。
+用户被明确告知旧确认仍可能成功后，可以显式开启第二个独立会话；系统不能因超时
+静默生成第二订单。主动放弃正在确认的会话暂缓，直到确认与取消的原子竞争被设计。
+
+Phase 7 的 Redis 临时占座只服务前置竞争与体验，正式确认仍由 PostgreSQL 仲裁。
+通用幂等记录和 Phase 9 异步受理都属于后续评估，不是当前实现事实。
+
+## 22. 当前阶段边界
 
 核心 MVP 当前不加入：
 
@@ -759,7 +816,7 @@ Kubernetes
 完整认证系统
 ```
 
-## 22. 最终对齐原则
+## 23. 最终对齐原则
 
 整个 MVP 统一遵循：
 

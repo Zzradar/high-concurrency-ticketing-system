@@ -56,15 +56,15 @@ Node.js 仅作为前端开发环境，不承担本项目的业务后端职责。
 
 ---
 
-### 2.3 JavaScript
+### 2.3 TypeScript
 
-MVP 使用 JavaScript，不强制使用 TypeScript。
+MVP 当前使用 TypeScript，入口文件为 `src/main.ts`。
 
 原因是：
 
-- 当前前端逻辑较简单。
-- 项目重点在后端预订模型，不希望前端增加额外学习和配置成本。
-- 如果后续前端规模扩大，再考虑迁移到 TypeScript。
+- 当前数据模型和 API 契约已经通过 TypeScript 类型表达。
+- Vue 组件、工具函数和测试均使用 TypeScript 源文件。
+- 类型检查有助于保持活动、场次、座位、Reservation 和 Order 数据一致。
 
 ---
 
@@ -91,7 +91,6 @@ MVP 第一阶段暂不使用：
 - Quasar。
 - Element Plus。
 - WebSocket。
-- TypeScript。
 - SSR。
 - 复杂权限系统。
 
@@ -297,7 +296,7 @@ A02
 
 MVP 不使用 Pinia。
 
-可以在 App.vue 或简单 composable 中维护以下核心状态：
+当前 App.vue 使用 Vue `ref` 维护以下核心状态：
 
 ```text
 currentEvent
@@ -307,8 +306,6 @@ currentSession
 seats
 
 selectedSeats
-
-currentReservation
 
 currentOrder
 
@@ -347,9 +344,10 @@ status
 
 只有用户点击“提交预订”且后端成功返回后，才认为真正锁座成功。
 
-### currentReservation
+### currentReservation（未来规划 / 目标状态）
 
-后端成功创建的 Reservation。
+当前 App.vue 没有维护 `currentReservation`；创建预订成功后主要将
+`result.order` 保存到 `currentOrder`。是否在后续保存 Reservation 留待未来规划。
 
 ### currentOrder
 
@@ -525,7 +523,7 @@ src/
 │   └── OrderView.vue
 │
 ├── App.vue
-└── main.js
+└── main.ts
 ```
 
 其中：
@@ -706,6 +704,24 @@ MVP 的交互重点是清晰，不追求复杂视觉效果。
 ---
 
 ## 14. 后续演进方向
+
+### 服务端购票会话与恢复
+
+当前前端主要依赖 Vue 内存保存 `currentEvent`、`currentSession`、本地点选和订单流程，
+刷新浏览器会丢失这些状态。这是当前实现事实，不是长期恢复机制。
+
+Phase 6 将围绕服务端 Checkout Session（购票会话）恢复业务状态。浏览器可以保存
+当前购票会话编号作为快速恢复线索，但正在选座、正在确认以及关联的 Reservation /
+Order 等正式状态必须由服务器返回；浏览器存储不能成为业务事实来源。长期方案不
+采用一个用户全局唯一的 `pendingReservationAttempt`，也不只依赖 Vue `ref`、
+`localStorage` 或 `sessionStorage`。
+
+同一购票会话进入 `SUBMITTING`（正在确认）后，其座位集合冻结，前端默认恢复或
+查询原确认，不能换座后沿用该会话再次确认，也不能因超时静默生成第二笔订单。
+这只冻结当前会话，不阻塞整个用户。用户在被明确告知上一笔仍可能成功后，可以
+显式开始新的独立购票会话，旧会话继续解析；旧会话后来成功或失败都应明确通知。
+
+具体 Vue 组件、Store、Router 和浏览器存储方式在 Phase 6 实施时确定，本阶段不固定。
 
 ### WebSocket 实时座位更新
 
