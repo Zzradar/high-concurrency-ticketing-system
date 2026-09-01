@@ -716,6 +716,12 @@ Order 等正式状态必须由服务器返回；浏览器存储不能成为业�
 采用一个用户全局唯一的 `pendingReservationAttempt`，也不只依赖 Vue `ref`、
 `localStorage` 或 `sessionStorage`。
 
+Phase 6 目标是在用户进入具体 Session 后查询可恢复会话；若同场次有多个会话，
+由用户选择继续哪一个。`sessionStorage` 只作 locator，主要保存 `checkoutSessionId`，
+可选保存 `eventId / sessionId`；不保存内部幂等键，也不把 selectedSeats、会话状态、
+Order 状态或 Seat 状态当作权威事实。刷新后必须重新 GET 服务端；`SUBMITTING`
+页面未来可做短轮询。Event 页不强制查询历史会话。以上均为 Phase 6 目标，当前 Vue 代码尚未实现。
+
 同一购票会话进入 `SUBMITTING`（正在确认）后，其座位集合冻结，前端默认恢复或
 查询原确认，不能换座后沿用该会话再次确认，也不能因超时静默生成第二笔订单。
 这只冻结当前会话，不阻塞整个用户。用户在被明确告知上一笔仍可能成功后，可以

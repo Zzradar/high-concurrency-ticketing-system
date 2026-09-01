@@ -173,4 +173,43 @@ struct ReservationResult
         return value;
     }
 };
+
+struct CheckoutSession
+{
+    std::string id;
+    std::string userId;
+    std::string sessionId;
+    std::vector<std::string> seatIds;
+    std::string status;
+    std::optional<std::string> reservationId;
+    std::string createdAt;
+    std::string updatedAt;
+    std::optional<ReservationResult> formalResult;
+
+    Json::Value toJson() const
+    {
+        Json::Value value;
+        value["id"] = id;
+        value["userId"] = userId;
+        value["sessionId"] = sessionId;
+        value["seatIds"] = Json::Value{Json::arrayValue};
+        for (const auto &seatId : seatIds)
+        {
+            value["seatIds"].append(seatId);
+        }
+        value["status"] = status;
+        if (reservationId)
+        {
+            value["reservationId"] = *reservationId;
+        }
+        value["createdAt"] = createdAt;
+        value["updatedAt"] = updatedAt;
+        if (formalResult)
+        {
+            value["reservation"] = formalResult->reservation.toJson();
+            value["order"] = formalResult->order.toJson();
+        }
+        return value;
+    }
+};
 }  // namespace ticketing

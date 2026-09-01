@@ -46,6 +46,19 @@ GET /orders/{orderId}
 后台过期释放 Worker
 ```
 
+Phase 5 后端已经实现服务端购票会话：
+
+```text
+POST /checkout-sessions
+GET /checkout-sessions/{id}
+GET /checkout-sessions?sessionId=...&recoverable=true
+PUT /checkout-sessions/{id}/seats
+POST /checkout-sessions/{id}/confirm
+POST /checkout-sessions/{id}/abandon
+```
+
+当前 Vue 前端尚未调用上述 Phase 5 接口，它们是已实现的后端事实，不是已联调的前端事实。
+
 当前 Vue 页面实际调用其中三个列表接口：
 
 ```text
@@ -743,11 +756,12 @@ EXPIRED、Reservation 进入 EXPIRED、SessionSeat 恢复 AVAILABLE 并清空
 事务、Order → Reservation → SessionSeat 固定锁顺序及 `FOR UPDATE SKIP LOCKED`。
 未来支付接口仍必须自己检查数据库过期时间，不能只依赖 Worker 是否已经及时执行。
 
-### Phase 5：服务端购票会话（待实现）
+### Phase 5：服务端购票会话（后端已完成）
 
-设计购票会话数据模型与状态机，并提供创建、查询、恢复和确认能力。确认入口复用
-Phase 3 的 `ReservationService` 与正式 Reservation 事务能力。本阶段不在本文写死
-精确表字段、完整状态枚举、接口 URL 或参数。
+已完成 `checkout_sessions` 与 `checkout_session_seats` 持久化、
+`SELECTING / SUBMITTING / RESERVED / ABANDONED` 状态机、完整座位集替换、创建/查询/
+恢复/确认/放弃 API。确认入口在服务端生成确认 Key，并复用 Phase 3 的
+`ReservationService` 与正式 Reservation 事务能力。
 
 ### Phase 6：前端购票会话恢复（待实现）
 
@@ -780,10 +794,9 @@ POST /orders/{orderId}/cancel
 完整并发、故障、提交结果不确定、Worker 批处理和服务重启恢复测试随各 Phase
 持续补充，不再作为一个与业务能力分离的单独阶段。
 
-## 21. 后续购票会话对齐
+## 21. Phase 5 购票会话对齐
 
-当前已实现 API 和数据库模型保持不变，`POST /reservations` 继续是正式接口，不标记
-为废弃。未来新增 Checkout Session（购票会话）后，职责分离如下：
+`POST /reservations` 继续是正式接口，不标记为废弃。Phase 5 新增的 CheckoutSession 与原有正式预订职责分离如下：
 
 ```text
 购票会话
@@ -796,13 +809,12 @@ Reservation / Order
 = 正式确认成功后创建的业务资源
 ```
 
-未来确认购票会话应复用现有 Phase 3 的固定顺序锁座、PostgreSQL 事务、价格快照、
-Reservation 专用幂等和 COMMIT 确认能力。购票会话 API 尚未实现，因此本节不把任何
-创建、查询、恢复或确认路径列为当前真实接口，也不固定表字段和请求参数。
+确认购票会话已复用 Phase 3 的固定顺序锁座、PostgreSQL 事务、价格快照、
+Reservation 专用幂等和 COMMIT 确认能力。CheckoutSession 行锁保证一个会话只有一个活动
+确认 Key，Phase 3 `(user_id, idempotency_key)` 唯一约束保证该 Key 只创建一份正式结果。
 
-恢复分三层：已知会话编号时按会话恢复，具体写请求结果未知时按原幂等键恢复，
-本地信息全部丢失时按用户身份恢复进行中会话、待支付订单和最近订单。浏览器保存
-会话编号只是辅助线索，服务器状态是最终事实。
+当前后端支持启动时一次有界被动对账、GET 按需对账，以及用户主动重试原 confirm。
+服务器对 `SUBMITTING` 持久化的 Key 与 `(user_id, key)` 正式 Reservation 对账；被动对账找不到结果时保持 `SUBMITTING`，不自动下单。
 
 同一会话进入 `SUBMITTING` 后冻结座位集合并持续解析原确认，但不阻塞整个用户。
 用户被明确告知旧确认仍可能成功后，可以显式开启第二个独立会话；系统不能因超时

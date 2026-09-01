@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace ticketing
 {
@@ -44,6 +45,13 @@ class ReservationService
 
     void createReservation(CreateReservationInput input,
                            Completion completion) const;
+
+    void createReservationForCheckout(
+        std::string userId,
+        std::string idempotencyKey,
+        std::string sessionId,
+        std::vector<std::string> seatIds,
+        Completion completion) const;
 
   private:
     struct FlowState;

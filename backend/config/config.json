@@ -33,6 +33,9 @@
     "order_expiry_worker": {
       "batch_size": 100,
       "interval_seconds": 5.0
+    },
+    "checkout_session_reconciliation": {
+      "batch_size": 100
     }
   }
 }

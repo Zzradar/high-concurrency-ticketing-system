@@ -117,7 +117,7 @@ Phase 1  工程骨架 + PostgreSQL Schema + Seed                 已完成
 Phase 2  四个只读接口 + PostgreSQL 查询 + Vite /api 链路    已完成
 Phase 3  POST /reservations + 幂等 + 原子锁座                已完成
 Phase 4  GET /orders/{orderId} + 超时释放 Worker             已完成
-Phase 5  服务端 Checkout Session（购票会话）                待实现
+Phase 5  服务端 Checkout Session（购票会话）                已完成
 Phase 6  前端购票会话恢复与独立多会话                        待实现
 Phase 7  Redis 临时占座                                      待实现
 Phase 8  支付 + 取消 + 支付/取消/超时状态竞争                待实现
@@ -133,6 +133,12 @@ GET /events/{eventId}/sessions
 GET /sessions/{sessionId}/seats
 POST /reservations
 GET /orders/{orderId}
+POST /checkout-sessions
+GET /checkout-sessions/{id}
+GET /checkout-sessions?sessionId=...&recoverable=true
+PUT /checkout-sessions/{id}/seats
+POST /checkout-sessions/{id}/confirm
+POST /checkout-sessions/{id}/abandon
 ```
 
 当前 Vue 页面实际调用活动列表、活动场次列表和场次座位图接口，尚未调用已经存在的
@@ -260,6 +266,15 @@ Phase 3 通过 `002_add_reservation_idempotency.sql` 为 Reservation 增加可�
 - EXPIRED
 
 MVP 阶段支付采用模拟接口，不接第三方支付平台。
+
+### 4.7 CheckoutSession 与 CheckoutSessionSeat
+
+Phase 5 的 `checkout_sessions` 保存用户针对一个 Session 的本轮购买流程，状态为
+`SELECTING / SUBMITTING / RESERVED / ABANDONED`。它保存服务端确认键和可空的
+`reservation_id`，不保存 `order_id` 或短期 `expires_at`。
+
+`checkout_session_seats` 保存当前完整购买意图。关联必须与购票会话属于同一
+Session，且每个座位在一个会话中只出现一次。这些行不代表 `HELD`；正式库存状态仍只由 Phase 3 事务修改。
 
 ---
 
@@ -728,9 +743,9 @@ Order 和真实关联数据。并发测试不能反复污染这些记录。
 
 ### 购票会话与长期调用链
 
-Phase 5 将引入服务端 Checkout Session（购票会话），作为某个用户针对一个具体场次
-的一轮连续购票过程的稳定身份。推荐在第一次实际资源修改行为时创建，而不是纯浏览
-时创建，也不延迟到最终确认之后。一个用户可以同时拥有多个独立购票会话。
+Phase 5 已引入服务端 Checkout Session（购票会话），作为某个用户针对一个具体场次
+的一轮连续购票过程的稳定身份。第一次真实选座时直接用首版完整座位集创建，
+纯浏览不创建。一个用户可以同时拥有多个独立购票会话。
 
 长期调用链为：
 
@@ -750,18 +765,17 @@ Reservation
 Order
 ```
 
-未来确认入口负责购票会话的状态和恢复语义，但正式库存仲裁继续复用 Phase 3 已完成
+当前确认入口负责购票会话的状态和恢复语义，但正式库存仲裁继续复用 Phase 3 已完成
 的 PostgreSQL 事务、固定顺序行锁、Reservation 专用幂等和 COMMIT 确认能力。
 Phase 3 不是临时方案，也不因未来增加购票会话而废弃。
 
-`Idempotency-Key` 表示购票会话中的一次关键写操作，不是整个购票流程身份。同一
-确认结果未知时必须复用原会话和原 Key。通用幂等请求记录只在支付、取消等多个关键
-写接口出现后评估，本阶段不新增表或固定字段。
+首次 confirm 在 CheckoutSession 行锁内生成服务端 Key，写入 `SUBMITTING` 后提交；
+并发或用户主动重试看到 `SUBMITTING` 时复用该 Key，不生成第二把 Key。随后在事务外
+调用 Phase 3 `ReservationService`，继续依靠 `(user_id, idempotency_key)` 唯一约束仲裁正式结果。
 
-恢复分为三层：已知会话时按会话恢复，特定写请求结果未知时按原幂等键恢复，本地
-信息全部丢失时按用户身份恢复进行中会话和订单。确认结果未知时冻结当前会话及座位
-集合，但不阻塞整个用户；用户被明确告知旧确认仍可能成功后，可以显式创建另一个
-独立会话。具体会话字段、完整状态枚举和接口形式在 Phase 5 设计时确定。
+恢复入口为：启动时一次有界被动对账、GET 按需对账，以及用户对 `SUBMITTING`
+主动重试 confirm。前两者只修复已存在的 Reservation/Order，找不到正式结果时保持
+`SUBMITTING`，启动对账绝不会自动购票。详见 [Phase 5 购票会话落地设计](checkout_session_phase5_design.md)。
 
 ### Redis
 

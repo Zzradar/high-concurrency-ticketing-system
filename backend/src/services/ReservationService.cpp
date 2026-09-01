@@ -97,6 +97,28 @@ void ReservationService::createReservation(CreateReservationInput input,
     queryExisting(state, false);
 }
 
+void ReservationService::createReservationForCheckout(
+    std::string userId,
+    std::string idempotencyKey,
+    std::string sessionId,
+    std::vector<std::string> seatIds,
+    Completion completion) const
+{
+    Json::Value body;
+    body["sessionId"] = std::move(sessionId);
+    body["seatIds"] = Json::Value{Json::arrayValue};
+    for (auto &seatId : seatIds)
+    {
+        body["seatIds"].append(std::move(seatId));
+    }
+    createReservation(CreateReservationInput{
+                          .userId = std::move(userId),
+                          .idempotencyKey = std::move(idempotencyKey),
+                          .body = std::move(body),
+                      },
+                      std::move(completion));
+}
+
 void ReservationService::queryExisting(
     const std::shared_ptr<FlowState> &state,
     bool required) const

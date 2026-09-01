@@ -12,8 +12,10 @@ services:
       - ticketing_postgres_data:/var/lib/postgresql/data
       - ./db/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql:ro
       - ./db/migrations/002_add_reservation_idempotency.sql:/docker-entrypoint-initdb.d/002_add_reservation_idempotency.sql:ro
-      - ./db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/003_demo_seed.sql:ro
-      - ./db/tests/001_verify_seed.sql:/docker-entrypoint-initdb.d/004_verify_seed.sql:ro
+      - ./db/migrations/003_add_checkout_sessions.sql:/docker-entrypoint-initdb.d/003_add_checkout_sessions.sql:ro
+      - ./db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/004_demo_seed.sql:ro
+      - ./db/tests/001_verify_seed.sql:/docker-entrypoint-initdb.d/005_verify_seed.sql:ro
+      - ./db/tests/002_verify_checkout_schema.sql:/docker-entrypoint-initdb.d/006_verify_checkout_schema.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ticketing -d ticketing"]
       interval: 5s
