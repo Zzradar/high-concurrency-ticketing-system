@@ -27,6 +27,7 @@ enum class CheckoutSessionOutcome
     SessionNotAvailable,
     NotFound,
     NotModifiable,
+    VersionConflict,
     NotConfirmable,
     NotAbandonable,
     SeatConflict,

@@ -5,6 +5,7 @@
 #include <drogon/orm/DbClient.h>
 
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -67,10 +68,11 @@ class CheckoutSessionRepository
                      const std::string &checkoutSessionId,
                      std::function<void()> onSuccess,
                      ErrorCallback onError) const;
-    void touch(const TransactionPtr &transaction,
-               const std::string &checkoutSessionId,
-               std::function<void(std::string)> onSuccess,
-               ErrorCallback onError) const;
+    void advanceSeatRevision(
+        const TransactionPtr &transaction,
+        const std::string &checkoutSessionId,
+        std::function<void(std::string, std::int64_t)> onSuccess,
+        ErrorCallback onError) const;
     void setSubmitting(const TransactionPtr &transaction,
                        const std::string &checkoutSessionId,
                        const std::string &idempotencyKey,

@@ -33,6 +33,14 @@ class CheckoutSessionSourceContractTest(unittest.TestCase):
         self.assertIn("replaceInsertSeats(state)", service)
         self.assertIn("normalizeSeatIds(body[\"seatIds\"], 0)", service)
         self.assertIn("status != \"SELECTING\"", service)
+        self.assertIn("expectedRevision", service)
+        self.assertIn("advanceSeatRevision", repository)
+        self.assertIn("revision = revision + 1", repository)
+        revision_check = service.index(
+            "state->record.value.revision != state->expectedRevision"
+        )
+        delete_call = service.index("replaceDeleteSeats(state)", revision_check)
+        self.assertLess(revision_check, delete_call)
 
     def test_confirm_generates_one_server_key_and_reuses_phase3(self) -> None:
         service = read("src/services/CheckoutSessionService.cpp")

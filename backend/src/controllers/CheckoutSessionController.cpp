@@ -55,6 +55,11 @@ drogon::HttpResponsePtr makeCheckoutResponse(
                 drogon::k409Conflict,
                 "CHECKOUT_SESSION_NOT_MODIFIABLE",
                 "Checkout session seats cannot be modified");
+        case CheckoutSessionOutcome::VersionConflict:
+            return ticketing::makeErrorResponse(
+                drogon::k409Conflict,
+                "CHECKOUT_SESSION_VERSION_CONFLICT",
+                "Checkout session was modified by another client");
         case CheckoutSessionOutcome::NotConfirmable:
             return ticketing::makeErrorResponse(
                 drogon::k409Conflict,

@@ -42,6 +42,7 @@ CheckoutSessionRecord recordFromRow(const drogon::orm::Row &row)
             .sessionId = row["session_id"].as<std::string>(),
             .seatIds = {},
             .status = row["status"].as<std::string>(),
+            .revision = row["revision"].as<std::int64_t>(),
             .reservationId = row["reservation_id"].isNull()
                                  ? std::nullopt
                                  : std::optional<std::string>{
@@ -63,6 +64,7 @@ constexpr const char *kReadColumns = R"SQL(
     checkout.user_id,
     checkout.session_id,
     checkout.status,
+    checkout.revision,
     checkout.active_confirm_idempotency_key,
     checkout.reservation_id,
     TO_CHAR(
@@ -173,7 +175,7 @@ void CheckoutSessionRepository::insertCheckoutSession(
     const std::string sql =
         "INSERT INTO checkout_sessions (id, user_id, session_id, status) "
         "VALUES ($1, $2, $3, 'SELECTING') RETURNING id, user_id, session_id, "
-        "status, active_confirm_idempotency_key, reservation_id, "
+        "status, revision, active_confirm_idempotency_key, reservation_id, "
         "TO_CHAR(created_at AT TIME ZONE 'UTC', " +
         std::string{kTimestampFormat} + ") AS created_at, "
         "TO_CHAR(updated_at AT TIME ZONE 'UTC', " +
@@ -316,24 +318,26 @@ void CheckoutSessionRepository::deleteSeats(
         checkoutSessionId);
 }
 
-void CheckoutSessionRepository::touch(
+void CheckoutSessionRepository::advanceSeatRevision(
     const TransactionPtr &transaction,
     const std::string &checkoutSessionId,
-    std::function<void(std::string)> onSuccess,
+    std::function<void(std::string, std::int64_t)> onSuccess,
     ErrorCallback onError) const
 {
     const std::string sql =
-        "UPDATE checkout_sessions SET updated_at = CURRENT_TIMESTAMP "
+        "UPDATE checkout_sessions SET updated_at = CURRENT_TIMESTAMP, "
+        "revision = revision + 1 "
         "WHERE id = $1 RETURNING TO_CHAR(updated_at AT TIME ZONE 'UTC', " +
-        std::string{kTimestampFormat} + ") AS updated_at";
+        std::string{kTimestampFormat} + ") AS updated_at, revision";
     transaction->execSqlAsync(
         sql,
         [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) {
-            onSuccess(rows.front()["updated_at"].as<std::string>());
+            onSuccess(rows.front()["updated_at"].as<std::string>(),
+                      rows.front()["revision"].as<std::int64_t>());
         },
         [onError = std::move(onError)](
             const drogon::orm::DrogonDbException &error) {
-            logDatabaseError("Failed to touch checkout session", error);
+            logDatabaseError("Failed to advance checkout seat revision", error);
             onError();
         },
         checkoutSessionId);

@@ -181,6 +181,7 @@ struct CheckoutSession
     std::string sessionId;
     std::vector<std::string> seatIds;
     std::string status;
+    std::int64_t revision{};
     std::optional<std::string> reservationId;
     std::string createdAt;
     std::string updatedAt;
@@ -198,6 +199,7 @@ struct CheckoutSession
             value["seatIds"].append(seatId);
         }
         value["status"] = status;
+        value["revision"] = Json::Int64(revision);
         if (reservationId)
         {
             value["reservationId"] = *reservationId;

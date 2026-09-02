@@ -25,6 +25,7 @@ struct CheckoutSessionService::ReplaceState
     std::string checkoutSessionId;
     std::string userId;
     std::vector<std::string> seatIds;
+    std::int64_t expectedRevision{};
     CheckoutSessionRecord record;
     CheckoutSessionRepository::TransactionPtr transaction;
     Completion completion;
@@ -274,7 +275,12 @@ void CheckoutSessionService::replaceSeats(std::string checkoutSessionId,
     auto seatIds = body.isObject()
                        ? normalizeSeatIds(body["seatIds"], 0)
                        : std::nullopt;
-    if (checkoutSessionId.empty() || userId.empty() || !seatIds)
+    const auto validRevision =
+        body.isObject() && body.isMember("expectedRevision") &&
+        body["expectedRevision"].isInt64() &&
+        body["expectedRevision"].asInt64() >= 0;
+    if (checkoutSessionId.empty() || userId.empty() || !seatIds ||
+        !validRevision)
     {
         completion({CheckoutSessionOutcome::InvalidArgument, std::nullopt});
         return;
@@ -283,6 +289,7 @@ void CheckoutSessionService::replaceSeats(std::string checkoutSessionId,
     state->checkoutSessionId = std::move(checkoutSessionId);
     state->userId = std::move(userId);
     state->seatIds = std::move(*seatIds);
+    state->expectedRevision = body["expectedRevision"].asInt64();
     state->completion = std::move(completion);
     auto client = drogon::app().getDbClient("default");
     client->newTransactionAsync(
@@ -314,6 +321,11 @@ void CheckoutSessionService::replaceLock(
             if (state->record.value.status != "SELECTING")
             {
                 failReplace(state, CheckoutSessionOutcome::NotModifiable);
+                return;
+            }
+            if (state->record.value.revision != state->expectedRevision)
+            {
+                failReplace(state, CheckoutSessionOutcome::VersionConflict);
                 return;
             }
             replaceValidateSeats(state);
@@ -383,12 +395,13 @@ void CheckoutSessionService::replaceInsertSeats(
 void CheckoutSessionService::replaceTouch(
     const std::shared_ptr<ReplaceState> &state) const
 {
-    repository_.touch(
+    repository_.advanceSeatRevision(
         state->transaction,
         state->checkoutSessionId,
-        [this, state](std::string updatedAt) {
+        [this, state](std::string updatedAt, std::int64_t revision) {
             state->record.value.seatIds = state->seatIds;
             state->record.value.updatedAt = std::move(updatedAt);
+            state->record.value.revision = revision;
             replaceCommit(state);
         },
         [state] { failReplace(state, CheckoutSessionOutcome::InternalError); });

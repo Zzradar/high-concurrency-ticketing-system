@@ -7,6 +7,9 @@ BACKEND_ROOT = Path(__file__).resolve().parents[1]
 MIGRATION = (
     BACKEND_ROOT / "db/migrations/003_add_checkout_sessions.sql"
 ).read_text(encoding="utf-8")
+REVISION_MIGRATION = (
+    BACKEND_ROOT / "db/migrations/004_add_checkout_session_revision.sql"
+).read_text(encoding="utf-8")
 COMPOSE = (BACKEND_ROOT / "docker-compose.yml").read_text(encoding="utf-8")
 DATABASE_TEST = (
     BACKEND_ROOT / "db/tests/002_verify_checkout_schema.sql"
@@ -41,14 +44,22 @@ class Phase5SchemaContractTest(unittest.TestCase):
         self.assertRegex(MIGRATION, r"created_at\s+TIMESTAMPTZ\s+NOT NULL")
         self.assertRegex(MIGRATION, r"updated_at\s+TIMESTAMPTZ\s+NOT NULL")
 
+    def test_seat_revision_is_nonnegative_and_defaults_to_zero(self) -> None:
+        self.assertRegex(
+            REVISION_MIGRATION,
+            r"revision\s+BIGINT\s+NOT NULL\s+DEFAULT\s+0",
+        )
+        self.assertIn("CHECK (revision >= 0)", REVISION_MIGRATION)
+
     def test_compose_applies_phase5_before_seed_and_verify(self) -> None:
         expected = (
             "/docker-entrypoint-initdb.d/001_initial_schema.sql",
             "/docker-entrypoint-initdb.d/002_add_reservation_idempotency.sql",
             "/docker-entrypoint-initdb.d/003_add_checkout_sessions.sql",
-            "/docker-entrypoint-initdb.d/004_demo_seed.sql",
-            "/docker-entrypoint-initdb.d/005_verify_seed.sql",
-            "/docker-entrypoint-initdb.d/006_verify_checkout_schema.sql",
+            "/docker-entrypoint-initdb.d/004_add_checkout_session_revision.sql",
+            "/docker-entrypoint-initdb.d/005_demo_seed.sql",
+            "/docker-entrypoint-initdb.d/006_verify_seed.sql",
+            "/docker-entrypoint-initdb.d/007_verify_checkout_schema.sql",
         )
         positions = [COMPOSE.index(path) for path in expected]
         self.assertEqual(positions, sorted(positions))

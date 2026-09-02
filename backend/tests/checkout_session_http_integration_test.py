@@ -24,11 +24,14 @@ class CheckoutSessionHttpIntegrationTest(unittest.TestCase):
     def setUp(self) -> None:
         cleanup_phase5_data(recreate_users=True)
 
-    def assert_checkout(self, value, *, user_id, seat_ids, status):
+    def assert_checkout(self, value, *, user_id, seat_ids, status, revision=None):
         self.assertEqual(value["userId"], user_id)
         self.assertEqual(value["sessionId"], SESSION_ID)
         self.assertEqual(value["seatIds"], sorted(seat_ids))
         self.assertEqual(value["status"], status)
+        self.assertIsInstance(value["revision"], int)
+        if revision is not None:
+            self.assertEqual(value["revision"], revision)
         self.assertTrue(value["id"].startswith("CHK-"))
         self.assertTrue(value["createdAt"].endswith("Z"))
         self.assertTrue(value["updatedAt"].endswith("Z"))
@@ -38,6 +41,13 @@ class CheckoutSessionHttpIntegrationTest(unittest.TestCase):
         second_status, second = create_checkout(TEST_USERS[0], [TEST_SEATS[1]])
         self.assertEqual((first_status, second_status), (201, 201))
         self.assertNotEqual(first["id"], second["id"])
+        self.assertEqual((first["revision"], second["revision"]), (0, 0))
+
+        get_status, fetched = request_json(
+            f"/checkout-sessions/{first['id']}", user_id=TEST_USERS[0]
+        )
+        self.assertEqual(get_status, 200, fetched)
+        self.assertEqual(fetched["revision"], 0)
 
         status, values = request_json(
             f"/checkout-sessions?sessionId={SESSION_ID}&recoverable=true",
@@ -45,12 +55,16 @@ class CheckoutSessionHttpIntegrationTest(unittest.TestCase):
         )
         self.assertEqual(status, 200, values)
         self.assertEqual({value["id"] for value in values}, {first["id"], second["id"]})
+        self.assertEqual({value["revision"] for value in values}, {0})
 
         status, updated = request_json(
             f"/checkout-sessions/{first['id']}/seats",
             method="PUT",
             user_id=TEST_USERS[0],
-            body={"seatIds": [TEST_SEATS[2], TEST_SEATS[1]]},
+            body={
+                "seatIds": [TEST_SEATS[2], TEST_SEATS[1]],
+                "expectedRevision": 0,
+            },
         )
         self.assertEqual(status, 200, updated)
         self.assert_checkout(
@@ -58,16 +72,18 @@ class CheckoutSessionHttpIntegrationTest(unittest.TestCase):
             user_id=TEST_USERS[0],
             seat_ids=[TEST_SEATS[1], TEST_SEATS[2]],
             status="SELECTING",
+            revision=1,
         )
 
         status, empty = request_json(
             f"/checkout-sessions/{first['id']}/seats",
             method="PUT",
             user_id=TEST_USERS[0],
-            body={"seatIds": []},
+            body={"seatIds": [], "expectedRevision": 1},
         )
         self.assertEqual(status, 200, empty)
         self.assertEqual(empty["seatIds"], [])
+        self.assertEqual(empty["revision"], 2)
 
         wrong_status, wrong = request_json(
             f"/checkout-sessions/{first['id']}", user_id=TEST_USERS[1]
@@ -123,22 +139,65 @@ class CheckoutSessionHttpIntegrationTest(unittest.TestCase):
             f"/checkout-sessions/{checkout['id']}/seats",
             method="PUT",
             user_id=TEST_USERS[0],
-            body={"seatIds": [TEST_SEATS[2], "ses-concert-1002-A01"]},
+            body={
+                "seatIds": [TEST_SEATS[2], "ses-concert-1002-A01"],
+                "expectedRevision": 0,
+            },
         )
         self.assertEqual(failed_status, 400, failed)
         _, current = request_json(
             f"/checkout-sessions/{checkout['id']}", user_id=TEST_USERS[0]
         )
         self.assertEqual(current["seatIds"], TEST_SEATS[:2])
+        self.assertEqual(current["revision"], 0)
 
         wrong_status, wrong = request_json(
             f"/checkout-sessions/{checkout['id']}/seats",
             method="PUT",
             user_id=TEST_USERS[1],
-            body={"seatIds": [TEST_SEATS[2]]},
+            body={"seatIds": [TEST_SEATS[2]], "expectedRevision": 0},
         )
         self.assertEqual(wrong_status, 404, wrong)
         self.assertEqual(wrong["code"], "CHECKOUT_SESSION_NOT_FOUND")
+
+        invalid_revisions = (
+            {"seatIds": [TEST_SEATS[2]]},
+            {"seatIds": [TEST_SEATS[2]], "expectedRevision": "0"},
+            {"seatIds": [TEST_SEATS[2]], "expectedRevision": -1},
+            {"seatIds": [TEST_SEATS[2]], "expectedRevision": 1.5},
+        )
+        for body in invalid_revisions:
+            with self.subTest(body=body):
+                invalid_status, invalid = request_json(
+                    f"/checkout-sessions/{checkout['id']}/seats",
+                    method="PUT",
+                    user_id=TEST_USERS[0],
+                    body=body,
+                )
+                self.assertEqual(invalid_status, 400, invalid)
+                self.assertEqual(invalid["code"], "INVALID_ARGUMENT")
+
+        success_status, success = request_json(
+            f"/checkout-sessions/{checkout['id']}/seats",
+            method="PUT",
+            user_id=TEST_USERS[0],
+            body={"seatIds": [TEST_SEATS[2]], "expectedRevision": 0},
+        )
+        self.assertEqual(success_status, 200, success)
+        self.assertEqual(success["revision"], 1)
+        stale_status, stale = request_json(
+            f"/checkout-sessions/{checkout['id']}/seats",
+            method="PUT",
+            user_id=TEST_USERS[0],
+            body={"seatIds": [TEST_SEATS[3]], "expectedRevision": 0},
+        )
+        self.assertEqual(stale_status, 409, stale)
+        self.assertEqual(stale["code"], "CHECKOUT_SESSION_VERSION_CONFLICT")
+        _, after_stale = request_json(
+            f"/checkout-sessions/{checkout['id']}", user_id=TEST_USERS[0]
+        )
+        self.assertEqual(after_stale["seatIds"], [TEST_SEATS[2]])
+        self.assertEqual(after_stale["revision"], 1)
 
         inventory = psql(
             f"SELECT string_agg(status, ',' ORDER BY id) FROM session_seats "
@@ -155,6 +214,7 @@ class CheckoutSessionHttpIntegrationTest(unittest.TestCase):
             user_id=TEST_USERS[0],
             seat_ids=TEST_SEATS[:2],
             status="RESERVED",
+            revision=0,
         )
         self.assertEqual(confirmed["reservation"]["id"], confirmed["reservationId"])
         self.assertEqual(
@@ -183,7 +243,10 @@ class CheckoutSessionHttpIntegrationTest(unittest.TestCase):
             f"/checkout-sessions/{checkout['id']}/seats",
             method="PUT",
             user_id=TEST_USERS[0],
-            body={"seatIds": [TEST_SEATS[2]]},
+            body={
+                "seatIds": [TEST_SEATS[2]],
+                "expectedRevision": checkout["revision"],
+            },
         )
         abandon_status, abandon_error = request_json(
             f"/checkout-sessions/{checkout['id']}/abandon",

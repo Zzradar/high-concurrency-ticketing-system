@@ -78,7 +78,10 @@ class CheckoutSessionConcurrencyTest(unittest.TestCase):
                 f"/checkout-sessions/{checkout['id']}/seats",
                 method="PUT",
                 user_id=TEST_USERS[0],
-                body={"seatIds": [TEST_SEATS[1], TEST_SEATS[2]]},
+                body={
+                    "seatIds": [TEST_SEATS[1], TEST_SEATS[2]],
+                    "expectedRevision": checkout["revision"],
+                },
             )
 
         def confirm():
@@ -109,6 +112,39 @@ class CheckoutSessionConcurrencyTest(unittest.TestCase):
             """
         )
         self.assertEqual(association.split(","), final_seats)
+
+    def test_concurrent_replaces_from_same_revision_allow_one_winner(self) -> None:
+        _, checkout = create_checkout(TEST_USERS[0], [TEST_SEATS[0]])
+        barrier = threading.Barrier(2)
+        candidates = ([TEST_SEATS[1]], [TEST_SEATS[2]])
+
+        def replace(seat_ids):
+            barrier.wait()
+            return request_json(
+                f"/checkout-sessions/{checkout['id']}/seats",
+                method="PUT",
+                user_id=TEST_USERS[0],
+                body={
+                    "seatIds": seat_ids,
+                    "expectedRevision": checkout["revision"],
+                },
+            )
+
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            responses = list(executor.map(replace, candidates))
+
+        self.assertEqual(sorted(status for status, _ in responses), [200, 409])
+        winner = next(value for status, value in responses if status == 200)
+        conflict = next(value for status, value in responses if status == 409)
+        self.assertEqual(winner["revision"], 1)
+        self.assertEqual(
+            conflict["code"], "CHECKOUT_SESSION_VERSION_CONFLICT"
+        )
+        _, current = request_json(
+            f"/checkout-sessions/{checkout['id']}", user_id=TEST_USERS[0]
+        )
+        self.assertEqual(current["seatIds"], winner["seatIds"])
+        self.assertEqual(current["revision"], 1)
 
     def test_independent_checkout_sessions_confirm_concurrently(self) -> None:
         _, first = create_checkout(TEST_USERS[0], [TEST_SEATS[0]])
