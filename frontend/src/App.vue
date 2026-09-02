@@ -39,9 +39,26 @@ const submitUncertain = ref(false)
 const errorMessage = ref('')
 const noticeMessage = ref('')
 
-let checkoutCreationPromise: Promise<CheckoutSession | null> | null = null
-let checkoutSyncPromise: Promise<void> | null = null
-let submittingPollTimer: number | null = null
+interface CheckoutCreationTask {
+  sessionId: string
+  promise: Promise<CheckoutSession | null>
+}
+
+interface CheckoutSyncTask {
+  checkoutSessionId: string
+  promise: Promise<void>
+}
+
+interface SubmittingPollWait {
+  generation: number
+  timer: number | null
+  resolve: () => void
+  settled: boolean
+}
+
+let checkoutCreationTask: CheckoutCreationTask | null = null
+let checkoutSyncTask: CheckoutSyncTask | null = null
+let submittingPollWait: SubmittingPollWait | null = null
 let submittingPollGeneration = 0
 
 const selectedSeats = computed(() =>
@@ -109,19 +126,32 @@ function clearCheckoutLocator(checkoutId?: string) {
   sessionStorage.removeItem(CHECKOUT_LOCATOR_KEY)
 }
 
+function finishSubmittingPollWait(wait: SubmittingPollWait) {
+  if (wait.settled) return
+  wait.settled = true
+  if (wait.timer !== null) window.clearTimeout(wait.timer)
+  wait.timer = null
+  if (submittingPollWait === wait) submittingPollWait = null
+  wait.resolve()
+}
+
 function stopSubmittingPolling() {
   submittingPollGeneration += 1
-  if (submittingPollTimer !== null) window.clearTimeout(submittingPollTimer)
-  submittingPollTimer = null
+  const wait = submittingPollWait
+  if (wait) finishSubmittingPollWait(wait)
   submittingPolling.value = false
 }
 
-function waitForSubmittingPoll(milliseconds: number) {
+function waitForSubmittingPoll(milliseconds: number, generation: number) {
   return new Promise<void>((resolve) => {
-    submittingPollTimer = window.setTimeout(() => {
-      submittingPollTimer = null
-      resolve()
-    }, milliseconds)
+    const wait: SubmittingPollWait = {
+      generation,
+      timer: null,
+      resolve,
+      settled: false,
+    }
+    wait.timer = window.setTimeout(() => finishSubmittingPollWait(wait), milliseconds)
+    submittingPollWait = wait
   })
 }
 
@@ -188,9 +218,18 @@ function startSubmittingPolling(checkoutId: string) {
       } catch {
         // A transient read failure remains an unknown result; retry until the deadline.
       }
+      if (
+        generation !== submittingPollGeneration ||
+        currentView.value !== 'seat-selection'
+      ) {
+        return
+      }
       const remaining = SUBMITTING_POLL_LIMIT_MS - (Date.now() - startedAt)
       if (remaining <= 0) break
-      await waitForSubmittingPoll(Math.min(SUBMITTING_POLL_INTERVAL_MS, remaining))
+      await waitForSubmittingPoll(
+        Math.min(SUBMITTING_POLL_INTERVAL_MS, remaining),
+        generation,
+      )
     }
     if (generation !== submittingPollGeneration) return
     submittingPolling.value = false
@@ -199,12 +238,46 @@ function startSubmittingPolling(checkoutId: string) {
   })()
 }
 
-async function continueCheckout(checkout: CheckoutSession) {
+async function activateCheckout(checkout: CheckoutSession) {
   recoverableCheckoutSessions.value = []
   applyCheckoutCheckpoint(checkout)
   errorMessage.value = ''
   if (checkout.status === 'SUBMITTING') startSubmittingPolling(checkout.id)
   if (checkout.status === 'RESERVED') await enterReservedCheckout(checkout)
+}
+
+function removeRecoverableCheckout(checkoutId: string) {
+  recoverableCheckoutSessions.value = recoverableCheckoutSessions.value.filter(
+    (candidate) => candidate.id !== checkoutId,
+  )
+  clearCheckoutLocator(checkoutId)
+}
+
+async function continueCheckout(candidate: CheckoutSession) {
+  const sessionId = currentSession.value?.id
+  if (!sessionId) return
+  errorMessage.value = ''
+  try {
+    const latest = await ticketApi.getCheckoutSession(candidate.id)
+    if (currentSession.value?.id !== sessionId || currentView.value !== 'seat-selection') return
+    if (latest.sessionId !== sessionId || latest.status === 'ABANDONED') {
+      removeRecoverableCheckout(candidate.id)
+      errorMessage.value = '该购票会话已不可恢复，请选择其他会话或开始新的选座。'
+      return
+    }
+    await activateCheckout(latest)
+  } catch (error) {
+    if (currentSession.value?.id !== sessionId || currentView.value !== 'seat-selection') return
+    if (
+      error instanceof TicketApiError &&
+      error.code === 'CHECKOUT_SESSION_NOT_FOUND'
+    ) {
+      removeRecoverableCheckout(candidate.id)
+      errorMessage.value = '该购票会话已不可恢复，请选择其他会话或开始新的选座。'
+      return
+    }
+    showError(error, '购票会话读取失败，请稍后重试。')
+  }
 }
 
 async function recoverCheckoutForSession(sessionId: string) {
@@ -219,7 +292,7 @@ async function recoverCheckoutForSession(sessionId: string) {
         try {
           const checkout = await ticketApi.getCheckoutSession(locator.checkoutSessionId)
           if (checkout.sessionId === sessionId && checkout.status !== 'ABANDONED') {
-            await continueCheckout(checkout)
+            await activateCheckout(checkout)
             return
           }
         } catch {
@@ -268,6 +341,8 @@ async function chooseSession(session: TicketSession) {
   currentCheckoutSession.value = null
   recoverableCheckoutSessions.value = []
   submitUncertain.value = false
+  checkoutCreating.value = false
+  checkoutSyncInFlight.value = false
   loading.value = true
   errorMessage.value = ''
   try {
@@ -302,35 +377,45 @@ function toggleSeat(seat: Seat) {
 
 async function ensureCheckoutSession() {
   if (currentCheckoutSession.value) return currentCheckoutSession.value
-  if (checkoutCreationPromise) return checkoutCreationPromise
   if (!currentSession.value || selectedSeatIds.value.length === 0) return null
   const sessionId = currentSession.value.id
+  if (checkoutCreationTask?.sessionId === sessionId) return checkoutCreationTask.promise
   const initialSeats = [...selectedSeatIds.value]
   checkoutCreating.value = true
-  checkoutCreationPromise = ticketApi
+  const task: CheckoutCreationTask = {
+    sessionId,
+    promise: Promise.resolve(null),
+  }
+  task.promise = ticketApi
     .createCheckoutSession(sessionId, initialSeats)
     .then(async (checkout) => {
-      writeCheckoutLocator(checkout)
       if (currentSession.value?.id !== sessionId || currentView.value !== 'seat-selection') {
         return null
       }
+      writeCheckoutLocator(checkout)
       currentCheckoutSession.value = checkout
       if (!sameSeatSet(selectedSeatIds.value, checkout.seatIds)) await ensureSeatSync()
       return currentCheckoutSession.value
     })
     .catch((error) => {
-      showError(error, '选座尚未保存，请继续修改或再次提交以重试。')
+      if (currentSession.value?.id === sessionId && currentView.value === 'seat-selection') {
+        showError(error, '选座尚未保存，请继续修改或再次提交以重试。')
+      }
       return null
     })
     .finally(() => {
-      checkoutCreating.value = false
-      checkoutCreationPromise = null
+      if (checkoutCreationTask === task) {
+        checkoutCreationTask = null
+        checkoutCreating.value = false
+      }
     })
-  return checkoutCreationPromise
+  checkoutCreationTask = task
+  return task.promise
 }
 
 async function handleVersionConflict(checkoutId: string) {
   const latest = await ticketApi.getCheckoutSession(checkoutId)
+  if (currentCheckoutSession.value?.id !== checkoutId) return
   applyCheckoutCheckpoint(latest)
   confirming.value = false
   errorMessage.value = '该购票会话已在其他页面发生修改，请确认最新座位后重新提交。'
@@ -338,12 +423,27 @@ async function handleVersionConflict(checkoutId: string) {
 }
 
 async function ensureSeatSync(fixedTarget?: string[]) {
-  if (checkoutSyncPromise) return checkoutSyncPromise
+  const activeCheckout = currentCheckoutSession.value
+  if (!activeCheckout || activeCheckout.status !== 'SELECTING') return
+  const checkoutSessionId = activeCheckout.id
+  if (checkoutSyncTask?.checkoutSessionId === checkoutSessionId) {
+    return checkoutSyncTask.promise
+  }
   checkoutSyncInFlight.value = true
-  checkoutSyncPromise = (async () => {
+  const task: CheckoutSyncTask = {
+    checkoutSessionId,
+    promise: Promise.resolve(),
+  }
+  task.promise = (async () => {
     while (true) {
       const checkout = currentCheckoutSession.value
-      if (!checkout || checkout.status !== 'SELECTING') return
+      if (
+        !checkout ||
+        checkout.id !== checkoutSessionId ||
+        checkout.status !== 'SELECTING'
+      ) {
+        return
+      }
       const desired = [...(fixedTarget ?? selectedSeatIds.value)]
       if (sameSeatSet(desired, checkout.seatIds)) return
       try {
@@ -356,6 +456,7 @@ async function ensureSeatSync(fixedTarget?: string[]) {
         currentCheckoutSession.value = updated
         writeCheckoutLocator(updated)
       } catch (error) {
+        if (currentCheckoutSession.value?.id !== checkout.id) return
         if (
           error instanceof TicketApiError &&
           error.code === 'CHECKOUT_SESSION_VERSION_CONFLICT'
@@ -368,10 +469,13 @@ async function ensureSeatSync(fixedTarget?: string[]) {
       }
     }
   })().finally(() => {
-    checkoutSyncInFlight.value = false
-    checkoutSyncPromise = null
+    if (checkoutSyncTask === task) {
+      checkoutSyncTask = null
+      checkoutSyncInFlight.value = false
+    }
   })
-  return checkoutSyncPromise
+  checkoutSyncTask = task
+  return task.promise
 }
 
 async function persistSeatIntent() {
@@ -422,8 +526,14 @@ async function submitReservation() {
   const confirmTargetSeats = [...selectedSeatIds.value]
   try {
     await ensureCheckoutSession()
-    if (checkoutCreationPromise) await checkoutCreationPromise
-    if (checkoutSyncPromise) await checkoutSyncPromise
+    const creationTask = checkoutCreationTask
+    if (creationTask && creationTask.sessionId === currentSession.value?.id) {
+      await creationTask.promise
+    }
+    const syncTask = checkoutSyncTask
+    if (syncTask && syncTask.checkoutSessionId === currentCheckoutSession.value?.id) {
+      await syncTask.promise
+    }
     await ensureSeatSync(confirmTargetSeats)
     const checkout = currentCheckoutSession.value
     if (!checkout || !sameSeatSet(checkout.seatIds, confirmTargetSeats)) {
@@ -494,6 +604,8 @@ function startNewCheckout() {
   recoverableCheckoutSessions.value = []
   selectedSeatIds.value = []
   submitUncertain.value = false
+  checkoutCreating.value = false
+  checkoutSyncInFlight.value = false
   errorMessage.value = ''
 }
 
@@ -563,6 +675,8 @@ async function expireOrder() {
 
 function backToEvents() {
   stopSubmittingPolling()
+  checkoutCreating.value = false
+  checkoutSyncInFlight.value = false
   currentView.value = 'event-list'
   currentEvent.value = null
   currentSession.value = null
@@ -577,6 +691,8 @@ function backToEvents() {
 
 function backToSessions() {
   stopSubmittingPolling()
+  checkoutCreating.value = false
+  checkoutSyncInFlight.value = false
   currentView.value = 'session-list'
   currentSession.value = null
   currentOrder.value = null

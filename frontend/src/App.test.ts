@@ -176,6 +176,130 @@ describe('ticket booking demo', () => {
     wrapper.unmount()
   })
 
+  it('isolates pending checkout creation across sessions', async () => {
+    const firstCreate = deferred<CheckoutSession>()
+    const secondCreate = deferred<CheckoutSession>()
+    const createSpy = vi
+      .spyOn(ticketApi, 'createCheckoutSession')
+      .mockImplementation((sessionId) =>
+        sessionId === 'ses-concert-1001' ? firstCreate.promise : secondCreate.promise,
+      )
+    const wrapper = mount(App)
+    await openSeatSelection(wrapper)
+
+    await wrapper.find('button[aria-label^="A01，可选"]').trigger('click')
+    expect(createSpy).toHaveBeenCalledTimes(1)
+    await wrapper.find('.back-button').trigger('click')
+    await wrapper.findAll('.session-card .primary-button')[1]!.trigger('click')
+    await settle(10)
+    await wrapper.find('button[aria-label^="A01，可选"]').trigger('click')
+
+    expect(createSpy).toHaveBeenCalledTimes(2)
+    expect(createSpy.mock.calls[1]![0]).toBe('ses-concert-1002')
+    const now = new Date().toISOString()
+    const firstCheckout: CheckoutSession = {
+      id: 'CHK-S1-PENDING',
+      userId: 'U-1001',
+      sessionId: 'ses-concert-1001',
+      seatIds: ['ses-concert-1001-A01'],
+      status: 'SELECTING',
+      revision: 0,
+      createdAt: now,
+      updatedAt: now,
+    }
+    const secondCheckout: CheckoutSession = {
+      id: 'CHK-S2-CURRENT',
+      userId: 'U-1001',
+      sessionId: 'ses-concert-1002',
+      seatIds: ['ses-concert-1002-A01'],
+      status: 'SELECTING',
+      revision: 0,
+      createdAt: now,
+      updatedAt: now,
+    }
+
+    firstCreate.resolve(firstCheckout)
+    await flushPromises()
+    expect(wrapper.text()).toContain('正在保存选座')
+    expect(sessionStorage.getItem('ticketing.currentCheckoutSession')).toBeNull()
+
+    secondCreate.resolve(secondCheckout)
+    await flushPromises()
+    expect(wrapper.text()).toContain('10月02日')
+    expect(
+      JSON.parse(sessionStorage.getItem('ticketing.currentCheckoutSession')!),
+    ).toEqual({ checkoutSessionId: secondCheckout.id, sessionId: secondCheckout.sessionId })
+    wrapper.unmount()
+  })
+
+  it('isolates pending seat synchronization across checkout sessions', async () => {
+    const wrapper = mount(App)
+    await openSeatSelection(wrapper)
+    await wrapper.find('button[aria-label^="A01，可选"]').trigger('click')
+    await settle(10)
+    const firstLocator = JSON.parse(
+      sessionStorage.getItem('ticketing.currentCheckoutSession')!,
+    )
+    const firstSync = deferred<CheckoutSession>()
+    const secondSync = deferred<CheckoutSession>()
+    const replaceSpy = vi
+      .spyOn(ticketApi, 'replaceCheckoutSessionSeats')
+      .mockImplementation((checkoutId) =>
+        checkoutId === firstLocator.checkoutSessionId
+          ? firstSync.promise
+          : secondSync.promise,
+      )
+
+    await wrapper.find('button[aria-label^="A02，可选"]').trigger('click')
+    expect(replaceSpy).toHaveBeenCalledTimes(1)
+    await wrapper.find('.back-button').trigger('click')
+    await wrapper.findAll('.session-card .primary-button')[1]!.trigger('click')
+    await settle(10)
+    await wrapper.find('button[aria-label^="A01，可选"]').trigger('click')
+    await settle(10)
+    const secondLocator = JSON.parse(
+      sessionStorage.getItem('ticketing.currentCheckoutSession')!,
+    )
+    await wrapper.find('button[aria-label^="A02，可选"]').trigger('click')
+
+    expect(replaceSpy).toHaveBeenCalledTimes(2)
+    expect(replaceSpy.mock.calls[1]![0]).toBe(secondLocator.checkoutSessionId)
+    const now = new Date().toISOString()
+    firstSync.resolve({
+      id: firstLocator.checkoutSessionId,
+      userId: 'U-1001',
+      sessionId: 'ses-concert-1001',
+      seatIds: ['ses-concert-1001-A01', 'ses-concert-1001-A02'],
+      status: 'SELECTING',
+      revision: 1,
+      createdAt: now,
+      updatedAt: now,
+    })
+    await flushPromises()
+    expect(wrapper.text()).toContain('正在后台同步最新选座')
+    expect(
+      JSON.parse(sessionStorage.getItem('ticketing.currentCheckoutSession')!).checkoutSessionId,
+    ).toBe(secondLocator.checkoutSessionId)
+
+    secondSync.resolve({
+      id: secondLocator.checkoutSessionId,
+      userId: 'U-1001',
+      sessionId: 'ses-concert-1002',
+      seatIds: ['ses-concert-1002-A01', 'ses-concert-1002-A02'],
+      status: 'SELECTING',
+      revision: 1,
+      createdAt: now,
+      updatedAt: now,
+    })
+    await flushPromises()
+    expect(wrapper.text()).toContain('10月02日')
+    expect(wrapper.text()).not.toContain('正在后台同步最新选座')
+    expect(
+      JSON.parse(sessionStorage.getItem('ticketing.currentCheckoutSession')!).checkoutSessionId,
+    ).toBe(secondLocator.checkoutSessionId)
+    wrapper.unmount()
+  })
+
   it('coalesces rapid changes behind one in-flight PUT', async () => {
     const wrapper = mount(App)
     await openSeatSelection(wrapper)
@@ -333,9 +457,97 @@ describe('ticket booking demo', () => {
       .findAll('.recoverable-item')
       .find((item) => item.text().includes(first.id.slice(0, 18)))
     await firstItem!.find('.secondary-button').trigger('click')
+    await settle(10)
     expect(recoveryWrapper.text()).toContain('A01')
     recoveryWrapper.unmount()
   })
+
+  it('re-reads a stale recoverable candidate and enters latest SUBMITTING state', async () => {
+    const candidate = await completeMock(
+      ticketApi.createCheckoutSession('ses-concert-1001', ['ses-concert-1001-A01']),
+    )
+    const latest: CheckoutSession = {
+      ...candidate,
+      status: 'SUBMITTING',
+      revision: candidate.revision + 1,
+    }
+    const wrapper = mount(App)
+    await openSeatSelection(wrapper)
+    const getSpy = vi.spyOn(ticketApi, 'getCheckoutSession').mockResolvedValue(latest)
+
+    await wrapper.find('.recoverable-item .secondary-button').trigger('click')
+    await flushPromises()
+
+    expect(getSpy).toHaveBeenCalledWith(candidate.id)
+    expect(wrapper.text()).toContain('正在确认预订')
+    expect(wrapper.find('button[aria-label^="A01，"]').attributes('disabled')).toBeDefined()
+    expect(sessionStorage.getItem('ticketing.currentCheckoutSession')).toContain(candidate.id)
+    wrapper.unmount()
+  })
+
+  it('re-reads a stale recoverable candidate and enters latest RESERVED order', async () => {
+    const candidate = await completeMock(
+      ticketApi.createCheckoutSession('ses-concert-1001', ['ses-concert-1001-A01']),
+    )
+    const order: TicketOrder = {
+      id: 'TKT-LATEST-RESERVED',
+      reservationId: 'RSV-LATEST-RESERVED',
+      eventId: 'evt-concert-2026',
+      sessionId: candidate.sessionId,
+      seatIds: candidate.seatIds,
+      status: 'PENDING_PAYMENT',
+      totalAmount: 128000,
+      expiresAt: new Date(Date.now() + 900000).toISOString(),
+      createdAt: new Date().toISOString(),
+    }
+    const latest: CheckoutSession = {
+      ...candidate,
+      status: 'RESERVED',
+      revision: candidate.revision + 1,
+      reservationId: order.reservationId,
+      order,
+    }
+    const wrapper = mount(App)
+    await openSeatSelection(wrapper)
+    const getSpy = vi.spyOn(ticketApi, 'getCheckoutSession').mockResolvedValue(latest)
+
+    await wrapper.find('.recoverable-item .secondary-button').trigger('click')
+    await settle(10)
+
+    expect(getSpy).toHaveBeenCalledWith(candidate.id)
+    expect(wrapper.text()).toContain('待支付')
+    expect(wrapper.text()).not.toContain('发现可继续的购票会话')
+    wrapper.unmount()
+  })
+
+  it.each(['ABANDONED', 'NOT_FOUND'] as const)(
+    'does not apply a stale recoverable candidate when latest is %s',
+    async (outcome) => {
+      const candidate = await completeMock(
+        ticketApi.createCheckoutSession('ses-concert-1001', ['ses-concert-1001-A01']),
+      )
+      const wrapper = mount(App)
+      await openSeatSelection(wrapper)
+      const getSpy = vi.spyOn(ticketApi, 'getCheckoutSession')
+      if (outcome === 'ABANDONED') {
+        getSpy.mockResolvedValue({ ...candidate, status: 'ABANDONED' })
+      } else {
+        getSpy.mockRejectedValue(
+          new TicketApiError('未找到该购票会话。', 'CHECKOUT_SESSION_NOT_FOUND'),
+        )
+      }
+
+      await wrapper.find('.recoverable-item .secondary-button').trigger('click')
+      await flushPromises()
+
+      expect(getSpy).toHaveBeenCalledWith(candidate.id)
+      expect(wrapper.text()).toContain('该购票会话已不可恢复')
+      expect(wrapper.findAll('.recoverable-item')).toHaveLength(0)
+      expect(wrapper.text()).toContain('还没有选择座位')
+      expect(sessionStorage.getItem('ticketing.currentCheckoutSession')).toBeNull()
+      wrapper.unmount()
+    },
+  )
 
   it('polls SUBMITTING to RESERVED and clears polling after leaving the session', async () => {
     const checkout = await completeMock(
@@ -377,6 +589,77 @@ describe('ticket booking demo', () => {
     wrapper.unmount()
     await settle(5000)
     expect(getSpy).toHaveBeenCalledTimes(callsAtOrder)
+  })
+
+  it('wakes and stops a pending poll wait when leaving seat selection', async () => {
+    const checkout = await completeMock(
+      ticketApi.createCheckoutSession('ses-concert-1001', ['ses-concert-1001-A01']),
+    )
+    const submitting: CheckoutSession = { ...checkout, status: 'SUBMITTING' }
+    sessionStorage.setItem(
+      'ticketing.currentCheckoutSession',
+      JSON.stringify({ checkoutSessionId: checkout.id, sessionId: checkout.sessionId }),
+    )
+    const getSpy = vi.spyOn(ticketApi, 'getCheckoutSession').mockResolvedValue(submitting)
+    const wrapper = mount(App)
+    await openSeatSelection(wrapper)
+    await settle(10)
+    expect(wrapper.text()).toContain('正在确认预订')
+
+    await wrapper.find('.back-button').trigger('click')
+    await flushPromises()
+    const callsAfterLeaving = getSpy.mock.calls.length
+    await settle(20000)
+
+    expect(getSpy).toHaveBeenCalledTimes(callsAfterLeaving)
+    expect(wrapper.text()).not.toContain('确认结果暂时无法确定')
+    wrapper.unmount()
+  })
+
+  it('does not let a stopped poll clear the next checkout poll wait', async () => {
+    const first = await completeMock(
+      ticketApi.createCheckoutSession('ses-concert-1001', ['ses-concert-1001-A01']),
+    )
+    const second = await completeMock(
+      ticketApi.createCheckoutSession('ses-concert-1002', ['ses-concert-1002-A01']),
+    )
+    const firstSubmitting: CheckoutSession = { ...first, status: 'SUBMITTING' }
+    const secondSubmitting: CheckoutSession = { ...second, status: 'SUBMITTING' }
+    const secondSelecting: CheckoutSession = { ...second, status: 'SELECTING' }
+    sessionStorage.setItem(
+      'ticketing.currentCheckoutSession',
+      JSON.stringify({ checkoutSessionId: first.id, sessionId: first.sessionId }),
+    )
+    let secondCalls = 0
+    const getSpy = vi.spyOn(ticketApi, 'getCheckoutSession').mockImplementation(async (id) => {
+      if (id === first.id) return firstSubmitting
+      secondCalls += 1
+      return secondCalls < 3 ? secondSubmitting : secondSelecting
+    })
+    const wrapper = mount(App)
+    await openSeatSelection(wrapper)
+    await settle(10)
+    expect(wrapper.text()).toContain('正在确认预订')
+
+    await wrapper.find('.back-button').trigger('click')
+    sessionStorage.setItem(
+      'ticketing.currentCheckoutSession',
+      JSON.stringify({ checkoutSessionId: second.id, sessionId: second.sessionId }),
+    )
+    await wrapper.findAll('.session-card .primary-button')[1]!.trigger('click')
+    await settle(10)
+    expect(wrapper.text()).toContain('正在确认预订')
+    const firstCallsAfterSwitch = getSpy.mock.calls.filter(([id]) => id === first.id).length
+
+    await settle(2000)
+
+    expect(secondCalls).toBe(3)
+    expect(wrapper.text()).toContain('提交预订')
+    expect(wrapper.text()).not.toContain('正在确认预订')
+    expect(getSpy.mock.calls.filter(([id]) => id === first.id)).toHaveLength(
+      firstCallsAfterSwitch,
+    )
+    wrapper.unmount()
   })
 
   it('shows an uncertain result after 15 seconds and retries the original confirm', async () => {
