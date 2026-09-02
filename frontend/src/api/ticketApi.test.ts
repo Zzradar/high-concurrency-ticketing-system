@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
   apiRequestHeaders,
+  buildCheckoutSeatReplacementRequest,
+  checkoutSessionPaths,
   buildReservationRequest,
   normalizeApiError,
   resetMockData,
@@ -21,6 +23,75 @@ describe('ticketApi contract and mock transaction flow', () => {
       seatIds: ['seat-1'],
     })
     expect(apiRequestHeaders['X-User-Id']).toBe('U-1001')
+    expect(buildCheckoutSeatReplacementRequest(['seat-1'], 3)).toEqual({
+      seatIds: ['seat-1'],
+      expectedRevision: 3,
+    })
+  })
+
+  it('uses the frozen checkout session API paths', () => {
+    expect(checkoutSessionPaths.collection).toBe('/checkout-sessions')
+    expect(checkoutSessionPaths.item('C1')).toBe('/checkout-sessions/C1')
+    expect(checkoutSessionPaths.seats('C1')).toBe('/checkout-sessions/C1/seats')
+    expect(checkoutSessionPaths.confirm('C1')).toBe('/checkout-sessions/C1/confirm')
+    expect(checkoutSessionPaths.abandon('C1')).toBe('/checkout-sessions/C1/abandon')
+  })
+
+  it('creates, reads, lists and revises a recoverable checkout session', async () => {
+    const checkout = await ticketApi.createCheckoutSession('ses-concert-1001', [
+      'ses-concert-1001-A01',
+    ])
+    expect(checkout).toMatchObject({ status: 'SELECTING', revision: 0 })
+
+    expect(await ticketApi.getCheckoutSession(checkout.id)).toEqual(checkout)
+    expect(await ticketApi.listRecoverableCheckoutSessions('ses-concert-1001')).toEqual([
+      checkout,
+    ])
+
+    const revised = await ticketApi.replaceCheckoutSessionSeats(
+      checkout.id,
+      ['ses-concert-1001-A01', 'ses-concert-1001-A02'],
+      0,
+    )
+    expect(revised).toMatchObject({
+      revision: 1,
+      seatIds: ['ses-concert-1001-A01', 'ses-concert-1001-A02'],
+    })
+    await expect(
+      ticketApi.replaceCheckoutSessionSeats(
+        checkout.id,
+        ['ses-concert-1001-A04'],
+        0,
+      ),
+    ).rejects.toMatchObject({ code: 'CHECKOUT_SESSION_VERSION_CONFLICT' })
+    expect(await ticketApi.getCheckoutSession(checkout.id)).toEqual(revised)
+  })
+
+  it('confirms once, returns the same order on retry, and guards abandon', async () => {
+    const checkout = await ticketApi.createCheckoutSession('ses-concert-1002', [
+      'ses-concert-1002-A01',
+    ])
+    const [first, second] = await Promise.all([
+      ticketApi.confirmCheckoutSession(checkout.id),
+      ticketApi.confirmCheckoutSession(checkout.id),
+    ])
+    expect(first.status).toBe('RESERVED')
+    expect(second.order?.id).toBe(first.order?.id)
+    expect((await ticketApi.confirmCheckoutSession(checkout.id)).order?.id).toBe(
+      first.order?.id,
+    )
+    await expect(ticketApi.abandonCheckoutSession(checkout.id)).rejects.toMatchObject({
+      code: 'CHECKOUT_SESSION_NOT_ABANDONABLE',
+    })
+  })
+
+  it('abandons only selecting checkout sessions and removes them from recovery', async () => {
+    const checkout = await ticketApi.createCheckoutSession('ses-concert-1003', [
+      'ses-concert-1003-A01',
+    ])
+    const abandoned = await ticketApi.abandonCheckoutSession(checkout.id)
+    expect(abandoned.status).toBe('ABANDONED')
+    expect(await ticketApi.listRecoverableCheckoutSessions('ses-concert-1003')).toEqual([])
   })
 
   it('normalizes an Axios business error to TicketApiError', () => {

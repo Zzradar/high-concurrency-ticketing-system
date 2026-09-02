@@ -307,9 +307,17 @@ seats
 
 selectedSeats
 
+currentCheckoutSession
+
+recoverableCheckoutSessions
+
 currentOrder
 
 currentView
+
+checkoutCreating / checkoutSyncInFlight / confirming
+
+submittingPolling / submitUncertain
 ```
 
 其中：
@@ -340,9 +348,15 @@ status
 
 当前用户在前端临时选中的座位。
 
-这些座位尚未真正锁定，只属于浏览器本地状态。
+这些座位尚未真正锁定；`selectedSeatIds` 是 UI 最终意图，服务端 CheckoutSession 的
+`seatIds + revision` 是最近一次成功保存的 checkpoint。
 
-只有用户点击“提交预订”且后端成功返回后，才认为真正锁座成功。
+只有最终同步屏障完成并且 CheckoutSession confirm 成功返回后，才认为真正锁座成功。
+
+### currentCheckoutSession
+
+当前服务端购票会话。每个 C1 最多一个完整集合 PUT in-flight；成功响应整体更新
+`seatIds + revision`。普通后台同步不复用订单操作的 `busy`。
 
 ### currentReservation（未来规划 / 目标状态）
 
@@ -707,27 +721,30 @@ MVP 的交互重点是清晰，不追求复杂视觉效果。
 
 ### 服务端购票会话与恢复
 
-当前前端主要依赖 Vue 内存保存 `currentEvent`、`currentSession`、本地点选和订单流程，
-刷新浏览器会丢失这些状态。这是当前实现事实，不是长期恢复机制。
+当前前端已经接入服务端 Checkout Session。活动、场次和页面视图仍由 Vue 内存管理，
+但选座/确认流程可通过服务端恢复。
 
-Phase 6 将围绕服务端 Checkout Session（购票会话）恢复业务状态。浏览器可以保存
+Phase 6 已围绕服务端 Checkout Session（购票会话）恢复业务状态。浏览器只保存
 当前购票会话编号作为快速恢复线索，但正在选座、正在确认以及关联的 Reservation /
 Order 等正式状态必须由服务器返回；浏览器存储不能成为业务事实来源。长期方案不
 采用一个用户全局唯一的 `pendingReservationAttempt`，也不只依赖 Vue `ref`、
-`localStorage` 或 `sessionStorage`。
+`localStorage` 或 `sessionStorage`；当前 `sessionStorage` locator 仅含
+`checkoutSessionId + sessionId`。
 
-Phase 6 目标是在用户进入具体 Session 后查询可恢复会话；若同场次有多个会话，
+用户进入具体 Session 后会查询可恢复会话；若同场次有多个会话，
 由用户选择继续哪一个。`sessionStorage` 只作 locator，主要保存 `checkoutSessionId`，
 可选保存 `eventId / sessionId`；不保存内部幂等键，也不把 selectedSeats、会话状态、
 Order 状态或 Seat 状态当作权威事实。刷新后必须重新 GET 服务端；`SUBMITTING`
-页面未来可做短轮询。Event 页不强制查询历史会话。以上均为 Phase 6 目标，当前 Vue 代码尚未实现。
+页面按 2 秒间隔短轮询，最长 15 秒后显示结果暂不确定和“继续原确认”。Event 页不强制查询历史会话。
 
 同一购票会话进入 `SUBMITTING`（正在确认）后，其座位集合冻结，前端默认恢复或
 查询原确认，不能换座后沿用该会话再次确认，也不能因超时静默生成第二笔订单。
 这只冻结当前会话，不阻塞整个用户。用户在被明确告知上一笔仍可能成功后，可以
 显式开始新的独立购票会话，旧会话继续解析；旧会话后来成功或失败都应明确通知。
 
-具体 Vue 组件、Store、Router 和浏览器存储方式在 Phase 6 实施时确定，本阶段不固定。
+当前仍由 `App.vue` 编排，不引入 Pinia 或 Vue Router。Confirm 前先等待 C1 创建和已有
+PUT，再把固定的最终座位集合 flush 到最新 revision；发生版本冲突时 GET 最新 C1，
+不自动 merge。Phase 6 不增加 Redis 预占座。
 
 ### WebSocket 实时座位更新
 

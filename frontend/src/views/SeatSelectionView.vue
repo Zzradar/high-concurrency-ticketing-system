@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ArrowLeft, CalendarDays, MapPin } from '@lucide/vue'
 import SeatGrid from '../components/SeatGrid.vue'
+import RecoverableCheckoutPanel from '../components/RecoverableCheckoutPanel.vue'
 import SelectedSeats from '../components/SelectedSeats.vue'
-import type { Seat, TicketEvent, TicketSession } from '../types'
+import type { CheckoutSession, Seat, TicketEvent, TicketSession } from '../types'
 
 defineProps<{
   event: TicketEvent
@@ -10,8 +11,15 @@ defineProps<{
   seats: Seat[]
   selectedSeats: Seat[]
   selectedSeatIds: string[]
+  checkoutSession: CheckoutSession | null
+  recoverableCheckoutSessions: CheckoutSession[]
   loading: boolean
-  busy: boolean
+  checkoutCreating: boolean
+  checkoutSyncInFlight: boolean
+  confirming: boolean
+  submittingPolling: boolean
+  submitUncertain: boolean
+  editingDisabled: boolean
 }>()
 
 defineEmits<{
@@ -20,6 +28,10 @@ defineEmits<{
   reserve: []
   refresh: []
   clear: []
+  continueCheckout: [checkout: CheckoutSession]
+  abandonCheckout: [checkout: CheckoutSession]
+  startNewCheckout: []
+  retryConfirm: []
 }>()
 </script>
 
@@ -45,20 +57,36 @@ defineEmits<{
       <div class="seat-map-panel skeleton-card"></div>
       <div class="selection-panel skeleton-card"></div>
     </div>
+    <RecoverableCheckoutPanel
+      v-else-if="recoverableCheckoutSessions.length"
+      :sessions="recoverableCheckoutSessions"
+      :seats="seats"
+      @continue="$emit('continueCheckout', $event)"
+      @abandon="$emit('abandonCheckout', $event)"
+      @start-new="$emit('startNewCheckout')"
+    />
     <div v-else class="seat-layout">
       <SeatGrid
         :seats="seats"
         :selected-seat-ids="selectedSeatIds"
+        :editing-disabled="editingDisabled"
         @toggle="$emit('toggle', $event)"
       />
       <SelectedSeats
         :selected-seats="selectedSeats"
         :session="session"
-        :busy="busy"
+        :checkout-status="checkoutSession?.status"
+        :checkout-creating="checkoutCreating"
+        :checkout-sync-in-flight="checkoutSyncInFlight"
+        :confirming="confirming"
+        :submitting-polling="submittingPolling"
+        :submit-uncertain="submitUncertain"
+        :editing-disabled="editingDisabled"
         @remove="$emit('toggle', $event)"
         @reserve="$emit('reserve')"
         @refresh="$emit('refresh')"
         @clear="$emit('clear')"
+        @retry-confirm="$emit('retryConfirm')"
       />
     </div>
   </main>

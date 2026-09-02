@@ -5,6 +5,7 @@ export type SessionStatus = 'ON_SALE' | 'SOLD_OUT'
 export type SeatStatus = 'AVAILABLE' | 'HELD' | 'SOLD'
 export type ReservationStatus = 'ACTIVE' | 'CONFIRMED' | 'CANCELLED' | 'EXPIRED'
 export type OrderStatus = 'PENDING_PAYMENT' | 'PAID' | 'CANCELLED' | 'EXPIRED'
+export type CheckoutSessionStatus = 'SELECTING' | 'SUBMITTING' | 'RESERVED' | 'ABANDONED'
 
 export interface TicketEvent {
   id: string
@@ -69,4 +70,18 @@ export interface TicketOrder {
 export interface ReservationResult {
   reservation: Reservation
   order: TicketOrder
+}
+
+export interface CheckoutSession {
+  id: string
+  userId: string
+  sessionId: string
+  seatIds: string[]
+  status: CheckoutSessionStatus
+  revision: number
+  reservationId?: string
+  createdAt: string
+  updatedAt: string
+  reservation?: Reservation
+  order?: TicketOrder
 }

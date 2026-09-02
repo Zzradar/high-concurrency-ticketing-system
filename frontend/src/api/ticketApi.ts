@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type {
+  CheckoutSession,
   Reservation,
   ReservationResult,
   Seat,
@@ -27,6 +28,14 @@ export const DEMO_USER_ID = 'U-1001'
 export const apiRequestHeaders = {
   'Content-Type': 'application/json',
   'X-User-Id': DEMO_USER_ID,
+} as const
+
+export const checkoutSessionPaths = {
+  collection: '/checkout-sessions',
+  item: (id: string) => '/checkout-sessions/' + id,
+  seats: (id: string) => '/checkout-sessions/' + id + '/seats',
+  confirm: (id: string) => '/checkout-sessions/' + id + '/confirm',
+  abandon: (id: string) => '/checkout-sessions/' + id + '/abandon',
 } as const
 
 export function normalizeApiError(error: unknown): unknown {
@@ -152,6 +161,8 @@ let mockLatency = 180
 let seatsBySession = new Map<string, Seat[]>()
 let reservations = new Map<string, Reservation>()
 let orders = new Map<string, TicketOrder>()
+let checkoutSessions = new Map<string, CheckoutSession>()
+let checkoutConfirmations = new Map<string, Promise<CheckoutSession>>()
 let sequence = 24082600
 
 const clone = <T>(value: T): T => structuredClone(value)
@@ -285,6 +296,149 @@ async function mockCreateReservation(sessionId: string, seatIds: string[]): Prom
   return clone({ reservation, order })
 }
 
+function validateCheckoutSeatIds(sessionId: string, seatIds: string[], minimum: number) {
+  const unique = new Set(seatIds)
+  const inventory = new Set(ensureSeats(sessionId).map((seat) => seat.id))
+  if (
+    seatIds.length < minimum ||
+    seatIds.length > 6 ||
+    unique.size !== seatIds.length ||
+    seatIds.some((seatId) => typeof seatId !== 'string' || !inventory.has(seatId))
+  ) {
+    throw new TicketApiError('购票会话请求无效。', 'INVALID_ARGUMENT')
+  }
+}
+
+async function mockCreateCheckoutSession(
+  sessionId: string,
+  seatIds: string[],
+): Promise<CheckoutSession> {
+  await wait()
+  const session = Object.values(sessionsSeed)
+    .flat()
+    .find((item) => item.id === sessionId)
+  if (!session) throw new TicketApiError('场次不存在。', 'SESSION_NOT_FOUND')
+  validateCheckoutSeatIds(sessionId, seatIds, 1)
+  const now = new Date().toISOString()
+  const checkout: CheckoutSession = {
+    id: 'CHK-' + ++sequence,
+    userId: DEMO_USER_ID,
+    sessionId,
+    seatIds: [...seatIds].sort(),
+    status: 'SELECTING',
+    revision: 0,
+    createdAt: now,
+    updatedAt: now,
+  }
+  checkoutSessions.set(checkout.id, checkout)
+  return clone(checkout)
+}
+
+async function mockGetCheckoutSession(id: string): Promise<CheckoutSession> {
+  await wait()
+  const checkout = checkoutSessions.get(id)
+  if (!checkout || checkout.userId !== DEMO_USER_ID) {
+    throw new TicketApiError('未找到该购票会话。', 'CHECKOUT_SESSION_NOT_FOUND')
+  }
+  return clone(checkout)
+}
+
+async function mockListRecoverableCheckoutSessions(
+  sessionId: string,
+): Promise<CheckoutSession[]> {
+  await wait()
+  return clone(
+    [...checkoutSessions.values()]
+      .filter(
+        (checkout) =>
+          checkout.userId === DEMO_USER_ID &&
+          checkout.sessionId === sessionId &&
+          (checkout.status === 'SELECTING' || checkout.status === 'SUBMITTING'),
+      )
+      .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt)),
+  )
+}
+
+async function mockReplaceCheckoutSessionSeats(
+  id: string,
+  seatIds: string[],
+  expectedRevision: number,
+): Promise<CheckoutSession> {
+  await wait()
+  const checkout = checkoutSessions.get(id)
+  if (!checkout) {
+    throw new TicketApiError('未找到该购票会话。', 'CHECKOUT_SESSION_NOT_FOUND')
+  }
+  if (checkout.status !== 'SELECTING') {
+    throw new TicketApiError('当前购票会话不能修改座位。', 'CHECKOUT_SESSION_NOT_MODIFIABLE')
+  }
+  if (checkout.revision !== expectedRevision) {
+    throw new TicketApiError(
+      '该购票会话已在其他页面发生修改。',
+      'CHECKOUT_SESSION_VERSION_CONFLICT',
+    )
+  }
+  validateCheckoutSeatIds(checkout.sessionId, seatIds, 0)
+  checkout.seatIds = [...seatIds].sort()
+  checkout.revision += 1
+  checkout.updatedAt = new Date().toISOString()
+  return clone(checkout)
+}
+
+function startMockCheckoutConfirmation(checkout: CheckoutSession) {
+  const pending = mockCreateReservation(checkout.sessionId, checkout.seatIds)
+    .then((result) => {
+      checkout.status = 'RESERVED'
+      checkout.reservationId = result.reservation.id
+      checkout.reservation = result.reservation
+      checkout.order = result.order
+      checkout.updatedAt = new Date().toISOString()
+      return clone(checkout)
+    })
+    .catch((error: unknown) => {
+      if (error instanceof TicketApiError && error.code === 'SEAT_CONFLICT') {
+        checkout.status = 'SELECTING'
+        checkout.updatedAt = new Date().toISOString()
+      }
+      throw error
+    })
+    .finally(() => checkoutConfirmations.delete(checkout.id))
+  checkoutConfirmations.set(checkout.id, pending)
+  return pending
+}
+
+async function mockConfirmCheckoutSession(id: string): Promise<CheckoutSession> {
+  await wait()
+  const checkout = checkoutSessions.get(id)
+  if (!checkout) {
+    throw new TicketApiError('未找到该购票会话。', 'CHECKOUT_SESSION_NOT_FOUND')
+  }
+  if (checkout.status === 'RESERVED') return clone(checkout)
+  if (checkout.status === 'ABANDONED' || checkout.seatIds.length === 0) {
+    throw new TicketApiError('当前购票会话不能确认。', 'CHECKOUT_SESSION_NOT_CONFIRMABLE')
+  }
+  const existing = checkoutConfirmations.get(id)
+  if (existing) return clone(await existing)
+  checkout.status = 'SUBMITTING'
+  checkout.updatedAt = new Date().toISOString()
+  return clone(await startMockCheckoutConfirmation(checkout))
+}
+
+async function mockAbandonCheckoutSession(id: string): Promise<CheckoutSession> {
+  await wait()
+  const checkout = checkoutSessions.get(id)
+  if (!checkout) {
+    throw new TicketApiError('未找到该购票会话。', 'CHECKOUT_SESSION_NOT_FOUND')
+  }
+  if (checkout.status === 'ABANDONED') return clone(checkout)
+  if (checkout.status !== 'SELECTING') {
+    throw new TicketApiError('当前购票会话不能放弃。', 'CHECKOUT_SESSION_NOT_ABANDONABLE')
+  }
+  checkout.status = 'ABANDONED'
+  checkout.updatedAt = new Date().toISOString()
+  return clone(checkout)
+}
+
 async function mockGetOrder(orderId: string) {
   await wait()
   const order = orders.get(orderId)
@@ -339,6 +493,13 @@ export function buildReservationRequest(sessionId: string, seatIds: string[]) {
   }
 }
 
+export function buildCheckoutSeatReplacementRequest(
+  seatIds: string[],
+  expectedRevision: number,
+) {
+  return { seatIds, expectedRevision }
+}
+
 export const ticketApi = {
   async getEvents(): Promise<TicketEvent[]> {
     if (isMockMode) return mockGetEvents()
@@ -360,6 +521,50 @@ export const ticketApi = {
         buildReservationRequest(sessionId, seatIds),
       )
     ).data
+  },
+  async createCheckoutSession(
+    sessionId: string,
+    seatIds: string[],
+  ): Promise<CheckoutSession> {
+    if (isMockMode) return mockCreateCheckoutSession(sessionId, seatIds)
+    return (
+      await http.post<CheckoutSession>(checkoutSessionPaths.collection, { sessionId, seatIds })
+    ).data
+  },
+  async getCheckoutSession(id: string): Promise<CheckoutSession> {
+    if (isMockMode) return mockGetCheckoutSession(id)
+    return (await http.get<CheckoutSession>(checkoutSessionPaths.item(id))).data
+  },
+  async listRecoverableCheckoutSessions(sessionId: string): Promise<CheckoutSession[]> {
+    if (isMockMode) return mockListRecoverableCheckoutSessions(sessionId)
+    return (
+      await http.get<CheckoutSession[]>(checkoutSessionPaths.collection, {
+        params: { sessionId, recoverable: true },
+      })
+    ).data
+  },
+  async replaceCheckoutSessionSeats(
+    id: string,
+    seatIds: string[],
+    expectedRevision: number,
+  ): Promise<CheckoutSession> {
+    if (isMockMode) {
+      return mockReplaceCheckoutSessionSeats(id, seatIds, expectedRevision)
+    }
+    return (
+      await http.put<CheckoutSession>(
+        checkoutSessionPaths.seats(id),
+        buildCheckoutSeatReplacementRequest(seatIds, expectedRevision),
+      )
+    ).data
+  },
+  async confirmCheckoutSession(id: string): Promise<CheckoutSession> {
+    if (isMockMode) return mockConfirmCheckoutSession(id)
+    return (await http.post<CheckoutSession>(checkoutSessionPaths.confirm(id))).data
+  },
+  async abandonCheckoutSession(id: string): Promise<CheckoutSession> {
+    if (isMockMode) return mockAbandonCheckoutSession(id)
+    return (await http.post<CheckoutSession>(checkoutSessionPaths.abandon(id))).data
   },
   async getOrder(orderId: string): Promise<TicketOrder> {
     if (isMockMode) return mockGetOrder(orderId)
@@ -383,6 +588,8 @@ export function resetMockData() {
   seatsBySession = new Map()
   reservations = new Map()
   orders = new Map()
+  checkoutSessions = new Map()
+  checkoutConfirmations = new Map()
   sequence = 24082600
 }
 

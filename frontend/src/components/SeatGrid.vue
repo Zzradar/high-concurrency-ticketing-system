@@ -7,6 +7,7 @@ import type { Seat } from '../types'
 const props = defineProps<{
   seats: Seat[]
   selectedSeatIds: string[]
+  editingDisabled: boolean
 }>()
 
 defineEmits<{ toggle: [seat: Seat] }>()
@@ -45,6 +46,7 @@ const groupedRows = computed(() => {
             :key="seat.id"
             :seat="seat"
             :selected="selectedSeatIds.includes(seat.id)"
+            :editing-disabled="editingDisabled"
             @toggle="$emit('toggle', $event)"
           />
         </div>

@@ -57,7 +57,7 @@ POST /checkout-sessions/{id}/confirm
 POST /checkout-sessions/{id}/abandon
 ```
 
-当前 Vue 前端尚未调用上述 Phase 5 接口，它们是已实现的后端事实，不是已联调的前端事实。
+当前 Vue 前端已调用上述 CheckoutSession 接口；正常 UI 不再直接调用 `POST /reservations`。
 
 当前 Vue 页面实际调用其中三个列表接口：
 
@@ -402,7 +402,8 @@ SOLD
 
 用户点击 AVAILABLE 座位后，只修改浏览器本地 `selectedSeatIds`。
 
-只有用户点击“提交预订”，且 `POST /reservations` 成功后，相应 SessionSeat 才正式从 AVAILABLE 进入 HELD。
+只有用户点击“提交预订”，CheckoutSession confirm 在服务端复用 Phase 3 正式预订并成功后，
+相应 SessionSeat 才正式从 AVAILABLE 进入 HELD。
 
 ## 13. Reservation 对齐
 
@@ -763,11 +764,16 @@ EXPIRED、Reservation 进入 EXPIRED、SessionSeat 恢复 AVAILABLE 并清空
 恢复/确认/放弃 API。确认入口在服务端生成确认 Key，并复用 Phase 3 的
 `ReservationService` 与正式 Reservation 事务能力。
 
-### Phase 6：前端购票会话恢复（待实现）
+### Phase 6：前端购票会话恢复（已完成）
 
-围绕服务端购票会话支持当前流程恢复、页面刷新恢复、确认结果未知恢复，以及用户
+已围绕服务端购票会话实现当前流程恢复、页面刷新恢复、确认结果未知恢复，以及用户
 知情后显式开启第二个独立会话。不采用全局唯一 `pendingReservationAttempt` 作为
 长期业务模型。
+
+座位同步继续使用完整集合 PUT，并携带锁后校验的 `expectedRevision`；成功后 revision
+原子加 1，版本冲突返回 `409 CHECKOUT_SESSION_VERSION_CONFLICT`。前端同一 C1 最多一个
+PUT in-flight，Confirm 前执行最终同步屏障。`sessionStorage` 只保存 locator；
+`SUBMITTING` 每 2 秒查询，15 秒后仍未知时允许继续原确认。本阶段没有 Redis pre-hold。
 
 ### Phase 7：Redis 临时占座（待实现）
 

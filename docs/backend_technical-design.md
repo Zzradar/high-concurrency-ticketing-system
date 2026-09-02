@@ -118,7 +118,7 @@ Phase 2  四个只读接口 + PostgreSQL 查询 + Vite /api 链路    已完成
 Phase 3  POST /reservations + 幂等 + 原子锁座                已完成
 Phase 4  GET /orders/{orderId} + 超时释放 Worker             已完成
 Phase 5  服务端 Checkout Session（购票会话）                已完成
-Phase 6  前端购票会话恢复与独立多会话                        待实现
+Phase 6  前端购票会话恢复与独立多会话                        已完成
 Phase 7  Redis 临时占座                                      待实现
 Phase 8  支付 + 取消 + 支付/取消/超时状态竞争                待实现
 Phase 9  按压测决定限流/排队/异步受理/操作查询               暂缓
@@ -141,8 +141,8 @@ POST /checkout-sessions/{id}/confirm
 POST /checkout-sessions/{id}/abandon
 ```
 
-当前 Vue 页面实际调用活动列表、活动场次列表和场次座位图接口，尚未调用已经存在的
-`GET /events/{eventId}`。Phase 3 后端预订能力与 Phase 4 订单查询、超时释放 Worker
+当前 Vue 页面实际调用活动列表、活动场次列表、场次座位图和全部 CheckoutSession 接口，
+尚未调用已经存在的 `GET /events/{eventId}`。Phase 3 后端预订能力与 Phase 4 订单查询、超时释放 Worker
 已经完成；支付和取消能力仍未实现。
 
 ---
@@ -275,6 +275,10 @@ Phase 5 的 `checkout_sessions` 保存用户针对一个 Session 的本轮购买
 
 `checkout_session_seats` 保存当前完整购买意图。关联必须与购票会话属于同一
 Session，且每个座位在一个会话中只出现一次。这些行不代表 `HELD`；正式库存状态仍只由 Phase 3 事务修改。
+
+`checkout_sessions.revision` 是座位完整集合版本，初始为 0。每次成功 PUT（包括相同集合）
+在行锁事务中原子加 1；请求必须携带 `expectedRevision`。锁后版本不一致返回
+`409 CHECKOUT_SESSION_VERSION_CONFLICT`，且不修改座位关联。状态迁移和对账不增加 revision。
 
 ---
 

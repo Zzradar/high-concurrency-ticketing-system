@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import { RefreshCw, ShieldCheck, Ticket, X } from '@lucide/vue'
 import { computed } from 'vue'
-import type { Seat, TicketSession } from '../types'
+import type { CheckoutSessionStatus, Seat, TicketSession } from '../types'
 import { formatCny } from '../utils/money'
 
 const props = defineProps<{
   selectedSeats: Seat[]
   session: TicketSession
-  busy: boolean
+  checkoutStatus?: CheckoutSessionStatus
+  checkoutCreating: boolean
+  checkoutSyncInFlight: boolean
+  confirming: boolean
+  submittingPolling: boolean
+  submitUncertain: boolean
+  editingDisabled: boolean
 }>()
 
 defineEmits<{
@@ -15,6 +21,7 @@ defineEmits<{
   remove: [seat: Seat]
   clear: []
   refresh: []
+  retryConfirm: []
 }>()
 
 const totalAmount = computed(() =>
@@ -39,12 +46,17 @@ const totalAmount = computed(() =>
         v-for="seat in selectedSeats"
         :key="seat.id"
         class="selected-seat"
+        :class="{ 'selected-seat--unavailable': seat.status !== 'AVAILABLE' }"
         type="button"
         :aria-label="'移除座位 ' + seat.label"
+        :disabled="editingDisabled"
         @click="$emit('remove', seat)"
       >
         <span><Ticket :size="16" aria-hidden="true" />{{ seat.label }}</span>
-        <small>{{ seat.zone }} · {{ formatCny(seat.price) }}</small>
+        <small>
+          {{ seat.zone }} · {{ formatCny(seat.price) }}
+          <em v-if="seat.status !== 'AVAILABLE'">当前不可用</em>
+        </small>
         <X :size="15" aria-hidden="true" />
       </button>
     </div>
@@ -72,13 +84,32 @@ const totalAmount = computed(() =>
     <button
       class="primary-button primary-button--full"
       type="button"
-      :disabled="!selectedSeats.length || busy"
-      @click="$emit('reserve')"
+      :disabled="
+        (!selectedSeats.length && !submitUncertain) ||
+        (editingDisabled && !submitUncertain)
+      "
+      @click="submitUncertain ? $emit('retryConfirm') : $emit('reserve')"
     >
-      <span v-if="busy" class="button-spinner"></span>
+      <span v-if="confirming || submittingPolling || checkoutCreating" class="button-spinner"></span>
       <ShieldCheck v-else :size="18" aria-hidden="true" />
-      {{ busy ? '正在确认座位…' : '提交预订' }}
+      {{
+        submitUncertain
+          ? '继续原确认'
+          : submittingPolling || checkoutStatus === 'SUBMITTING'
+            ? '正在确认预订…'
+            : confirming
+              ? '正在确认座位…'
+              : checkoutCreating
+                ? '正在保存选座…'
+                : '提交预订'
+      }}
     </button>
+    <p v-if="submitUncertain" class="selection-panel__warning">
+      确认结果暂时无法确定。继续原确认不会创建第二份订单。
+    </p>
+    <p v-else-if="checkoutSyncInFlight && !confirming" class="selection-panel__sync">
+      正在后台同步最新选座…
+    </p>
     <p class="selection-panel__hint">
       提交后将由服务端原子锁定全部座位，任一座位不可用则整单失败。
     </p>

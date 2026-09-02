@@ -5,12 +5,13 @@ import { formatCny } from '../utils/money'
 const props = defineProps<{
   seat: Seat
   selected: boolean
+  editingDisabled: boolean
 }>()
 
 const emit = defineEmits<{ toggle: [seat: Seat] }>()
 
 function handleClick() {
-  if (props.seat.status === 'AVAILABLE') emit('toggle', props.seat)
+  if (!props.editingDisabled && props.seat.status === 'AVAILABLE') emit('toggle', props.seat)
 }
 
 const statusLabel = {
@@ -28,7 +29,7 @@ const statusLabel = {
       { 'seat-item--selected': selected },
     ]"
     type="button"
-    :disabled="seat.status !== 'AVAILABLE'"
+    :disabled="editingDisabled || seat.status !== 'AVAILABLE'"
     :aria-pressed="selected"
     :aria-label="seat.label + '，' + (selected ? '已选择' : statusLabel[seat.status]) + '，' + formatCny(seat.price)"
     :title="seat.label + ' · ' + seat.zone + ' · ' + formatCny(seat.price)"

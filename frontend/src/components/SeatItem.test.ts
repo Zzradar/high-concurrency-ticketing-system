@@ -17,7 +17,7 @@ const availableSeat: Seat = {
 describe('SeatItem', () => {
   it('emits toggle for an available seat', async () => {
     const wrapper = mount(SeatItem, {
-      props: { seat: availableSeat, selected: false },
+      props: { seat: availableSeat, selected: false, editingDisabled: false },
     })
 
     await wrapper.get('button').trigger('click')
@@ -30,11 +30,21 @@ describe('SeatItem', () => {
       props: {
         seat: { ...availableSeat, status: 'HELD' },
         selected: false,
+        editingDisabled: false,
       },
     })
 
     expect(wrapper.get('button').attributes('disabled')).toBeDefined()
     expect(wrapper.get('button').attributes('aria-label')).toContain('锁定中')
+    wrapper.unmount()
+  })
+
+  it('disables an available seat while checkout confirmation is in progress', () => {
+    const wrapper = mount(SeatItem, {
+      props: { seat: availableSeat, selected: true, editingDisabled: true },
+    })
+
+    expect(wrapper.get('button').attributes('disabled')).toBeDefined()
     wrapper.unmount()
   })
 })

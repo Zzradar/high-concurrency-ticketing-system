@@ -11,7 +11,7 @@
 - 开发环境会把 **/api** 代理到 **http://localhost:8080**，并移除路径前缀 **/api**。例如浏览器请求 **/api/events**，C++ 后端实际接收 **/events**。
 - 当 **VITE_USE_MOCK_API** 不等于字符串 **false** 时使用 mock；仓库中的 .env.example 当前为 **true**。
 - 真实 API 成功响应直接读取 Axios 的 response.data，不使用统一 data 外层包装，也不做响应字段转换。失败响应提取 `code` 和 `message`，并转换为兼容现有处理逻辑的 TicketApiError。
-- 当前实际代码存在 7 个真实后端调用：
+- 当前实际代码存在以下真实后端调用：
 
 | 前端方法 | HTTP |
 | --- | --- |
@@ -19,6 +19,12 @@
 | getSessions | GET /events/{eventId}/sessions |
 | getSeats | GET /sessions/{sessionId}/seats |
 | createReservation | POST /reservations |
+| createCheckoutSession | POST /checkout-sessions |
+| getCheckoutSession | GET /checkout-sessions/{id} |
+| listRecoverableCheckoutSessions | GET /checkout-sessions?sessionId=...&recoverable=true |
+| replaceCheckoutSessionSeats | PUT /checkout-sessions/{id}/seats |
+| confirmCheckoutSession | POST /checkout-sessions/{id}/confirm |
+| abandonCheckoutSession | POST /checkout-sessions/{id}/abandon |
 | getOrder | GET /orders/{orderId} |
 | payOrder | POST /orders/{orderId}/pay |
 | cancelOrder | POST /orders/{orderId}/cancel |
@@ -30,13 +36,13 @@ expireOrderForDemo 仅用于 mock 演示；真实 API 模式会直接报 MOCK_ON
 
 ## 2. 页面、组件与数据需求
 
-前端没有 Vue Router。App.vue 使用 currentView 在四个视图间切换，刷新浏览器会丢失当前流程状态。
+前端没有 Vue Router。App.vue 使用 currentView 在四个视图间切换；购票会话通过服务端恢复，`sessionStorage` 只保存当前 Tab 的 `checkoutSessionId + sessionId` locator。
 
 | 页面 / 视图 | 主要组件 | 当前依赖数据 | 当前来源 | 后端联调需求 |
 | --- | --- | --- | --- | --- |
 | 活动列表 EventListView | EventCard | events、loading | App 挂载后调用 ticketApi.getEvents；默认来自 eventsSeed mock | TicketEvent[] 必须由 GET /events 提供 |
 | 场次选择 SessionListView | SessionCard | currentEvent、sessions、loading | currentEvent 来自用户刚选中的活动对象；sessions 来自 getSessions(event.id) | TicketSession[] 必须由 GET /events/{eventId}/sessions 提供 |
-| 座位选择 SeatSelectionView | SeatGrid、SeatItem、SelectedSeats | currentEvent、currentSession、seats、selectedSeatIds、selectedSeats、busy | event/session 保存在 App 内存；seats 来自 getSeats；selectedSeatIds 为本地状态；selectedSeats 和合计金额为计算值 | Seat[] 必须由 GET /sessions/{sessionId}/seats 提供；提交时后端最终确认是否锁座成功 |
+| 座位选择 SeatSelectionView | SeatGrid、SeatItem、SelectedSeats、RecoverableCheckoutPanel | currentEvent、currentSession、seats、selectedSeatIds、currentCheckoutSession、恢复候选与确认状态 | seats 来自 getSeats；selectedSeatIds 为当前 UI 意图；CheckoutSession 是服务端 checkpoint | Seat[] 与 CheckoutSession API；提交时后端最终确认是否锁座成功 |
 | 订单 OrderView | OrderSummary | currentOrder、currentEvent、currentSession、seats、busy、倒计时 | currentOrder 来自创建预订或订单接口；event/session/seats 沿用 App 内存；倒计时由 expiresAt 与浏览器当前时间计算 | 创建、查询、支付、取消后的 TicketOrder 必须由后端返回；状态变更后前端会重新获取 seats |
 
 页面中的以下内容目前是纯前端常量，不来自接口：
@@ -145,11 +151,13 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
 | App 首次挂载 | loadEvents | GET /events，保存 TicketEvent[] 到 events |
 | 点击“查看场次” | 保存整个 event 为 currentEvent，切换视图并加载场次 | GET /events/{event.id}/sessions |
 | 点击“进入选座” | 保存整个 session 为 currentSession，清空本地选择并加载座位 | GET /sessions/{session.id}/seats |
-| 点击 AVAILABLE 座位 | 只在 selectedSeatIds 中增删 seat.id；最多 6 个 | **无接口调用** |
-| 点击刷新座位 | 重新获取 Seat[]；仅保留最新仍为 AVAILABLE 的已选 id | GET /sessions/{session.id}/seats |
-| 点击“提交预订” | 提交 currentSession.id 和 selectedSeatIds | POST /reservations，请求体为 sessionId、seatIds |
-| 预订成功 | 保存 result.order，重新获取座位图，再进入订单页 | POST 响应 ReservationResult；随后 GET /sessions/{session.id}/seats |
-| 预订失败 / 座位冲突 | 显示错误，立即刷新 seats 并过滤失效选择；刷新过程保留本次预订错误提示 | POST 失败；随后 GET /sessions/{session.id}/seats |
+| 进入选座 | 先按 locator GET；无有效 locator 时查询全部可恢复会话且不自动选最新一条 | GET CheckoutSession / list recoverable |
+| 第一次点击 AVAILABLE 座位 | 立即更新 selectedSeatIds，并异步创建唯一 C1 | POST /checkout-sessions |
+| 后续 add/remove | UI 立即更新；同一 C1 以 single-flight PUT 同步最新完整集合 | PUT seats，携带 seatIds、expectedRevision |
+| 点击刷新座位 | 重新获取 Seat[]；不删除恢复出的 HELD/SOLD 意图座位 | GET /sessions/{session.id}/seats |
+| 点击“提交预订” | 禁止继续编辑，等待 create/PUT 并把最终集合 flush 到服务端 checkpoint，再正式确认 | POST /checkout-sessions/{id}/confirm |
+| 确认成功 | 使用 CheckoutSession 响应中的 order，刷新座位图并进入订单页 | confirm 响应 RESERVED CheckoutSession；随后 GET seats |
+| SEAT_CONFLICT | GET 当前 C1 回到 SELECTING，保留服务端意图并刷新 Seat Map | GET CheckoutSession + GET seats |
 | 点击订单“刷新状态” | 更新 currentOrder，并同步刷新座位 | GET /orders/{order.id}；随后 GET /sessions/{session.id}/seats |
 | 倒计时归零 | 倒计时组件只发出 expiryReached，不自行把订单设为 EXPIRED | GET /orders/{order.id}，以后端状态为准 |
 | 点击“模拟支付” | 用返回值替换 currentOrder，再刷新 seats | POST /orders/{order.id}/pay；随后 GET seats |
@@ -389,7 +397,9 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
       -> GET /sessions/{sessionId}/seats
       -> seats
       -> 本地点选 selectedSeatIds / selectedSeats
-      -> POST /reservations
+      -> create / full-set PUT CheckoutSession
+      -> final sync barrier
+      -> POST /checkout-sessions/{id}/confirm
       -> currentOrder
       -> pay / cancel / GET order
 
@@ -403,15 +413,18 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 | seats | 后端权威数据的前端副本 | 进入选座、刷新、订单变更后重新获取 |
 | selectedSeatIds | 完全属于前端 | 只是用户意向；不是锁座结果 |
 | selectedSeats | 完全属于前端的计算值 | 从 seats 和 selectedSeatIds 派生 |
+| currentCheckoutSession | 后端权威 checkpoint 的前端副本 | 包含 seatIds、revision、status；成功 PUT 后整体替换 |
+| recoverableCheckoutSessions | 后端查询结果 | 多个候选必须由用户显式选择 |
 | currentReservation | **当前不存在** | 创建预订响应包含 reservation，但 App 未保存 |
 | currentOrder | 必须以后端返回为准 | 来自创建、查询、支付或取消接口 |
 | 倒计时 | 前端展示状态 | 由 expiresAt - Date.now() 计算；归零不直接修改订单 |
-| loading、busy、errorMessage、noticeMessage | 完全属于前端 | 页面交互和反馈状态 |
+| checkoutCreating、checkoutSyncInFlight、confirming、submittingPolling、submitUncertain | 完全属于前端 | 区分后台同步、确认屏障、结果恢复和 15 秒不确定状态 |
+| loading、busy、errorMessage、noticeMessage | 完全属于前端 | 页面交互和订单操作反馈状态 |
 
 边界原则：
 
 1. 用户点选座位只改变 selectedSeatIds，不能视为锁座。
-2. POST /reservations 成功返回以后，前端才进入订单页。
+2. 正常 UI 不直接调用 POST /reservations；confirm 返回 RESERVED + order 后才进入订单页。底层 createReservation 仍保留用于 Mock 竞争和较低层测试。
 3. Seat.status、Reservation.status 和 Order.status 的正式值必须以后端为准。
 4. 倒计时仅用于展示；是否过期由 GET /orders/{orderId} 的返回状态决定。
 5. 支付或取消后，前端既采用返回的 TicketOrder，也会重新获取 Seat[]，不自行推断座位最终状态。
@@ -428,6 +441,22 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 6. Reservation 和 Order 的 expiresAt、createdAt、paidAt 使用可由 Date.parse 解析的 ISO 8601 字符串。
 7. 每单最多 6 个座位；SELECTED 仍是纯前端本地选择状态。
 8. Mock 已使用分为单位，并已使篮球场次 priceFrom 与该场次最低 seat.price 一致。
+
+### 7.2 CheckoutSession revision 与恢复契约
+
+`CheckoutSession` 必须包含整数 `revision`。座位完整集合替换请求固定为：
+
+```json
+{
+  "seatIds": ["ses-concert-1001-A01"],
+  "expectedRevision": 3
+}
+```
+
+成功 PUT 使服务端 `revision + 1`。过期版本返回 HTTP 409、
+`CHECKOUT_SESSION_VERSION_CONFLICT`；前端不 merge 或盲重试，而是 GET 最新 C1，整体采用
+服务端 `seatIds + revision` 并要求用户重新确认。`SUBMITTING` 每 2 秒 GET，最长 15 秒；
+仍未确定时显示“继续原确认”，不会显示预订失败。Phase 6 不使用 Redis 预占座。
 
 ### 7.2 仍需联调确认的问题
 
