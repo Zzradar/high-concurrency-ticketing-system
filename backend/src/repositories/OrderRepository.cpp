@@ -123,6 +123,84 @@ void OrderRepository::findByIdForUser(
         userId);
 }
 
+void OrderRepository::listForUser(
+    const drogon::orm::DbClientPtr &client,
+    const std::string &userId,
+    const std::string &status,
+    const std::string &sessionId,
+    std::size_t limit,
+    std::function<void(std::vector<TicketOrder>)> onSuccess,
+    ErrorCallback onError) const
+{
+    constexpr const char *sql = R"SQL(
+        WITH selected_orders AS (
+            SELECT ticket_order.id
+            FROM orders AS ticket_order
+            JOIN reservations AS reservation
+              ON reservation.id = ticket_order.reservation_id
+            WHERE ticket_order.user_id = $1
+              AND ($2 = '' OR ticket_order.status = $2)
+              AND ($3 = '' OR reservation.session_id = $3)
+            ORDER BY ticket_order.created_at DESC, ticket_order.id DESC
+            LIMIT $4
+        )
+        SELECT ticket_order.id, ticket_order.reservation_id,
+               session.event_id, reservation.session_id,
+               item.session_seat_id, ticket_order.status,
+               ticket_order.total_amount,
+               TO_CHAR(ticket_order.expires_at AT TIME ZONE 'UTC',
+                       'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS expires_at,
+               TO_CHAR(ticket_order.created_at AT TIME ZONE 'UTC',
+                       'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS created_at,
+               CASE WHEN ticket_order.paid_at IS NULL THEN NULL ELSE
+                   TO_CHAR(ticket_order.paid_at AT TIME ZONE 'UTC',
+                           'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') END AS paid_at
+        FROM selected_orders
+        JOIN orders AS ticket_order ON ticket_order.id = selected_orders.id
+        JOIN reservations AS reservation ON reservation.id = ticket_order.reservation_id
+        JOIN sessions AS session ON session.id = reservation.session_id
+        JOIN reservation_session_seats AS item ON item.reservation_id = reservation.id
+        ORDER BY ticket_order.created_at DESC, ticket_order.id DESC,
+                 item.session_seat_id ASC
+    )SQL";
+    client->execSqlAsync(
+        sql,
+        [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) {
+            std::vector<TicketOrder> orders;
+            for (const auto &row : rows)
+            {
+                const auto id = row["id"].as<std::string>();
+                if (orders.empty() || orders.back().id != id)
+                {
+                    orders.push_back(TicketOrder{
+                        .id = id,
+                        .reservationId = row["reservation_id"].as<std::string>(),
+                        .eventId = row["event_id"].as<std::string>(),
+                        .sessionId = row["session_id"].as<std::string>(),
+                        .seatIds = {},
+                        .status = row["status"].as<std::string>(),
+                        .totalAmount = row["total_amount"].as<std::int64_t>(),
+                        .expiresAt = row["expires_at"].as<std::string>(),
+                        .createdAt = row["created_at"].as<std::string>(),
+                        .paidAt = row["paid_at"].isNull()
+                                      ? std::nullopt
+                                      : std::optional<std::string>{
+                                            row["paid_at"].as<std::string>()},
+                    });
+                }
+                orders.back().seatIds.push_back(
+                    row["session_seat_id"].as<std::string>());
+            }
+            onSuccess(std::move(orders));
+        },
+        [onError = std::move(onError)](
+            const drogon::orm::DrogonDbException &error) {
+            logDatabaseError("Failed to list user orders", error);
+            onError();
+        },
+        userId, status, sessionId, static_cast<std::int64_t>(limit));
+}
+
 void OrderRepository::findExpiredCandidateIds(
     const drogon::orm::DbClientPtr &client,
     std::size_t batchSize,

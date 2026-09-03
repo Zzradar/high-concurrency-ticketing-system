@@ -42,3 +42,28 @@ void SessionController::listEventSessions(
                 "Internal server error"));
         });
 }
+
+void SessionController::getSession(
+    const drogon::HttpRequestPtr &,
+    std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+    std::string sessionId) const
+{
+    auto done = std::make_shared<HttpCallback>(std::move(callback));
+    service_.getSession(
+        sessionId,
+        [done](std::optional<ticketing::TicketSession> session) {
+            if (!session)
+            {
+                (*done)(ticketing::makeErrorResponse(
+                    drogon::k404NotFound, "SESSION_NOT_FOUND",
+                    "Session not found"));
+                return;
+            }
+            (*done)(drogon::HttpResponse::newHttpJsonResponse(session->toJson()));
+        },
+        [done] {
+            (*done)(ticketing::makeErrorResponse(
+                drogon::k500InternalServerError, "INTERNAL_ERROR",
+                "Internal server error"));
+        });
+}

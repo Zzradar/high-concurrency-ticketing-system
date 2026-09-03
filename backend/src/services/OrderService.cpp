@@ -2,11 +2,37 @@
 
 #include <drogon/drogon.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 namespace ticketing
 {
+void OrderService::listOrders(
+    const std::string &userId,
+    const std::string &status,
+    const std::string &sessionId,
+    std::size_t limit,
+    std::function<void(ListOrdersResult)> completion) const
+{
+    static const std::vector<std::string> statuses{
+        "PENDING_PAYMENT", "PAID", "CANCELLED", "EXPIRED"};
+    if (userId.empty() || limit == 0 || limit > 100 ||
+        (!status.empty() &&
+         std::find(statuses.begin(), statuses.end(), status) == statuses.end()))
+    {
+        completion({GetOrderOutcome::InvalidArgument, {}});
+        return;
+    }
+    auto done = std::make_shared<decltype(completion)>(std::move(completion));
+    repository_.listForUser(
+        drogon::app().getDbClient("default"), userId, status, sessionId, limit,
+        [done](std::vector<TicketOrder> orders) {
+            (*done)({GetOrderOutcome::Found, std::move(orders)});
+        },
+        [done] { (*done)({GetOrderOutcome::InternalError, {}}); });
+}
+
 void OrderService::getOrder(const std::string &orderId,
                             const std::string &userId,
                             Completion completion) const

@@ -11,6 +11,10 @@ class OrderController final : public drogon::HttpController<OrderController>
 {
   public:
     METHOD_LIST_BEGIN
+    ADD_METHOD_TO(OrderController::listOrders,
+                  "/orders",
+                  drogon::Get,
+                  "ticketing::AuthFilter");
     ADD_METHOD_TO(OrderController::getOrder,
                   "/orders/{orderId}",
                   drogon::Get,
@@ -29,6 +33,10 @@ class OrderController final : public drogon::HttpController<OrderController>
         const drogon::HttpRequestPtr &request,
         std::function<void(const drogon::HttpResponsePtr &)> &&callback,
         std::string orderId) const;
+
+    void listOrders(
+        const drogon::HttpRequestPtr &request,
+        std::function<void(const drogon::HttpResponsePtr &)> &&callback) const;
 
     void cancelOrder(
         const drogon::HttpRequestPtr &request,

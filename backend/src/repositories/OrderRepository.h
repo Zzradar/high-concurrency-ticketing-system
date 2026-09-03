@@ -54,6 +54,15 @@ class OrderRepository
         std::function<void(std::optional<TicketOrder>)> onSuccess,
         ErrorCallback onError) const;
 
+    void listForUser(
+        const drogon::orm::DbClientPtr &client,
+        const std::string &userId,
+        const std::string &status,
+        const std::string &sessionId,
+        std::size_t limit,
+        std::function<void(std::vector<TicketOrder>)> onSuccess,
+        ErrorCallback onError) const;
+
     void findExpiredCandidateIds(
         const drogon::orm::DbClientPtr &client,
         std::size_t batchSize,

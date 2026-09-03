@@ -11,7 +11,7 @@ def read(relative_path: str) -> str:
 
 
 class ReadApiSourceContractTest(unittest.TestCase):
-    def test_only_phase_two_read_routes_are_registered(self) -> None:
+    def test_public_catalog_read_routes_are_registered(self) -> None:
         controllers = "\n".join(
             read(path)
             for path in (
@@ -24,10 +24,11 @@ class ReadApiSourceContractTest(unittest.TestCase):
             '"/events"',
             '"/events/{eventId}"',
             '"/events/{eventId}/sessions"',
+            '"/sessions/{sessionId}"',
             '"/sessions/{sessionId}/seats"',
         ):
             self.assertIn(route, controllers)
-        self.assertEqual(controllers.count("drogon::Get"), 4)
+        self.assertEqual(controllers.count("drogon::Get"), 5)
         self.assertNotRegex(controllers, r"drogon::Post|drogon::Put|drogon::Delete")
 
     def test_path_ids_are_handler_arguments(self) -> None:

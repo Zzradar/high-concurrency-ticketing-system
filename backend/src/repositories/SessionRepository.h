@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -35,6 +36,11 @@ class SessionRepository
     void eventExists(
         const std::string &eventId,
         std::function<void(bool)> onSuccess,
+        ErrorCallback onError) const;
+
+    void findById(
+        const std::string &sessionId,
+        std::function<void(std::optional<SessionRow>)> onSuccess,
         ErrorCallback onError) const;
 };
 }  // namespace ticketing

@@ -368,6 +368,30 @@ void ReservationService::createOrder(
                 fail(state, CreateReservationOutcome::InternalError);
                 return;
             }
+            createOrderNotification(state);
+        },
+        [state] { fail(state, CreateReservationOutcome::InternalError); });
+}
+
+void ReservationService::createOrderNotification(
+    const std::shared_ptr<FlowState> &state) const
+{
+    notificationRepository_.insert(
+        state->transaction,
+        "NTF-" + drogon::utils::getUuid(true),
+        state->userId,
+        state->orderId,
+        "ORDER_CREATED",
+        "订单已创建",
+        "订单已创建，请在有效期内完成支付。",
+        "order-created:" + state->orderId,
+        [this, state](std::size_t inserted) {
+            if (inserted != 1)
+            {
+                LOG_ERROR << "ORDER_CREATED notification insert mismatch";
+                fail(state, CreateReservationOutcome::InternalError);
+                return;
+            }
             commit(state);
         },
         [state] { fail(state, CreateReservationOutcome::InternalError); });

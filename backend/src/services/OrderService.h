@@ -24,6 +24,12 @@ struct GetOrderResult
     std::optional<TicketOrder> value;
 };
 
+struct ListOrdersResult
+{
+    GetOrderOutcome outcome{GetOrderOutcome::InternalError};
+    std::vector<TicketOrder> values;
+};
+
 enum class CancelOrderOutcome
 {
     Cancelled,
@@ -48,6 +54,11 @@ class OrderService
     void getOrder(const std::string &orderId,
                   const std::string &userId,
                   Completion completion) const;
+    void listOrders(const std::string &userId,
+                    const std::string &status,
+                    const std::string &sessionId,
+                    std::size_t limit,
+                    std::function<void(ListOrdersResult)> completion) const;
 
     void cancelOrder(const std::string &orderId,
                      const std::string &userId,

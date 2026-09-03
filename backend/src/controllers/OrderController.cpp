@@ -3,8 +3,57 @@
 #include "common/ApiResponse.h"
 #include "common/AuthContext.h"
 
+#include <charconv>
 #include <memory>
 #include <utility>
+
+void OrderController::listOrders(
+    const drogon::HttpRequestPtr &request,
+    std::function<void(const drogon::HttpResponsePtr &)> &&callback) const
+{
+    std::size_t limit = 20;
+    const auto limitText = request->getParameter("limit");
+    if (!limitText.empty())
+    {
+        const auto parsed = std::from_chars(limitText.data(),
+                                            limitText.data() + limitText.size(),
+                                            limit);
+        if (parsed.ec != std::errc{} ||
+            parsed.ptr != limitText.data() + limitText.size())
+        {
+            callback(ticketing::makeErrorResponse(
+                drogon::k400BadRequest, "INVALID_ARGUMENT",
+                "Invalid order query"));
+            return;
+        }
+    }
+    using HttpCallback =
+        std::function<void(const drogon::HttpResponsePtr &)>;
+    auto done = std::make_shared<HttpCallback>(std::move(callback));
+    service_.listOrders(
+        ticketing::authenticatedUserId(request), request->getParameter("status"),
+        request->getParameter("sessionId"), limit,
+        [done](ticketing::ListOrdersResult result) {
+            if (result.outcome == ticketing::GetOrderOutcome::InvalidArgument)
+            {
+                (*done)(ticketing::makeErrorResponse(
+                    drogon::k400BadRequest, "INVALID_ARGUMENT",
+                    "Invalid order query"));
+                return;
+            }
+            if (result.outcome != ticketing::GetOrderOutcome::Found)
+            {
+                (*done)(ticketing::makeErrorResponse(
+                    drogon::k500InternalServerError, "INTERNAL_ERROR",
+                    "Internal server error"));
+                return;
+            }
+            Json::Value body{Json::arrayValue};
+            for (const auto &order : result.values)
+                body.append(order.toJson());
+            (*done)(drogon::HttpResponse::newHttpJsonResponse(body));
+        });
+}
 
 void OrderController::getOrder(
     const drogon::HttpRequestPtr &request,

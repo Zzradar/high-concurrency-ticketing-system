@@ -2,6 +2,7 @@
 
 #include "dto/TicketDtos.h"
 #include "repositories/ReservationRepository.h"
+#include "repositories/NotificationRepository.h"
 
 #include <json/json.h>
 
@@ -68,6 +69,7 @@ class ReservationService
     void insertSeatSnapshots(
         const std::shared_ptr<FlowState> &state) const;
     void createOrder(const std::shared_ptr<FlowState> &state) const;
+    void createOrderNotification(const std::shared_ptr<FlowState> &state) const;
     void commit(const std::shared_ptr<FlowState> &state) const;
     static void fail(const std::shared_ptr<FlowState> &state,
                      CreateReservationOutcome outcome);
@@ -75,5 +77,6 @@ class ReservationService
                        CreateReservationResult result);
 
     ReservationRepository repository_;
+    NotificationRepository notificationRepository_;
 };
 }  // namespace ticketing

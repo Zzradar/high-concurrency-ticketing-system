@@ -76,4 +76,24 @@ void SessionService::listEventSessions(
         },
         [errorPtr] { (*errorPtr)(); });
 }
+
+void SessionService::getSession(
+    const std::string &sessionId,
+    std::function<void(std::optional<TicketSession>)> onSuccess,
+    ErrorCallback onError) const
+{
+    if (sessionId.empty())
+    {
+        onSuccess(std::nullopt);
+        return;
+    }
+    repository_.findById(
+        sessionId,
+        [onSuccess = std::move(onSuccess)](
+            std::optional<SessionRow> row) mutable {
+            onSuccess(row ? std::optional<TicketSession>{toDto(std::move(*row))}
+                          : std::nullopt);
+        },
+        std::move(onError));
+}
 }  // namespace ticketing
