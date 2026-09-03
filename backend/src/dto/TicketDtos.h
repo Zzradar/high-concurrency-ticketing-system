@@ -247,12 +247,14 @@ struct PaymentAttempt
 
 struct PaymentStartResult
 {
+    std::string disposition;
     TicketOrder order;
     std::optional<PaymentAttempt> paymentAttempt;
 
     Json::Value toJson() const
     {
         Json::Value value;
+        value["disposition"] = disposition;
         value["order"] = order.toJson();
         value["paymentAttempt"] = paymentAttempt
                                       ? paymentAttempt->toJson()

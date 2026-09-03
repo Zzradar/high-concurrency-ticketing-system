@@ -125,7 +125,7 @@ void PaymentService::inspectProcessingAttempt(
         state->attempt = std::move(attempt->value);
         state->transaction->rollback();
         state->transaction.reset();
-        loadResponse(state, StartPaymentOutcome::Started);
+        loadResponse(state, StartPaymentOutcome::ReusedProcessing);
         return;
     }
     if (attempt)
@@ -200,7 +200,7 @@ void PaymentService::commitAttempt(const std::shared_ptr<StartState> &state) con
             return;
         }
         scheduleCompletion(state);
-        loadResponse(state, StartPaymentOutcome::Started);
+        loadResponse(state, StartPaymentOutcome::StartedNew);
     });
     state->transaction.reset();
     transaction.reset();
@@ -234,7 +234,14 @@ void PaymentService::loadResponse(const std::shared_ptr<StartState> &state,
             }
             finish(state,
                    {outcome,
-                    PaymentStartResult{.order = std::move(*order),
+                    PaymentStartResult{
+                                       .disposition =
+                                           outcome == StartPaymentOutcome::StartedNew
+                                               ? "STARTED_NEW"
+                                               : outcome == StartPaymentOutcome::ReusedProcessing
+                                                     ? "REUSED_PROCESSING"
+                                                     : "ALREADY_PAID",
+                                       .order = std::move(*order),
                                        .paymentAttempt = state->attempt}},
                    false);
         },

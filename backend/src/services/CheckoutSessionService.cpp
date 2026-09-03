@@ -53,6 +53,7 @@ struct CheckoutSessionService::ConfirmState
         CheckoutSessionOutcome::InternalError};
     CheckoutSessionRepository::TransactionPtr transaction;
     Completion completion;
+    std::string disposition;
     bool finished{false};
 };
 
@@ -653,6 +654,7 @@ void CheckoutSessionService::confirmLoadSeats(
             const auto &status = state->record.value.status;
             if (status == "RESERVED")
             {
+                state->disposition = "ALREADY_CONFIRMED";
                 state->transaction->rollback();
                 state->transaction.reset();
                 state->finished = true;
@@ -668,6 +670,7 @@ void CheckoutSessionService::confirmLoadSeats(
                                seatIds,
                                completion = std::move(completion)](
                                   CheckoutSessionResult result) mutable {
+                                  result.disposition = "ALREADY_CONFIRMED";
                                   seatHoldService_.release(
                                       sessionId,
                                       checkoutSessionId,
@@ -697,6 +700,7 @@ void CheckoutSessionService::confirmLoadSeats(
             }
             if (status == "SUBMITTING")
             {
+                state->disposition = "REUSED_CONFIRMATION";
                 if (!state->record.activeConfirmIdempotencyKey)
                 {
                     failConfirm(state, CheckoutSessionOutcome::InternalError);
@@ -715,6 +719,7 @@ void CheckoutSessionService::confirmLoadSeats(
             }
             state->idempotencyKey =
                 "CHK-CONFIRM-" + drogon::utils::getUuid(true);
+            state->disposition = "CONFIRMED_NOW";
             confirmEnsureHolds(state);
         },
         [state] { failConfirm(state, CheckoutSessionOutcome::InternalError); });
@@ -846,7 +851,8 @@ void CheckoutSessionService::finalizeReservedLocked(
                         state->finished = true;
                         auto completion = std::move(state->completion);
                         completion({CheckoutSessionOutcome::Confirmed,
-                                    std::move(state->record.value)});
+                                    std::move(state->record.value),
+                                    state->disposition});
                     });
                 return;
             }
@@ -903,7 +909,8 @@ void CheckoutSessionService::finalizeReservedCommit(
                 state->finished = true;
                 auto completion = std::move(state->completion);
                 completion({CheckoutSessionOutcome::Confirmed,
-                            std::move(state->record.value)});
+                            std::move(state->record.value),
+                            state->disposition});
             });
     });
     state->transaction.reset();

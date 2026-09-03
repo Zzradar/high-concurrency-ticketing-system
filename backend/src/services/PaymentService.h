@@ -15,7 +15,8 @@ namespace ticketing
 {
 enum class StartPaymentOutcome
 {
-    Started,
+    StartedNew,
+    ReusedProcessing,
     AlreadyPaid,
     InvalidArgument,
     NotFound,

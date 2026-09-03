@@ -117,8 +117,10 @@ void OrderController::cancelOrder(
             using ticketing::CancelOrderOutcome;
             if (result.outcome == CancelOrderOutcome::Cancelled && result.value)
             {
-                (*callbackPtr)(drogon::HttpResponse::newHttpJsonResponse(
-                    result.value->toJson()));
+                Json::Value body;
+                body["disposition"] = result.disposition;
+                body["order"] = result.value->toJson();
+                (*callbackPtr)(drogon::HttpResponse::newHttpJsonResponse(body));
                 return;
             }
             if (result.outcome == CancelOrderOutcome::InvalidArgument)
@@ -161,12 +163,13 @@ void OrderController::payOrder(
         std::move(orderId), ticketing::authenticatedUserId(request),
         [callbackPtr](ticketing::StartPaymentResult result) {
             using ticketing::StartPaymentOutcome;
-            if ((result.outcome == StartPaymentOutcome::Started ||
+            if ((result.outcome == StartPaymentOutcome::StartedNew ||
+                 result.outcome == StartPaymentOutcome::ReusedProcessing ||
                  result.outcome == StartPaymentOutcome::AlreadyPaid) && result.value)
             {
                 auto response = drogon::HttpResponse::newHttpJsonResponse(
                     result.value->toJson());
-                response->setStatusCode(result.outcome == StartPaymentOutcome::Started
+                response->setStatusCode(result.outcome != StartPaymentOutcome::AlreadyPaid
                                             ? drogon::k202Accepted
                                             : drogon::k200OK);
                 (*callbackPtr)(response);

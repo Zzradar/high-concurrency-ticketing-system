@@ -44,6 +44,7 @@ struct CancelOrderResult
 {
     CancelOrderOutcome outcome{CancelOrderOutcome::InternalError};
     std::optional<TicketOrder> value;
+    std::string disposition;
 };
 
 class OrderService

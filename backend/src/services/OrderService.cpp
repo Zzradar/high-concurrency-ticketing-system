@@ -116,10 +116,13 @@ void OrderService::cancelOrder(
                 auto client = drogon::app().getDbClient("default");
                 repository_.findByIdForUser(
                     client, orderId, userId,
-                    [completionPtr](std::optional<TicketOrder> order) {
+                    [completionPtr, outcome](std::optional<TicketOrder> order) {
                         (*completionPtr)({order ? CancelOrderOutcome::Cancelled
                                                 : CancelOrderOutcome::InternalError,
-                                          std::move(order)});
+                                          std::move(order),
+                                          outcome == OrderLifecycleOutcome::Cancelled
+                                              ? "CANCELLED_NOW"
+                                              : "ALREADY_CANCELLED"});
                     },
                     [completionPtr] {
                         (*completionPtr)({CancelOrderOutcome::InternalError,

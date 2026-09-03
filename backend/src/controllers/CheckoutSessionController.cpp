@@ -197,6 +197,17 @@ void CheckoutSessionController::confirm(
     service_.confirm(std::move(id),
                      ticketing::authenticatedUserId(request),
                      [callbackPtr](ticketing::CheckoutSessionResult result) {
+                         if (result.outcome ==
+                                 ticketing::CheckoutSessionOutcome::Confirmed &&
+                             result.value && !result.disposition.empty())
+                         {
+                             Json::Value body;
+                             body["disposition"] = result.disposition;
+                             body["checkoutSession"] = result.value->toJson();
+                             (*callbackPtr)(
+                                 drogon::HttpResponse::newHttpJsonResponse(body));
+                             return;
+                         }
                          respond(callbackPtr, std::move(result));
                      });
 }

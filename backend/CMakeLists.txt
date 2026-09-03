@@ -167,4 +167,8 @@ if(BUILD_TESTING)
         NAME order_recovery_source_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/order_recovery_source_contract_test.py"
     )
+    add_test(
+        NAME operation_disposition_source_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/operation_disposition_source_contract_test.py"
+    )
 endif()
