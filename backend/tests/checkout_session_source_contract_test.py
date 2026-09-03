@@ -21,7 +21,9 @@ class CheckoutSessionSourceContractTest(unittest.TestCase):
             '"/checkout-sessions/{id}/abandon"',
         ):
             self.assertIn(route, header)
-        self.assertIn('getHeader("X-User-Id")', source)
+        self.assertIn("authenticatedUserId(request)", source)
+        self.assertIn('"ticketing::AuthFilter"', header)
+        self.assertNotIn("X-User-Id", source)
         self.assertNotIn('getHeader("Idempotency-Key")', source)
 
     def test_selected_seats_are_full_set_replacement_under_row_lock(self) -> None:

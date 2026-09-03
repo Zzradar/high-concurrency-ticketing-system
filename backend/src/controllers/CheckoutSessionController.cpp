@@ -1,6 +1,7 @@
 #include "controllers/CheckoutSessionController.h"
 
 #include "common/ApiResponse.h"
+#include "common/AuthContext.h"
 
 #include <memory>
 #include <utility>
@@ -108,7 +109,7 @@ void CheckoutSessionController::create(
                  std::nullopt});
         return;
     }
-    service_.create(request->getHeader("X-User-Id"),
+    service_.create(ticketing::authenticatedUserId(request),
                     *json,
                     [callbackPtr](ticketing::CheckoutSessionResult result) {
                         respond(callbackPtr, std::move(result));
@@ -121,7 +122,7 @@ void CheckoutSessionController::list(
 {
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.listRecoverable(
-        request->getHeader("X-User-Id"),
+        ticketing::authenticatedUserId(request),
         request->getParameter("sessionId"),
         request->getParameter("recoverable") == "true",
         [callbackPtr](ticketing::CheckoutSessionListResult result) {
@@ -158,7 +159,7 @@ void CheckoutSessionController::get(
 {
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.get(std::move(id),
-                 request->getHeader("X-User-Id"),
+                 ticketing::authenticatedUserId(request),
                  [callbackPtr](ticketing::CheckoutSessionResult result) {
                      respond(callbackPtr, std::move(result));
                  });
@@ -180,7 +181,7 @@ void CheckoutSessionController::replaceSeats(
     }
     service_.replaceSeats(
         std::move(id),
-        request->getHeader("X-User-Id"),
+        ticketing::authenticatedUserId(request),
         *json,
         [callbackPtr](ticketing::CheckoutSessionResult result) {
             respond(callbackPtr, std::move(result));
@@ -194,7 +195,7 @@ void CheckoutSessionController::confirm(
 {
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.confirm(std::move(id),
-                     request->getHeader("X-User-Id"),
+                     ticketing::authenticatedUserId(request),
                      [callbackPtr](ticketing::CheckoutSessionResult result) {
                          respond(callbackPtr, std::move(result));
                      });
@@ -207,7 +208,7 @@ void CheckoutSessionController::abandon(
 {
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.abandon(std::move(id),
-                     request->getHeader("X-User-Id"),
+                     ticketing::authenticatedUserId(request),
                      [callbackPtr](ticketing::CheckoutSessionResult result) {
                          respond(callbackPtr, std::move(result));
                      });

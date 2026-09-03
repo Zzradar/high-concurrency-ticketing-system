@@ -13,22 +13,28 @@ class CheckoutSessionController final
     METHOD_LIST_BEGIN
     ADD_METHOD_TO(CheckoutSessionController::create,
                   "/checkout-sessions",
-                  drogon::Post);
+                  drogon::Post,
+                  "ticketing::AuthFilter");
     ADD_METHOD_TO(CheckoutSessionController::list,
                   "/checkout-sessions",
-                  drogon::Get);
+                  drogon::Get,
+                  "ticketing::AuthFilter");
     ADD_METHOD_TO(CheckoutSessionController::get,
                   "/checkout-sessions/{id}",
-                  drogon::Get);
+                  drogon::Get,
+                  "ticketing::AuthFilter");
     ADD_METHOD_TO(CheckoutSessionController::replaceSeats,
                   "/checkout-sessions/{id}/seats",
-                  drogon::Put);
+                  drogon::Put,
+                  "ticketing::AuthFilter");
     ADD_METHOD_TO(CheckoutSessionController::confirm,
                   "/checkout-sessions/{id}/confirm",
-                  drogon::Post);
+                  drogon::Post,
+                  "ticketing::AuthFilter");
     ADD_METHOD_TO(CheckoutSessionController::abandon,
                   "/checkout-sessions/{id}/abandon",
-                  drogon::Post);
+                  drogon::Post,
+                  "ticketing::AuthFilter");
     METHOD_LIST_END
 
     void create(

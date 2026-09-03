@@ -1,6 +1,7 @@
 #include "controllers/OrderController.h"
 
 #include "common/ApiResponse.h"
+#include "common/AuthContext.h"
 
 #include <memory>
 #include <utility>
@@ -16,7 +17,7 @@ void OrderController::getOrder(
 
     service_.getOrder(
         orderId,
-        request->getHeader("X-User-Id"),
+        ticketing::authenticatedUserId(request),
         [callbackPtr](ticketing::GetOrderResult result) {
             using ticketing::GetOrderOutcome;
             switch (result.outcome)
@@ -62,7 +63,7 @@ void OrderController::cancelOrder(
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.cancelOrder(
         orderId,
-        request->getHeader("X-User-Id"),
+        ticketing::authenticatedUserId(request),
         [callbackPtr](ticketing::CancelOrderResult result) {
             using ticketing::CancelOrderOutcome;
             if (result.outcome == CancelOrderOutcome::Cancelled && result.value)
@@ -108,7 +109,7 @@ void OrderController::payOrder(
     using HttpCallback = std::function<void(const drogon::HttpResponsePtr &)>;
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     paymentService_.startPayment(
-        std::move(orderId), request->getHeader("X-User-Id"),
+        std::move(orderId), ticketing::authenticatedUserId(request),
         [callbackPtr](ticketing::StartPaymentResult result) {
             using ticketing::StartPaymentOutcome;
             if ((result.outcome == StartPaymentOutcome::Started ||

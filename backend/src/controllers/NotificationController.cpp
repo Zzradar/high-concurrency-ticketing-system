@@ -1,6 +1,7 @@
 #include "controllers/NotificationController.h"
 
 #include "common/ApiResponse.h"
+#include "common/AuthContext.h"
 
 #include <memory>
 #include <utility>
@@ -30,7 +31,7 @@ void NotificationController::list(
 {
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.list(
-        request->getHeader("X-User-Id"),
+        ticketing::authenticatedUserId(request),
         [callbackPtr](ticketing::NotificationListResult result) {
             if (result.outcome != ticketing::NotificationOutcome::Found)
             {
@@ -50,7 +51,7 @@ void NotificationController::markRead(
 {
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.markRead(
-        std::move(notificationId), request->getHeader("X-User-Id"),
+        std::move(notificationId), ticketing::authenticatedUserId(request),
         [callbackPtr](ticketing::NotificationResult result) {
             if (result.outcome == ticketing::NotificationOutcome::Found && result.value)
             {

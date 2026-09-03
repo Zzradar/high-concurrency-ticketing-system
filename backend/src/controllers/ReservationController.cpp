@@ -1,6 +1,7 @@
 #include "controllers/ReservationController.h"
 
 #include "common/ApiResponse.h"
+#include "common/AuthContext.h"
 
 #include <memory>
 #include <utility>
@@ -92,7 +93,7 @@ void ReservationController::createReservation(
 
     service_.createReservation(
         ticketing::CreateReservationInput{
-            .userId = request->getHeader("X-User-Id"),
+            .userId = ticketing::authenticatedUserId(request),
             .idempotencyKey = request->getHeader("Idempotency-Key"),
             .body = *json,
         },

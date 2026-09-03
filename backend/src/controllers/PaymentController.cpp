@@ -1,6 +1,7 @@
 #include "controllers/PaymentController.h"
 
 #include "common/ApiResponse.h"
+#include "common/AuthContext.h"
 
 #include <memory>
 #include <utility>
@@ -13,7 +14,7 @@ void PaymentController::getAttempt(
     using HttpCallback = std::function<void(const drogon::HttpResponsePtr &)>;
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.getPaymentAttempt(
-        std::move(paymentAttemptId), request->getHeader("X-User-Id"),
+        std::move(paymentAttemptId), ticketing::authenticatedUserId(request),
         [callbackPtr](ticketing::GetPaymentAttemptResult result) {
             using ticketing::GetPaymentAttemptOutcome;
             if (result.outcome == GetPaymentAttemptOutcome::Found && result.value)

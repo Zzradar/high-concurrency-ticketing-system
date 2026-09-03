@@ -11,7 +11,8 @@ class ReservationController final
     METHOD_LIST_BEGIN
     ADD_METHOD_TO(ReservationController::createReservation,
                   "/reservations",
-                  drogon::Post);
+                  drogon::Post,
+                  "ticketing::AuthFilter");
     METHOD_LIST_END
 
     void createReservation(

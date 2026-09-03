@@ -9,10 +9,14 @@ class NotificationController final
 {
   public:
     METHOD_LIST_BEGIN
-    ADD_METHOD_TO(NotificationController::list, "/notifications", drogon::Get);
+    ADD_METHOD_TO(NotificationController::list,
+                  "/notifications",
+                  drogon::Get,
+                  "ticketing::AuthFilter");
     ADD_METHOD_TO(NotificationController::markRead,
                   "/notifications/{notificationId}/read",
-                  drogon::Post);
+                  drogon::Post,
+                  "ticketing::AuthFilter");
     METHOD_LIST_END
 
     void list(const drogon::HttpRequestPtr &request,

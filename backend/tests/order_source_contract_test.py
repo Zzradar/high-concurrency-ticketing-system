@@ -18,7 +18,9 @@ class OrderSourceContractTest(unittest.TestCase):
         )
         self.assertIn('"/orders/{orderId}"', controller)
         self.assertIn("drogon::Get", controller)
-        self.assertIn('getHeader("X-User-Id")', source)
+        self.assertIn("authenticatedUserId(request)", source)
+        self.assertIn('"ticketing::AuthFilter"', controller)
+        self.assertNotIn("X-User-Id", source)
         self.assertIn("ticket_order.id = $1", repository)
         self.assertIn("ticket_order.user_id = $2", repository)
 

@@ -11,7 +11,8 @@ class PaymentController final
     METHOD_LIST_BEGIN
     ADD_METHOD_TO(PaymentController::getAttempt,
                   "/payment-attempts/{paymentAttemptId}",
-                  drogon::Get);
+                  drogon::Get,
+                  "ticketing::AuthFilter");
     METHOD_LIST_END
 
     void getAttempt(

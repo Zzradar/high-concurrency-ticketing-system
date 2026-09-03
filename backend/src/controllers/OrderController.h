@@ -13,13 +13,16 @@ class OrderController final : public drogon::HttpController<OrderController>
     METHOD_LIST_BEGIN
     ADD_METHOD_TO(OrderController::getOrder,
                   "/orders/{orderId}",
-                  drogon::Get);
+                  drogon::Get,
+                  "ticketing::AuthFilter");
     ADD_METHOD_TO(OrderController::cancelOrder,
                   "/orders/{orderId}/cancel",
-                  drogon::Post);
+                  drogon::Post,
+                  "ticketing::AuthFilter");
     ADD_METHOD_TO(OrderController::payOrder,
                   "/orders/{orderId}/pay",
-                  drogon::Post);
+                  drogon::Post,
+                  "ticketing::AuthFilter");
     METHOD_LIST_END
 
     void getOrder(

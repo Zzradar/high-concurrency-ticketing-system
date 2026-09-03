@@ -30,4 +30,11 @@ inline std::optional<AuthContext> authContext(
         return std::nullopt;
     }
 }
+
+inline std::string authenticatedUserId(
+    const drogon::HttpRequestPtr &request)
+{
+    const auto context = authContext(request);
+    return context ? context->userId : std::string{};
+}
 }  // namespace ticketing
