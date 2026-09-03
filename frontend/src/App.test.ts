@@ -176,6 +176,45 @@ describe('ticket booking demo', () => {
     wrapper.unmount()
   })
 
+  it('preserves seat intent and refreshes after a temporary hold blocks creation', async () => {
+    const wrapper = mount(App)
+    await openSeatSelection(wrapper)
+    const getSeatsSpy = vi.spyOn(ticketApi, 'getSeats')
+    vi.spyOn(ticketApi, 'createCheckoutSession').mockRejectedValueOnce(
+      new TicketApiError('该座位正被其他购票会话暂时占用。', 'SEAT_TEMPORARILY_HELD'),
+    )
+
+    await wrapper.find('button[aria-label^="A01，可选"]').trigger('click')
+    await settle(20)
+
+    expect(wrapper.text()).toContain('该座位正被其他购票会话暂时占用。')
+    expect(wrapper.text()).toContain('A01')
+    expect(getSeatsSpy).toHaveBeenCalledWith('ses-concert-1001', undefined)
+    wrapper.unmount()
+  })
+
+  it('treats a final temporary hold conflict as known and refreshes with C1', async () => {
+    const wrapper = mount(App)
+    await openSeatSelection(wrapper)
+    await wrapper.find('button[aria-label^="A01，可选"]').trigger('click')
+    await settle(10)
+    const locator = JSON.parse(sessionStorage.getItem('ticketing.currentCheckoutSession')!)
+    const getSeatsSpy = vi.spyOn(ticketApi, 'getSeats')
+    const getCheckoutSpy = vi.spyOn(ticketApi, 'getCheckoutSession')
+    vi.spyOn(ticketApi, 'confirmCheckoutSession').mockRejectedValueOnce(
+      new TicketApiError('该座位正被其他购票会话暂时占用。', 'SEAT_TEMPORARILY_HELD'),
+    )
+
+    await wrapper.find('.selection-panel .primary-button').trigger('click')
+    await settle(20)
+
+    expect(wrapper.text()).toContain('该座位正被其他购票会话暂时占用。')
+    expect(wrapper.text()).toContain('A01')
+    expect(getSeatsSpy).toHaveBeenCalledWith('ses-concert-1001', locator.checkoutSessionId)
+    expect(getCheckoutSpy).not.toHaveBeenCalled()
+    wrapper.unmount()
+  })
+
   it('isolates pending checkout creation across sessions', async () => {
     const firstCreate = deferred<CheckoutSession>()
     const secondCreate = deferred<CheckoutSession>()
@@ -411,10 +450,12 @@ describe('ticket booking demo', () => {
       JSON.stringify({ checkoutSessionId: checkout.id, sessionId: checkout.sessionId }),
     )
     const getSpy = vi.spyOn(ticketApi, 'getCheckoutSession')
+    const getSeatsSpy = vi.spyOn(ticketApi, 'getSeats')
     const wrapper = mount(App)
     await openSeatSelection(wrapper)
 
     expect(getSpy).toHaveBeenCalledWith(checkout.id)
+    expect(getSeatsSpy).toHaveBeenCalledWith(checkout.sessionId, checkout.id)
     expect(wrapper.text()).toContain('当前不可用')
     const remove = wrapper.find('button[aria-label="移除座位 A08"]')
     expect(remove.attributes('disabled')).toBeUndefined()

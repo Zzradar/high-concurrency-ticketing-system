@@ -500,6 +500,10 @@ export function buildCheckoutSeatReplacementRequest(
   return { seatIds, expectedRevision }
 }
 
+export function buildSeatMapRequestConfig(checkoutSessionId?: string) {
+  return checkoutSessionId ? { params: { checkoutSessionId } } : undefined
+}
+
 export const ticketApi = {
   async getEvents(): Promise<TicketEvent[]> {
     if (isMockMode) return mockGetEvents()
@@ -509,9 +513,14 @@ export const ticketApi = {
     if (isMockMode) return mockGetSessions(eventId)
     return (await http.get<TicketSession[]>('/events/' + eventId + '/sessions')).data
   },
-  async getSeats(sessionId: string): Promise<Seat[]> {
+  async getSeats(sessionId: string, checkoutSessionId?: string): Promise<Seat[]> {
     if (isMockMode) return mockGetSeats(sessionId)
-    return (await http.get<Seat[]>('/sessions/' + sessionId + '/seats')).data
+    return (
+      await http.get<Seat[]>(
+        '/sessions/' + sessionId + '/seats',
+        buildSeatMapRequestConfig(checkoutSessionId),
+      )
+    ).data
   },
   async createReservation(sessionId: string, seatIds: string[]): Promise<ReservationResult> {
     if (isMockMode) return mockCreateReservation(sessionId, seatIds)

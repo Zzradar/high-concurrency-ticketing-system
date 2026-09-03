@@ -105,6 +105,15 @@ function sameSeatSet(left: string[], right: string[]) {
   return [...left].sort().join('\n') === [...right].sort().join('\n')
 }
 
+function isTemporarySeatConflict(error: unknown) {
+  return error instanceof TicketApiError && error.code === 'SEAT_TEMPORARILY_HELD'
+}
+
+function activeSeatMapCheckoutId() {
+  const checkout = currentCheckoutSession.value
+  return checkout && checkout.sessionId === currentSession.value?.id ? checkout.id : undefined
+}
+
 function writeCheckoutLocator(checkout: CheckoutSession) {
   sessionStorage.setItem(
     CHECKOUT_LOCATOR_KEY,
@@ -171,7 +180,12 @@ async function enterReservedCheckout(checkout: CheckoutSession) {
     return
   }
   currentOrder.value = checkout.order
-  if (currentSession.value) seats.value = await ticketApi.getSeats(currentSession.value.id)
+  if (currentSession.value) {
+    seats.value = await ticketApi.getSeats(
+      currentSession.value.id,
+      activeSeatMapCheckoutId(),
+    )
+  }
   currentView.value = 'order'
   showNotice('座位锁定成功，请在 15 分钟内支付')
 }
@@ -241,6 +255,9 @@ function startSubmittingPolling(checkoutId: string) {
 async function activateCheckout(checkout: CheckoutSession) {
   recoverableCheckoutSessions.value = []
   applyCheckoutCheckpoint(checkout)
+  if (currentSession.value?.id === checkout.sessionId) {
+    seats.value = await ticketApi.getSeats(checkout.sessionId, checkout.id)
+  }
   errorMessage.value = ''
   if (checkout.status === 'SUBMITTING') startSubmittingPolling(checkout.id)
   if (checkout.status === 'RESERVED') await enterReservedCheckout(checkout)
@@ -397,8 +414,9 @@ async function ensureCheckoutSession() {
       if (!sameSeatSet(selectedSeatIds.value, checkout.seatIds)) await ensureSeatSync()
       return currentCheckoutSession.value
     })
-    .catch((error) => {
+    .catch(async (error) => {
       if (currentSession.value?.id === sessionId && currentView.value === 'seat-selection') {
+        if (isTemporarySeatConflict(error)) await refreshSeats(true)
         showError(error, '选座尚未保存，请继续修改或再次提交以重试。')
       }
       return null
@@ -462,6 +480,9 @@ async function ensureSeatSync(fixedTarget?: string[]) {
           error.code === 'CHECKOUT_SESSION_VERSION_CONFLICT'
         ) {
           await handleVersionConflict(checkout.id)
+        } else if (isTemporarySeatConflict(error)) {
+          await refreshSeats(true)
+          showError(error, '所选座位正被其他购票会话暂时占用。')
         } else {
           showError(error, '选座同步失败，提交前将再次重试。')
         }
@@ -498,7 +519,10 @@ async function refreshSeats(preserveError = false) {
   loading.value = true
   if (!preserveError) errorMessage.value = ''
   try {
-    seats.value = await ticketApi.getSeats(currentSession.value.id)
+    seats.value = await ticketApi.getSeats(
+      currentSession.value.id,
+      activeSeatMapCheckoutId(),
+    )
     showNotice('座位状态已更新')
   } catch (error) {
     showError(error, '座位状态刷新失败，请稍后重试。')
@@ -547,6 +571,11 @@ async function submitReservation() {
       error instanceof TicketApiError &&
       error.code === 'CHECKOUT_SESSION_VERSION_CONFLICT'
     ) {
+      return
+    }
+    if (isTemporarySeatConflict(error)) {
+      await refreshSeats(true)
+      showError(error, '所选座位正被其他购票会话暂时占用。')
       return
     }
     if (error instanceof TicketApiError && error.code === 'SEAT_CONFLICT' && checkout) {

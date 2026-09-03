@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
   apiRequestHeaders,
   buildCheckoutSeatReplacementRequest,
+  buildSeatMapRequestConfig,
   checkoutSessionPaths,
   buildReservationRequest,
   normalizeApiError,
@@ -35,6 +36,13 @@ describe('ticketApi contract and mock transaction flow', () => {
     expect(checkoutSessionPaths.seats('C1')).toBe('/checkout-sessions/C1/seats')
     expect(checkoutSessionPaths.confirm('C1')).toBe('/checkout-sessions/C1/confirm')
     expect(checkoutSessionPaths.abandon('C1')).toBe('/checkout-sessions/C1/abandon')
+  })
+
+  it('adds checkout ownership context only when loading an owned seat map', () => {
+    expect(buildSeatMapRequestConfig()).toBeUndefined()
+    expect(buildSeatMapRequestConfig('CHK-1')).toEqual({
+      params: { checkoutSessionId: 'CHK-1' },
+    })
   })
 
   it('creates, reads, lists and revises a recoverable checkout session', async () => {
