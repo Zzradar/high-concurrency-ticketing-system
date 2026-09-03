@@ -53,11 +53,16 @@ add_executable(ticketing_backend
     src/repositories/ReservationRepository.cpp
     src/services/ReservationService.cpp
     src/controllers/OrderController.cpp
+    src/controllers/PaymentController.cpp
+    src/controllers/NotificationController.cpp
     src/repositories/OrderRepository.cpp
     src/repositories/PaymentRepository.cpp
     src/repositories/NotificationRepository.cpp
     src/services/OrderService.cpp
     src/services/OrderLifecycleService.cpp
+    src/services/PaymentSimulation.cpp
+    src/services/PaymentService.cpp
+    src/services/NotificationService.cpp
     src/services/OrderExpiryService.cpp
     src/workers/OrderExpiryWorker.cpp
     src/controllers/CheckoutSessionController.cpp
@@ -120,5 +125,9 @@ if(BUILD_TESTING)
     add_test(
         NAME order_lifecycle_source_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/order_lifecycle_source_contract_test.py"
+    )
+    add_test(
+        NAME payment_source_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/payment_source_contract_test.py"
     )
 endif()

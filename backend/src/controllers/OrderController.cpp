@@ -99,3 +99,54 @@ void OrderController::cancelOrder(
                 drogon::k500InternalServerError, "INTERNAL_ERROR", "Internal server error"));
         });
 }
+
+void OrderController::payOrder(
+    const drogon::HttpRequestPtr &request,
+    std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+    std::string orderId) const
+{
+    using HttpCallback = std::function<void(const drogon::HttpResponsePtr &)>;
+    auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
+    paymentService_.startPayment(
+        std::move(orderId), request->getHeader("X-User-Id"),
+        [callbackPtr](ticketing::StartPaymentResult result) {
+            using ticketing::StartPaymentOutcome;
+            if ((result.outcome == StartPaymentOutcome::Started ||
+                 result.outcome == StartPaymentOutcome::AlreadyPaid) && result.value)
+            {
+                auto response = drogon::HttpResponse::newHttpJsonResponse(
+                    result.value->toJson());
+                response->setStatusCode(result.outcome == StartPaymentOutcome::Started
+                                            ? drogon::k202Accepted
+                                            : drogon::k200OK);
+                (*callbackPtr)(response);
+                return;
+            }
+            if (result.outcome == StartPaymentOutcome::InvalidArgument)
+            {
+                (*callbackPtr)(ticketing::makeErrorResponse(
+                    drogon::k400BadRequest, "INVALID_ARGUMENT", "Invalid payment request"));
+                return;
+            }
+            if (result.outcome == StartPaymentOutcome::NotFound)
+            {
+                (*callbackPtr)(ticketing::makeErrorResponse(
+                    drogon::k404NotFound, "ORDER_NOT_FOUND", "Order not found"));
+                return;
+            }
+            if (result.outcome == StartPaymentOutcome::NotPayable)
+            {
+                (*callbackPtr)(ticketing::makeErrorResponse(
+                    drogon::k409Conflict, "ORDER_NOT_PAYABLE", "Order is not payable"));
+                return;
+            }
+            if (result.outcome == StartPaymentOutcome::OrderExpired)
+            {
+                (*callbackPtr)(ticketing::makeErrorResponse(
+                    drogon::k409Conflict, "ORDER_EXPIRED", "Order has expired"));
+                return;
+            }
+            (*callbackPtr)(ticketing::makeErrorResponse(
+                drogon::k500InternalServerError, "INTERNAL_ERROR", "Internal server error"));
+        });
+}

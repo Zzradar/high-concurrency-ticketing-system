@@ -73,6 +73,12 @@ class OrderRepository
         std::function<void(std::optional<ExpirableOrderRow>)> onSuccess,
         ErrorCallback onError) const;
 
+    void lockOrderForPayment(
+        const TransactionPtr &transaction,
+        const std::string &orderId,
+        std::function<void(std::optional<ExpirableOrderRow>)> onSuccess,
+        ErrorCallback onError) const;
+
     void lockReservationForExpiry(
         const TransactionPtr &transaction,
         const std::string &reservationId,
@@ -89,6 +95,11 @@ class OrderRepository
                                  const std::string &reservationId,
                                  std::function<void(std::size_t)> onSuccess,
                                  ErrorCallback onError) const;
+
+    void sellReservationSeats(const TransactionPtr &transaction,
+                              const std::string &reservationId,
+                              std::function<void(std::size_t)> onSuccess,
+                              ErrorCallback onError) const;
 
     void expireReservation(const TransactionPtr &transaction,
                            const std::string &reservationId,
@@ -111,5 +122,10 @@ class OrderRepository
                          const std::string &targetStatus,
                          std::function<void(std::size_t)> onSuccess,
                          ErrorCallback onError) const;
+
+    void payOrder(const TransactionPtr &transaction,
+                  const std::string &orderId,
+                  std::function<void(std::size_t)> onSuccess,
+                  ErrorCallback onError) const;
 };
 }  // namespace ticketing

@@ -240,6 +240,36 @@ void OrderRepository::lockOrderForUser(
         }, orderId, userId);
 }
 
+void OrderRepository::lockOrderForPayment(
+    const TransactionPtr &transaction,
+    const std::string &orderId,
+    std::function<void(std::optional<ExpirableOrderRow>)> onSuccess,
+    ErrorCallback onError) const
+{
+    constexpr const char *sql = R"SQL(
+        SELECT id, user_id, reservation_id, status, total_amount,
+               clock_timestamp() >= expires_at AS expired
+        FROM orders WHERE id = $1 FOR UPDATE
+    )SQL";
+    transaction->execSqlAsync(
+        sql,
+        [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) {
+            if (rows.empty()) { onSuccess(std::nullopt); return; }
+            const auto &row = rows.front();
+            onSuccess(ExpirableOrderRow{
+                .id = row["id"].as<std::string>(),
+                .userId = row["user_id"].as<std::string>(),
+                .reservationId = row["reservation_id"].as<std::string>(),
+                .status = row["status"].as<std::string>(),
+                .totalAmount = row["total_amount"].as<std::int64_t>(),
+                .expired = row["expired"].as<bool>(),
+            });
+        },
+        [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
+            logDatabaseError("Failed to lock payment order", error); onError();
+        }, orderId);
+}
+
 void OrderRepository::lockReservationForExpiry(
     const TransactionPtr &transaction,
     const std::string &reservationId,
@@ -354,6 +384,30 @@ void OrderRepository::releaseReservationSeats(
         reservationId);
 }
 
+void OrderRepository::sellReservationSeats(
+    const TransactionPtr &transaction,
+    const std::string &reservationId,
+    std::function<void(std::size_t)> onSuccess,
+    ErrorCallback onError) const
+{
+    constexpr const char *sql = R"SQL(
+        UPDATE session_seats AS inventory
+        SET status = 'SOLD', current_reservation_id = NULL
+        FROM reservation_session_seats AS item
+        WHERE item.reservation_id = $1
+          AND item.session_seat_id = inventory.id
+          AND inventory.status = 'HELD'
+          AND inventory.current_reservation_id = $1
+        RETURNING inventory.id
+    )SQL";
+    transaction->execSqlAsync(
+        sql,
+        [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) { onSuccess(rows.size()); },
+        [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
+            logDatabaseError("Failed to sell reservation seats", error); onError();
+        }, reservationId);
+}
+
 void OrderRepository::expireReservation(
     const TransactionPtr &transaction,
     const std::string &reservationId,
@@ -420,5 +474,20 @@ void OrderRepository::transitionOrder(
         [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
             logDatabaseError("Failed to transition order", error); onError();
         }, orderId, targetStatus);
+}
+
+void OrderRepository::payOrder(
+    const TransactionPtr &transaction,
+    const std::string &orderId,
+    std::function<void(std::size_t)> onSuccess,
+    ErrorCallback onError) const
+{
+    transaction->execSqlAsync(
+        "UPDATE orders SET status = 'PAID', paid_at = clock_timestamp() "
+        "WHERE id = $1 AND status = 'PENDING_PAYMENT' RETURNING id",
+        [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) { onSuccess(rows.size()); },
+        [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
+            logDatabaseError("Failed to accept order payment", error); onError();
+        }, orderId);
 }
 }  // namespace ticketing

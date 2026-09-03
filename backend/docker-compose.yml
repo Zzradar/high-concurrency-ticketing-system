@@ -51,6 +51,8 @@ services:
         condition: service_healthy
     ports:
       - "8080:8080"
+    environment:
+      TICKETING_PAYMENT_FORCE_OUTCOME: ${TICKETING_PAYMENT_FORCE_OUTCOME:-}
     healthcheck:
       test: ["CMD-SHELL", "curl --fail --silent http://127.0.0.1:8080/health >/dev/null"]
       interval: 5s

@@ -19,6 +19,7 @@ enum class OrderLifecycleOutcome
     NotFound,
     NotCancellable,
     Skipped,
+    PaymentCompleted,
     Failed,
 };
 
@@ -31,9 +32,13 @@ class OrderLifecycleService
                 std::string userId,
                 Completion completion) const;
     void expireForWorker(std::string orderId, Completion completion) const;
+    void completePayment(std::string orderId,
+                         std::string paymentAttemptId,
+                         bool succeeded,
+                         Completion completion) const;
 
   private:
-    enum class Mode { Cancel, Expire };
+    enum class Mode { Cancel, Expire, PaymentCallback };
     struct FlowState;
 
     void start(const std::shared_ptr<FlowState> &state) const;
@@ -44,11 +49,24 @@ class OrderLifecycleService
     void inspectAttempt(
         const std::shared_ptr<FlowState> &state,
         std::optional<LockedPaymentAttempt> attempt) const;
+    void lockCallbackAttempt(const std::shared_ptr<FlowState> &state) const;
+    void inspectCallbackAttempt(
+        const std::shared_ptr<FlowState> &state,
+        std::optional<LockedPaymentAttempt> attempt) const;
     void markAttemptTimedOut(const std::shared_ptr<FlowState> &state) const;
     void chooseTerminalTransition(const std::shared_ptr<FlowState> &state,
                                   bool hasValidProcessing) const;
     void lockReservation(const std::shared_ptr<FlowState> &state) const;
     void lockSeats(const std::shared_ptr<FlowState> &state) const;
+    void mutatePaymentResult(const std::shared_ptr<FlowState> &state) const;
+    void afterPaymentResult(const std::shared_ptr<FlowState> &state) const;
+    void insertRefund(const std::shared_ptr<FlowState> &state) const;
+    void insertRefundNotification(const std::shared_ptr<FlowState> &state) const;
+    void checkOtherProcessingBeforeExpiry(const std::shared_ptr<FlowState> &state) const;
+    void inspectOtherProcessingBeforeExpiry(
+        const std::shared_ptr<FlowState> &state,
+        std::optional<LockedPaymentAttempt> attempt) const;
+    void continueTerminalTransition(const std::shared_ptr<FlowState> &state) const;
     void releaseSeats(const std::shared_ptr<FlowState> &state) const;
     void transitionReservation(const std::shared_ptr<FlowState> &state) const;
     void transitionOrder(const std::shared_ptr<FlowState> &state) const;
