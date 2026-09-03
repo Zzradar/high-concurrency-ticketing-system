@@ -11,6 +11,7 @@ from checkout_session_test_support import (
     create_formal_reservation,
     create_checkout,
     psql,
+    redis_cli,
     request_json,
 )
 
@@ -79,6 +80,13 @@ class CheckoutSessionRecoveryTest(unittest.TestCase):
         self.assertEqual(known_status, 200)
         self.assertEqual(known_value["status"], "RESERVED")
         self.assertEqual(known_value["reservation"]["id"], formal["reservation"]["id"])
+        self.assertEqual(
+            redis_cli(
+                "GET",
+                f"ticketing:seat-hold:{{{SESSION_ID}}}:{TEST_SEATS[0]}",
+            ),
+            "",
+        )
         self.assertEqual(unknown_status, 200)
         self.assertEqual(unknown_value["status"], "SUBMITTING")
         self.assertNotIn("reservationId", unknown_value)

@@ -21,8 +21,18 @@ class SeatHoldSourceContractTest(unittest.TestCase):
         self.assertIn("redis.call('SET', key, owner .. '|' .. target_revision", service)
         self.assertIn("current_owner == owner and revision <= target_revision", service)
         self.assertIn("redis.call('GET', key) == expected", service)
-        self.assertIn('std::string command = "MGET"', service)
+        self.assertIn("return redis.call('MGET', unpack(keys))", service)
         self.assertIn("SeatHoldService::validateConfiguration()", main)
+
+    def test_checkout_and_seat_services_use_holds_at_required_boundaries(self):
+        checkout = (ROOT / "src/services/CheckoutSessionService.cpp").read_text(encoding="utf-8")
+        seat = (ROOT / "src/services/SeatService.cpp").read_text(encoding="utf-8")
+        controller = (ROOT / "src/controllers/CheckoutSessionController.cpp").read_text(encoding="utf-8")
+
+        for operation in (".prepare(", ".abort(", ".finalize(", ".ensure(", ".release("):
+            self.assertIn(operation, checkout)
+        self.assertIn("readOwners(", seat)
+        self.assertIn('"SEAT_TEMPORARILY_HELD"', controller)
 
     def test_configuration_has_short_timeout_and_positive_ttl(self):
         for filename, host in (("config.json", "127.0.0.1"), ("config.docker.json", "redis")):

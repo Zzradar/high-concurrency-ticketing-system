@@ -21,6 +21,7 @@ Seat SeatService::toDto(SeatRow row)
 
 void SeatService::listSessionSeats(
     const std::string &sessionId,
+    const std::string &checkoutSessionId,
     std::function<void(SeatsResult)> onSuccess,
     ErrorCallback onError) const
 {
@@ -29,6 +30,7 @@ void SeatService::listSessionSeats(
         sessionId,
         [this,
          sessionId,
+         checkoutSessionId,
          onSuccess = std::move(onSuccess),
          errorPtr](std::vector<SeatRow> rows) mutable {
             if (!rows.empty())
@@ -39,7 +41,36 @@ void SeatService::listSessionSeats(
                 {
                     seats.push_back(toDto(std::move(row)));
                 }
-                onSuccess(std::move(seats));
+                std::vector<std::string> seatIds;
+                seatIds.reserve(seats.size());
+                for (const auto &seat : seats)
+                {
+                    seatIds.push_back(seat.id);
+                }
+                seatHoldService_.readOwners(
+                    sessionId,
+                    seatIds,
+                    [checkoutSessionId,
+                     seats = std::move(seats),
+                     onSuccess = std::move(onSuccess)](
+                        SeatHoldReadResult holds) mutable {
+                        if (holds.outcome == SeatHoldOutcome::Applied &&
+                            holds.owners.size() == seats.size())
+                        {
+                            for (std::size_t index = 0; index < seats.size();
+                                 ++index)
+                            {
+                                if (seats[index].status == "AVAILABLE" &&
+                                    holds.owners[index] &&
+                                    (checkoutSessionId.empty() ||
+                                     *holds.owners[index] != checkoutSessionId))
+                                {
+                                    seats[index].status = "HELD";
+                                }
+                            }
+                        }
+                        onSuccess(std::move(seats));
+                    });
                 return;
             }
 

@@ -108,6 +108,11 @@ end
 return deleted
 )lua";
 
+constexpr std::string_view kReadScript = R"lua(
+local keys = cjson.decode(ARGV[1])
+return redis.call('MGET', unpack(keys))
+)lua";
+
 std::string arguments(std::initializer_list<std::string> values)
 {
     std::string result;
@@ -394,11 +399,14 @@ void SeatHoldService::readOwners(
     try
     {
         const auto keys = keysFor(sessionId, seatIds);
-        std::string command = "MGET";
-        for (std::size_t index = 0; index < keys.size(); ++index)
+        Json::Value keyArray{Json::arrayValue};
+        for (const auto &key : keys)
         {
-            command += " %s";
+            keyArray.append(key);
         }
+        Json::StreamWriterBuilder writer;
+        writer["indentation"] = "";
+        const auto encodedKeys = Json::writeString(writer, keyArray);
         auto success = [done](const drogon::nosql::RedisResult &result) {
             try
             {
@@ -427,16 +435,14 @@ void SeatHoldService::readOwners(
         auto error = [done](const std::exception &) {
             (*done)({SeatHoldOutcome::Unavailable, {}});
         };
-        switch (keys.size())
-        {
-            case 1: drogon::app().getRedisClient("seat_holds")->execCommandAsync(success, error, command, keys[0].c_str()); break;
-            case 2: drogon::app().getRedisClient("seat_holds")->execCommandAsync(success, error, command, keys[0].c_str(), keys[1].c_str()); break;
-            case 3: drogon::app().getRedisClient("seat_holds")->execCommandAsync(success, error, command, keys[0].c_str(), keys[1].c_str(), keys[2].c_str()); break;
-            case 4: drogon::app().getRedisClient("seat_holds")->execCommandAsync(success, error, command, keys[0].c_str(), keys[1].c_str(), keys[2].c_str(), keys[3].c_str()); break;
-            case 5: drogon::app().getRedisClient("seat_holds")->execCommandAsync(success, error, command, keys[0].c_str(), keys[1].c_str(), keys[2].c_str(), keys[3].c_str(), keys[4].c_str()); break;
-            case 6: drogon::app().getRedisClient("seat_holds")->execCommandAsync(success, error, command, keys[0].c_str(), keys[1].c_str(), keys[2].c_str(), keys[3].c_str(), keys[4].c_str(), keys[5].c_str()); break;
-            default: throw std::invalid_argument("seat hold read requires one to six seats");
-        }
+        drogon::app().getRedisClient("seat_holds")->execCommandAsync(
+            success,
+            error,
+            "EVAL %b 0 %b",
+            kReadScript.data(),
+            kReadScript.size(),
+            encodedKeys.data(),
+            encodedKeys.size());
     }
     catch (...)
     {

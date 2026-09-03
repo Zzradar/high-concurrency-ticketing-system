@@ -3,6 +3,7 @@
 #include "dto/TicketDtos.h"
 #include "repositories/CheckoutSessionRepository.h"
 #include "services/ReservationService.h"
+#include "services/SeatHoldService.h"
 
 #include <json/json.h>
 
@@ -31,6 +32,7 @@ enum class CheckoutSessionOutcome
     NotConfirmable,
     NotAbandonable,
     SeatConflict,
+    TemporarySeatConflict,
     InternalError,
 };
 
@@ -87,19 +89,24 @@ class CheckoutSessionService
     void createValidateUser(const std::shared_ptr<CreateState> &state) const;
     void createValidateSession(const std::shared_ptr<CreateState> &state) const;
     void createValidateSeats(const std::shared_ptr<CreateState> &state) const;
+    void createPrepareHolds(const std::shared_ptr<CreateState> &state) const;
     void createInsert(const std::shared_ptr<CreateState> &state) const;
     void createInsertSeats(const std::shared_ptr<CreateState> &state) const;
     void createCommit(const std::shared_ptr<CreateState> &state) const;
 
     void replaceLock(const std::shared_ptr<ReplaceState> &state) const;
+    void replaceLoadCurrentSeats(const std::shared_ptr<ReplaceState> &state) const;
     void replaceValidateSeats(const std::shared_ptr<ReplaceState> &state) const;
+    void replacePrepareHolds(const std::shared_ptr<ReplaceState> &state) const;
     void replaceDeleteSeats(const std::shared_ptr<ReplaceState> &state) const;
     void replaceInsertSeats(const std::shared_ptr<ReplaceState> &state) const;
     void replaceTouch(const std::shared_ptr<ReplaceState> &state) const;
     void replaceCommit(const std::shared_ptr<ReplaceState> &state) const;
+    void replaceFinish(const std::shared_ptr<ReplaceState> &state) const;
 
     void prepareConfirm(const std::shared_ptr<ConfirmState> &state) const;
     void confirmLoadSeats(const std::shared_ptr<ConfirmState> &state) const;
+    void confirmEnsureHolds(const std::shared_ptr<ConfirmState> &state) const;
     void freezeConfirm(const std::shared_ptr<ConfirmState> &state) const;
     void confirmPrepareCommit(const std::shared_ptr<ConfirmState> &state) const;
     void runFormalReservation(const std::shared_ptr<ConfirmState> &state) const;
@@ -109,6 +116,8 @@ class CheckoutSessionService
     void resetAfterBusinessFailure(
         const std::shared_ptr<ConfirmState> &state) const;
     void resetAfterBusinessFailureLocked(
+        const std::shared_ptr<ConfirmState> &state) const;
+    void resetAfterBusinessFailureRelease(
         const std::shared_ptr<ConfirmState> &state) const;
     void resetAfterBusinessFailureCommit(
         const std::shared_ptr<ConfirmState> &state) const;
@@ -122,14 +131,16 @@ class CheckoutSessionService
     void reconcileRecord(const std::shared_ptr<ResolveState> &state) const;
     void reconcileRecordLocked(const std::shared_ptr<ResolveState> &state) const;
     void reconcileRecordCommit(const std::shared_ptr<ResolveState> &state) const;
+    void finishResolved(const std::shared_ptr<ResolveState> &state) const;
 
     void abandonLock(const std::shared_ptr<AbandonState> &state) const;
+    void abandonLoadSeats(const std::shared_ptr<AbandonState> &state) const;
     void abandonCommit(const std::shared_ptr<AbandonState> &state) const;
 
-    static void failCreate(const std::shared_ptr<CreateState> &state,
-                           CheckoutSessionOutcome outcome);
-    static void failReplace(const std::shared_ptr<ReplaceState> &state,
-                            CheckoutSessionOutcome outcome);
+    void failCreate(const std::shared_ptr<CreateState> &state,
+                    CheckoutSessionOutcome outcome) const;
+    void failReplace(const std::shared_ptr<ReplaceState> &state,
+                     CheckoutSessionOutcome outcome) const;
     static void failConfirm(const std::shared_ptr<ConfirmState> &state,
                             CheckoutSessionOutcome outcome);
     static void failResolve(const std::shared_ptr<ResolveState> &state);
@@ -139,5 +150,6 @@ class CheckoutSessionService
     CheckoutSessionRepository repository_;
     ReservationRepository reservationRepository_;
     ReservationService reservationService_;
+    SeatHoldService seatHoldService_;
 };
 }  // namespace ticketing

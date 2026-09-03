@@ -42,7 +42,8 @@ class ReadApiSourceContractTest(unittest.TestCase):
                 "src/controllers/SeatController.cpp",
             )
         )
-        self.assertNotIn("getParameter", sources)
+        self.assertNotIn('getParameter("eventId")', sources)
+        self.assertNotIn('getParameter("sessionId")', sources)
         self.assertGreaterEqual(len(re.findall(r"std::string eventId", sources)), 4)
         self.assertGreaterEqual(len(re.findall(r"std::string sessionId", sources)), 2)
 

@@ -4,6 +4,8 @@
 #include <drogon/utils/Utilities.h>
 
 #include <algorithm>
+#include <iterator>
+#include <limits>
 #include <set>
 #include <utility>
 
@@ -11,12 +13,14 @@ namespace ticketing
 {
 struct CheckoutSessionService::CreateState
 {
+    std::string checkoutSessionId;
     std::string userId;
     std::string sessionId;
     std::vector<std::string> seatIds;
     CheckoutSessionRecord record;
     CheckoutSessionRepository::TransactionPtr transaction;
     Completion completion;
+    bool redisPrepareAttempted{false};
     bool finished{false};
 };
 
@@ -25,10 +29,16 @@ struct CheckoutSessionService::ReplaceState
     std::string checkoutSessionId;
     std::string userId;
     std::vector<std::string> seatIds;
+    std::vector<std::string> oldSeatIds;
+    std::vector<std::string> addedSeatIds;
+    std::vector<std::string> retainedSeatIds;
+    std::vector<std::string> removedSeatIds;
     std::int64_t expectedRevision{};
+    std::int64_t targetRevision{};
     CheckoutSessionRecord record;
     CheckoutSessionRepository::TransactionPtr transaction;
     Completion completion;
+    bool redisPrepareAttempted{false};
     bool finished{false};
 };
 
@@ -138,6 +148,7 @@ void CheckoutSessionService::create(std::string userId,
     }
 
     auto state = std::make_shared<CreateState>();
+    state->checkoutSessionId = "CHK-" + drogon::utils::getUuid(true);
     state->userId = std::move(userId);
     state->sessionId = body["sessionId"].asString();
     state->seatIds = std::move(*seatIds);
@@ -169,7 +180,7 @@ void CheckoutSessionService::createValidateUser(
             }
             createValidateSession(state);
         },
-        [state] { failCreate(state, CheckoutSessionOutcome::InternalError); });
+        [this, state] { failCreate(state, CheckoutSessionOutcome::InternalError); });
 }
 
 void CheckoutSessionService::createValidateSession(
@@ -192,7 +203,7 @@ void CheckoutSessionService::createValidateSession(
             }
             createValidateSeats(state);
         },
-        [state] { failCreate(state, CheckoutSessionOutcome::InternalError); });
+        [this, state] { failCreate(state, CheckoutSessionOutcome::InternalError); });
 }
 
 void CheckoutSessionService::createValidateSeats(
@@ -208,9 +219,30 @@ void CheckoutSessionService::createValidateSeats(
                 failCreate(state, CheckoutSessionOutcome::InvalidArgument);
                 return;
             }
-            createInsert(state);
+            createPrepareHolds(state);
         },
-        [state] { failCreate(state, CheckoutSessionOutcome::InternalError); });
+        [this, state] { failCreate(state, CheckoutSessionOutcome::InternalError); });
+}
+
+void CheckoutSessionService::createPrepareHolds(
+    const std::shared_ptr<CreateState> &state) const
+{
+    state->redisPrepareAttempted = true;
+    seatHoldService_.prepare(
+        state->sessionId,
+        state->checkoutSessionId,
+        state->seatIds,
+        {},
+        0,
+        0,
+        [this, state](SeatHoldOutcome outcome) {
+            if (outcome == SeatHoldOutcome::Conflict)
+            {
+                failCreate(state, CheckoutSessionOutcome::TemporarySeatConflict);
+                return;
+            }
+            createInsert(state);
+        });
 }
 
 void CheckoutSessionService::createInsert(
@@ -218,7 +250,7 @@ void CheckoutSessionService::createInsert(
 {
     repository_.insertCheckoutSession(
         state->transaction,
-        "CHK-" + drogon::utils::getUuid(true),
+        state->checkoutSessionId,
         state->userId,
         state->sessionId,
         [this, state](CheckoutSessionRecord record) {
@@ -226,7 +258,7 @@ void CheckoutSessionService::createInsert(
             state->record.value.seatIds = state->seatIds;
             createInsertSeats(state);
         },
-        [state] { failCreate(state, CheckoutSessionOutcome::InternalError); });
+        [this, state] { failCreate(state, CheckoutSessionOutcome::InternalError); });
 }
 
 void CheckoutSessionService::createInsertSeats(
@@ -245,14 +277,14 @@ void CheckoutSessionService::createInsertSeats(
             }
             createCommit(state);
         },
-        [state] { failCreate(state, CheckoutSessionOutcome::InternalError); });
+        [this, state] { failCreate(state, CheckoutSessionOutcome::InternalError); });
 }
 
 void CheckoutSessionService::createCommit(
     const std::shared_ptr<CreateState> &state) const
 {
     auto transaction = state->transaction;
-    transaction->setCommitCallback([state](bool committed) {
+    transaction->setCommitCallback([this, state](bool committed) {
         if (!committed)
         {
             failCreate(state, CheckoutSessionOutcome::InternalError);
@@ -278,7 +310,9 @@ void CheckoutSessionService::replaceSeats(std::string checkoutSessionId,
     const auto validRevision =
         body.isObject() && body.isMember("expectedRevision") &&
         body["expectedRevision"].isInt64() &&
-        body["expectedRevision"].asInt64() >= 0;
+        body["expectedRevision"].asInt64() >= 0 &&
+        body["expectedRevision"].asInt64() <
+            std::numeric_limits<std::int64_t>::max();
     if (checkoutSessionId.empty() || userId.empty() || !seatIds ||
         !validRevision)
     {
@@ -290,6 +324,7 @@ void CheckoutSessionService::replaceSeats(std::string checkoutSessionId,
     state->userId = std::move(userId);
     state->seatIds = std::move(*seatIds);
     state->expectedRevision = body["expectedRevision"].asInt64();
+    state->targetRevision = state->expectedRevision + 1;
     state->completion = std::move(completion);
     auto client = drogon::app().getDbClient("default");
     client->newTransactionAsync(
@@ -328,9 +363,39 @@ void CheckoutSessionService::replaceLock(
                 failReplace(state, CheckoutSessionOutcome::VersionConflict);
                 return;
             }
+            replaceLoadCurrentSeats(state);
+        },
+        [this, state] { failReplace(state, CheckoutSessionOutcome::InternalError); });
+}
+
+void CheckoutSessionService::replaceLoadCurrentSeats(
+    const std::shared_ptr<ReplaceState> &state) const
+{
+    repository_.loadSeatIds(
+        state->transaction,
+        state->checkoutSessionId,
+        [this, state](std::vector<std::string> seatIds) {
+            state->oldSeatIds = std::move(seatIds);
+            std::set_difference(state->seatIds.begin(),
+                                state->seatIds.end(),
+                                state->oldSeatIds.begin(),
+                                state->oldSeatIds.end(),
+                                std::back_inserter(state->addedSeatIds));
+            std::set_intersection(state->seatIds.begin(),
+                                  state->seatIds.end(),
+                                  state->oldSeatIds.begin(),
+                                  state->oldSeatIds.end(),
+                                  std::back_inserter(state->retainedSeatIds));
+            std::set_difference(state->oldSeatIds.begin(),
+                                state->oldSeatIds.end(),
+                                state->seatIds.begin(),
+                                state->seatIds.end(),
+                                std::back_inserter(state->removedSeatIds));
             replaceValidateSeats(state);
         },
-        [state] { failReplace(state, CheckoutSessionOutcome::InternalError); });
+        [this, state] {
+            failReplace(state, CheckoutSessionOutcome::InternalError);
+        });
 }
 
 void CheckoutSessionService::replaceValidateSeats(
@@ -338,7 +403,7 @@ void CheckoutSessionService::replaceValidateSeats(
 {
     if (state->seatIds.empty())
     {
-        replaceDeleteSeats(state);
+        replacePrepareHolds(state);
         return;
     }
     repository_.findSessionSeatIds(
@@ -351,9 +416,35 @@ void CheckoutSessionService::replaceValidateSeats(
                 failReplace(state, CheckoutSessionOutcome::InvalidArgument);
                 return;
             }
-            replaceDeleteSeats(state);
+            replacePrepareHolds(state);
         },
-        [state] { failReplace(state, CheckoutSessionOutcome::InternalError); });
+        [this, state] { failReplace(state, CheckoutSessionOutcome::InternalError); });
+}
+
+void CheckoutSessionService::replacePrepareHolds(
+    const std::shared_ptr<ReplaceState> &state) const
+{
+    if (state->addedSeatIds.empty() && state->retainedSeatIds.empty())
+    {
+        replaceDeleteSeats(state);
+        return;
+    }
+    state->redisPrepareAttempted = true;
+    seatHoldService_.prepare(
+        state->record.value.sessionId,
+        state->checkoutSessionId,
+        state->addedSeatIds,
+        state->retainedSeatIds,
+        state->expectedRevision,
+        state->targetRevision,
+        [this, state](SeatHoldOutcome outcome) {
+            if (outcome == SeatHoldOutcome::Conflict)
+            {
+                failReplace(state, CheckoutSessionOutcome::TemporarySeatConflict);
+                return;
+            }
+            replaceDeleteSeats(state);
+        });
 }
 
 void CheckoutSessionService::replaceDeleteSeats(
@@ -370,7 +461,7 @@ void CheckoutSessionService::replaceDeleteSeats(
             }
             replaceInsertSeats(state);
         },
-        [state] { failReplace(state, CheckoutSessionOutcome::InternalError); });
+        [this, state] { failReplace(state, CheckoutSessionOutcome::InternalError); });
 }
 
 void CheckoutSessionService::replaceInsertSeats(
@@ -389,7 +480,7 @@ void CheckoutSessionService::replaceInsertSeats(
             }
             replaceTouch(state);
         },
-        [state] { failReplace(state, CheckoutSessionOutcome::InternalError); });
+        [this, state] { failReplace(state, CheckoutSessionOutcome::InternalError); });
 }
 
 void CheckoutSessionService::replaceTouch(
@@ -404,26 +495,39 @@ void CheckoutSessionService::replaceTouch(
             state->record.value.revision = revision;
             replaceCommit(state);
         },
-        [state] { failReplace(state, CheckoutSessionOutcome::InternalError); });
+        [this, state] { failReplace(state, CheckoutSessionOutcome::InternalError); });
 }
 
 void CheckoutSessionService::replaceCommit(
     const std::shared_ptr<ReplaceState> &state) const
 {
     auto transaction = state->transaction;
-    transaction->setCommitCallback([state](bool committed) {
+    transaction->setCommitCallback([this, state](bool committed) {
         if (!committed)
         {
             failReplace(state, CheckoutSessionOutcome::InternalError);
             return;
         }
-        state->finished = true;
-        auto completion = std::move(state->completion);
-        completion({CheckoutSessionOutcome::Updated,
-                    std::move(state->record.value)});
+        replaceFinish(state);
     });
     state->transaction.reset();
     transaction.reset();
+}
+
+void CheckoutSessionService::replaceFinish(
+    const std::shared_ptr<ReplaceState> &state) const
+{
+    seatHoldService_.finalize(
+        state->record.value.sessionId,
+        state->checkoutSessionId,
+        state->removedSeatIds,
+        state->targetRevision,
+        [state](SeatHoldOutcome) {
+            state->finished = true;
+            auto completion = std::move(state->completion);
+            completion({CheckoutSessionOutcome::Updated,
+                        std::move(state->record.value)});
+        });
 }
 
 void CheckoutSessionService::get(std::string checkoutSessionId,
@@ -553,9 +657,27 @@ void CheckoutSessionService::confirmLoadSeats(
                 state->transaction.reset();
                 state->finished = true;
                 auto completion = std::move(state->completion);
+                const auto sessionId = state->record.value.sessionId;
+                const auto checkoutSessionId = state->checkoutSessionId;
+                const auto seatIds = state->record.value.seatIds;
                 resolveRecord(std::move(state->record),
                               CheckoutSessionOutcome::Confirmed,
-                              std::move(completion));
+                              [this,
+                               sessionId,
+                               checkoutSessionId,
+                               seatIds,
+                               completion = std::move(completion)](
+                                  CheckoutSessionResult result) mutable {
+                                  seatHoldService_.release(
+                                      sessionId,
+                                      checkoutSessionId,
+                                      seatIds,
+                                      [completion = std::move(completion),
+                                       result = std::move(result)](
+                                          SeatHoldOutcome) mutable {
+                                          completion(std::move(result));
+                                      });
+                              });
                 return;
             }
             if (status == "ABANDONED")
@@ -593,9 +715,27 @@ void CheckoutSessionService::confirmLoadSeats(
             }
             state->idempotencyKey =
                 "CHK-CONFIRM-" + drogon::utils::getUuid(true);
-            freezeConfirm(state);
+            confirmEnsureHolds(state);
         },
         [state] { failConfirm(state, CheckoutSessionOutcome::InternalError); });
+}
+
+void CheckoutSessionService::confirmEnsureHolds(
+    const std::shared_ptr<ConfirmState> &state) const
+{
+    seatHoldService_.ensure(
+        state->record.value.sessionId,
+        state->checkoutSessionId,
+        state->record.value.seatIds,
+        state->record.value.revision,
+        [this, state](SeatHoldOutcome outcome) {
+            if (outcome == SeatHoldOutcome::Conflict)
+            {
+                failConfirm(state, CheckoutSessionOutcome::TemporarySeatConflict);
+                return;
+            }
+            freezeConfirm(state);
+        });
 }
 
 void CheckoutSessionService::freezeConfirm(
@@ -698,10 +838,16 @@ void CheckoutSessionService::finalizeReservedLocked(
                 state->record.value.formalResult = state->formalResult;
                 state->transaction->rollback();
                 state->transaction.reset();
-                state->finished = true;
-                auto completion = std::move(state->completion);
-                completion({CheckoutSessionOutcome::Confirmed,
-                            std::move(state->record.value)});
+                seatHoldService_.release(
+                    state->record.value.sessionId,
+                    state->checkoutSessionId,
+                    state->record.value.seatIds,
+                    [state](SeatHoldOutcome) {
+                        state->finished = true;
+                        auto completion = std::move(state->completion);
+                        completion({CheckoutSessionOutcome::Confirmed,
+                                    std::move(state->record.value)});
+                    });
                 return;
             }
             if (current->value.status != "SUBMITTING" ||
@@ -743,16 +889,22 @@ void CheckoutSessionService::finalizeReservedCommit(
     const std::shared_ptr<ConfirmState> &state) const
 {
     auto transaction = state->transaction;
-    transaction->setCommitCallback([state](bool committed) {
+    transaction->setCommitCallback([this, state](bool committed) {
         if (!committed)
         {
             failConfirm(state, CheckoutSessionOutcome::InternalError);
             return;
         }
-        state->finished = true;
-        auto completion = std::move(state->completion);
-        completion({CheckoutSessionOutcome::Confirmed,
-                    std::move(state->record.value)});
+        seatHoldService_.release(
+            state->record.value.sessionId,
+            state->checkoutSessionId,
+            state->record.value.seatIds,
+            [state](SeatHoldOutcome) {
+                state->finished = true;
+                auto completion = std::move(state->completion);
+                completion({CheckoutSessionOutcome::Confirmed,
+                            std::move(state->record.value)});
+            });
     });
     state->transaction.reset();
     transaction.reset();
@@ -805,6 +957,19 @@ void CheckoutSessionService::resetAfterBusinessFailureLocked(
                 failConfirm(state, CheckoutSessionOutcome::InternalError);
                 return;
             }
+            resetAfterBusinessFailureRelease(state);
+        },
+        [state] { failConfirm(state, CheckoutSessionOutcome::InternalError); });
+}
+
+void CheckoutSessionService::resetAfterBusinessFailureRelease(
+    const std::shared_ptr<ConfirmState> &state) const
+{
+    seatHoldService_.release(
+        state->record.value.sessionId,
+        state->checkoutSessionId,
+        state->record.value.seatIds,
+        [this, state](SeatHoldOutcome) {
             repository_.resetSelecting(
                 state->transaction,
                 state->checkoutSessionId,
@@ -825,8 +990,7 @@ void CheckoutSessionService::resetAfterBusinessFailureLocked(
                     failConfirm(state,
                                 CheckoutSessionOutcome::InternalError);
                 });
-        },
-        [state] { failConfirm(state, CheckoutSessionOutcome::InternalError); });
+        });
 }
 
 void CheckoutSessionService::resetAfterBusinessFailureCommit(
@@ -906,9 +1070,7 @@ void CheckoutSessionService::resolveFoundFormalResult(
             return;
         }
         state->record.value.formalResult = state->formalResult;
-        state->finished = true;
-        auto completion = std::move(state->completion);
-        completion({state->successOutcome, std::move(state->record.value)});
+        finishResolved(state);
         return;
     }
     reconcileRecord(state);
@@ -954,10 +1116,7 @@ void CheckoutSessionService::reconcileRecordLocked(
                 state->record.value.formalResult = state->formalResult;
                 state->transaction->rollback();
                 state->transaction.reset();
-                state->finished = true;
-                auto completion = std::move(state->completion);
-                completion({state->successOutcome,
-                            std::move(state->record.value)});
+                finishResolved(state);
                 return;
             }
             if (current->value.status != "SUBMITTING" ||
@@ -995,18 +1154,30 @@ void CheckoutSessionService::reconcileRecordCommit(
     const std::shared_ptr<ResolveState> &state) const
 {
     auto transaction = state->transaction;
-    transaction->setCommitCallback([state](bool committed) {
+    transaction->setCommitCallback([this, state](bool committed) {
         if (!committed)
         {
             failResolve(state);
             return;
         }
-        state->finished = true;
-        auto completion = std::move(state->completion);
-        completion({state->successOutcome, std::move(state->record.value)});
+        finishResolved(state);
     });
     state->transaction.reset();
     transaction.reset();
+}
+
+void CheckoutSessionService::finishResolved(
+    const std::shared_ptr<ResolveState> &state) const
+{
+    seatHoldService_.release(
+        state->record.value.sessionId,
+        state->record.value.id,
+        state->record.value.seatIds,
+        [state](SeatHoldOutcome) {
+            state->finished = true;
+            auto completion = std::move(state->completion);
+            completion({state->successOutcome, std::move(state->record.value)});
+        });
 }
 
 void CheckoutSessionService::abandon(std::string checkoutSessionId,
@@ -1065,6 +1236,19 @@ void CheckoutSessionService::abandonLock(
                             CheckoutSessionOutcome::NotAbandonable);
                 return;
             }
+            abandonLoadSeats(state);
+        },
+        [state] { failAbandon(state, CheckoutSessionOutcome::InternalError); });
+}
+
+void CheckoutSessionService::abandonLoadSeats(
+    const std::shared_ptr<AbandonState> &state) const
+{
+    repository_.loadSeatIds(
+        state->transaction,
+        state->checkoutSessionId,
+        [this, state](std::vector<std::string> seatIds) {
+            state->record.value.seatIds = std::move(seatIds);
             repository_.setAbandoned(
                 state->transaction,
                 state->checkoutSessionId,
@@ -1091,16 +1275,22 @@ void CheckoutSessionService::abandonCommit(
     const std::shared_ptr<AbandonState> &state) const
 {
     auto transaction = state->transaction;
-    transaction->setCommitCallback([state](bool committed) {
+    transaction->setCommitCallback([this, state](bool committed) {
         if (!committed)
         {
             failAbandon(state, CheckoutSessionOutcome::InternalError);
             return;
         }
-        state->finished = true;
-        auto completion = std::move(state->completion);
-        completion({CheckoutSessionOutcome::Abandoned,
-                    std::move(state->record.value)});
+        seatHoldService_.release(
+            state->record.value.sessionId,
+            state->checkoutSessionId,
+            state->record.value.seatIds,
+            [state](SeatHoldOutcome) {
+                state->finished = true;
+                auto completion = std::move(state->completion);
+                completion({CheckoutSessionOutcome::Abandoned,
+                            std::move(state->record.value)});
+            });
     });
     state->transaction.reset();
     transaction.reset();
@@ -1129,38 +1319,62 @@ void CheckoutSessionService::reconcileSubmitting(
 
 void CheckoutSessionService::failCreate(
     const std::shared_ptr<CreateState> &state,
-    CheckoutSessionOutcome outcome)
+    CheckoutSessionOutcome outcome) const
 {
     if (state->finished)
     {
         return;
     }
-    if (state->transaction)
-    {
-        state->transaction->rollback();
-        state->transaction.reset();
-    }
     state->finished = true;
-    auto completion = std::move(state->completion);
-    completion({outcome, std::nullopt});
+    auto finish = [state, outcome](SeatHoldOutcome) {
+        if (state->transaction)
+        {
+            state->transaction->rollback();
+            state->transaction.reset();
+        }
+        auto completion = std::move(state->completion);
+        completion({outcome, std::nullopt});
+    };
+    if (state->redisPrepareAttempted)
+    {
+        seatHoldService_.abort(state->sessionId,
+                               state->checkoutSessionId,
+                               state->seatIds,
+                               0,
+                               std::move(finish));
+        return;
+    }
+    finish(SeatHoldOutcome::Applied);
 }
 
 void CheckoutSessionService::failReplace(
     const std::shared_ptr<ReplaceState> &state,
-    CheckoutSessionOutcome outcome)
+    CheckoutSessionOutcome outcome) const
 {
     if (state->finished)
     {
         return;
     }
-    if (state->transaction)
-    {
-        state->transaction->rollback();
-        state->transaction.reset();
-    }
     state->finished = true;
-    auto completion = std::move(state->completion);
-    completion({outcome, std::nullopt});
+    auto finish = [state, outcome](SeatHoldOutcome) {
+        if (state->transaction)
+        {
+            state->transaction->rollback();
+            state->transaction.reset();
+        }
+        auto completion = std::move(state->completion);
+        completion({outcome, std::nullopt});
+    };
+    if (state->redisPrepareAttempted)
+    {
+        seatHoldService_.abort(state->record.value.sessionId,
+                               state->checkoutSessionId,
+                               state->addedSeatIds,
+                               state->targetRevision,
+                               std::move(finish));
+        return;
+    }
+    finish(SeatHoldOutcome::Applied);
 }
 
 void CheckoutSessionService::failConfirm(

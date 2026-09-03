@@ -5,9 +5,11 @@ from checkout_session_test_support import (
     TEST_SEATS,
     TEST_USERS,
     cleanup_phase5_data,
+    cleanup_seat_holds,
     confirm_checkout,
     create_checkout,
     psql,
+    redis_cli,
     request_json,
 )
 
@@ -62,7 +64,7 @@ class CheckoutSessionHttpIntegrationTest(unittest.TestCase):
             method="PUT",
             user_id=TEST_USERS[0],
             body={
-                "seatIds": [TEST_SEATS[2], TEST_SEATS[1]],
+                "seatIds": [TEST_SEATS[2], TEST_SEATS[3]],
                 "expectedRevision": 0,
             },
         )
@@ -70,7 +72,7 @@ class CheckoutSessionHttpIntegrationTest(unittest.TestCase):
         self.assert_checkout(
             updated,
             user_id=TEST_USERS[0],
-            seat_ids=[TEST_SEATS[1], TEST_SEATS[2]],
+            seat_ids=[TEST_SEATS[2], TEST_SEATS[3]],
             status="SELECTING",
             revision=1,
         )
@@ -132,6 +134,11 @@ class CheckoutSessionHttpIntegrationTest(unittest.TestCase):
         max_status, maximum = create_checkout(TEST_USERS[0], TEST_SEATS)
         self.assertEqual(max_status, 201, maximum)
         self.assertEqual(maximum["seatIds"], TEST_SEATS)
+        request_json(
+            f"/checkout-sessions/{maximum['id']}/abandon",
+            method="POST",
+            user_id=TEST_USERS[0],
+        )
 
         status, checkout = create_checkout(TEST_USERS[0], TEST_SEATS[:2])
         self.assertEqual(status, 201, checkout)
@@ -265,7 +272,9 @@ class CheckoutSessionHttpIntegrationTest(unittest.TestCase):
 
     def test_business_seat_conflict_resets_to_selecting(self) -> None:
         _, winner = create_checkout(TEST_USERS[0], [TEST_SEATS[0]])
+        cleanup_seat_holds()
         _, loser = create_checkout(TEST_USERS[1], [TEST_SEATS[0]])
+        cleanup_seat_holds()
         winner_status, _ = confirm_checkout(winner["id"], TEST_USERS[0])
         loser_status, loser_error = confirm_checkout(loser["id"], TEST_USERS[1])
         self.assertEqual(winner_status, 200)
@@ -351,6 +360,13 @@ class CheckoutSessionHttpIntegrationTest(unittest.TestCase):
                 f"SELECT COUNT(*) FROM reservations WHERE user_id = '{TEST_USERS[0]}';"
             )
             self.assertEqual(formal_count, "0")
+            self.assertEqual(
+                redis_cli(
+                    "GET",
+                    f"ticketing:seat-hold:{{{SESSION_ID}}}:{TEST_SEATS[0]}",
+                ),
+                f"{checkout['id']}|0",
+            )
         finally:
             psql(
                 "DROP TRIGGER IF EXISTS phase5_force_reservation_failure ON reservations; "

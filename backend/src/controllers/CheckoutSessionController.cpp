@@ -75,6 +75,11 @@ drogon::HttpResponsePtr makeCheckoutResponse(
                 drogon::k409Conflict,
                 "SEAT_CONFLICT",
                 "Selected seats are no longer available");
+        case CheckoutSessionOutcome::TemporarySeatConflict:
+            return ticketing::makeErrorResponse(
+                drogon::k409Conflict,
+                "SEAT_TEMPORARILY_HELD",
+                "Selected seats are temporarily held by another checkout session");
         case CheckoutSessionOutcome::InternalError:
             break;
     }

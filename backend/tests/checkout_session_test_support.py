@@ -36,13 +36,38 @@ def psql(sql: str) -> str:
     return completed.stdout.strip()
 
 
+def redis_cli(*arguments: str) -> str:
+    completed = subprocess.run(
+        ["docker", "compose", "exec", "-T", "redis", "redis-cli", "--raw", *arguments],
+        cwd=BACKEND_ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    if completed.returncode != 0:
+        raise AssertionError(
+            f"redis-cli failed ({completed.returncode}): {completed.stderr}"
+        )
+    return completed.stdout.strip()
+
+
+def cleanup_seat_holds() -> None:
+    keys = redis_cli("--scan", "--pattern", "ticketing:seat-hold:*").splitlines()
+    if keys:
+        redis_cli("DEL", *keys)
+
+
 def cleanup_phase5_data(*, recreate_users: bool = False) -> None:
+    cleanup_seat_holds()
     users = ", ".join(repr(user) for user in TEST_USERS)
     psql(
         f"""
         BEGIN;
         DROP TRIGGER IF EXISTS phase5_force_reservation_failure ON reservations;
         DROP FUNCTION IF EXISTS phase5_force_reservation_failure();
+        DROP TRIGGER IF EXISTS phase7_force_checkout_failure ON checkout_sessions;
+        DROP FUNCTION IF EXISTS phase7_force_checkout_failure();
         DELETE FROM checkout_sessions WHERE user_id IN ({users});
         UPDATE session_seats
         SET status = 'AVAILABLE', current_reservation_id = NULL

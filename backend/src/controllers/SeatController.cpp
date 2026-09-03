@@ -11,13 +11,14 @@ using HttpCallback = std::function<void(const drogon::HttpResponsePtr &)>;
 }
 
 void SeatController::listSessionSeats(
-    const drogon::HttpRequestPtr &,
+    const drogon::HttpRequestPtr &request,
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string sessionId) const
 {
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.listSessionSeats(
         sessionId,
+        request->getParameter("checkoutSessionId"),
         [callbackPtr](ticketing::SeatService::SeatsResult seats) {
             if (!seats)
             {
