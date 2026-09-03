@@ -1,7 +1,10 @@
 BEGIN;
 
-INSERT INTO app_users (id, display_name)
-VALUES ('U-CHECKOUT-SCHEMA-TEST', 'Checkout schema verification');
+INSERT INTO app_users (id, display_name, username, password_hash, status)
+VALUES (
+    'U-CHECKOUT-SCHEMA-TEST', 'Checkout schema verification',
+    'checkout-schema-test', '!disabled', 'DISABLED'
+);
 
 INSERT INTO checkout_sessions (id, user_id, session_id, status)
 VALUES (

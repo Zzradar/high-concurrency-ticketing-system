@@ -29,10 +29,12 @@ services:
       - ./db/migrations/003_add_checkout_sessions.sql:/docker-entrypoint-initdb.d/003_add_checkout_sessions.sql:ro
       - ./db/migrations/004_add_checkout_session_revision.sql:/docker-entrypoint-initdb.d/004_add_checkout_session_revision.sql:ro
       - ./db/migrations/005_add_payment_lifecycle.sql:/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql:ro
-      - ./db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/006_demo_seed.sql:ro
-      - ./db/tests/001_verify_seed.sql:/docker-entrypoint-initdb.d/007_verify_seed.sql:ro
-      - ./db/tests/002_verify_checkout_schema.sql:/docker-entrypoint-initdb.d/008_verify_checkout_schema.sql:ro
-      - ./db/tests/003_verify_payment_schema.sql:/docker-entrypoint-initdb.d/009_verify_payment_schema.sql:ro
+      - ./db/migrations/006_add_user_authentication.sql:/docker-entrypoint-initdb.d/006_add_user_authentication.sql:ro
+      - ./db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/007_demo_seed.sql:ro
+      - ./db/tests/001_verify_seed.sql:/docker-entrypoint-initdb.d/008_verify_seed.sql:ro
+      - ./db/tests/002_verify_checkout_schema.sql:/docker-entrypoint-initdb.d/009_verify_checkout_schema.sql:ro
+      - ./db/tests/003_verify_payment_schema.sql:/docker-entrypoint-initdb.d/010_verify_payment_schema.sql:ro
+      - ./db/tests/004_verify_auth_schema.sql:/docker-entrypoint-initdb.d/011_verify_auth_schema.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ticketing -d ticketing"]
       interval: 5s

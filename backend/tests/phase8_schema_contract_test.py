@@ -56,9 +56,10 @@ class Phase8SchemaContractTest(unittest.TestCase):
         for dto in ("struct PaymentAttempt", "struct PaymentStartResult", "struct UserNotification"):
             self.assertIn(dto, DTO)
         sequence = (
-            "005_add_payment_lifecycle.sql", "006_demo_seed.sql",
-            "007_verify_seed.sql", "008_verify_checkout_schema.sql",
-            "009_verify_payment_schema.sql",
+            "005_add_payment_lifecycle.sql", "006_add_user_authentication.sql",
+            "007_demo_seed.sql", "008_verify_seed.sql",
+            "009_verify_checkout_schema.sql", "010_verify_payment_schema.sql",
+            "011_verify_auth_schema.sql",
         )
         positions = [COMPOSE.index(name) for name in sequence]
         self.assertEqual(positions, sorted(positions))

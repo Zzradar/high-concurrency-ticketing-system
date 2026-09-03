@@ -29,6 +29,14 @@
       "is_fast": false,
       "number_of_connections": 2,
       "timeout": 0.4
+    },
+    {
+      "name": "auth_sessions",
+      "host": "127.0.0.1",
+      "port": 6379,
+      "is_fast": false,
+      "number_of_connections": 2,
+      "timeout": 0.4
     }
   ],
   "app": {
@@ -55,6 +63,28 @@
       "max_delay_seconds": 6.0,
       "failure_rate": 0.01,
       "processing_grace_seconds": 10.0
+    },
+    "authentication": {
+      "idle_timeout_seconds": 86400,
+      "absolute_timeout_seconds": 604800,
+      "session_cache_ttl_seconds": 300,
+      "last_seen_write_interval_seconds": 300,
+      "cookie_name": "ticketing_session",
+      "csrf_cookie_name": "ticketing_csrf",
+      "cookie_secure": false,
+      "allowed_origins": [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+      ],
+      "password_hash_workers": 2,
+      "password_hash_queue_capacity": 64,
+      "argon2_time_cost": 2,
+      "argon2_memory_cost_kib": 65536,
+      "argon2_parallelism": 1
+    },
+    "login_rate_limit": {
+      "window_seconds": 60,
+      "max_failures": 5
     }
   }
 }

@@ -9,6 +9,7 @@ RUN apt-get update \
         cmake \
         git \
         libbrotli-dev \
+        libargon2-dev \
         libc-ares-dev \
         libjsoncpp-dev \
         libhiredis-dev \
@@ -39,6 +40,7 @@ RUN apt-get update \
         ca-certificates \
         curl \
         libbrotli1 \
+        libargon2-1 \
         libc-ares2 \
         libjsoncpp25 \
         libhiredis1.1.0 \
@@ -52,7 +54,7 @@ WORKDIR /app
 COPY --from=build /src/build/ticketing_backend /app/ticketing_backend
 COPY config /app/config
 
-RUN ldd /app/ticketing_backend | grep -E 'libhiredis|not found' \
+RUN ldd /app/ticketing_backend | grep -E 'libargon2|libhiredis|not found' \
     && ! ldd /app/ticketing_backend | grep 'not found'
 
 EXPOSE 8080

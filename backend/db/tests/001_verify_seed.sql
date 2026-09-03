@@ -30,6 +30,20 @@ BEGIN
     IF (SELECT COUNT(*) FROM orders) <> 10 THEN
         RAISE EXCEPTION 'Expected one Seed order per reservation';
     END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM app_users
+        WHERE id = 'U-1001' AND username = 'demo' AND status = 'ACTIVE'
+          AND password_hash LIKE '$argon2id$%'
+    ) THEN
+        RAISE EXCEPTION 'Demo authentication user is invalid';
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM app_users
+        WHERE id = 'U-SEED-HOLDER' AND username = 'seed-holder'
+          AND status = 'DISABLED' AND password_hash = '!disabled'
+    ) THEN
+        RAISE EXCEPTION 'Seed holder must remain disabled';
+    END IF;
     IF (SELECT COUNT(*) FROM reservation_session_seats) <> 45 THEN
         RAISE EXCEPTION 'Expected 45 held/sold reservation-seat associations';
     END IF;

@@ -10,6 +10,10 @@ option(TICKETING_FETCH_DROGON "Fetch the pinned Drogon release when it is not in
 
 include(CTest)
 
+find_package(OpenSSL REQUIRED)
+find_path(ARGON2_INCLUDE_DIR NAMES argon2.h REQUIRED)
+find_library(ARGON2_LIBRARY NAMES argon2 REQUIRED)
+
 find_package(Drogon 1.9 CONFIG QUIET)
 
 if(NOT Drogon_FOUND)
@@ -71,8 +75,8 @@ add_executable(ticketing_backend
     src/services/SeatHoldService.cpp
 )
 
-target_include_directories(ticketing_backend PRIVATE src)
-target_link_libraries(ticketing_backend PRIVATE Drogon::Drogon)
+target_include_directories(ticketing_backend PRIVATE src "${ARGON2_INCLUDE_DIR}")
+target_link_libraries(ticketing_backend PRIVATE Drogon::Drogon OpenSSL::Crypto "${ARGON2_LIBRARY}")
 
 if(MSVC)
     target_compile_options(ticketing_backend PRIVATE /W4 /permissive-)
@@ -129,5 +133,9 @@ if(BUILD_TESTING)
     add_test(
         NAME payment_source_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/payment_source_contract_test.py"
+    )
+    add_test(
+        NAME phase9_auth_schema_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase9_auth_schema_contract_test.py"
     )
 endif()

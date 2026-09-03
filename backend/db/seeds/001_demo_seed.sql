@@ -4,9 +4,15 @@ INSERT INTO venues (id, name, city) VALUES
     ('venue-shanghai-stadium', '上海体育场', '上海'),
     ('venue-pudong-sports-center', '浦东体育中心', '上海');
 
-INSERT INTO app_users (id, display_name) VALUES
-    ('U-1001', 'Demo 用户'),
-    ('U-SEED-HOLDER', 'Seed 占座用户');
+INSERT INTO app_users (id, display_name, username, password_hash, status) VALUES
+    (
+        'U-1001',
+        'Demo 用户',
+        'demo',
+        '$argon2id$v=19$m=65536,t=2,p=1$tUON0+a+tW+XPmzdPL+RoA$OCRPrfDL//acztJL8FF4AhlFnL7GN03xL4mAsYextRo',
+        'ACTIVE'
+    ),
+    ('U-SEED-HOLDER', 'Seed 占座用户', 'seed-holder', '!disabled', 'DISABLED');
 
 INSERT INTO events (
     id, primary_venue_id, name, description, status,
