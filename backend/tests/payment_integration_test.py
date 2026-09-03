@@ -205,6 +205,13 @@ class PaymentIntegrationTest(unittest.TestCase):
 
     def test_checkout_stays_reserved_and_notification_ownership_is_enforced(self) -> None:
         order, reservation = create_order("checkout-stays", SEATS[4])
+        foreign_pay_status, _ = request_json(
+            f"/orders/{order['id']}/pay", method="POST", user_id=OTHER_USER_ID
+        )
+        foreign_cancel_status, _ = request_json(
+            f"/orders/{order['id']}/cancel", method="POST", user_id=OTHER_USER_ID
+        )
+        self.assertEqual((foreign_pay_status, foreign_cancel_status), (404, 404))
         psql(
             f"""
             INSERT INTO checkout_sessions (
