@@ -106,17 +106,20 @@ void PaymentRepository::lockProcessingForOrder(
     ErrorCallback onError) const
 {
     const std::string sql = "SELECT " + std::string{kAttemptColumns} + R"SQL(,
-        clock_timestamp() >= attempt.processing_deadline AS deadline_passed
+        clock_timestamp() >= attempt.processing_deadline AS deadline_passed,
+        attempt.started_at < ticket_order.expires_at AS started_before_order_expiry
         FROM payment_attempts AS attempt
+        JOIN orders AS ticket_order ON ticket_order.id = attempt.order_id
         WHERE attempt.order_id = $1 AND attempt.status = 'PROCESSING'
-        FOR UPDATE
+        FOR UPDATE OF attempt
     )SQL";
     transaction->execSqlAsync(
         sql,
         [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) {
             if (rows.empty()) { onSuccess(std::nullopt); return; }
             onSuccess(LockedPaymentAttempt{.value = mapAttempt(rows.front()),
-                                           .deadlinePassed = rows.front()["deadline_passed"].as<bool>()});
+                                           .deadlinePassed = rows.front()["deadline_passed"].as<bool>(),
+                                           .startedBeforeOrderExpiry = rows.front()["started_before_order_expiry"].as<bool>()});
         },
         [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
             logDatabaseError("Failed to lock processing payment attempt", error);
@@ -132,17 +135,20 @@ void PaymentRepository::lockByIdForOrder(
     ErrorCallback onError) const
 {
     const std::string sql = "SELECT " + std::string{kAttemptColumns} + R"SQL(,
-        clock_timestamp() >= attempt.processing_deadline AS deadline_passed
+        clock_timestamp() >= attempt.processing_deadline AS deadline_passed,
+        attempt.started_at < ticket_order.expires_at AS started_before_order_expiry
         FROM payment_attempts AS attempt
+        JOIN orders AS ticket_order ON ticket_order.id = attempt.order_id
         WHERE attempt.id = $1 AND attempt.order_id = $2
-        FOR UPDATE
+        FOR UPDATE OF attempt
     )SQL";
     transaction->execSqlAsync(
         sql,
         [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) {
             if (rows.empty()) { onSuccess(std::nullopt); return; }
             onSuccess(LockedPaymentAttempt{.value = mapAttempt(rows.front()),
-                                           .deadlinePassed = rows.front()["deadline_passed"].as<bool>()});
+                                           .deadlinePassed = rows.front()["deadline_passed"].as<bool>(),
+                                           .startedBeforeOrderExpiry = rows.front()["started_before_order_expiry"].as<bool>()});
         },
         [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
             logDatabaseError("Failed to lock payment attempt", error);

@@ -2,6 +2,7 @@
 
 #include "dto/TicketDtos.h"
 #include "repositories/OrderRepository.h"
+#include "services/OrderLifecycleService.h"
 
 #include <functional>
 #include <optional>
@@ -23,6 +24,22 @@ struct GetOrderResult
     std::optional<TicketOrder> value;
 };
 
+enum class CancelOrderOutcome
+{
+    Cancelled,
+    InvalidArgument,
+    NotFound,
+    NotCancellable,
+    OrderExpired,
+    InternalError,
+};
+
+struct CancelOrderResult
+{
+    CancelOrderOutcome outcome{CancelOrderOutcome::InternalError};
+    std::optional<TicketOrder> value;
+};
+
 class OrderService
 {
   public:
@@ -32,7 +49,12 @@ class OrderService
                   const std::string &userId,
                   Completion completion) const;
 
+    void cancelOrder(const std::string &orderId,
+                     const std::string &userId,
+                     std::function<void(CancelOrderResult)> completion) const;
+
   private:
     OrderRepository repository_;
+    OrderLifecycleService lifecycleService_;
 };
 }  // namespace ticketing

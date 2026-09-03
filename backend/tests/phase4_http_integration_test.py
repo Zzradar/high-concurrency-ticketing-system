@@ -48,6 +48,21 @@ def cleanup_phase4_data() -> None:
             SELECT id FROM reservations
             WHERE idempotency_key LIKE '{KEY_PREFIX}%'
         ) OR id = '{SEAT_ID}';
+        DELETE FROM user_notifications WHERE order_id IN (
+            SELECT id FROM orders WHERE reservation_id IN (
+                SELECT id FROM reservations WHERE idempotency_key LIKE '{KEY_PREFIX}%'
+            )
+        );
+        DELETE FROM refunds WHERE order_id IN (
+            SELECT id FROM orders WHERE reservation_id IN (
+                SELECT id FROM reservations WHERE idempotency_key LIKE '{KEY_PREFIX}%'
+            )
+        );
+        DELETE FROM payment_attempts WHERE order_id IN (
+            SELECT id FROM orders WHERE reservation_id IN (
+                SELECT id FROM reservations WHERE idempotency_key LIKE '{KEY_PREFIX}%'
+            )
+        );
         DELETE FROM orders
         WHERE reservation_id IN (
             SELECT id FROM reservations
@@ -193,6 +208,53 @@ class OrderGetHttpIntegrationTest(unittest.TestCase):
         self.assertEqual(status, 200, order)
         self.assertEqual(order["status"], "PAID")
         assert_iso_utc(self, order["paidAt"])
+
+    def test_cancel_is_atomic_and_idempotent(self) -> None:
+        created = create_pending_order("it-phase4-cancel")
+        first_status, first = request_json(
+            f"/orders/{created['id']}/cancel", method="POST"
+        )
+        second_status, second = request_json(
+            f"/orders/{created['id']}/cancel", method="POST"
+        )
+        self.assertEqual((first_status, second_status), (200, 200))
+        self.assertEqual((first["status"], second["status"]), ("CANCELLED", "CANCELLED"))
+        state = psql(
+            f"""
+            SELECT ticket_order.status, reservation.status,
+                   inventory.status, inventory.current_reservation_id IS NULL,
+                   COUNT(notification.id)
+            FROM orders AS ticket_order
+            JOIN reservations AS reservation ON reservation.id = ticket_order.reservation_id
+            JOIN reservation_session_seats AS item ON item.reservation_id = reservation.id
+            JOIN session_seats AS inventory ON inventory.id = item.session_seat_id
+            LEFT JOIN user_notifications AS notification
+              ON notification.order_id = ticket_order.id
+             AND notification.type = 'ORDER_CANCELLED'
+            WHERE ticket_order.id = '{created['id']}'
+            GROUP BY ticket_order.status, reservation.status,
+                     inventory.status, inventory.current_reservation_id;
+            """
+        )
+        self.assertEqual(state.split("\t"), ["CANCELLED", "CANCELLED", "AVAILABLE", "t", "1"])
+
+    def test_cancel_discovers_expiry_and_returns_expired(self) -> None:
+        created = create_pending_order("it-phase4-cancel-expired")
+        reservation_id = created["reservationId"]
+        psql(
+            f"""
+            UPDATE reservations SET created_at = clock_timestamp() - INTERVAL '20 minutes',
+                expires_at = clock_timestamp() - INTERVAL '1 minute'
+            WHERE id = '{reservation_id}';
+            UPDATE orders SET created_at = clock_timestamp() - INTERVAL '20 minutes',
+                expires_at = clock_timestamp() - INTERVAL '1 minute'
+            WHERE id = '{created['id']}';
+            """
+        )
+        status, payload = request_json(f"/orders/{created['id']}/cancel", method="POST")
+        self.assertEqual(status, 409, payload)
+        self.assertEqual(payload["code"], "ORDER_EXPIRED")
+        self.assertEqual(psql(f"SELECT status FROM orders WHERE id = '{created['id']}';"), "EXPIRED")
 
 
 if __name__ == "__main__":

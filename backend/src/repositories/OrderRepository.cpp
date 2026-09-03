@@ -166,9 +166,11 @@ void OrderRepository::lockOrderForExpiry(
 {
     constexpr const char *sql = R"SQL(
         SELECT id,
+               user_id,
                reservation_id,
                status,
-               expires_at <= CURRENT_TIMESTAMP AS expired
+               total_amount,
+               clock_timestamp() >= expires_at AS expired
         FROM orders
         WHERE id = $1
         FOR UPDATE SKIP LOCKED
@@ -186,8 +188,10 @@ void OrderRepository::lockOrderForExpiry(
             const auto &row = rows.front();
             onSuccess(ExpirableOrderRow{
                 .id = row["id"].as<std::string>(),
+                .userId = row["user_id"].as<std::string>(),
                 .reservationId = row["reservation_id"].as<std::string>(),
                 .status = row["status"].as<std::string>(),
+                .totalAmount = row["total_amount"].as<std::int64_t>(),
                 .expired = row["expired"].as<bool>(),
             });
         },
@@ -197,6 +201,43 @@ void OrderRepository::lockOrderForExpiry(
             onError();
         },
         orderId);
+}
+
+void OrderRepository::lockOrderForUser(
+    const TransactionPtr &transaction,
+    const std::string &orderId,
+    const std::string &userId,
+    std::function<void(std::optional<ExpirableOrderRow>)> onSuccess,
+    ErrorCallback onError) const
+{
+    constexpr const char *sql = R"SQL(
+        SELECT id,
+               user_id,
+               reservation_id,
+               status,
+               total_amount,
+               clock_timestamp() >= expires_at AS expired
+        FROM orders
+        WHERE id = $1 AND user_id = $2
+        FOR UPDATE
+    )SQL";
+    transaction->execSqlAsync(
+        sql,
+        [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) {
+            if (rows.empty()) { onSuccess(std::nullopt); return; }
+            const auto &row = rows.front();
+            onSuccess(ExpirableOrderRow{
+                .id = row["id"].as<std::string>(),
+                .userId = row["user_id"].as<std::string>(),
+                .reservationId = row["reservation_id"].as<std::string>(),
+                .status = row["status"].as<std::string>(),
+                .totalAmount = row["total_amount"].as<std::int64_t>(),
+                .expired = row["expired"].as<bool>(),
+            });
+        },
+        [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
+            logDatabaseError("Failed to lock user order", error); onError();
+        }, orderId, userId);
 }
 
 void OrderRepository::lockReservationForExpiry(
@@ -349,5 +390,35 @@ void OrderRepository::expireOrder(
             onError();
         },
         orderId);
+}
+
+void OrderRepository::transitionReservation(
+    const TransactionPtr &transaction,
+    const std::string &reservationId,
+    const std::string &targetStatus,
+    std::function<void(std::size_t)> onSuccess,
+    ErrorCallback onError) const
+{
+    transaction->execSqlAsync(
+        "UPDATE reservations SET status = $2 WHERE id = $1 AND status = 'ACTIVE' RETURNING id",
+        [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) { onSuccess(rows.size()); },
+        [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
+            logDatabaseError("Failed to transition reservation", error); onError();
+        }, reservationId, targetStatus);
+}
+
+void OrderRepository::transitionOrder(
+    const TransactionPtr &transaction,
+    const std::string &orderId,
+    const std::string &targetStatus,
+    std::function<void(std::size_t)> onSuccess,
+    ErrorCallback onError) const
+{
+    transaction->execSqlAsync(
+        "UPDATE orders SET status = $2 WHERE id = $1 AND status = 'PENDING_PAYMENT' RETURNING id",
+        [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) { onSuccess(rows.size()); },
+        [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
+            logDatabaseError("Failed to transition order", error); onError();
+        }, orderId, targetStatus);
 }
 }  // namespace ticketing

@@ -60,6 +60,21 @@ def cleanup_test_data() -> None:
         WHERE current_reservation_id IN (
             SELECT id FROM reservations WHERE idempotency_key LIKE '{PREFIX}%'
         ) OR id IN ({seat_list});
+        DELETE FROM user_notifications WHERE order_id IN (
+            SELECT id FROM orders WHERE reservation_id IN (
+                SELECT id FROM reservations WHERE idempotency_key LIKE '{PREFIX}%'
+            )
+        );
+        DELETE FROM refunds WHERE order_id IN (
+            SELECT id FROM orders WHERE reservation_id IN (
+                SELECT id FROM reservations WHERE idempotency_key LIKE '{PREFIX}%'
+            )
+        );
+        DELETE FROM payment_attempts WHERE order_id IN (
+            SELECT id FROM orders WHERE reservation_id IN (
+                SELECT id FROM reservations WHERE idempotency_key LIKE '{PREFIX}%'
+            )
+        );
         DELETE FROM orders
         WHERE reservation_id IN (
             SELECT id FROM reservations WHERE idempotency_key LIKE '{PREFIX}%'

@@ -16,6 +16,7 @@ struct LockedPaymentAttempt
 {
     PaymentAttempt value;
     bool deadlinePassed{};
+    bool startedBeforeOrderExpiry{};
 };
 
 class PaymentRepository

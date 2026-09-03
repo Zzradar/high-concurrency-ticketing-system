@@ -16,8 +16,10 @@ namespace ticketing
 struct ExpirableOrderRow
 {
     std::string id;
+    std::string userId;
     std::string reservationId;
     std::string status;
+    std::int64_t totalAmount{};
     bool expired{};
 };
 
@@ -64,6 +66,13 @@ class OrderRepository
         std::function<void(std::optional<ExpirableOrderRow>)> onSuccess,
         ErrorCallback onError) const;
 
+    void lockOrderForUser(
+        const TransactionPtr &transaction,
+        const std::string &orderId,
+        const std::string &userId,
+        std::function<void(std::optional<ExpirableOrderRow>)> onSuccess,
+        ErrorCallback onError) const;
+
     void lockReservationForExpiry(
         const TransactionPtr &transaction,
         const std::string &reservationId,
@@ -90,5 +99,17 @@ class OrderRepository
                      const std::string &orderId,
                      std::function<void(std::size_t)> onSuccess,
                      ErrorCallback onError) const;
+
+    void transitionReservation(const TransactionPtr &transaction,
+                               const std::string &reservationId,
+                               const std::string &targetStatus,
+                               std::function<void(std::size_t)> onSuccess,
+                               ErrorCallback onError) const;
+
+    void transitionOrder(const TransactionPtr &transaction,
+                         const std::string &orderId,
+                         const std::string &targetStatus,
+                         std::function<void(std::size_t)> onSuccess,
+                         ErrorCallback onError) const;
 };
 }  // namespace ticketing

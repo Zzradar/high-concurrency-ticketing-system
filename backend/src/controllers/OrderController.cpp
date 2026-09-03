@@ -52,3 +52,50 @@ void OrderController::getOrder(
                 "Internal server error"));
         });
 }
+
+void OrderController::cancelOrder(
+    const drogon::HttpRequestPtr &request,
+    std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+    std::string orderId) const
+{
+    using HttpCallback = std::function<void(const drogon::HttpResponsePtr &)>;
+    auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
+    service_.cancelOrder(
+        orderId,
+        request->getHeader("X-User-Id"),
+        [callbackPtr](ticketing::CancelOrderResult result) {
+            using ticketing::CancelOrderOutcome;
+            if (result.outcome == CancelOrderOutcome::Cancelled && result.value)
+            {
+                (*callbackPtr)(drogon::HttpResponse::newHttpJsonResponse(
+                    result.value->toJson()));
+                return;
+            }
+            if (result.outcome == CancelOrderOutcome::InvalidArgument)
+            {
+                (*callbackPtr)(ticketing::makeErrorResponse(
+                    drogon::k400BadRequest, "INVALID_ARGUMENT", "Invalid order request"));
+                return;
+            }
+            if (result.outcome == CancelOrderOutcome::NotFound)
+            {
+                (*callbackPtr)(ticketing::makeErrorResponse(
+                    drogon::k404NotFound, "ORDER_NOT_FOUND", "Order not found"));
+                return;
+            }
+            if (result.outcome == CancelOrderOutcome::NotCancellable)
+            {
+                (*callbackPtr)(ticketing::makeErrorResponse(
+                    drogon::k409Conflict, "ORDER_NOT_CANCELLABLE", "Order is not cancellable"));
+                return;
+            }
+            if (result.outcome == CancelOrderOutcome::OrderExpired)
+            {
+                (*callbackPtr)(ticketing::makeErrorResponse(
+                    drogon::k409Conflict, "ORDER_EXPIRED", "Order has expired"));
+                return;
+            }
+            (*callbackPtr)(ticketing::makeErrorResponse(
+                drogon::k500InternalServerError, "INTERNAL_ERROR", "Internal server error"));
+        });
+}

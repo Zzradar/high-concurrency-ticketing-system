@@ -19,17 +19,17 @@ class OrderExpirySourceContractTest(unittest.TestCase):
 
     def test_single_order_lock_and_fixed_domain_lock_order(self) -> None:
         repository = read("src/repositories/OrderRepository.cpp")
-        service = read("src/services/OrderExpiryService.cpp")
+        service = read("src/services/OrderLifecycleService.cpp")
         self.assertIn("FOR UPDATE SKIP LOCKED", repository)
         self.assertIn("ORDER BY inventory.id ASC", repository)
         self.assertIn("FOR UPDATE OF inventory", repository)
         self.assertLess(
             service.index("lockOrder(state)"),
-            service.index("lockReservation(state)"),
+            service.index("lockAttempt(state)"),
         )
         self.assertLess(
+            service.index("lockAttempt(state)"),
             service.index("lockReservation(state)"),
-            service.index("lockSeats(state)"),
         )
 
     def test_release_has_membership_status_and_owner_guards(self) -> None:
@@ -42,9 +42,9 @@ class OrderExpirySourceContractTest(unittest.TestCase):
         self.assertIn("current_reservation_id = NULL", source)
 
     def test_service_checks_counts_and_transaction_lifecycle(self) -> None:
-        source = read("src/services/OrderExpiryService.cpp")
+        source = read("src/services/OrderLifecycleService.cpp")
         self.assertIn("released != state->expectedSeatCount", source)
-        self.assertGreaterEqual(source.count("updated != 1"), 2)
+        self.assertGreaterEqual(source.count("updated != 1"), 3)
         self.assertIn("newTransactionAsync", source)
         self.assertIn("setCommitCallback", source)
         self.assertIn("state->transaction->rollback()", source)
