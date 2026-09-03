@@ -11,6 +11,7 @@ RUN apt-get update \
         libbrotli-dev \
         libc-ares-dev \
         libjsoncpp-dev \
+        libhiredis-dev \
         libpq-dev \
         libssl-dev \
         python3 \
@@ -40,6 +41,7 @@ RUN apt-get update \
         libbrotli1 \
         libc-ares2 \
         libjsoncpp25 \
+        libhiredis1.1.0 \
         libpq5 \
         libssl3t64 \
         libuuid1 \
@@ -49,6 +51,9 @@ RUN apt-get update \
 WORKDIR /app
 COPY --from=build /src/build/ticketing_backend /app/ticketing_backend
 COPY config /app/config
+
+RUN ldd /app/ticketing_backend | grep -E 'libhiredis|not found' \
+    && ! ldd /app/ticketing_backend | grep 'not found'
 
 EXPOSE 8080
 

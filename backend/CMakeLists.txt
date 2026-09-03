@@ -24,6 +24,7 @@ if(NOT Drogon_FOUND)
     set(BUILD_CTL OFF CACHE BOOL "" FORCE)
     set(BUILD_ORM ON CACHE BOOL "" FORCE)
     set(BUILD_POSTGRESQL ON CACHE BOOL "" FORCE)
+    set(BUILD_REDIS ON CACHE BOOL "" FORCE)
     set(TICKETING_BUILD_TESTING "${BUILD_TESTING}")
     set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(
@@ -59,6 +60,7 @@ add_executable(ticketing_backend
     src/controllers/CheckoutSessionController.cpp
     src/repositories/CheckoutSessionRepository.cpp
     src/services/CheckoutSessionService.cpp
+    src/services/SeatHoldService.cpp
 )
 
 target_include_directories(ticketing_backend PRIVATE src)
@@ -103,5 +105,9 @@ if(BUILD_TESTING)
     add_test(
         NAME checkout_session_source_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/checkout_session_source_contract_test.py"
+    )
+    add_test(
+        NAME seat_hold_source_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/seat_hold_source_contract_test.py"
     )
 endif()

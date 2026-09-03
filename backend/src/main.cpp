@@ -1,5 +1,6 @@
 #include "workers/OrderExpiryWorker.h"
 #include "services/CheckoutSessionService.h"
+#include "services/SeatHoldService.h"
 
 #include <drogon/drogon.h>
 
@@ -97,6 +98,7 @@ int main(int argc, char *argv[])
     try
     {
         drogon::app().loadConfigFile(configPath);
+        ticketing::SeatHoldService::validateConfiguration();
         const auto [batchSize, intervalSeconds] =
             loadOrderExpiryWorkerConfig();
         const auto checkoutReconciliationBatchSize =
