@@ -15,7 +15,7 @@
 MVP 阶段遵循以下原则：
 
 1. 前端负责展示、交互和本地临时选择状态。
-2. 后端负责正式座位状态、Reservation、Order 和所有业务状态迁移。
+2. 后端负责正式座位状态、Reservation、Order、PaymentAttempt、Refund、Notification 和所有业务状态迁移。
 3. PostgreSQL 是 MVP 阶段唯一正式数据源。
 4. Phase 7 的 Redis 只进入 SELECTING 临时占座层；消息队列、WebSocket、多实例部署不进入当前核心 MVP 阶段。
 5. 接口数量保持最小，以跑通完整预订闭环为目标。
@@ -74,11 +74,14 @@ GET /sessions/{sessionId}/seats
 `GET /events/{eventId}` 已经是正式后端接口，但当前页面选择活动时仍复用
 `GET /events` 返回的 `TicketEvent`，尚未调用活动详情接口。
 
-后续阶段待实现：
+Phase 8 已实现并完成前端接入：
 
 ```text
 POST /orders/{orderId}/pay
 POST /orders/{orderId}/cancel
+GET /payment-attempts/{paymentAttemptId}
+GET /notifications
+POST /notifications/{notificationId}/read
 ```
 
 前端的 `expireOrderForDemo` 仅存在于 Mock 模式，不是正式后端接口。
@@ -152,8 +155,9 @@ INTERNAL_ERROR
 ```
 
 Phase 4 订单查询已经实现 `ORDER_NOT_FOUND`；不存在和不属于当前用户的 Order
-统一使用该错误，避免泄露其他用户订单。支付和取消阶段还需要
-`ORDER_NOT_PAYABLE`、`ORDER_NOT_CANCELLABLE` 等错误语义。`Idempotency-Key` 缺失，以及同一个 Key
+统一使用该错误，避免泄露其他用户订单。Phase 8 已实现 `ORDER_NOT_PAYABLE`、
+`ORDER_NOT_CANCELLABLE`、`ORDER_EXPIRED`、`PAYMENT_ATTEMPT_NOT_FOUND` 和
+`NOTIFICATION_NOT_FOUND`。`Idempotency-Key` 缺失，以及同一个 Key
 被用于不同 `sessionId / seatIds` 时返回 `409 IDEMPOTENCY_CONFLICT`。Session 存在
 但不处于 `ON_SALE` 时返回 `409 SESSION_NOT_AVAILABLE`。
 
@@ -171,6 +175,8 @@ Phase 4 订单查询已经实现 `ORDER_NOT_FOUND`；不存在和不属于当前
 expiresAt
 createdAt
 paidAt
+startedAt / processingDeadline / scheduledCompleteAt
+completedAt / timedOutAt / acceptedAt / readAt
 ```
 
 前端通过 `Date.parse(expiresAt)` 计算展示倒计时，但真正是否过期始终以后端数据库和订单状态为准。
@@ -527,6 +533,22 @@ Phase 4 已在单 Order 独立事务中统一完成超时变化，同时清空
 `SessionSeat.current_reservation_id`。正式关联、HELD 状态和当前 Reservation 所有权
 必须全部匹配，释放数量不一致时整单回滚。
 
+Phase 8 的 `005_add_payment_lifecycle.sql` 增加 PaymentAttempt、Refund 和
+UserNotification。Order 与 PaymentAttempt 为一对多，但部分唯一索引保证同一 Order
+最多一个 PROCESSING Attempt。Refund 独立于 Order 建模，每个 payment_attempt_id 最多
+一条；通知通过 dedupe key 防止同一业务事件重复写入。Order 不增加
+PAYMENT_PROCESSING 或 REFUNDED 状态。
+
+| 场景 | PaymentAttempt | Order | Reservation | SessionSeat | Refund |
+| --- | --- | --- | --- | --- | --- |
+| 正常支付 | SUCCEEDED，accepted | PAID | CONFIRMED | SOLD | 无 |
+| 支付失败且订单仍有效 | FAILED | PENDING_PAYMENT | ACTIVE | HELD | 无 |
+| 主动取消 | PROCESSING 可继续等待渠道结果 | CANCELLED | CANCELLED | AVAILABLE | 暂无 |
+| 订单超时 | PROCESSING 超过 deadline 后 TIMED_OUT | EXPIRED | EXPIRED | AVAILABLE | 暂无 |
+| 取消或超时后的 late success | SUCCEEDED，unaccepted | 保持 CANCELLED / EXPIRED | 保持对应终态 | AVAILABLE | 自动全额成功 |
+
+这些变化不修改已 RESERVED 的 CheckoutSession。
+
 ## 15. POST /reservations Phase 3 契约
 
 Headers：
@@ -638,7 +660,7 @@ paidAt（数据库非 NULL 时输出）
 
 ## 17. 支付和取消契约
 
-### 支付
+### 支付启动与 PaymentAttempt 查询
 
 ```text
 POST /orders/{orderId}/pay
@@ -646,9 +668,28 @@ POST /orders/{orderId}/pay
 
 无请求体。
 
-成功后返回更新后的 TicketOrder。
+新建或复用 PROCESSING Attempt 返回 HTTP 202：
 
-后端在同一事务中执行：
+```json
+{
+  "order": {},
+  "paymentAttempt": {
+    "id": "PAY-...",
+    "orderId": "ORD-...",
+    "status": "PROCESSING",
+    "startedAt": "...",
+    "processingDeadline": "...",
+    "scheduledCompleteAt": "..."
+  }
+}
+```
+
+Order 已 PAID 时返回 HTTP 200，`paymentAttempt` 为已接纳 Attempt 或 null。CANCELLED
+返回 409 `ORDER_NOT_PAYABLE`，已过期返回 409 `ORDER_EXPIRED`。
+
+前端通过 `GET /payment-attempts/{paymentAttemptId}` 查询
+`PROCESSING / SUCCEEDED / FAILED / TIMED_OUT`，并读取可选的 `completedAt`、
+`timedOutAt`、`acceptedAt`、`failureReason`。正常接纳成功时同一事务执行：
 
 ```text
 Order -> PAID
@@ -656,13 +697,9 @@ Reservation -> CONFIRMED
 SessionSeat -> SOLD
 ```
 
-如果订单已经 PAID，可按幂等语义直接返回当前 PAID Order。
-
-如果订单已经 CANCELLED 或 EXPIRED，返回：
-
-```text
-ORDER_NOT_PAYABLE
-```
+渠道失败且订单仍有效时 Order 保持 PENDING_PAYMENT，可再次支付。截止前发起的 Attempt
+获得 10 秒 processing grace；Worker 在合法 grace 内暂缓过期。`acceptedAt` 区分渠道
+成功与 Order 接纳成功。
 
 ### 取消
 
@@ -682,11 +719,20 @@ Reservation -> CANCELLED
 SessionSeat -> AVAILABLE
 ```
 
-如果订单已经 PAID 或 EXPIRED，返回：
+重复取消 CANCELLED 幂等返回；PAID 返回 `ORDER_NOT_CANCELLABLE`；已过期在线收尾后
+返回 `ORDER_EXPIRED`。PROCESSING Attempt 不阻止取消，取消也不把它改成 FAILED。
 
-```text
-ORDER_NOT_CANCELLABLE
-```
+渠道在 CANCELLED、EXPIRED 或另一支付已接纳后迟到成功时，Attempt 仍记为 SUCCEEDED
+但 `acceptedAt` 为空；Order、Reservation 和 Seat 不复活，并创建自动全额 Refund。
+未接纳 SUCCESS 的 Attempt 更新、Refund INSERT 和当前退款通知在同一 PostgreSQL
+Transaction 中提交，失败时整体回滚。CheckoutSession 保持 RESERVED，不跟随支付终态
+扩展状态。Redis 不参与任何正式支付、取消或退款仲裁。
+
+### 通知
+
+`GET /notifications` 返回当前用户的通知数组；
+`POST /notifications/{notificationId}/read` 幂等标记已读。不存在与跨用户访问均返回
+`NOTIFICATION_NOT_FOUND`。
 
 ## 18. 每单最多选择座位数
 
@@ -763,7 +809,8 @@ GET /orders/{orderId}
 EXPIRED、Reservation 进入 EXPIRED、SessionSeat 恢复 AVAILABLE 并清空
 `current_reservation_id`。Worker 使用数据库当前时间、可配置批次和周期、单 Order
 事务、Order → Reservation → SessionSeat 固定锁顺序及 `FOR UPDATE SKIP LOCKED`。
-未来支付接口仍必须自己检查数据库过期时间，不能只依赖 Worker 是否已经及时执行。
+支付和取消接口均在锁 Order 后使用数据库权威时间检查过期，不能只依赖 Worker 是否
+已经及时执行。
 
 ### Phase 5：服务端购票会话（后端已完成）
 
@@ -792,16 +839,20 @@ Key 为 `ticketing:seat-hold:{sessionId}:sessionSeatId`，value 为
 Hold 或迟到 cleanup 删除新版本 Hold。Redis unavailable 时继续 PostgreSQL 流程。
 正式库存仍由 PostgreSQL 事务、SessionSeat 行锁与约束决定。
 
-### Phase 8：支付、取消与超时竞争（待实现）
+### Phase 8：支付、取消与超时竞争（已完成）
 
 ```text
 POST /orders/{orderId}/pay
 POST /orders/{orderId}/cancel
+GET /payment-attempts/{paymentAttemptId}
+GET /notifications
+POST /notifications/{notificationId}/read
 ```
 
-重点处理 `PENDING_PAYMENT → PAID / CANCELLED / EXPIRED` 对同一订单的状态竞争。
-多个关键写接口出现后，再评估是否把 Reservation 专用幂等演进为通用幂等请求
-基础设施；本阶段不新增通用表。
+已完成 PaymentAttempt 一对多模型、单 PROCESSING 约束、异步模拟渠道、Order-first
+状态仲裁、processing grace、支付中取消、迟到成功自动全额退款和用户通知。模拟 timer
+在进程重启时不恢复；PROCESSING Attempt 由 processing deadline + Expiry Worker 最终
+收敛为 TIMED_OUT，真实渠道未来通过 callback / 主动查单恢复。
 
 ### Phase 9：按压测决定高峰增强（暂缓）
 
@@ -855,7 +906,7 @@ Prometheus
 Grafana
 Kubernetes
 真实支付平台
-退款
+正常 PAID 订单的主动退票/退款
 优惠券
 完整认证系统
 ```

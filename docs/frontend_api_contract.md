@@ -27,12 +27,15 @@
 | abandonCheckoutSession | POST /checkout-sessions/{id}/abandon |
 | getOrder | GET /orders/{orderId} |
 | payOrder | POST /orders/{orderId}/pay |
+| getPaymentAttempt | GET /payment-attempts/{paymentAttemptId} |
 | cancelOrder | POST /orders/{orderId}/cancel |
+| getNotifications | GET /notifications |
+| markNotificationRead | POST /notifications/{notificationId}/read |
 
 当前代码**没有**调用 GET /events/{eventId}。活动详情数据直接复用活动列表中选中的 TicketEvent。  
 expireOrderForDemo 仅用于 mock 演示；真实 API 模式会直接报 MOCK_ONLY，不能视为后端接口契约。
 
-当前后端已实际打通 `GET /orders/{orderId}`；支付和取消接口仍是后续能力。
+当前后端已实际打通订单查询、异步支付、取消、PaymentAttempt 查询和用户通知接口。
 
 ## 2. 页面、组件与数据需求
 
@@ -43,7 +46,7 @@ expireOrderForDemo 仅用于 mock 演示；真实 API 模式会直接报 MOCK_ON
 | 活动列表 EventListView | EventCard | events、loading | App 挂载后调用 ticketApi.getEvents；默认来自 eventsSeed mock | TicketEvent[] 必须由 GET /events 提供 |
 | 场次选择 SessionListView | SessionCard | currentEvent、sessions、loading | currentEvent 来自用户刚选中的活动对象；sessions 来自 getSessions(event.id) | TicketSession[] 必须由 GET /events/{eventId}/sessions 提供 |
 | 座位选择 SeatSelectionView | SeatGrid、SeatItem、SelectedSeats、RecoverableCheckoutPanel | currentEvent、currentSession、seats、selectedSeatIds、currentCheckoutSession、恢复候选与确认状态 | seats 来自 getSeats；selectedSeatIds 为当前 UI 意图；CheckoutSession 是服务端 checkpoint | Seat[] 与 CheckoutSession API；提交时后端最终确认是否锁座成功 |
-| 订单 OrderView | OrderSummary | currentOrder、currentEvent、currentSession、seats、busy、倒计时 | currentOrder 来自创建预订或订单接口；event/session/seats 沿用 App 内存；倒计时由 expiresAt 与浏览器当前时间计算 | 创建、查询、支付、取消后的 TicketOrder 必须由后端返回；状态变更后前端会重新获取 seats |
+| 订单 OrderView | OrderSummary | currentOrder、currentPaymentAttempt、currentEvent、currentSession、seats、paymentStarting、paymentPolling、cancelling、倒计时 | currentOrder 和 PaymentAttempt 来自后端；event/session/seats 沿用 App 内存；倒计时由 expiresAt 与浏览器当前时间计算 | 支付返回后轮询 Attempt；订单终态变化后重新获取 order、seats 和 notifications |
 
 页面中的以下内容目前是纯前端常量，不来自接口：
 
@@ -146,6 +149,17 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
 
 订单页展示活动、场次和座位详细信息时，使用的是 App 内存中的 currentEvent、currentSession 和 seats，并非 TicketOrder 自身提供的展开数据。
 
+### 3.6 PaymentAttempt、PaymentStartResult 与 UserNotification
+
+`PaymentAttempt` 包含 `id`、`orderId`、`status`、`startedAt`、
+`processingDeadline`、`scheduledCompleteAt`，以及可选的 `completedAt`、`timedOutAt`、
+`acceptedAt`、`failureReason`。状态为 `PROCESSING / SUCCEEDED / FAILED / TIMED_OUT`；
+`acceptedAt` 存在才表示渠道成功已被 Order 接纳。
+
+`PaymentStartResult` 固定包含 `order` 和可空的 `paymentAttempt`。`UserNotification`
+包含 `id`、`orderId`、`type`、`title`、`message`、`createdAt` 和可选 `readAt`；`type`
+为 `PAYMENT_SUCCEEDED / ORDER_CANCELLED / ORDER_EXPIRED / AUTO_REFUND_COMPLETED`。
+
 ## 4. 页面操作与接口调用关系
 
 | 时机 / 操作 | 当前前端行为 | 接口与数据 |
@@ -163,11 +177,12 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
 | SEAT_TEMPORARILY_HELD | 视为明确业务冲突，保留合理的本地意图并刷新 Seat Map，不进入结果未知轮询 | GET seats；Final PUT 冲突时不调用 confirm |
 | 点击订单“刷新状态” | 更新 currentOrder，并同步刷新座位 | GET /orders/{order.id}；随后 GET /sessions/{session.id}/seats |
 | 倒计时归零 | 倒计时组件只发出 expiryReached，不自行把订单设为 EXPIRED | GET /orders/{order.id}，以后端状态为准 |
-| 点击“模拟支付” | 用返回值替换 currentOrder，再刷新 seats | POST /orders/{order.id}/pay；随后 GET seats |
-| 点击“取消订单” | 用返回值替换 currentOrder，再刷新 seats | POST /orders/{order.id}/cancel；随后 GET seats |
+| 点击“模拟支付” | 保存返回的 order 和 PROCESSING Attempt，约每 1 秒轮询，最长约 15 秒 | POST /orders/{order.id}/pay；GET /payment-attempts/{id} |
+| 支付 Attempt 到达终态 | 重新查询订单、座位与通知；未接纳的 SUCCEEDED 以退款通知为准 | GET order、GET seats、GET notifications |
+| 点击“取消订单” | 独立执行取消；即使支付仍在 polling 也不停止观察其迟到结果 | POST /orders/{order.id}/cancel；随后 GET seats 和 notifications |
 | 点击“模拟订单超时” | 仅 mock 模式调用本地 expireOrderForDemo | 不对应真实后端接口 |
 
-支付请求出错时，前端不会直接认定支付失败，而是显示“支付请求结果未知”并调用 GET /orders/{orderId} 重新查询结果；刷新订单过程会保留本次支付提示。
+支付启动请求出错时，前端不会直接认定支付失败，而是显示“支付请求结果未知”并调用 GET /orders/{orderId} 重新查询；已经拿到 Attempt 后则以 Attempt polling 的终态为准。
 
 ## 5. 当前前端期望的接口契约
 
@@ -353,27 +368,36 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 
 ### 5.6 POST /orders/{orderId}/pay
 
-对应模拟支付。当前无请求体。
+对应异步模拟支付，无请求体。新建或复用仍在有效 grace 内的 PROCESSING Attempt 时
+返回 HTTP 202：
 
-前端期望 response.data 直接返回更新后的 TicketOrder，例如：
+```json
+{
+  "order": {
+    "id": "TKT-24082602",
+    "reservationId": "RSV-24082601",
+    "eventId": "evt-concert-2026",
+    "sessionId": "ses-concert-1001",
+    "seatIds": ["ses-concert-1001-A01", "ses-concert-1001-A02"],
+    "status": "PENDING_PAYMENT",
+    "totalAmount": 256000,
+    "expiresAt": "2026-08-30T05:30:00.000Z",
+    "createdAt": "2026-08-30T05:15:00.000Z"
+  },
+  "paymentAttempt": {
+    "id": "PAY-24082603",
+    "orderId": "TKT-24082602",
+    "status": "PROCESSING",
+    "startedAt": "2026-08-30T05:16:00.000Z",
+    "processingDeadline": "2026-08-30T05:16:10.000Z",
+    "scheduledCompleteAt": "2026-08-30T05:16:04.000Z"
+  }
+}
+```
 
-    {
-      "id": "TKT-24082602",
-      "reservationId": "RSV-24082601",
-      "eventId": "evt-concert-2026",
-      "sessionId": "ses-concert-1001",
-      "seatIds": [
-        "ses-concert-1001-A01",
-        "ses-concert-1001-A02"
-      ],
-      "status": "PAID",
-      "totalAmount": 256000,
-      "expiresAt": "2026-08-30T05:30:00.000Z",
-      "createdAt": "2026-08-30T05:15:00.000Z",
-      "paidAt": "2026-08-30T05:17:00.000Z"
-    }
-
-前端使用返回对象整体替换 currentOrder，随后重新获取座位图，期望对应座位最终为 SOLD。
+Order 已 PAID 时返回 HTTP 200，`order.status = PAID`；`paymentAttempt` 为已接纳 Attempt
+或 `null`。找不到或不属于当前用户返回 404 `ORDER_NOT_FOUND`；CANCELLED 等不可支付
+状态返回 409 `ORDER_NOT_PAYABLE`；已过期并完成在线收尾返回 409 `ORDER_EXPIRED`。
 
 ### 5.7 POST /orders/{orderId}/cancel
 
@@ -398,7 +422,24 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 
 前端使用返回对象整体替换 currentOrder，随后重新获取座位图，期望原 HELD 座位已经恢复为 AVAILABLE。
 
-### 5.8 CheckoutSession 临时占座冲突与 Confirm
+重复取消已经 CANCELLED 的订单仍返回 HTTP 200 和最新 TicketOrder。PAID 返回 409
+`ORDER_NOT_CANCELLABLE`。PROCESSING Attempt 不阻止取消，也不会被取消路径伪造成
+FAILED；若数据库权威时间已过期，在线收尾后返回 409 `ORDER_EXPIRED`。
+
+### 5.8 GET /payment-attempts/{paymentAttemptId}
+
+成功直接返回完整 PaymentAttempt。可选时间字段为 ISO 8601；`failureReason` 只在失败
+原因存在时输出。找不到或属于其他用户均返回 404 `PAYMENT_ATTEMPT_NOT_FOUND`。
+前端约每 1 秒查询，最长约 15 秒，观察 `PROCESSING` 转为 `SUCCEEDED / FAILED /
+TIMED_OUT`。TIMED_OUT 只表示系统不再等待本次结果，不等价于渠道永远不会迟到成功。
+
+### 5.9 GET /notifications 与 POST /notifications/{notificationId}/read
+
+GET 成功直接返回当前用户的 UserNotification 数组。POST read 无请求体，成功返回更新后
+的 UserNotification；重复标记已读保持幂等。不存在或属于其他用户的通知统一返回 404
+`NOTIFICATION_NOT_FOUND`，避免跨用户探测。
+
+### 5.10 CheckoutSession 临时占座冲突与 Confirm
 
 CheckoutSession 的 create、完整集合 PUT 和 `SELECTING` Confirm 可能返回：
 
@@ -434,7 +475,8 @@ Phase 5/6 语义，复用原 K1，不重新把 Redis Hold 当作正式确认资�
       -> final sync barrier
       -> POST /checkout-sessions/{id}/confirm
       -> currentOrder
-      -> pay / cancel / GET order
+      -> POST pay / PaymentAttempt polling / cancel / GET order
+      -> notifications
 
 | 状态 | 所有者 / 来源 | 说明 |
 | --- | --- | --- |
@@ -450,9 +492,12 @@ Phase 5/6 语义，复用原 K1，不重新把 Redis Hold 当作正式确认资�
 | recoverableCheckoutSessions | 后端查询结果 | 多个候选必须由用户显式选择 |
 | currentReservation | **当前不存在** | 创建预订响应包含 reservation，但 App 未保存 |
 | currentOrder | 必须以后端返回为准 | 来自创建、查询、支付或取消接口 |
+| currentPaymentAttempt | 后端权威数据的前端副本 | POST pay 返回并由 GET Attempt 轮询更新 |
+| notifications | 后端权威数据的前端副本 | 启动、窗口 focus 和 5 秒低频刷新 |
 | 倒计时 | 前端展示状态 | 由 expiresAt - Date.now() 计算；归零不直接修改订单 |
 | checkoutCreating、checkoutSyncInFlight、confirming、submittingPolling、submitUncertain | 完全属于前端 | 区分后台同步、确认屏障、结果恢复和 15 秒不确定状态 |
-| loading、busy、errorMessage、noticeMessage | 完全属于前端 | 页面交互和订单操作反馈状态 |
+| paymentStarting、paymentPolling、cancelling | 完全属于前端 | 支付启动、Attempt 观察和取消互相隔离；支付观察不禁用取消 |
+| loading、busy、errorMessage、noticeMessage | 完全属于前端 | 页面交互和操作反馈状态 |
 
 边界原则：
 
@@ -460,7 +505,7 @@ Phase 5/6 语义，复用原 K1，不重新把 Redis Hold 当作正式确认资�
 2. 正常 UI 不直接调用 POST /reservations；confirm 返回 RESERVED + order 后才进入订单页。底层 createReservation 仍保留用于 Mock 竞争和较低层测试。
 3. Seat.status、Reservation.status 和 Order.status 的正式值必须以后端为准。
 4. 倒计时仅用于展示；是否过期由 GET /orders/{orderId} 的返回状态决定。
-5. 支付或取消后，前端既采用返回的 TicketOrder，也会重新获取 Seat[]，不自行推断座位最终状态。
+5. 支付启动不等于 PAID；前端轮询 PaymentAttempt，并在终态后重新获取 Order、Seat[] 和通知，不自行推断正式终态。
 
 ## 7. 已收敛事实与联调前待确认问题
 
@@ -507,7 +552,6 @@ Redis 不可用的降级由后端处理，前端不感知 Redis 故障细节。
 4. **Event.status 当前未生效。** 类型允许 COMING_SOON，但活动卡始终显示“正在售票”，也不会根据 status 禁用进入流程。
 5. **cover 当前是前端静态路径。** GET /events mock 返回 /images/...；真实后端应返回何种可访问 URL 或资源标识尚未确认。
 6. **空列表、分页和排序没有契约。** 当前所有 GET 都假定直接返回完整数组，没有分页参数、分页元数据或排序字段。
-7. **支付和取消的幂等性与并发 HTTP 语义仍需确认。** 当前前端依赖成功时返回最新 TicketOrder，失败时重新查询订单。
 
 当前前端没有 GET /events/{eventId} 调用，活动详情复用 GET /events 返回的完整 TicketEvent；该接口不属于当前 MVP 对接清单。
 
@@ -525,9 +569,9 @@ Redis 不可用的降级由后端处理，前端不感知 Redis 故障细节。
 - price、priceFrom、totalAmount 使用整数分。
 - 使用本文列出的精确状态字符串。
 - expiresAt、createdAt、paidAt 使用可被浏览器 Date.parse 正确解析的 ISO 8601 字符串。
-- 创建、支付、取消和订单查询返回完整 TicketOrder；创建预订返回 ReservationResult。
+- 支付启动返回 PaymentStartResult；取消和订单查询返回完整 TicketOrder；创建预订返回 ReservationResult。
+- PaymentAttempt、通知列表和通知已读接口按当前用户隔离；通知已读保持幂等。
 - 座位竞争、支付、取消或超时处理后，GET seats 和 GET order 能返回一致的最终状态。
 
-其中订单查询和超时处理已在 Phase 4 后端实现并完成真实联调；支付与取消仍待后续
-Phase 实现。
+其中异步支付、取消、PaymentAttempt polling、自动退款与用户通知已在 Phase 8 实现。
 

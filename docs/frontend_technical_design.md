@@ -314,11 +314,17 @@ recoverableCheckoutSessions
 
 currentOrder
 
+currentPaymentAttempt
+
+notifications
+
 currentView
 
 checkoutCreating / checkoutSyncInFlight / confirming
 
 submittingPolling / submitUncertain
+
+paymentStarting / paymentPolling / cancelling
 ```
 
 其中：
@@ -370,6 +376,12 @@ Phase 7 中，成功的 CheckoutSession create/PUT 还会尝试建立或刷新 R
 ### currentOrder
 
 当前订单信息。
+
+### currentPaymentAttempt 与 notifications
+
+`currentPaymentAttempt` 保存当前异步支付尝试；`notifications` 保存通知中心列表。
+支付轮询与 Phase 6 的 Checkout SUBMITTING 轮询使用独立状态、generation 和 timer，
+避免两个会话恢复流程互相取消或覆盖。
 
 ### currentView
 
@@ -498,13 +510,27 @@ GET /orders/{orderId}
 POST /orders/{orderId}/pay
 ```
 
-模拟支付。
+启动或复用异步模拟支付，通常返回 HTTP 202 和 PROCESSING PaymentAttempt，不代表订单
+已 PAID。前端随后约每 1 秒调用：
+
+```text
+GET /payment-attempts/{paymentAttemptId}
+```
+
+最多主动观察约 15 秒。Attempt 终态后重新查询订单、座位和通知。
 
 ```text
 POST /orders/{orderId}/cancel
 ```
 
 主动取消。
+
+```text
+GET /notifications
+POST /notifications/{notificationId}/read
+```
+
+获取用户通知并幂等标记已读。
 
 当前前端使用 axios。
 
@@ -647,6 +673,18 @@ expiresAt - 当前时间
 
 真正是否超时由后端数据库中的 expiresAt 决定。
 
+`expiresAt` 是允许开始支付的截止时间，不是要求渠道在该时刻前完成。截止前创建的
+PROCESSING Attempt 有后端约 10 秒的处理宽限；前端倒计时不会自行实现或延长该宽限。
+
+### 异步支付交互
+
+支付启动、支付观察和取消分别使用 `paymentStarting`、`paymentPolling`、`cancelling`。
+支付启动或 polling 时禁用 Pay，Cancel 仍可点击。取消不停止当前 Attempt polling；若
+随后观察到未被订单接纳的迟到 SUCCEEDED，前端刷新通知并提示查看自动退款结果。
+
+右上角 Bell 展示未读数和通知列表；App 启动、窗口重新 focus 以及每 5 秒低频刷新通知，
+点击通知调用 read 接口。通知刷新是 best effort，不干扰选座、确认或支付主流程。
+
 ---
 
 ## 11. 错误处理
@@ -695,7 +733,9 @@ Confirm barrier 的最终 PUT 遇到该错误时不会调用 confirm endpoint。
 - 不擅自修改业务状态。
 - 允许用户重新查询。
 
-例如支付请求网络超时时，不能直接认为支付失败，应重新查询订单状态，并在查询过程中保留“支付请求结果未知”提示。
+例如支付启动请求网络超时时，不能直接认为支付失败，应重新查询订单状态，并在查询
+过程中保留“支付请求结果未知”提示。已获得 PaymentAttempt ID 后，以 Attempt 查询结果
+区分 SUCCEEDED、FAILED 和 TIMED_OUT；TIMED_OUT 不被前端解释为渠道最终失败。
 
 ---
 
@@ -846,5 +886,7 @@ A01 自动变成 HELD
 3. 预订失败后可以重新刷新座位图。
 4. 支付、取消和超时状态能够正确展示。
 5. 前端不自行决定最终业务状态，一切正式状态以后端为准。
+6. 异步支付轮询与 CheckoutSession 恢复轮询互不干扰，支付中仍可取消。
+7. 用户可以通过通知中心看到支付、取消、过期与自动退款结果，并幂等标记已读。
 
 MVP 第一阶段的目标是形成一个清晰、稳定、方便后端联调和演示的票务前端，而不是追求复杂视觉效果或完整商业产品能力。

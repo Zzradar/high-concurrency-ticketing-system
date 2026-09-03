@@ -59,6 +59,9 @@ PostgreSQL 是 MVP 中最重要的基础设施，负责保存全部正式业务�
 - 场次座位。
 - 预订。
 - 订单。
+- 支付尝试。
+- 自动退款。
+- 用户通知。
 - 订单与座位关联关系。
 
 同时，PostgreSQL 负责保证核心业务正确性：
@@ -96,7 +99,9 @@ Drogon HTTP Server
   ├── Seat Module
   ├── Reservation Module
   ├── Checkout Session Module ── Redis 临时占座
-  └── Order Module
+  ├── Order Lifecycle Module
+  ├── Payment Module
+  └── Notification Module
           │
           ▼
       PostgreSQL（正式业务事实）
@@ -122,7 +127,7 @@ Phase 4  GET /orders/{orderId} + 超时释放 Worker             已完成
 Phase 5  服务端 Checkout Session（购票会话）                已完成
 Phase 6  前端购票会话恢复与独立多会话                        已完成
 Phase 7  Redis 临时占座                                      已完成
-Phase 8  支付 + 取消 + 支付/取消/超时状态竞争                待实现
+Phase 8  支付 + 取消 + 支付/取消/超时状态竞争                已完成
 Phase 9  按压测决定限流/排队/异步受理/操作查询               暂缓
 ```
 
@@ -141,12 +146,17 @@ GET /checkout-sessions?sessionId=...&recoverable=true
 PUT /checkout-sessions/{id}/seats
 POST /checkout-sessions/{id}/confirm
 POST /checkout-sessions/{id}/abandon
+POST /orders/{orderId}/pay
+POST /orders/{orderId}/cancel
+GET /payment-attempts/{paymentAttemptId}
+GET /notifications
+POST /notifications/{notificationId}/read
 ```
 
 当前 Vue 页面实际调用活动列表、活动场次列表、场次座位图和全部 CheckoutSession 接口，
 尚未调用已经存在的 `GET /events/{eventId}`。Phase 3 后端预订能力与 Phase 4 订单查询、超时释放 Worker
 已经完成；Phase 7 的 Redis 临时占座和带 CheckoutSession 上下文的座位图也已完成；
-支付和取消能力仍未实现。
+Phase 8 的异步模拟支付、取消、超时竞争、自动退款和用户通知也已完成。
 
 ---
 
@@ -270,7 +280,19 @@ Phase 3 通过 `002_add_reservation_idempotency.sql` 为 Reservation 增加可�
 
 MVP 阶段支付采用模拟接口，不接第三方支付平台。
 
-### 4.7 CheckoutSession 与 CheckoutSessionSeat
+### 4.7 PaymentAttempt、Refund 与 UserNotification
+
+`005_add_payment_lifecycle.sql` 增加 `payment_attempts`、`refunds` 和
+`user_notifications`。一个 Order 可以有多次 PaymentAttempt，但部分唯一索引保证
+同一 Order 最多一条 `PROCESSING` Attempt。Attempt 状态为
+`PROCESSING / SUCCEEDED / FAILED / TIMED_OUT`；`accepted_at` 进一步区分“渠道已经
+成功”与“本次成功已被订单接纳”。
+
+Refund 是独立的全额补偿记录，不给 Order 增加 `REFUNDED`。每个
+`payment_attempt_id` 最多一条 Refund。UserNotification 使用唯一 `dedupe_key`
+保证相同支付、取消、过期或退款事件不会因重试重复创建。
+
+### 4.8 CheckoutSession 与 CheckoutSessionSeat
 
 Phase 5 的 `checkout_sessions` 保存用户针对一个 Session 的本轮购买流程，状态为
 `SELECTING / SUBMITTING / RESERVED / ABANDONED`。它保存服务端确认键和可空的
@@ -488,9 +510,14 @@ EXPIRED
 当前状态仍然是 PENDING_PAYMENT 的订单
 ```
 
-这样可以防止支付、取消和超时流程相互覆盖。Phase 4 已建立长期锁顺序：先锁
-Order，再锁 Reservation，最后按 `SessionSeat.id` 升序锁 SessionSeat。未来支付和
-取消实现必须沿用该顺序，并以 Order 作为终态竞争的第一仲裁点。
+这样可以防止支付、取消和超时流程相互覆盖。Phase 8 的统一正式生命周期锁顺序为：
+
+```text
+Order → PaymentAttempt（需要时） → Reservation → SessionSeat（id ASC）
+```
+
+Worker 只在锁 Order 时使用 `SKIP LOCKED`；在线支付和取消等待同一行锁。三条路径都
+以 Order 作为终态竞争的第一仲裁点，Redis 不参与正式终态判断。
 
 支付接口必须自行使用数据库时间判断 `current_time >= expires_at`，不能依赖 Worker
 已经先把订单改成 EXPIRED 才识别过期。`expires_at` 是时间上的正式业务事实，Worker
@@ -498,21 +525,35 @@ Order，再锁 Reservation，最后按 `SessionSeat.id` 升序锁 SessionSeat。
 
 ---
 
-## 8. 模拟支付
+## 8. 异步模拟支付（Phase 8）
 
-MVP 提供模拟支付接口。
+`POST /orders/{orderId}/pay` 不同步把 Order 改成 PAID。它先在 Order 行锁事务中创建
+或复用 `PROCESSING` PaymentAttempt，提交成功后返回 HTTP 202，再用 Drogon EventLoop
+非阻塞 timer 模拟 2～6 秒渠道处理，默认失败率约 1%。Order 不增加
+`PAYMENT_PROCESSING` 状态。
 
-用户调用支付接口后：
+`Order.expires_at` 表示允许开始支付的截止时间。截止前发起的合法 Attempt 在自身
+10 秒 `processing_grace_seconds` 内会阻止 Worker 过期；锁 Order 后通过
+`clock_timestamp()` 取得权威时间。渠道成功且订单仍可接纳时，同一事务完成：
 
-1. 开启数据库事务。
-2. 检查订单当前状态是否仍为 PENDING_PAYMENT。
-3. 检查订单是否尚未过期。
-4. 将 Order 更新为 PAID。
-5. 将 Reservation 更新为 CONFIRMED。
-6. 将对应 SessionSeat 从 HELD 更新为 SOLD。
-7. 提交事务。
+```text
+PaymentAttempt SUCCEEDED + accepted_at
+Order PAID
+Reservation CONFIRMED
+SessionSeat SOLD + current_reservation_id NULL
+PAYMENT_SUCCEEDED Notification
+```
 
-支付操作必须保证订单状态、Reservation 状态和座位状态同时成功修改。
+渠道失败时 Attempt 进入 FAILED；订单尚有效则继续 PENDING_PAYMENT，允许重试。
+支付处理中仍允许主动取消，取消不会伪造 Attempt 为 FAILED。若渠道成功迟到而 Order
+已经 CANCELLED、EXPIRED，或已被另一 Attempt 支付，则 Attempt 记录 SUCCEEDED、
+`accepted_at = NULL`，保持原 Order/库存终态并自动创建全额 Refund。
+
+未被接纳的 Attempt SUCCESS 更新、Refund INSERT 和当前
+`AUTO_REFUND_COMPLETED` Notification 使用同一个 PostgreSQL Transaction；任一步失败
+都会回滚。`refunds.payment_attempt_id UNIQUE` 和通知 `dedupe_key UNIQUE` 保证重试幂等。
+CheckoutSession 在正式预订成功后始终保持 RESERVED，不随支付、取消、过期或退款扩展状态。
+完整竞争与补偿设计见 [Phase 8 支付生命周期专项设计](payment_lifecycle_phase8_design.md)。
 
 ---
 
@@ -529,7 +570,8 @@ MVP 提供模拟支付接口。
 
 已经 PAID 的订单不能通过 MVP 普通取消接口取消。
 
-退款属于后续版本能力。
+取消时当前 PROCESSING Attempt 保持原状态，之后的迟到成功按自动全额退款处理。
+正常 PAID 订单的主动退票/退款仍不在当前范围内。
 
 ---
 
@@ -555,7 +597,9 @@ AND expires_at <= 数据库当前时间
 
 实际候选查询按 `expires_at ASC, id ASC` 排序并使用可配置 `batch_size`；默认值为
 100。每个候选 Order 使用独立事务，先以 `FOR UPDATE SKIP LOCKED` 锁 Order 并重新
-检查状态和数据库时间，再依次锁 Reservation 和按 ID 升序排列的 SessionSeat。
+检查状态和数据库时间，再锁定可能仍在处理中的 PaymentAttempt。处于合法 grace 窗口
+内的 Attempt 使本轮正常跳过该 Order；超过 processing deadline 的 Attempt 先进入
+TIMED_OUT，之后再依次锁 Reservation 和按 ID 升序排列的 SessionSeat。
 
 全部正式关联座位必须仍为 HELD，且 `current_reservation_id` 必须指向目标
 Reservation。校验通过后，在同一数据库事务中：
@@ -568,6 +612,11 @@ Reservation。校验通过后，在同一数据库事务中：
 因为过期时间持久化在数据库中，所以应用停止后重新启动，仍然能够继续清理之前
 已经超时的订单。不能把“只有新订单请求到来时才顺便清理旧订单”作为主方案；
 突发票务流量可能产生集中到期，清理工作不能转嫁给后续用户请求。
+
+当前模拟渠道完成依赖进程内 EventLoop timer，进程重启会丢失 timer，启动时没有专门
+恢复 PROCESSING Attempt 的支付任务。此时 Worker 会在 processing deadline 前正常
+跳过，超过 deadline 后将 Attempt 标为 TIMED_OUT，并继续让订单过期收敛；它不会把
+不确定结果推断为渠道成功。真实支付渠道的 callback / polling 恢复留待后续接入。
 
 Worker 通过 Drogon `registerBeginningAdvice` 在应用启动后立即执行一轮，本轮异步
 处理全部完成后，再由 `getLoop()->runAfter()` 等待可配置周期（默认 5 秒）并启动
@@ -591,19 +640,17 @@ GET /events/{eventId}/sessions
 GET /sessions/{sessionId}/seats
 POST /reservations
 GET /orders/{orderId}
+POST /orders/{orderId}/pay
+POST /orders/{orderId}/cancel
+GET /payment-attempts/{paymentAttemptId}
+GET /notifications
+POST /notifications/{notificationId}/read
 ```
 
 Phase 4 后台能力已完成并验证：
 
 ```text
 订单超时释放 Worker
-```
-
-Phase 8 待实现：
-
-```text
-POST /orders/{orderId}/pay
-POST /orders/{orderId}/cancel
 ```
 
 前端 `expireOrderForDemo` 是 Mock-only 行为，不是后端接口。管理端功能不是 MVP
@@ -742,7 +789,7 @@ Order 和真实关联数据。并发测试不能反复污染这些记录。
 - Prometheus / Grafana。
 - Kubernetes。
 - 第三方真实支付。
-- 退款。
+- 正常 PAID 订单的主动退票/退款。
 - 优惠券。
 - 推荐系统。
 - 复杂后台管理系统。
@@ -887,6 +934,7 @@ MVP 完成时必须能够完整演示：
 4. 取消和超时能够正确释放座位。
 5. 服务重启不会导致超时订单永久占座。
 
-只要以上业务闭环和并发正确性成立，才认为核心 MVP 完成。当前 Phase 1～4 已经
-完成，Phase 5～7 的购票会话、恢复和 Redis 临时占座也已经落地；支付/取消以及完整故障恢复验证仍属于后续阶段，不能因为 Reservation 和
-过期回收已经可运行就把完整 MVP 标记为完成。
+只要以上业务闭环和并发正确性成立，才认为核心 MVP 完成。当前 Phase 1～8 已经完成：
+购票会话、恢复、Redis 临时占座、异步支付、取消、超时竞争、自动退款和通知均已落地，
+并通过当前阶段的事务、并发与故障路径验证。真实第三方支付渠道及正常 PAID 订单的
+主动退票/退款仍属于后续能力。
