@@ -70,8 +70,8 @@ void UserSessionRepository::create(
             idle_expires_at, absolute_expires_at
         ) VALUES (
             $1, $2, $3, clock_timestamp(), clock_timestamp(),
-            clock_timestamp() + make_interval(secs => $4),
-            clock_timestamp() + make_interval(secs => $5)
+            clock_timestamp() + ($4::bigint * INTERVAL '1 second'),
+            clock_timestamp() + ($5::bigint * INTERVAL '1 second')
         )
     )SQL"} + kReturningSession;
     drogon::app().getDbClient()->execSqlAsync(
@@ -118,7 +118,7 @@ void UserSessionRepository::touch(
         UPDATE user_sessions
         SET last_seen_at = clock_timestamp(),
             idle_expires_at = LEAST(
-                clock_timestamp() + make_interval(secs => $2),
+                clock_timestamp() + ($2::bigint * INTERVAL '1 second'),
                 absolute_expires_at
             )
         WHERE id = $1

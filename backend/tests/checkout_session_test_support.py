@@ -1,9 +1,13 @@
-import json
 import os
 from pathlib import Path
 import subprocess
-from urllib.error import HTTPError
-from urllib.request import Request, urlopen
+
+from auth_test_support import (
+    anonymous_request,
+    client_for,
+    reset_auth_clients,
+    test_user_values,
+)
 
 
 BASE_URL = os.environ.get("TICKETING_BASE_URL", "http://127.0.0.1:8080")
@@ -59,6 +63,7 @@ def cleanup_seat_holds() -> None:
 
 
 def cleanup_phase5_data(*, recreate_users: bool = False) -> None:
+    reset_auth_clients()
     cleanup_seat_holds()
     users = ", ".join(repr(user) for user in TEST_USERS)
     psql(
@@ -74,23 +79,29 @@ def cleanup_phase5_data(*, recreate_users: bool = False) -> None:
         WHERE current_reservation_id IN (
             SELECT id FROM reservations WHERE user_id IN ({users})
         );
+        DELETE FROM user_notifications WHERE user_id IN ({users});
+        DELETE FROM refunds WHERE order_id IN (
+            SELECT id FROM orders WHERE user_id IN ({users})
+        );
+        DELETE FROM payment_attempts WHERE order_id IN (
+            SELECT id FROM orders WHERE user_id IN ({users})
+        );
         DELETE FROM orders WHERE user_id IN ({users});
         DELETE FROM reservation_session_seats
         WHERE reservation_id IN (
             SELECT id FROM reservations WHERE user_id IN ({users})
         );
         DELETE FROM reservations WHERE user_id IN ({users});
+        DELETE FROM user_sessions WHERE user_id IN ({users});
         DELETE FROM app_users WHERE id IN ({users});
         UPDATE sessions SET status = 'ON_SALE' WHERE id = '{SESSION_ID}';
         COMMIT;
         """
     )
     if recreate_users:
-        values = ", ".join(
-            f"('{user}', 'Phase 5 integration user')" for user in TEST_USERS
-        )
+        values = test_user_values(TEST_USERS)
         psql(
-            "INSERT INTO app_users (id, display_name) VALUES "
+            "INSERT INTO app_users (id, display_name, username, password_hash, status) VALUES "
             f"{values} ON CONFLICT (id) DO NOTHING;"
         )
 
@@ -103,20 +114,15 @@ def request_json(
     body=None,
     timeout: float = 30,
 ):
-    headers = {"Content-Type": "application/json"}
-    if user_id is not None:
-        headers["X-User-Id"] = user_id
-    data = None if body is None else json.dumps(body).encode("utf-8")
-    request = Request(BASE_URL + path, data=data, headers=headers, method=method)
-    try:
-        with urlopen(request, timeout=timeout) as response:
-            return response.status, json.load(response)
-    except HTTPError as error:
-        return error.code, json.load(error)
-    except Exception as error:
-        raise AssertionError(
-            f"Backend is required at {BASE_URL}; {method} {path} failed: {error}"
-        ) from error
+    if user_id is None:
+        status, payload, _ = anonymous_request(
+            path, method=method, body=body, timeout=timeout
+        )
+    else:
+        status, payload, _ = client_for(user_id).request(
+            path, method=method, body=body, timeout=timeout
+        )
+    return status, payload
 
 
 def create_checkout(user_id: str, seat_ids: list[str]):
@@ -129,27 +135,21 @@ def create_checkout(user_id: str, seat_ids: list[str]):
 
 
 def confirm_checkout(checkout_id: str, user_id: str):
-    return request_json(
+    status, payload = request_json(
         f"/checkout-sessions/{checkout_id}/confirm",
         method="POST",
         user_id=user_id,
     )
+    if status == 200:
+        payload = payload["checkoutSession"]
+    return status, payload
 
 
 def create_formal_reservation(user_id: str, idempotency_key: str, seat_ids: list[str]):
-    headers = {
-        "Content-Type": "application/json",
-        "X-User-Id": user_id,
-        "Idempotency-Key": idempotency_key,
-    }
-    request = Request(
-        BASE_URL + "/reservations",
-        data=json.dumps({"sessionId": SESSION_ID, "seatIds": seat_ids}).encode("utf-8"),
-        headers=headers,
+    status, payload, _ = client_for(user_id).request(
+        "/reservations",
         method="POST",
+        body={"sessionId": SESSION_ID, "seatIds": seat_ids},
+        headers={"Idempotency-Key": idempotency_key},
     )
-    try:
-        with urlopen(request, timeout=30) as response:
-            return response.status, json.load(response)
-    except HTTPError as error:
-        return error.code, json.load(error)
+    return status, payload

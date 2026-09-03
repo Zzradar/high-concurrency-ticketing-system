@@ -6,8 +6,8 @@ from pathlib import Path
 import subprocess
 import threading
 import unittest
-from urllib.error import HTTPError
-from urllib.request import Request, urlopen
+
+from auth_test_support import anonymous_request, client_for, reset_auth_clients
 
 
 BASE_URL = os.environ.get("TICKETING_BASE_URL", "http://127.0.0.1:8080")
@@ -53,6 +53,7 @@ def psql(sql: str) -> str:
 
 
 def cleanup_phase3_data() -> None:
+    reset_auth_clients()
     seat_list = ", ".join(f"'{seat}'" for seat in TEST_SEATS)
     psql(
         f"""
@@ -63,6 +64,11 @@ def cleanup_phase3_data() -> None:
             SELECT id FROM reservations
             WHERE idempotency_key LIKE 'it-phase3-%'
         ) OR id IN ({seat_list});
+        DELETE FROM user_notifications WHERE order_id IN (
+            SELECT id FROM orders WHERE reservation_id IN (
+                SELECT id FROM reservations WHERE idempotency_key LIKE 'it-phase3-%'
+            )
+        );
         DELETE FROM orders
         WHERE reservation_id IN (
             SELECT id FROM reservations
@@ -89,37 +95,25 @@ def request_json(
     idempotency_key: str | None = None,
     timeout: float = 30,
 ):
-    headers = {"Content-Type": "application/json"}
-    if user_id is not None:
-        headers["X-User-Id"] = user_id
+    headers = {}
     if idempotency_key is not None:
         headers["Idempotency-Key"] = idempotency_key
-    data = raw_body if raw_body is not None else json.dumps(body).encode("utf-8")
-    request = Request(
-        BASE_URL + "/reservations",
-        data=data,
-        headers=headers,
-        method="POST",
-    )
-    try:
-        with urlopen(request, timeout=timeout) as response:
-            return response.status, json.load(response)
-    except HTTPError as error:
-        return error.code, json.load(error)
-    except Exception as error:
-        raise AssertionError(
-            f"Backend is required at {BASE_URL}; POST /reservations failed: {error}"
-        ) from error
+    if user_id is None or user_id == "":
+        status, payload, _ = anonymous_request(
+            "/reservations", method="POST", body=body, raw_body=raw_body,
+            headers=headers, timeout=timeout,
+        )
+    else:
+        status, payload, _ = client_for(user_id).request(
+            "/reservations", method="POST", body=body, raw_body=raw_body,
+            headers=headers, timeout=timeout,
+        )
+    return status, payload
 
 
 def get_json(path: str):
-    try:
-        with urlopen(BASE_URL + path, timeout=10) as response:
-            return response.status, json.load(response)
-    except Exception as error:
-        raise AssertionError(
-            f"Backend is required at {BASE_URL}; GET {path} failed: {error}"
-        ) from error
+    status, payload, _ = anonymous_request(path, timeout=10)
+    return status, payload
 
 
 def assert_iso_utc(test: unittest.TestCase, value: str) -> None:
@@ -388,8 +382,8 @@ class ReservationHttpIntegrationTest(unittest.TestCase):
 
     def test_request_validation_and_session_errors(self) -> None:
         cases = (
-            ("missing-user", None, "it-phase3-validation-user", {"sessionId": SESSION_ID, "seatIds": [TEST_SEATS[0]]}, 400),
-            ("empty-user", "", "it-phase3-validation-empty-user", {"sessionId": SESSION_ID, "seatIds": [TEST_SEATS[0]]}, 400),
+            ("missing-auth", None, "it-phase3-validation-user", {"sessionId": SESSION_ID, "seatIds": [TEST_SEATS[0]]}, 401),
+            ("empty-auth", "", "it-phase3-validation-empty-user", {"sessionId": SESSION_ID, "seatIds": [TEST_SEATS[0]]}, 401),
             ("missing-key", USER_ID, None, {"sessionId": SESSION_ID, "seatIds": [TEST_SEATS[0]]}, 400),
             ("empty-key", USER_ID, "", {"sessionId": SESSION_ID, "seatIds": [TEST_SEATS[0]]}, 400),
             ("long-key", USER_ID, "x" * 129, {"sessionId": SESSION_ID, "seatIds": [TEST_SEATS[0]]}, 400),
@@ -402,7 +396,6 @@ class ReservationHttpIntegrationTest(unittest.TestCase):
             ("non-string-seat-id", USER_ID, "it-phase3-validation-seat-type", {"sessionId": SESSION_ID, "seatIds": [1]}, 400),
             ("seven-seats", USER_ID, "it-phase3-validation-seven", {"sessionId": SESSION_ID, "seatIds": [f"seat-{i}" for i in range(7)]}, 400),
             ("duplicate", USER_ID, "it-phase3-validation-duplicate", {"sessionId": SESSION_ID, "seatIds": [TEST_SEATS[0], TEST_SEATS[0]]}, 400),
-            ("unknown-user", "U-NOT-PRESENT", "it-phase3-validation-unknown-user", {"sessionId": SESSION_ID, "seatIds": [TEST_SEATS[0]]}, 400),
             ("unknown-session", USER_ID, "it-phase3-validation-unknown-session", {"sessionId": "not-present", "seatIds": [TEST_SEATS[0]]}, 404),
             ("unknown-seat", USER_ID, "it-phase3-validation-unknown-seat", {"sessionId": SESSION_ID, "seatIds": [f"{SESSION_ID}-Z99"]}, 400),
             ("other-session-seat", USER_ID, "it-phase3-validation-other-session", {"sessionId": SESSION_ID, "seatIds": ["ses-concert-1002-A01"]}, 400),
@@ -415,8 +408,11 @@ class ReservationHttpIntegrationTest(unittest.TestCase):
                     idempotency_key=key,
                 )
                 self.assertEqual(status, expected_status, payload)
-                self.assertEqual(payload["code"],
-                                 "SESSION_NOT_FOUND" if expected_status == 404 else "INVALID_ARGUMENT")
+                expected_code = {
+                    401: "UNAUTHENTICATED",
+                    404: "SESSION_NOT_FOUND",
+                }.get(expected_status, "INVALID_ARGUMENT")
+                self.assertEqual(payload["code"], expected_code)
 
         status, payload = request_json(
             raw_body=b"{invalid-json",

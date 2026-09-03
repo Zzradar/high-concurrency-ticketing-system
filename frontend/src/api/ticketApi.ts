@@ -1,6 +1,9 @@
 import axios from 'axios'
 import type {
   CheckoutSession,
+  CheckoutConfirmationResult,
+  CancelOrderResult,
+  CurrentUser,
   PaymentAttempt,
   PaymentStartResult,
   Reservation,
@@ -27,12 +30,6 @@ interface ApiErrorPayload {
   message?: unknown
 }
 
-export const DEMO_USER_ID = 'U-1001'
-export const apiRequestHeaders = {
-  'Content-Type': 'application/json',
-  'X-User-Id': DEMO_USER_ID,
-} as const
-
 export const checkoutSessionPaths = {
   collection: '/checkout-sessions',
   item: (id: string) => '/checkout-sessions/' + id,
@@ -56,12 +53,37 @@ export function normalizeApiError(error: unknown): unknown {
 const http = axios.create({
   baseURL: '/api',
   timeout: 8000,
-  headers: apiRequestHeaders,
+  withCredentials: true,
 })
+
+function cookieValue(name: string) {
+  const prefix = encodeURIComponent(name) + '='
+  const item = document.cookie.split('; ').find((part) => part.startsWith(prefix))
+  return item ? decodeURIComponent(item.slice(prefix.length)) : ''
+}
+
+http.interceptors.request.use((config) => {
+  const method = (config.method ?? 'get').toUpperCase()
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+    const csrf = cookieValue('ticketing_csrf')
+    if (csrf) config.headers.set('X-CSRF-Token', csrf)
+  }
+  return config
+})
+
+let unauthenticatedHandler: (() => void) | null = null
+export function onUnauthenticated(handler: () => void) {
+  unauthenticatedHandler = handler
+}
 
 http.interceptors.response.use(
   (response) => response,
-  (error: unknown) => Promise.reject(normalizeApiError(error)),
+  (error: unknown) => {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      unauthenticatedHandler?.()
+    }
+    return Promise.reject(normalizeApiError(error))
+  },
 )
 
 export const isMockMode =
@@ -172,9 +194,24 @@ let notifications: UserNotification[] = []
 let sequence = 24082600
 let mockPaymentDelayMilliseconds: number | null = null
 let mockPaymentOutcome: 'SUCCESS' | 'FAILURE' | null = null
+let mockCurrentUser: CurrentUser | null = null
 
 const clone = <T>(value: T): T => structuredClone(value)
 const wait = () => new Promise((resolve) => setTimeout(resolve, mockLatency))
+
+function requireMockUser() {
+  if (!mockCurrentUser) throw new TicketApiError('请先登录。', 'UNAUTHENTICATED')
+  return mockCurrentUser
+}
+
+async function mockLogin(username: string, password: string) {
+  await wait()
+  if (username.trim().toLowerCase() !== 'demo' || password !== 'Ticketing123!') {
+    throw new TicketApiError('用户名或密码错误。', 'INVALID_CREDENTIALS')
+  }
+  mockCurrentUser = { id: 'U-1001', username: 'demo', displayName: 'Demo 用户' }
+  return clone(mockCurrentUser)
+}
 
 function createSeats(sessionId: string): Seat[] {
   const unavailableHeld = new Set(['A03', 'B07', 'D04', 'F09'])
@@ -304,6 +341,7 @@ async function mockGetSeats(sessionId: string) {
 
 async function mockCreateReservation(sessionId: string, seatIds: string[]): Promise<ReservationResult> {
   await wait()
+  const currentUser = requireMockUser()
   const seats = ensureSeats(sessionId)
   const requested = seats.filter((seat) => seatIds.includes(seat.id))
 
@@ -327,7 +365,7 @@ async function mockCreateReservation(sessionId: string, seatIds: string[]): Prom
 
   const reservation: Reservation = {
     id: reservationId,
-    userId: 'U-1001',
+    userId: currentUser.id,
     sessionId,
     seatIds: [...seatIds],
     status: 'ACTIVE',
@@ -348,6 +386,7 @@ async function mockCreateReservation(sessionId: string, seatIds: string[]): Prom
 
   reservations.set(reservation.id, reservation)
   orders.set(order.id, order)
+  addNotification(order, 'ORDER_CREATED', '订单已创建', '订单已创建，请在有效期内完成支付。', 'order-created:' + order.id)
   return clone({ reservation, order })
 }
 
@@ -369,6 +408,7 @@ async function mockCreateCheckoutSession(
   seatIds: string[],
 ): Promise<CheckoutSession> {
   await wait()
+  const currentUser = requireMockUser()
   const session = Object.values(sessionsSeed)
     .flat()
     .find((item) => item.id === sessionId)
@@ -377,7 +417,7 @@ async function mockCreateCheckoutSession(
   const now = new Date().toISOString()
   const checkout: CheckoutSession = {
     id: 'CHK-' + ++sequence,
-    userId: DEMO_USER_ID,
+    userId: currentUser.id,
     sessionId,
     seatIds: [...seatIds].sort(),
     status: 'SELECTING',
@@ -392,7 +432,8 @@ async function mockCreateCheckoutSession(
 async function mockGetCheckoutSession(id: string): Promise<CheckoutSession> {
   await wait()
   const checkout = checkoutSessions.get(id)
-  if (!checkout || checkout.userId !== DEMO_USER_ID) {
+  const currentUser = requireMockUser()
+  if (!checkout || checkout.userId !== currentUser.id) {
     throw new TicketApiError('未找到该购票会话。', 'CHECKOUT_SESSION_NOT_FOUND')
   }
   return clone(checkout)
@@ -402,11 +443,12 @@ async function mockListRecoverableCheckoutSessions(
   sessionId: string,
 ): Promise<CheckoutSession[]> {
   await wait()
+  const currentUser = requireMockUser()
   return clone(
     [...checkoutSessions.values()]
       .filter(
         (checkout) =>
-          checkout.userId === DEMO_USER_ID &&
+          checkout.userId === currentUser.id &&
           checkout.sessionId === sessionId &&
           (checkout.status === 'SELECTING' || checkout.status === 'SUBMITTING'),
       )
@@ -462,21 +504,26 @@ function startMockCheckoutConfirmation(checkout: CheckoutSession) {
   return pending
 }
 
-async function mockConfirmCheckoutSession(id: string): Promise<CheckoutSession> {
+async function mockConfirmCheckoutSession(id: string): Promise<CheckoutConfirmationResult> {
   await wait()
+  requireMockUser()
   const checkout = checkoutSessions.get(id)
   if (!checkout) {
     throw new TicketApiError('未找到该购票会话。', 'CHECKOUT_SESSION_NOT_FOUND')
   }
-  if (checkout.status === 'RESERVED') return clone(checkout)
+  if (checkout.status === 'RESERVED') {
+    return { disposition: 'ALREADY_CONFIRMED', checkoutSession: clone(checkout) }
+  }
   if (checkout.status === 'ABANDONED' || checkout.seatIds.length === 0) {
     throw new TicketApiError('当前购票会话不能确认。', 'CHECKOUT_SESSION_NOT_CONFIRMABLE')
   }
   const existing = checkoutConfirmations.get(id)
-  if (existing) return clone(await existing)
+  if (existing) {
+    return { disposition: 'REUSED_CONFIRMATION', checkoutSession: clone(await existing) }
+  }
   checkout.status = 'SUBMITTING'
   checkout.updatedAt = new Date().toISOString()
-  return clone(await startMockCheckoutConfirmation(checkout))
+  return { disposition: 'CONFIRMED_NOW', checkoutSession: clone(await startMockCheckoutConfirmation(checkout)) }
 }
 
 async function mockAbandonCheckoutSession(id: string): Promise<CheckoutSession> {
@@ -496,6 +543,7 @@ async function mockAbandonCheckoutSession(id: string): Promise<CheckoutSession> 
 
 async function mockGetOrder(orderId: string) {
   await wait()
+  requireMockUser()
   const order = orders.get(orderId)
   if (!order) throw new TicketApiError('未找到该订单。', 'ORDER_NOT_FOUND')
   synchronizeExpiry(order)
@@ -545,6 +593,7 @@ function finishMockPayment(attemptId: string, outcome: 'SUCCESS' | 'FAILURE') {
 
 async function mockPayOrder(orderId: string): Promise<PaymentStartResult> {
   await wait()
+  requireMockUser()
   const order = orders.get(orderId)
   if (!order) throw new TicketApiError('未找到该订单。', 'ORDER_NOT_FOUND')
   synchronizeExpiry(order)
@@ -552,7 +601,7 @@ async function mockPayOrder(orderId: string): Promise<PaymentStartResult> {
     const accepted = [...paymentAttempts.values()].find(
       (attempt) => attempt.orderId === orderId && attempt.acceptedAt,
     )
-    return clone({ order, paymentAttempt: accepted ?? null })
+    return clone({ disposition: 'ALREADY_PAID', order, paymentAttempt: accepted ?? null })
   }
   if (order.status === 'EXPIRED') {
     throw new TicketApiError('订单已过期。', 'ORDER_EXPIRED')
@@ -561,7 +610,7 @@ async function mockPayOrder(orderId: string): Promise<PaymentStartResult> {
     throw new TicketApiError('当前订单无法支付。', 'ORDER_NOT_PAYABLE')
   }
   const existing = activeProcessingAttempt(orderId)
-  if (existing) return clone({ order, paymentAttempt: existing })
+  if (existing) return clone({ disposition: 'REUSED_PROCESSING', order, paymentAttempt: existing })
 
   const startedAt = new Date()
   const delay = mockPaymentDelayMilliseconds ?? 2000 + Math.random() * 4000
@@ -576,15 +625,18 @@ async function mockPayOrder(orderId: string): Promise<PaymentStartResult> {
   paymentAttempts.set(attempt.id, attempt)
   const outcome = mockPaymentOutcome ?? (Math.random() < 0.01 ? 'FAILURE' : 'SUCCESS')
   window.setTimeout(() => finishMockPayment(attempt.id, outcome), delay)
-  return clone({ order, paymentAttempt: attempt })
+  return clone({ disposition: 'STARTED_NEW', order, paymentAttempt: attempt })
 }
 
-async function mockCancelOrder(orderId: string) {
+async function mockCancelOrder(orderId: string): Promise<CancelOrderResult> {
   await wait()
+  requireMockUser()
   const order = orders.get(orderId)
   if (!order) throw new TicketApiError('未找到该订单。', 'ORDER_NOT_FOUND')
   synchronizeExpiry(order)
-  if (order.status === 'CANCELLED') return clone(order)
+  if (order.status === 'CANCELLED') {
+    return { disposition: 'ALREADY_CANCELLED', order: clone(order) }
+  }
   if (order.status === 'EXPIRED') {
     throw new TicketApiError('订单已过期。', 'ORDER_EXPIRED')
   }
@@ -593,7 +645,7 @@ async function mockCancelOrder(orderId: string) {
   }
   releaseReservation(order, 'CANCELLED')
   addNotification(order, 'ORDER_CANCELLED', '订单已取消', '订单已取消，所选座位已释放。', 'order-cancelled:' + order.id)
-  return clone(order)
+  return { disposition: 'CANCELLED_NOW', order: clone(order) }
 }
 
 async function mockGetPaymentAttempt(attemptId: string) {
@@ -606,11 +658,13 @@ async function mockGetPaymentAttempt(attemptId: string) {
 
 async function mockGetNotifications() {
   await wait()
+  requireMockUser()
   return clone(notifications)
 }
 
 async function mockMarkNotificationRead(notificationId: string) {
   await wait()
+  requireMockUser()
   const notification = notifications.find((item) => item.id === notificationId)
   if (!notification) throw new TicketApiError('未找到通知。', 'NOTIFICATION_NOT_FOUND')
   notification.readAt ??= new Date().toISOString()
@@ -644,13 +698,51 @@ export function buildSeatMapRequestConfig(checkoutSessionId?: string) {
 }
 
 export const ticketApi = {
+  async login(username: string, password: string): Promise<CurrentUser> {
+    if (isMockMode) return mockLogin(username, password)
+    return (await http.post<CurrentUser>('/auth/login', { username, password })).data
+  },
+  async me(): Promise<CurrentUser> {
+    if (isMockMode) {
+      await wait()
+      if (!mockCurrentUser) throw new TicketApiError('请先登录。', 'UNAUTHENTICATED')
+      return clone(mockCurrentUser)
+    }
+    return (await http.get<CurrentUser>('/auth/me')).data
+  },
+  async logout(): Promise<void> {
+    if (isMockMode) {
+      await wait()
+      mockCurrentUser = null
+      return
+    }
+    await http.post('/auth/logout')
+  },
   async getEvents(): Promise<TicketEvent[]> {
     if (isMockMode) return mockGetEvents()
     return (await http.get<TicketEvent[]>('/events')).data
   },
+  async getEvent(eventId: string): Promise<TicketEvent> {
+    if (isMockMode) {
+      await wait()
+      const event = eventsSeed.find((item) => item.id === eventId)
+      if (!event) throw new TicketApiError('活动不存在。', 'EVENT_NOT_FOUND')
+      return clone(event)
+    }
+    return (await http.get<TicketEvent>('/events/' + eventId)).data
+  },
   async getSessions(eventId: string): Promise<TicketSession[]> {
     if (isMockMode) return mockGetSessions(eventId)
     return (await http.get<TicketSession[]>('/events/' + eventId + '/sessions')).data
+  },
+  async getSession(sessionId: string): Promise<TicketSession> {
+    if (isMockMode) {
+      await wait()
+      const session = Object.values(sessionsSeed).flat().find((item) => item.id === sessionId)
+      if (!session) throw new TicketApiError('场次不存在。', 'SESSION_NOT_FOUND')
+      return clone(session)
+    }
+    return (await http.get<TicketSession>('/sessions/' + sessionId)).data
   },
   async getSeats(sessionId: string, checkoutSessionId?: string): Promise<Seat[]> {
     if (isMockMode) return mockGetSeats(sessionId)
@@ -706,9 +798,9 @@ export const ticketApi = {
       )
     ).data
   },
-  async confirmCheckoutSession(id: string): Promise<CheckoutSession> {
+  async confirmCheckoutSession(id: string): Promise<CheckoutConfirmationResult> {
     if (isMockMode) return mockConfirmCheckoutSession(id)
-    return (await http.post<CheckoutSession>(checkoutSessionPaths.confirm(id))).data
+    return (await http.post<CheckoutConfirmationResult>(checkoutSessionPaths.confirm(id))).data
   },
   async abandonCheckoutSession(id: string): Promise<CheckoutSession> {
     if (isMockMode) return mockAbandonCheckoutSession(id)
@@ -717,6 +809,20 @@ export const ticketApi = {
   async getOrder(orderId: string): Promise<TicketOrder> {
     if (isMockMode) return mockGetOrder(orderId)
     return (await http.get<TicketOrder>('/orders/' + orderId)).data
+  },
+  async getOrders(filters: { status?: string; sessionId?: string; limit?: number } = {}): Promise<TicketOrder[]> {
+    if (isMockMode) {
+      await wait()
+      requireMockUser()
+      return clone(
+        [...orders.values()]
+          .filter((order) => !filters.status || order.status === filters.status)
+          .filter((order) => !filters.sessionId || order.sessionId === filters.sessionId)
+          .sort((left, right) => right.createdAt.localeCompare(left.createdAt))
+          .slice(0, filters.limit ?? 20),
+      )
+    }
+    return (await http.get<TicketOrder[]>('/orders', { params: filters })).data
   },
   async payOrder(orderId: string): Promise<PaymentStartResult> {
     if (isMockMode) return mockPayOrder(orderId)
@@ -734,9 +840,9 @@ export const ticketApi = {
     if (isMockMode) return mockMarkNotificationRead(notificationId)
     return (await http.post<UserNotification>('/notifications/' + notificationId + '/read')).data
   },
-  async cancelOrder(orderId: string): Promise<TicketOrder> {
+  async cancelOrder(orderId: string): Promise<CancelOrderResult> {
     if (isMockMode) return mockCancelOrder(orderId)
-    return (await http.post<TicketOrder>('/orders/' + orderId + '/cancel')).data
+    return (await http.post<CancelOrderResult>('/orders/' + orderId + '/cancel')).data
   },
   async expireOrderForDemo(orderId: string): Promise<TicketOrder> {
     if (!isMockMode) throw new TicketApiError('真实 API 模式不支持模拟超时。', 'MOCK_ONLY')
@@ -755,6 +861,7 @@ export function resetMockData() {
   sequence = 24082600
   mockPaymentDelayMilliseconds = null
   mockPaymentOutcome = null
+  mockCurrentUser = null
 }
 
 export function setMockLatency(milliseconds: number) {

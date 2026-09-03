@@ -1,17 +1,21 @@
-import json
 import os
 from datetime import datetime
 from pathlib import Path
 import subprocess
 import unittest
-from urllib.error import HTTPError
-from urllib.request import Request, urlopen
+
+from auth_test_support import (
+    anonymous_request,
+    client_for,
+    reset_auth_clients,
+    test_user_values,
+)
 
 
 BASE_URL = os.environ.get("TICKETING_BASE_URL", "http://127.0.0.1:8080")
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 USER_ID = "U-1001"
-OTHER_USER_ID = "U-SEED-HOLDER"
+OTHER_USER_ID = "U-1002"
 SESSION_ID = "ses-concert-1001"
 SEAT_ID = f"{SESSION_ID}-A01"
 KEY_PREFIX = "it-phase4-"
@@ -39,6 +43,7 @@ def psql(sql: str) -> str:
 
 
 def cleanup_phase4_data() -> None:
+    reset_auth_clients()
     psql(
         f"""
         BEGIN;
@@ -75,6 +80,8 @@ def cleanup_phase4_data() -> None:
         );
         DELETE FROM reservations
         WHERE idempotency_key LIKE '{KEY_PREFIX}%';
+        DELETE FROM user_sessions WHERE user_id = '{OTHER_USER_ID}';
+        DELETE FROM app_users WHERE id = '{OTHER_USER_ID}';
         COMMIT;
         """
     )
@@ -82,22 +89,18 @@ def cleanup_phase4_data() -> None:
 
 def request_json(path: str, *, method: str = "GET", user_id: str | None = USER_ID,
                  body=None, idempotency_key: str | None = None):
-    headers = {"Content-Type": "application/json"}
-    if user_id is not None:
-        headers["X-User-Id"] = user_id
+    headers = {}
     if idempotency_key is not None:
         headers["Idempotency-Key"] = idempotency_key
-    data = None if body is None else json.dumps(body).encode("utf-8")
-    request = Request(BASE_URL + path, data=data, headers=headers, method=method)
-    try:
-        with urlopen(request, timeout=15) as response:
-            return response.status, json.load(response)
-    except HTTPError as error:
-        return error.code, json.load(error)
-    except Exception as error:
-        raise AssertionError(
-            f"Backend is required at {BASE_URL}; {method} {path} failed: {error}"
-        ) from error
+    if user_id is None or user_id == "":
+        status, payload, _ = anonymous_request(
+            path, method=method, body=body, headers=headers, timeout=15
+        )
+    else:
+        status, payload, _ = client_for(user_id).request(
+            path, method=method, body=body, headers=headers, timeout=15
+        )
+    return status, payload
 
 
 def create_pending_order(key: str = "it-phase4-get"):
@@ -121,6 +124,10 @@ def assert_iso_utc(test: unittest.TestCase, value: str) -> None:
 class OrderGetHttpIntegrationTest(unittest.TestCase):
     def setUp(self) -> None:
         cleanup_phase4_data()
+        psql(
+            "INSERT INTO app_users (id, display_name, username, password_hash, status) VALUES "
+            + test_user_values((OTHER_USER_ID,)) + ";"
+        )
 
     def tearDown(self) -> None:
         cleanup_phase4_data()
@@ -191,20 +198,22 @@ class OrderGetHttpIntegrationTest(unittest.TestCase):
                     "message": "Order not found",
                 })
 
-    def test_invalid_user_header_matches_reservation_validation(self) -> None:
-        for user_id in (None, "", "U-NOT-PRESENT"):
+    def test_missing_auth_is_rejected(self) -> None:
+        for user_id in (None, ""):
             with self.subTest(user_id=user_id):
                 status, payload = request_json(
                     "/orders/TKT-NOT-PRESENT", user_id=user_id
                 )
-                self.assertEqual(status, 400)
-                self.assertEqual(payload["code"], "INVALID_ARGUMENT")
+                self.assertEqual(status, 401)
+                self.assertEqual(payload["code"], "UNAUTHENTICATED")
 
     def test_paid_seed_order_includes_paid_at(self) -> None:
-        order_id = "TKT-SEED-SOLD-ses-concert-1001"
-        status, order = request_json(
-            f"/orders/{order_id}", user_id=OTHER_USER_ID
+        created = create_pending_order("it-phase4-paid-shape")
+        psql(
+            f"UPDATE orders SET status = 'PAID', paid_at = clock_timestamp() "
+            f"WHERE id = '{created['id']}';"
         )
+        status, order = request_json(f"/orders/{created['id']}")
         self.assertEqual(status, 200, order)
         self.assertEqual(order["status"], "PAID")
         assert_iso_utc(self, order["paidAt"])
@@ -218,7 +227,14 @@ class OrderGetHttpIntegrationTest(unittest.TestCase):
             f"/orders/{created['id']}/cancel", method="POST"
         )
         self.assertEqual((first_status, second_status), (200, 200))
-        self.assertEqual((first["status"], second["status"]), ("CANCELLED", "CANCELLED"))
+        self.assertEqual(
+            (first["disposition"], second["disposition"]),
+            ("CANCELLED_NOW", "ALREADY_CANCELLED"),
+        )
+        self.assertEqual(
+            (first["order"]["status"], second["order"]["status"]),
+            ("CANCELLED", "CANCELLED"),
+        )
         state = psql(
             f"""
             SELECT ticket_order.status, reservation.status,

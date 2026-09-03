@@ -1,12 +1,11 @@
 from concurrent.futures import ThreadPoolExecutor
-import json
 import os
 from pathlib import Path
 import subprocess
 import time
 import unittest
-from urllib.error import HTTPError
-from urllib.request import Request, urlopen
+
+from auth_test_support import client_for, reset_auth_clients, test_user_values
 
 
 BASE_URL = os.environ.get("TICKETING_BASE_URL", "http://127.0.0.1:8080")
@@ -30,17 +29,14 @@ def psql(sql: str) -> str:
 
 
 def request_json(path: str, *, method="GET", user_id=USER_ID, body=None):
-    headers = {"Content-Type": "application/json", "X-User-Id": user_id}
-    data = None if body is None else json.dumps(body).encode()
-    request = Request(BASE_URL + path, data=data, headers=headers, method=method)
-    try:
-        with urlopen(request, timeout=30) as response:
-            return response.status, json.load(response)
-    except HTTPError as error:
-        return error.code, json.load(error)
+    status, payload, _ = client_for(user_id).request(
+        path, method=method, body=body, timeout=30
+    )
+    return status, payload
 
 
 def cleanup(*, create_users=False) -> None:
+    reset_auth_clients()
     users = f"'{USER_ID}', '{OTHER_USER_ID}'"
     seat_list = ", ".join(repr(value) for value in SEATS)
     psql(
@@ -59,28 +55,26 @@ def cleanup(*, create_users=False) -> None:
             SELECT id FROM reservations WHERE user_id IN ({users})
         );
         DELETE FROM reservations WHERE user_id IN ({users});
+        DELETE FROM user_sessions WHERE user_id IN ({users});
         DELETE FROM app_users WHERE id IN ({users});
         COMMIT;
         """
     )
     if create_users:
         psql(
-            f"INSERT INTO app_users (id, display_name) VALUES "
-            f"('{USER_ID}', 'Phase 8 user'), ('{OTHER_USER_ID}', 'Phase 8 other');"
+            "INSERT INTO app_users (id, display_name, username, password_hash, status) VALUES "
+            + test_user_values((USER_ID, OTHER_USER_ID)) + ";"
         )
 
 
 def create_order(key: str, seat_id: str):
-    request = Request(
-        BASE_URL + "/reservations",
-        data=json.dumps({"sessionId": SESSION_ID, "seatIds": [seat_id]}).encode(),
-        headers={"Content-Type": "application/json", "X-User-Id": USER_ID,
-                 "Idempotency-Key": PREFIX + key}, method="POST",
+    status, payload, _ = client_for(USER_ID).request(
+        "/reservations", method="POST",
+        body={"sessionId": SESSION_ID, "seatIds": [seat_id]},
+        headers={"Idempotency-Key": PREFIX + key}, timeout=30,
     )
-    with urlopen(request, timeout=30) as response:
-        payload = json.load(response)
-        if response.status != 201:
-            raise AssertionError((response.status, payload))
+    if status != 201:
+        raise AssertionError((status, payload))
     return payload["order"], payload["reservation"]
 
 
@@ -139,7 +133,10 @@ class PaymentIntegrationTest(unittest.TestCase):
         self.assertEqual(status, 202)
         attempt_id = started["paymentAttempt"]["id"]
         cancel_status, cancelled = request_json(f"/orders/{order['id']}/cancel", method="POST")
-        self.assertEqual((cancel_status, cancelled["status"]), (200, "CANCELLED"))
+        self.assertEqual(
+            (cancel_status, cancelled["disposition"], cancelled["order"]["status"]),
+            (200, "CANCELLED_NOW", "CANCELLED"),
+        )
         self.assertEqual(psql(f"SELECT status FROM payment_attempts WHERE id='{attempt_id}';"), "PROCESSING")
         attempt = wait_attempt(attempt_id)
         self.assertNotIn("acceptedAt", attempt)

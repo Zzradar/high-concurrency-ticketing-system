@@ -4,12 +4,21 @@
 
 #include <drogon/drogon.h>
 
-#include <charconv>
 #include <memory>
 #include <utility>
 
 namespace
 {
+constexpr std::string_view kCheckScript = R"lua(
+local username_failures = tonumber(redis.call('GET', KEYS[1]) or '0')
+local ip_failures = tonumber(redis.call('GET', KEYS[2]) or '0')
+if username_failures < tonumber(ARGV[1]) and
+   ip_failures < tonumber(ARGV[1]) then
+  return 1
+end
+return 0
+)lua";
+
 constexpr std::string_view kRecordFailureScript = R"lua(
 for _, key in ipairs(KEYS) do
   local value = redis.call('INCR', key)
@@ -18,14 +27,6 @@ end
 return 1
 )lua";
 
-std::int64_t counter(const drogon::nosql::RedisResult &value)
-{
-    if (value.isNil()) return 0;
-    const auto text = value.asString();
-    std::int64_t parsed{};
-    const auto result = std::from_chars(text.data(), text.data() + text.size(), parsed);
-    return result.ec == std::errc{} ? parsed : 0;
-}
 }  // namespace
 
 namespace ticketing
@@ -51,13 +52,10 @@ void LoginRateLimiter::check(const std::string &username,
     try
     {
         drogon::app().getRedisClient("auth_sessions")->execCommandAsync(
-            [done, maxFailures](const drogon::nosql::RedisResult &result) {
+            [done](const drogon::nosql::RedisResult &result) {
                 try
                 {
-                    const auto values = result.asArray();
-                    (*done)(values.size() == 2 &&
-                            counter(values[0]) < maxFailures &&
-                            counter(values[1]) < maxFailures);
+                    (*done)(result.asInteger() == 1);
                 }
                 catch (const std::exception &error)
                 {
@@ -69,7 +67,9 @@ void LoginRateLimiter::check(const std::string &username,
                 LOG_WARN << "Login rate-limit read failed open: " << error.what();
                 (*done)(true);
             },
-            "MGET %s %s", usernameCounter.c_str(), ipCounter.c_str());
+            "EVAL %b 2 %s %s %lld", kCheckScript.data(), kCheckScript.size(),
+            usernameCounter.c_str(), ipCounter.c_str(),
+            static_cast<long long>(maxFailures));
     }
     catch (const std::exception &error)
     {

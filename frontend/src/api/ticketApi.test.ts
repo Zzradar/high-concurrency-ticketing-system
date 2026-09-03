@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
-  apiRequestHeaders,
   buildCheckoutSeatReplacementRequest,
   buildSeatMapRequestConfig,
   checkoutSessionPaths,
@@ -14,22 +13,22 @@ import {
 } from './ticketApi'
 
 describe('ticketApi contract and mock transaction flow', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     resetMockData()
     setMockLatency(0)
     setMockPaymentSimulation({ delayMilliseconds: 100, outcome: 'SUCCESS' })
+    await ticketApi.login('demo', 'Ticketing123!')
   })
 
   afterEach(() => {
     vi.useRealTimers()
   })
 
-  it('uses camelCase reservation fields and the demo user header', () => {
+  it('uses camelCase reservation fields without a client identity header', () => {
     expect(buildReservationRequest('session-1', ['seat-1'])).toEqual({
       sessionId: 'session-1',
       seatIds: ['seat-1'],
     })
-    expect(apiRequestHeaders['X-User-Id']).toBe('U-1001')
     expect(buildCheckoutSeatReplacementRequest(['seat-1'], 3)).toEqual({
       seatIds: ['seat-1'],
       expectedRevision: 3,
@@ -89,11 +88,13 @@ describe('ticketApi contract and mock transaction flow', () => {
       ticketApi.confirmCheckoutSession(checkout.id),
       ticketApi.confirmCheckoutSession(checkout.id),
     ])
-    expect(first.status).toBe('RESERVED')
-    expect(second.order?.id).toBe(first.order?.id)
-    expect((await ticketApi.confirmCheckoutSession(checkout.id)).order?.id).toBe(
-      first.order?.id,
-    )
+    expect(first.disposition).toBe('CONFIRMED_NOW')
+    expect(second.disposition).toBe('REUSED_CONFIRMATION')
+    expect(first.checkoutSession.status).toBe('RESERVED')
+    expect(second.checkoutSession.order?.id).toBe(first.checkoutSession.order?.id)
+    const replay = await ticketApi.confirmCheckoutSession(checkout.id)
+    expect(replay.disposition).toBe('ALREADY_CONFIRMED')
+    expect(replay.checkoutSession.order?.id).toBe(first.checkoutSession.order?.id)
     await expect(ticketApi.abandonCheckoutSession(checkout.id)).rejects.toMatchObject({
       code: 'CHECKOUT_SESSION_NOT_ABANDONABLE',
     })
@@ -167,7 +168,9 @@ describe('ticketApi contract and mock transaction flow', () => {
     )
 
     const cancelled = await ticketApi.cancelOrder(order.id)
-    expect(cancelled.status).toBe('CANCELLED')
+    expect(cancelled.disposition).toBe('CANCELLED_NOW')
+    expect(cancelled.order.status).toBe('CANCELLED')
+    expect((await ticketApi.cancelOrder(order.id)).disposition).toBe('ALREADY_CANCELLED')
 
     const latestSeats = await ticketApi.getSeats('ses-concert-1002')
     expect(
@@ -217,9 +220,11 @@ describe('ticketApi contract and mock transaction flow', () => {
       ticketApi.payOrder(order.id),
       ticketApi.payOrder(order.id),
     ])
+    expect(first.disposition).toBe('STARTED_NEW')
+    expect(second.disposition).toBe('REUSED_PROCESSING')
     expect(second.paymentAttempt?.id).toBe(first.paymentAttempt?.id)
 
-    expect((await ticketApi.cancelOrder(order.id)).status).toBe('CANCELLED')
+    expect((await ticketApi.cancelOrder(order.id)).order.status).toBe('CANCELLED')
     await new Promise((resolve) => setTimeout(resolve, 55))
     const attempt = await ticketApi.getPaymentAttempt(first.paymentAttempt!.id)
     expect(attempt).toMatchObject({ status: 'SUCCEEDED' })
@@ -269,5 +274,34 @@ describe('ticketApi contract and mock transaction flow', () => {
         .filter((seat) => order.seatIds.includes(seat.id))
         .every((seat) => seat.status === 'AVAILABLE'),
     ).toBe(true)
+  })
+
+  it('restores, rejects and clears the mock authenticated user lifecycle', async () => {
+    await ticketApi.logout()
+    await expect(ticketApi.me()).rejects.toMatchObject({ code: 'UNAUTHENTICATED' })
+    await expect(ticketApi.login('demo', 'wrong')).rejects.toMatchObject({
+      code: 'INVALID_CREDENTIALS',
+    })
+    const user = await ticketApi.login(' Demo ', 'Ticketing123!')
+    expect(await ticketApi.me()).toEqual(user)
+    await ticketApi.logout()
+    await expect(ticketApi.me()).rejects.toMatchObject({ code: 'UNAUTHENTICATED' })
+  })
+
+  it('lists account orders with status, session and limit filters', async () => {
+    const first = await ticketApi.createReservation('ses-concert-1001', [
+      'ses-concert-1001-A01',
+    ])
+    const second = await ticketApi.createReservation('ses-concert-1002', [
+      'ses-concert-1002-A01',
+    ])
+    await ticketApi.cancelOrder(first.order.id)
+
+    expect(await ticketApi.getOrders({ status: 'CANCELLED' })).toEqual([
+      expect.objectContaining({ id: first.order.id }),
+    ])
+    expect(await ticketApi.getOrders({ sessionId: second.order.sessionId, limit: 1 })).toEqual([
+      expect.objectContaining({ id: second.order.id }),
+    ])
   })
 })

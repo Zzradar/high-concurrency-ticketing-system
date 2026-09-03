@@ -12,6 +12,11 @@ SERVICE = (ROOT / "src/services/AuthSessionService.cpp").read_text(encoding="utf
 
 
 class AuthCoreSourceContractTest(unittest.TestCase):
+    def test_session_timeout_parameters_keep_postgres_int8_type(self) -> None:
+        self.assertIn("$4::bigint * INTERVAL '1 second'", SESSION_REPOSITORY)
+        self.assertIn("$5::bigint * INTERVAL '1 second'", SESSION_REPOSITORY)
+        self.assertIn("$2::bigint * INTERVAL '1 second'", SESSION_REPOSITORY)
+
     def test_token_uses_csprng_and_sha256(self) -> None:
         self.assertIn("RAND_bytes", CRYPTO)
         self.assertIn("EVP_sha256", CRYPTO)

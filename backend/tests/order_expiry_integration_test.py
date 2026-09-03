@@ -1,10 +1,10 @@
-import json
 import os
 from pathlib import Path
 import subprocess
 import time
 import unittest
-from urllib.request import Request, urlopen
+
+from auth_test_support import client_for, reset_auth_clients
 
 
 BASE_URL = os.environ.get("TICKETING_BASE_URL", "http://127.0.0.1:8080")
@@ -51,6 +51,7 @@ def psql(sql: str) -> str:
 
 
 def cleanup_test_data() -> None:
+    reset_auth_clients()
     seat_list = ", ".join(repr(seat) for seat in TEST_SEATS)
     psql(
         f"""
@@ -90,20 +91,13 @@ def cleanup_test_data() -> None:
 
 
 def create_order(key: str, seat_ids: list[str]) -> tuple[str, str]:
-    request = Request(
-        BASE_URL + "/reservations",
-        data=json.dumps({"sessionId": SESSION_ID, "seatIds": seat_ids}).encode(),
-        headers={
-            "Content-Type": "application/json",
-            "X-User-Id": USER_ID,
-            "Idempotency-Key": key,
-        },
-        method="POST",
+    status, payload, _ = client_for(USER_ID).request(
+        "/reservations", method="POST",
+        body={"sessionId": SESSION_ID, "seatIds": seat_ids},
+        headers={"Idempotency-Key": key}, timeout=15,
     )
-    with urlopen(request, timeout=15) as response:
-        payload = json.load(response)
-        if response.status != 201:
-            raise AssertionError((response.status, payload))
+    if status != 201:
+        raise AssertionError((status, payload))
     return payload["order"]["id"], payload["reservation"]["id"]
 
 

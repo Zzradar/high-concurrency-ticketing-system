@@ -62,8 +62,8 @@ void AuthService::login(std::string username,
     }
     rateLimiter_.check(
         username, peerIp,
-        [this, username = std::move(username), password = std::move(password),
-         peerIp = std::move(peerIp), done](bool allowed) mutable {
+        [this, username, password = std::move(password), peerIp, done](
+            bool allowed) mutable {
             if (!allowed)
             {
                 (*done)({LoginOutcome::TooManyAttempts});

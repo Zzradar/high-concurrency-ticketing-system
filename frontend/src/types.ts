@@ -8,6 +8,7 @@ export type OrderStatus = 'PENDING_PAYMENT' | 'PAID' | 'CANCELLED' | 'EXPIRED'
 export type CheckoutSessionStatus = 'SELECTING' | 'SUBMITTING' | 'RESERVED' | 'ABANDONED'
 export type PaymentAttemptStatus = 'PROCESSING' | 'SUCCEEDED' | 'FAILED' | 'TIMED_OUT'
 export type NotificationType =
+  | 'ORDER_CREATED'
   | 'PAYMENT_SUCCEEDED'
   | 'ORDER_CANCELLED'
   | 'ORDER_EXPIRED'
@@ -106,8 +107,25 @@ export interface PaymentAttempt {
 }
 
 export interface PaymentStartResult {
+  disposition: 'STARTED_NEW' | 'REUSED_PROCESSING' | 'ALREADY_PAID'
   order: TicketOrder
   paymentAttempt: PaymentAttempt | null
+}
+
+export interface CheckoutConfirmationResult {
+  disposition: 'CONFIRMED_NOW' | 'REUSED_CONFIRMATION' | 'ALREADY_CONFIRMED'
+  checkoutSession: CheckoutSession
+}
+
+export interface CancelOrderResult {
+  disposition: 'CANCELLED_NOW' | 'ALREADY_CANCELLED'
+  order: TicketOrder
+}
+
+export interface CurrentUser {
+  id: string
+  username: string
+  displayName: string
 }
 
 export interface UserNotification {

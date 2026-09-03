@@ -16,8 +16,13 @@ class AuthHttpSourceContractTest(unittest.TestCase):
         self.assertIn("passwordExecutor().verify", AUTH_SERVICE)
         self.assertIn("LoginOutcome::Busy", AUTH_SERVICE)
         self.assertNotIn("sleep", AUTH_SERVICE)
+        self.assertIn("[this, username, password = std::move(password), peerIp, done]", AUTH_SERVICE)
+        self.assertNotIn("username = std::move(username)", AUTH_SERVICE)
 
     def test_rate_limit_is_atomic_ttl_and_fail_open(self) -> None:
+        self.assertIn("kCheckScript", RATE_LIMIT)
+        self.assertIn("tonumber(redis.call('GET'", RATE_LIMIT)
+        self.assertIn("result.asInteger() == 1", RATE_LIMIT)
         self.assertIn("redis.call('INCR'", RATE_LIMIT)
         self.assertIn("if value == 1 then redis.call('EXPIRE'", RATE_LIMIT)
         self.assertIn("ticketing:login-fail:username:", RATE_LIMIT)
