@@ -17,6 +17,7 @@ class SeatHoldSourceContractTest(unittest.TestCase):
         self.assertIn("libhiredis-dev", dockerfile)
         self.assertIn("libhiredis1.1.0", dockerfile)
         self.assertIn("redis:7.4-alpine", compose)
+        self.assertIn("- type: tmpfs\n        target: /data", compose)
         self.assertIn("ticketing:seat-hold:{", service)
         self.assertIn("redis.call('SET', key, owner .. '|' .. target_revision", service)
         self.assertIn("current_owner == owner and revision <= target_revision", service)
