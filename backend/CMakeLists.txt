@@ -54,6 +54,8 @@ add_executable(ticketing_backend
     src/services/ReservationService.cpp
     src/controllers/OrderController.cpp
     src/repositories/OrderRepository.cpp
+    src/repositories/PaymentRepository.cpp
+    src/repositories/NotificationRepository.cpp
     src/services/OrderService.cpp
     src/services/OrderExpiryService.cpp
     src/workers/OrderExpiryWorker.cpp
@@ -109,5 +111,9 @@ if(BUILD_TESTING)
     add_test(
         NAME seat_hold_source_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/seat_hold_source_contract_test.py"
+    )
+    add_test(
+        NAME phase8_schema_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase8_schema_contract_test.py"
     )
 endif()

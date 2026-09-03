@@ -214,4 +214,74 @@ struct CheckoutSession
         return value;
     }
 };
+
+struct PaymentAttempt
+{
+    std::string id;
+    std::string orderId;
+    std::string status;
+    std::string startedAt;
+    std::string processingDeadline;
+    std::string scheduledCompleteAt;
+    std::optional<std::string> completedAt;
+    std::optional<std::string> timedOutAt;
+    std::optional<std::string> acceptedAt;
+    std::optional<std::string> failureReason;
+
+    Json::Value toJson() const
+    {
+        Json::Value value;
+        value["id"] = id;
+        value["orderId"] = orderId;
+        value["status"] = status;
+        value["startedAt"] = startedAt;
+        value["processingDeadline"] = processingDeadline;
+        value["scheduledCompleteAt"] = scheduledCompleteAt;
+        if (completedAt) value["completedAt"] = *completedAt;
+        if (timedOutAt) value["timedOutAt"] = *timedOutAt;
+        if (acceptedAt) value["acceptedAt"] = *acceptedAt;
+        if (failureReason) value["failureReason"] = *failureReason;
+        return value;
+    }
+};
+
+struct PaymentStartResult
+{
+    TicketOrder order;
+    std::optional<PaymentAttempt> paymentAttempt;
+
+    Json::Value toJson() const
+    {
+        Json::Value value;
+        value["order"] = order.toJson();
+        value["paymentAttempt"] = paymentAttempt
+                                      ? paymentAttempt->toJson()
+                                      : Json::Value{Json::nullValue};
+        return value;
+    }
+};
+
+struct UserNotification
+{
+    std::string id;
+    std::string orderId;
+    std::string type;
+    std::string title;
+    std::string message;
+    std::string createdAt;
+    std::optional<std::string> readAt;
+
+    Json::Value toJson() const
+    {
+        Json::Value value;
+        value["id"] = id;
+        value["orderId"] = orderId;
+        value["type"] = type;
+        value["title"] = title;
+        value["message"] = message;
+        value["createdAt"] = createdAt;
+        if (readAt) value["readAt"] = *readAt;
+        return value;
+    }
+};
 }  // namespace ticketing
