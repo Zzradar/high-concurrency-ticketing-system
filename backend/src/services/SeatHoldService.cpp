@@ -208,11 +208,11 @@ void SeatHoldService::validateConfiguration()
 int SeatHoldService::ttlSeconds()
 {
     const auto &config = drogon::app().getCustomConfig();
-    const auto value = config["seat_holds"]["ttl_seconds"];
+    const auto value = config["checkout_seat_hold"]["ttl_seconds"];
     if (!value.isInt64() || value.asInt64() <= 0 ||
         value.asInt64() > std::numeric_limits<int>::max())
     {
-        throw std::runtime_error("custom_config.seat_holds.ttl_seconds must be a positive integer");
+        throw std::runtime_error("custom_config.checkout_seat_hold.ttl_seconds must be a positive integer");
     }
     return static_cast<int>(value.asInt64());
 }

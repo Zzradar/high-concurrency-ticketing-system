@@ -47,7 +47,7 @@
     "checkout_session_reconciliation": {
       "batch_size": 100
     },
-    "seat_holds": {
+    "checkout_seat_hold": {
       "ttl_seconds": 300
     }
   }

@@ -40,6 +40,7 @@ class SeatHoldSourceContractTest(unittest.TestCase):
             self.assertIn('"name": "seat_holds"', config)
             self.assertIn(f'"host": "{host}"', config)
             self.assertIn('"timeout": 0.4', config)
+            self.assertIn('"checkout_seat_hold": {', config)
             self.assertIn('"ttl_seconds": 300', config)
 
 
