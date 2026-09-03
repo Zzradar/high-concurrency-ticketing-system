@@ -1,12 +1,15 @@
 import axios from 'axios'
 import type {
   CheckoutSession,
+  PaymentAttempt,
+  PaymentStartResult,
   Reservation,
   ReservationResult,
   Seat,
   TicketEvent,
   TicketOrder,
   TicketSession,
+  UserNotification,
 } from '../types'
 
 export class TicketApiError extends Error {
@@ -61,7 +64,8 @@ http.interceptors.response.use(
   (error: unknown) => Promise.reject(normalizeApiError(error)),
 )
 
-export const isMockMode = import.meta.env.VITE_USE_MOCK_API !== 'false'
+export const isMockMode =
+  import.meta.env.MODE === 'test' || import.meta.env.VITE_USE_MOCK_API !== 'false'
 
 const eventsSeed: TicketEvent[] = [
   {
@@ -163,7 +167,11 @@ let reservations = new Map<string, Reservation>()
 let orders = new Map<string, TicketOrder>()
 let checkoutSessions = new Map<string, CheckoutSession>()
 let checkoutConfirmations = new Map<string, Promise<CheckoutSession>>()
+let paymentAttempts = new Map<string, PaymentAttempt>()
+let notifications: UserNotification[] = []
 let sequence = 24082600
+let mockPaymentDelayMilliseconds: number | null = null
+let mockPaymentOutcome: 'SUCCESS' | 'FAILURE' | null = null
 
 const clone = <T>(value: T): T => structuredClone(value)
 const wait = () => new Promise((resolve) => setTimeout(resolve, mockLatency))
@@ -226,9 +234,56 @@ function releaseReservation(order: TicketOrder, status: 'CANCELLED' | 'EXPIRED')
   })
 }
 
+function addNotification(
+  order: TicketOrder,
+  type: UserNotification['type'],
+  title: string,
+  message: string,
+  dedupeKey: string,
+) {
+  if (notifications.some((item) => item.id === dedupeKey)) return
+  notifications.unshift({
+    id: dedupeKey,
+    orderId: order.id,
+    type,
+    title,
+    message,
+    createdAt: new Date().toISOString(),
+  })
+}
+
+function activeProcessingAttempt(orderId: string) {
+  return [...paymentAttempts.values()].find(
+    (attempt) =>
+      attempt.orderId === orderId &&
+      attempt.status === 'PROCESSING' &&
+      Date.parse(attempt.processingDeadline) > Date.now(),
+  )
+}
+
+function timeoutExpiredProcessingAttempts(orderId: string) {
+  const now = Date.now()
+  paymentAttempts.forEach((attempt) => {
+    if (
+      attempt.orderId === orderId &&
+      attempt.status === 'PROCESSING' &&
+      Date.parse(attempt.processingDeadline) <= now
+    ) {
+      attempt.status = 'TIMED_OUT'
+      attempt.timedOutAt = new Date(now).toISOString()
+    }
+  })
+}
+
 function synchronizeExpiry(order: TicketOrder) {
-  if (order.status === 'PENDING_PAYMENT' && Date.parse(order.expiresAt) <= Date.now()) {
+  timeoutExpiredProcessingAttempts(order.id)
+  if (
+    order.status === 'PENDING_PAYMENT' &&
+    Date.parse(order.expiresAt) <= Date.now() &&
+    !activeProcessingAttempt(order.id)
+  ) {
     releaseReservation(order, 'EXPIRED')
+    addNotification(order, 'ORDER_EXPIRED', '订单已过期', '订单支付时间已结束，所选座位已释放。', 'order-expired:' + order.id)
   }
 }
 
@@ -447,23 +502,81 @@ async function mockGetOrder(orderId: string) {
   return clone(order)
 }
 
-async function mockPayOrder(orderId: string) {
+function finishMockPayment(attemptId: string, outcome: 'SUCCESS' | 'FAILURE') {
+  const attempt = paymentAttempts.get(attemptId)
+  if (!attempt || !['PROCESSING', 'TIMED_OUT'].includes(attempt.status)) return
+  const order = orders.get(attempt.orderId)
+  if (!order) return
+  const now = new Date()
+  attempt.completedAt = now.toISOString()
+  if (outcome === 'FAILURE') {
+    attempt.status = 'FAILED'
+    attempt.failureReason = 'SIMULATED_PAYMENT_FAILURE'
+    synchronizeExpiry(order)
+    return
+  }
+
+  attempt.status = 'SUCCEEDED'
+  const accepted =
+    order.status === 'PENDING_PAYMENT' &&
+    now.getTime() < Date.parse(attempt.processingDeadline) &&
+    Date.parse(attempt.startedAt) < Date.parse(order.expiresAt)
+  if (accepted) {
+    attempt.acceptedAt = attempt.completedAt
+    order.status = 'PAID'
+    order.paidAt = attempt.completedAt
+    const reservation = reservations.get(order.reservationId)
+    if (reservation) reservation.status = 'CONFIRMED'
+    ensureSeats(order.sessionId).forEach((seat) => {
+      if (order.seatIds.includes(seat.id)) seat.status = 'SOLD'
+    })
+    addNotification(order, 'PAYMENT_SUCCEEDED', '支付成功', '订单支付成功，座位已确认。', 'payment-succeeded:' + order.id)
+    return
+  }
+  addNotification(
+    order,
+    'AUTO_REFUND_COMPLETED',
+    '自动退款已完成',
+    '支付结果晚于订单终态到达，款项已原路全额退回。',
+    'auto-refund:' + attempt.id,
+  )
+  synchronizeExpiry(order)
+}
+
+async function mockPayOrder(orderId: string): Promise<PaymentStartResult> {
   await wait()
   const order = orders.get(orderId)
   if (!order) throw new TicketApiError('未找到该订单。', 'ORDER_NOT_FOUND')
   synchronizeExpiry(order)
-  if (order.status !== 'PENDING_PAYMENT') {
-    throw new TicketApiError('订单已过期或无法支付，请刷新订单状态。', 'ORDER_NOT_PAYABLE')
+  if (order.status === 'PAID') {
+    const accepted = [...paymentAttempts.values()].find(
+      (attempt) => attempt.orderId === orderId && attempt.acceptedAt,
+    )
+    return clone({ order, paymentAttempt: accepted ?? null })
   }
+  if (order.status === 'EXPIRED') {
+    throw new TicketApiError('订单已过期。', 'ORDER_EXPIRED')
+  }
+  if (order.status !== 'PENDING_PAYMENT') {
+    throw new TicketApiError('当前订单无法支付。', 'ORDER_NOT_PAYABLE')
+  }
+  const existing = activeProcessingAttempt(orderId)
+  if (existing) return clone({ order, paymentAttempt: existing })
 
-  order.status = 'PAID'
-  order.paidAt = new Date().toISOString()
-  const reservation = reservations.get(order.reservationId)
-  if (reservation) reservation.status = 'CONFIRMED'
-  ensureSeats(order.sessionId).forEach((seat) => {
-    if (order.seatIds.includes(seat.id)) seat.status = 'SOLD'
-  })
-  return clone(order)
+  const startedAt = new Date()
+  const delay = mockPaymentDelayMilliseconds ?? 2000 + Math.random() * 4000
+  const attempt: PaymentAttempt = {
+    id: 'PAY-' + ++sequence,
+    orderId,
+    status: 'PROCESSING',
+    startedAt: startedAt.toISOString(),
+    processingDeadline: new Date(startedAt.getTime() + 10000).toISOString(),
+    scheduledCompleteAt: new Date(startedAt.getTime() + delay).toISOString(),
+  }
+  paymentAttempts.set(attempt.id, attempt)
+  const outcome = mockPaymentOutcome ?? (Math.random() < 0.01 ? 'FAILURE' : 'SUCCESS')
+  window.setTimeout(() => finishMockPayment(attempt.id, outcome), delay)
+  return clone({ order, paymentAttempt: attempt })
 }
 
 async function mockCancelOrder(orderId: string) {
@@ -471,11 +584,37 @@ async function mockCancelOrder(orderId: string) {
   const order = orders.get(orderId)
   if (!order) throw new TicketApiError('未找到该订单。', 'ORDER_NOT_FOUND')
   synchronizeExpiry(order)
+  if (order.status === 'CANCELLED') return clone(order)
+  if (order.status === 'EXPIRED') {
+    throw new TicketApiError('订单已过期。', 'ORDER_EXPIRED')
+  }
   if (order.status !== 'PENDING_PAYMENT') {
     throw new TicketApiError('当前订单无法取消。', 'ORDER_NOT_CANCELLABLE')
   }
   releaseReservation(order, 'CANCELLED')
+  addNotification(order, 'ORDER_CANCELLED', '订单已取消', '订单已取消，所选座位已释放。', 'order-cancelled:' + order.id)
   return clone(order)
+}
+
+async function mockGetPaymentAttempt(attemptId: string) {
+  await wait()
+  const attempt = paymentAttempts.get(attemptId)
+  if (!attempt) throw new TicketApiError('未找到支付尝试。', 'PAYMENT_ATTEMPT_NOT_FOUND')
+  timeoutExpiredProcessingAttempts(attempt.orderId)
+  return clone(attempt)
+}
+
+async function mockGetNotifications() {
+  await wait()
+  return clone(notifications)
+}
+
+async function mockMarkNotificationRead(notificationId: string) {
+  await wait()
+  const notification = notifications.find((item) => item.id === notificationId)
+  if (!notification) throw new TicketApiError('未找到通知。', 'NOTIFICATION_NOT_FOUND')
+  notification.readAt ??= new Date().toISOString()
+  return clone(notification)
 }
 
 async function mockExpireOrder(orderId: string) {
@@ -579,9 +718,21 @@ export const ticketApi = {
     if (isMockMode) return mockGetOrder(orderId)
     return (await http.get<TicketOrder>('/orders/' + orderId)).data
   },
-  async payOrder(orderId: string): Promise<TicketOrder> {
+  async payOrder(orderId: string): Promise<PaymentStartResult> {
     if (isMockMode) return mockPayOrder(orderId)
-    return (await http.post<TicketOrder>('/orders/' + orderId + '/pay')).data
+    return (await http.post<PaymentStartResult>('/orders/' + orderId + '/pay')).data
+  },
+  async getPaymentAttempt(attemptId: string): Promise<PaymentAttempt> {
+    if (isMockMode) return mockGetPaymentAttempt(attemptId)
+    return (await http.get<PaymentAttempt>('/payment-attempts/' + attemptId)).data
+  },
+  async getNotifications(): Promise<UserNotification[]> {
+    if (isMockMode) return mockGetNotifications()
+    return (await http.get<UserNotification[]>('/notifications')).data
+  },
+  async markNotificationRead(notificationId: string): Promise<UserNotification> {
+    if (isMockMode) return mockMarkNotificationRead(notificationId)
+    return (await http.post<UserNotification>('/notifications/' + notificationId + '/read')).data
   },
   async cancelOrder(orderId: string): Promise<TicketOrder> {
     if (isMockMode) return mockCancelOrder(orderId)
@@ -599,10 +750,22 @@ export function resetMockData() {
   orders = new Map()
   checkoutSessions = new Map()
   checkoutConfirmations = new Map()
+  paymentAttempts = new Map()
+  notifications = []
   sequence = 24082600
+  mockPaymentDelayMilliseconds = null
+  mockPaymentOutcome = null
 }
 
 export function setMockLatency(milliseconds: number) {
   mockLatency = milliseconds
+}
+
+export function setMockPaymentSimulation(options: {
+  delayMilliseconds: number
+  outcome: 'SUCCESS' | 'FAILURE'
+}) {
+  mockPaymentDelayMilliseconds = options.delayMilliseconds
+  mockPaymentOutcome = options.outcome
 }
 

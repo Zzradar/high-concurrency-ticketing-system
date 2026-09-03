@@ -217,6 +217,95 @@ h2 {
   gap: 12px;
 }
 
+.notification-center {
+  position: relative;
+}
+
+.notification-button {
+  position: relative;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.notification-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  padding: 2px 5px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--accent);
+  font-size: 0.6rem;
+  font-weight: 800;
+}
+
+.notification-panel {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  width: min(360px, calc(100vw - 32px));
+  max-height: 440px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.notification-panel header {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.76rem;
+}
+
+.notification-panel header span,
+.notification-empty {
+  color: var(--ink-soft);
+}
+
+.notification-empty {
+  margin: 0;
+  padding: 28px;
+  text-align: center;
+  font-size: 0.72rem;
+}
+
+.notification-item {
+  display: grid;
+  width: 100%;
+  gap: 5px;
+  padding: 14px 18px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--accent-soft);
+  cursor: pointer;
+  text-align: left;
+}
+
+.notification-item.is-read {
+  background: var(--surface);
+}
+
+.notification-item strong {
+  font-size: 0.75rem;
+}
+
+.notification-item span,
+.notification-item small {
+  color: var(--ink-soft);
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+
 .mode-badge,
 .user-button {
   display: inline-flex;
@@ -1393,6 +1482,14 @@ h2 {
   gap: 12px;
   max-width: 620px;
   margin: 24px auto 0;
+}
+
+.payment-state {
+  max-width: 620px;
+  margin: 12px auto 0;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  text-align: center;
 }
 
 .order-pay-button {

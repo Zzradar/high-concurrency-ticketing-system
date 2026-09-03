@@ -4,6 +4,7 @@ import App from './App.vue'
 import {
   resetMockData,
   setMockLatency,
+  setMockPaymentSimulation,
   TicketApiError,
   ticketApi,
 } from './api/ticketApi'
@@ -58,6 +59,7 @@ describe('ticket booking demo', () => {
     vi.useFakeTimers()
     resetMockData()
     setMockLatency(1)
+    setMockPaymentSimulation({ delayMilliseconds: 100, outcome: 'SUCCESS' })
     sessionStorage.clear()
   })
 
@@ -86,10 +88,81 @@ describe('ticket booking demo', () => {
       .find((button) => button.text().includes('模拟支付'))
     expect(payButton).toBeDefined()
     await payButton!.trigger('click')
-    await settle(20)
+    await settle(1100)
 
     expect(wrapper.text()).toContain('支付成功')
     wrapper.unmount()
+  })
+
+  it('keeps cancel enabled during payment and reports the late-success refund', async () => {
+    setMockPaymentSimulation({ delayMilliseconds: 2000, outcome: 'SUCCESS' })
+    const wrapper = mount(App)
+    await createPendingOrder(wrapper)
+
+    const payButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('模拟支付'))!
+    await payButton.trigger('click')
+    await settle(20)
+    expect(wrapper.text()).toContain('支付处理中')
+
+    const cancelButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('取消订单'))!
+    expect(cancelButton.attributes('disabled')).toBeUndefined()
+    await cancelButton.trigger('click')
+    await settle(20)
+    expect(wrapper.text()).toContain('订单已取消')
+
+    await settle(2100)
+    expect(wrapper.text()).toContain('订单已取消')
+    expect(wrapper.text()).toContain('支付结果已处理，请查看自动退款通知')
+    expect(wrapper.find('.notification-count').text()).toBe('2')
+
+    await wrapper.find('.notification-button').trigger('click')
+    const refundNotification = wrapper
+      .findAll('.notification-item')
+      .find((item) => item.text().includes('自动退款已完成'))!
+    await refundNotification.trigger('click')
+    await settle(10)
+    expect(wrapper.find('.notification-count').text()).toBe('1')
+    wrapper.unmount()
+  })
+
+  it('shows a failed payment as retryable', async () => {
+    setMockPaymentSimulation({ delayMilliseconds: 100, outcome: 'FAILURE' })
+    const wrapper = mount(App)
+    await createPendingOrder(wrapper)
+
+    const payButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('模拟支付'))!
+    await payButton.trigger('click')
+    await settle(1100)
+
+    expect(wrapper.text()).toContain('支付失败，订单仍有效时可以重新支付。')
+    const retryButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('模拟支付'))!
+    expect(retryButton.attributes('disabled')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('stops payment polling after the component is unmounted', async () => {
+    setMockPaymentSimulation({ delayMilliseconds: 5000, outcome: 'SUCCESS' })
+    const attemptSpy = vi.spyOn(ticketApi, 'getPaymentAttempt')
+    const wrapper = mount(App)
+    await createPendingOrder(wrapper)
+    const payButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('模拟支付'))!
+    await payButton.trigger('click')
+    await settle(20)
+    const callsBeforeUnmount = attemptSpy.mock.calls.length
+
+    wrapper.unmount()
+    await settle(3000)
+    expect(attemptSpy).toHaveBeenCalledTimes(callsBeforeUnmount)
   })
 
   it('keeps the seat conflict message after refreshing seats', async () => {

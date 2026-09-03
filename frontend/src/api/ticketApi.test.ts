@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   apiRequestHeaders,
   buildCheckoutSeatReplacementRequest,
@@ -8,6 +8,7 @@ import {
   normalizeApiError,
   resetMockData,
   setMockLatency,
+  setMockPaymentSimulation,
   TicketApiError,
   ticketApi,
 } from './ticketApi'
@@ -16,6 +17,11 @@ describe('ticketApi contract and mock transaction flow', () => {
   beforeEach(() => {
     resetMockData()
     setMockLatency(0)
+    setMockPaymentSimulation({ delayMilliseconds: 100, outcome: 'SUCCESS' })
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('uses camelCase reservation fields and the demo user header', () => {
@@ -171,7 +177,8 @@ describe('ticketApi contract and mock transaction flow', () => {
     ).toBe(true)
   })
 
-  it('marks every reserved seat sold after payment', async () => {
+  it('moves PROCESSING payment to PAID and marks every reserved seat sold', async () => {
+    setMockPaymentSimulation({ delayMilliseconds: 50, outcome: 'SUCCESS' })
     const seats = await ticketApi.getSeats('ses-basketball-2001')
     const selected = seats.filter((seat) => seat.status === 'AVAILABLE').slice(0, 2)
     const { order } = await ticketApi.createReservation(
@@ -179,8 +186,15 @@ describe('ticketApi contract and mock transaction flow', () => {
       selected.map((seat) => seat.id),
     )
 
-    const paid = await ticketApi.payOrder(order.id)
-    expect(paid.status).toBe('PAID')
+    const started = await ticketApi.payOrder(order.id)
+    expect(started.order.status).toBe('PENDING_PAYMENT')
+    expect(started.paymentAttempt?.status).toBe('PROCESSING')
+    await new Promise((resolve) => setTimeout(resolve, 55))
+
+    const attempt = await ticketApi.getPaymentAttempt(started.paymentAttempt!.id)
+    expect(attempt).toMatchObject({ status: 'SUCCEEDED' })
+    expect(attempt.acceptedAt).toBeDefined()
+    expect((await ticketApi.getOrder(order.id)).status).toBe('PAID')
 
     const latestSeats = await ticketApi.getSeats('ses-basketball-2001')
     expect(
@@ -188,6 +202,54 @@ describe('ticketApi contract and mock transaction flow', () => {
         .filter((seat) => order.seatIds.includes(seat.id))
         .every((seat) => seat.status === 'SOLD'),
     ).toBe(true)
+  })
+
+  it('reuses one processing attempt and refunds a success arriving after cancellation', async () => {
+    setMockPaymentSimulation({ delayMilliseconds: 50, outcome: 'SUCCESS' })
+    const seats = await ticketApi.getSeats('ses-basketball-2002')
+    const selected = seats.filter((seat) => seat.status === 'AVAILABLE').slice(0, 2)
+    const { order } = await ticketApi.createReservation(
+      'ses-basketball-2002',
+      selected.map((seat) => seat.id),
+    )
+
+    const [first, second] = await Promise.all([
+      ticketApi.payOrder(order.id),
+      ticketApi.payOrder(order.id),
+    ])
+    expect(second.paymentAttempt?.id).toBe(first.paymentAttempt?.id)
+
+    expect((await ticketApi.cancelOrder(order.id)).status).toBe('CANCELLED')
+    await new Promise((resolve) => setTimeout(resolve, 55))
+    const attempt = await ticketApi.getPaymentAttempt(first.paymentAttempt!.id)
+    expect(attempt).toMatchObject({ status: 'SUCCEEDED' })
+    expect(attempt.acceptedAt).toBeUndefined()
+    expect((await ticketApi.getOrder(order.id)).status).toBe('CANCELLED')
+
+    const notifications = await ticketApi.getNotifications()
+    expect(notifications.map((notification) => notification.type)).toEqual(
+      expect.arrayContaining(['ORDER_CANCELLED', 'AUTO_REFUND_COMPLETED']),
+    )
+    const refund = notifications.find(
+      (notification) => notification.type === 'AUTO_REFUND_COMPLETED',
+    )!
+    expect((await ticketApi.markNotificationRead(refund.id)).readAt).toBeDefined()
+  })
+
+  it('keeps the order payable after a deterministic payment failure', async () => {
+    setMockPaymentSimulation({ delayMilliseconds: 1, outcome: 'FAILURE' })
+    const seats = await ticketApi.getSeats('ses-concert-1003')
+    const selected = seats.find((seat) => seat.status === 'AVAILABLE')!
+    const { order } = await ticketApi.createReservation('ses-concert-1003', [selected.id])
+
+    const first = await ticketApi.payOrder(order.id)
+    await new Promise((resolve) => setTimeout(resolve, 5))
+    expect((await ticketApi.getPaymentAttempt(first.paymentAttempt!.id)).status).toBe('FAILED')
+    expect((await ticketApi.getOrder(order.id)).status).toBe('PENDING_PAYMENT')
+
+    const retry = await ticketApi.payOrder(order.id)
+    expect(retry.paymentAttempt?.id).not.toBe(first.paymentAttempt?.id)
+    expect(retry.paymentAttempt?.status).toBe('PROCESSING')
   })
 
   it('expires an order in demo mode and releases every held seat', async () => {

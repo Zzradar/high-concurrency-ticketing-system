@@ -6,6 +6,12 @@ export type SeatStatus = 'AVAILABLE' | 'HELD' | 'SOLD'
 export type ReservationStatus = 'ACTIVE' | 'CONFIRMED' | 'CANCELLED' | 'EXPIRED'
 export type OrderStatus = 'PENDING_PAYMENT' | 'PAID' | 'CANCELLED' | 'EXPIRED'
 export type CheckoutSessionStatus = 'SELECTING' | 'SUBMITTING' | 'RESERVED' | 'ABANDONED'
+export type PaymentAttemptStatus = 'PROCESSING' | 'SUCCEEDED' | 'FAILED' | 'TIMED_OUT'
+export type NotificationType =
+  | 'PAYMENT_SUCCEEDED'
+  | 'ORDER_CANCELLED'
+  | 'ORDER_EXPIRED'
+  | 'AUTO_REFUND_COMPLETED'
 
 export interface TicketEvent {
   id: string
@@ -84,4 +90,32 @@ export interface CheckoutSession {
   updatedAt: string
   reservation?: Reservation
   order?: TicketOrder
+}
+
+export interface PaymentAttempt {
+  id: string
+  orderId: string
+  status: PaymentAttemptStatus
+  startedAt: string
+  processingDeadline: string
+  scheduledCompleteAt: string
+  completedAt?: string
+  timedOutAt?: string
+  acceptedAt?: string
+  failureReason?: string
+}
+
+export interface PaymentStartResult {
+  order: TicketOrder
+  paymentAttempt: PaymentAttempt | null
+}
+
+export interface UserNotification {
+  id: string
+  orderId: string
+  type: NotificationType
+  title: string
+  message: string
+  createdAt: string
+  readAt?: string
 }

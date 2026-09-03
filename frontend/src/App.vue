@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { AlertCircle, CircleUserRound, Database, TicketCheck, X } from '@lucide/vue'
+import { AlertCircle, Bell, CircleUserRound, Database, TicketCheck, X } from '@lucide/vue'
 import { isMockMode, TicketApiError, ticketApi } from './api/ticketApi'
 import EventListView from './views/EventListView.vue'
 import OrderView from './views/OrderView.vue'
@@ -8,16 +8,21 @@ import SeatSelectionView from './views/SeatSelectionView.vue'
 import SessionListView from './views/SessionListView.vue'
 import type {
   CheckoutSession,
+  PaymentAttempt,
   Seat,
   TicketEvent,
   TicketOrder,
   TicketSession,
+  UserNotification,
   ViewName,
 } from './types'
 
 const CHECKOUT_LOCATOR_KEY = 'ticketing.currentCheckoutSession'
 const SUBMITTING_POLL_INTERVAL_MS = 2000
 const SUBMITTING_POLL_LIMIT_MS = 15000
+const PAYMENT_POLL_INTERVAL_MS = 1000
+const PAYMENT_POLL_LIMIT_MS = 15000
+const NOTIFICATION_POLL_INTERVAL_MS = 5000
 
 const currentView = ref<ViewName>('event-list')
 const events = ref<TicketEvent[]>([])
@@ -31,6 +36,12 @@ const currentCheckoutSession = ref<CheckoutSession | null>(null)
 const recoverableCheckoutSessions = ref<CheckoutSession[]>([])
 const loading = ref(true)
 const busy = ref(false)
+const paymentStarting = ref(false)
+const paymentPolling = ref(false)
+const cancelling = ref(false)
+const currentPaymentAttempt = ref<PaymentAttempt | null>(null)
+const notifications = ref<UserNotification[]>([])
+const notificationsOpen = ref(false)
 const checkoutCreating = ref(false)
 const checkoutSyncInFlight = ref(false)
 const confirming = ref(false)
@@ -56,10 +67,24 @@ interface SubmittingPollWait {
   settled: boolean
 }
 
+interface PaymentPollWait {
+  generation: number
+  timer: number | null
+  resolve: () => void
+  settled: boolean
+}
+
 let checkoutCreationTask: CheckoutCreationTask | null = null
 let checkoutSyncTask: CheckoutSyncTask | null = null
 let submittingPollWait: SubmittingPollWait | null = null
 let submittingPollGeneration = 0
+let paymentPollWait: PaymentPollWait | null = null
+let paymentPollGeneration = 0
+let notificationTimer: number | null = null
+
+const unreadNotificationCount = computed(
+  () => notifications.value.filter((notification) => !notification.readAt).length,
+)
 
 const selectedSeats = computed(() =>
   seats.value.filter((seat) => selectedSeatIds.value.includes(seat.id)),
@@ -149,6 +174,102 @@ function stopSubmittingPolling() {
   const wait = submittingPollWait
   if (wait) finishSubmittingPollWait(wait)
   submittingPolling.value = false
+}
+
+function finishPaymentPollWait(wait: PaymentPollWait) {
+  if (wait.settled) return
+  wait.settled = true
+  if (wait.timer !== null) window.clearTimeout(wait.timer)
+  wait.timer = null
+  if (paymentPollWait === wait) paymentPollWait = null
+  wait.resolve()
+}
+
+function stopPaymentPolling() {
+  paymentPollGeneration += 1
+  if (paymentPollWait) finishPaymentPollWait(paymentPollWait)
+  paymentPolling.value = false
+}
+
+function waitForPaymentPoll(milliseconds: number, generation: number) {
+  return new Promise<void>((resolve) => {
+    const wait: PaymentPollWait = {
+      generation,
+      timer: null,
+      resolve,
+      settled: false,
+    }
+    wait.timer = window.setTimeout(() => finishPaymentPollWait(wait), milliseconds)
+    paymentPollWait = wait
+  })
+}
+
+async function refreshNotifications() {
+  try {
+    notifications.value = await ticketApi.getNotifications()
+  } catch {
+    // Notification polling is best effort and must not disturb booking flows.
+  }
+}
+
+async function markNotificationRead(notification: UserNotification) {
+  if (notification.readAt) return
+  try {
+    const updated = await ticketApi.markNotificationRead(notification.id)
+    notifications.value = notifications.value.map((item) =>
+      item.id === updated.id ? updated : item,
+    )
+  } catch (error) {
+    showError(error, '通知状态更新失败，请稍后重试。')
+  }
+}
+
+async function settlePaymentAttempt(attempt: PaymentAttempt) {
+  currentPaymentAttempt.value = attempt
+  await refreshOrder()
+  await refreshNotifications()
+  if (attempt.status === 'SUCCEEDED' && attempt.acceptedAt) {
+    showNotice('支付成功，订单与座位状态已同步确认')
+  } else if (attempt.status === 'SUCCEEDED') {
+    showNotice('支付结果已处理，请查看自动退款通知')
+  } else if (attempt.status === 'FAILED') {
+    errorMessage.value = '支付失败，订单仍有效时可以重新支付。'
+  } else if (attempt.status === 'TIMED_OUT') {
+    errorMessage.value = '系统已停止等待本次支付结果，请以订单和通知状态为准。'
+  }
+}
+
+function startPaymentAttemptPolling(attemptId: string) {
+  stopPaymentPolling()
+  const generation = paymentPollGeneration
+  paymentPolling.value = true
+  void (async () => {
+    const startedAt = Date.now()
+    while (
+      generation === paymentPollGeneration &&
+      currentView.value === 'order' &&
+      Date.now() - startedAt < PAYMENT_POLL_LIMIT_MS
+    ) {
+      try {
+        const attempt = await ticketApi.getPaymentAttempt(attemptId)
+        if (generation !== paymentPollGeneration) return
+        currentPaymentAttempt.value = attempt
+        if (attempt.status !== 'PROCESSING') {
+          paymentPolling.value = false
+          await settlePaymentAttempt(attempt)
+          return
+        }
+      } catch {
+        // Retry transient payment-attempt reads until the observation deadline.
+      }
+      const remaining = PAYMENT_POLL_LIMIT_MS - (Date.now() - startedAt)
+      if (remaining <= 0) break
+      await waitForPaymentPoll(Math.min(PAYMENT_POLL_INTERVAL_MS, remaining), generation)
+    }
+    if (generation !== paymentPollGeneration) return
+    paymentPolling.value = false
+    errorMessage.value = '支付结果仍在处理中，请稍后刷新订单和通知。'
+  })()
 }
 
 function waitForSubmittingPoll(milliseconds: number, generation: number) {
@@ -658,32 +779,45 @@ async function refreshOrder(preserveError = false) {
 
 async function payOrder() {
   if (!currentOrder.value) return
-  busy.value = true
+  paymentStarting.value = true
   errorMessage.value = ''
   try {
-    currentOrder.value = await ticketApi.payOrder(currentOrder.value.id)
-    if (currentSession.value) seats.value = await ticketApi.getSeats(currentSession.value.id)
-    showNotice('支付成功，订单与座位状态已同步确认')
+    const result = await ticketApi.payOrder(currentOrder.value.id)
+    currentOrder.value = result.order
+    currentPaymentAttempt.value = result.paymentAttempt
+    if (result.order.status === 'PAID') {
+      if (currentSession.value) seats.value = await ticketApi.getSeats(currentSession.value.id)
+      await refreshNotifications()
+      showNotice('支付成功，订单与座位状态已同步确认')
+    } else if (result.paymentAttempt?.status === 'PROCESSING') {
+      startPaymentAttemptPolling(result.paymentAttempt.id)
+    }
   } catch (error) {
     showError(error, '支付请求结果未知，正在重新查询订单。')
     await refreshOrder(true)
   } finally {
-    busy.value = false
+    paymentStarting.value = false
   }
 }
 
 async function cancelOrder() {
   if (!currentOrder.value) return
-  busy.value = true
+  cancelling.value = true
   errorMessage.value = ''
   try {
     currentOrder.value = await ticketApi.cancelOrder(currentOrder.value.id)
     if (currentSession.value) seats.value = await ticketApi.getSeats(currentSession.value.id)
     showNotice('订单已取消，座位已释放')
+    await refreshNotifications()
   } catch (error) {
-    showError(error, '取消订单失败，请刷新订单状态。')
+    if (error instanceof TicketApiError && error.code === 'ORDER_EXPIRED') {
+      await refreshOrder()
+      errorMessage.value = '订单已过期，座位已释放。'
+    } else {
+      showError(error, '取消订单失败，请刷新订单状态。')
+    }
   } finally {
-    busy.value = false
+    cancelling.value = false
   }
 }
 
@@ -704,12 +838,14 @@ async function expireOrder() {
 
 function backToEvents() {
   stopSubmittingPolling()
+  stopPaymentPolling()
   checkoutCreating.value = false
   checkoutSyncInFlight.value = false
   currentView.value = 'event-list'
   currentEvent.value = null
   currentSession.value = null
   currentOrder.value = null
+  currentPaymentAttempt.value = null
   currentCheckoutSession.value = null
   recoverableCheckoutSessions.value = []
   sessions.value = []
@@ -720,11 +856,13 @@ function backToEvents() {
 
 function backToSessions() {
   stopSubmittingPolling()
+  stopPaymentPolling()
   checkoutCreating.value = false
   checkoutSyncInFlight.value = false
   currentView.value = 'session-list'
   currentSession.value = null
   currentOrder.value = null
+  currentPaymentAttempt.value = null
   currentCheckoutSession.value = null
   recoverableCheckoutSessions.value = []
   seats.value = []
@@ -732,8 +870,22 @@ function backToSessions() {
   errorMessage.value = ''
 }
 
-onMounted(loadEvents)
-onBeforeUnmount(stopSubmittingPolling)
+function handleWindowFocus() {
+  void refreshNotifications()
+}
+
+onMounted(() => {
+  void loadEvents()
+  void refreshNotifications()
+  window.addEventListener('focus', handleWindowFocus)
+  notificationTimer = window.setInterval(() => void refreshNotifications(), NOTIFICATION_POLL_INTERVAL_MS)
+})
+onBeforeUnmount(() => {
+  stopSubmittingPolling()
+  stopPaymentPolling()
+  window.removeEventListener('focus', handleWindowFocus)
+  if (notificationTimer !== null) window.clearInterval(notificationTimer)
+})
 </script>
 
 <template>
@@ -764,6 +916,35 @@ onBeforeUnmount(stopSubmittingPolling)
           <Database :size="14" aria-hidden="true" />
           演示数据
         </span>
+        <div class="notification-center">
+          <button
+            class="notification-button"
+            type="button"
+            aria-label="通知中心"
+            :aria-expanded="notificationsOpen"
+            @click="notificationsOpen = !notificationsOpen"
+          >
+            <Bell :size="19" aria-hidden="true" />
+            <span v-if="unreadNotificationCount" class="notification-count">
+              {{ unreadNotificationCount }}
+            </span>
+          </button>
+          <section v-if="notificationsOpen" class="notification-panel" aria-label="通知列表">
+            <header><strong>通知</strong><span>{{ unreadNotificationCount }} 条未读</span></header>
+            <p v-if="!notifications.length" class="notification-empty">暂无通知</p>
+            <button
+              v-for="notification in notifications"
+              :key="notification.id"
+              :class="['notification-item', { 'is-read': notification.readAt }]"
+              type="button"
+              @click="markNotificationRead(notification)"
+            >
+              <strong>{{ notification.title }}</strong>
+              <span>{{ notification.message }}</span>
+              <small>{{ new Date(notification.createdAt).toLocaleString('zh-CN') }}</small>
+            </button>
+          </section>
+        </div>
         <button class="user-button" type="button" aria-label="当前用户 U-1001">
           <CircleUserRound :size="20" aria-hidden="true" />
           <span>U-1001</span>
@@ -825,7 +1006,11 @@ onBeforeUnmount(stopSubmittingPolling)
       :event="currentEvent"
       :session="currentSession"
       :seats="seats"
-      :busy="busy"
+      :refreshing="busy"
+      :payment-starting="paymentStarting"
+      :payment-polling="paymentPolling"
+      :cancelling="cancelling"
+      :payment-attempt="currentPaymentAttempt"
       @pay="payOrder"
       @cancel="cancelOrder"
       @expire="expireOrder"
