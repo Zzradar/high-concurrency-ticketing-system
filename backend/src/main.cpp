@@ -2,6 +2,7 @@
 #include "services/CheckoutSessionService.h"
 #include "services/SeatHoldService.h"
 #include "services/PaymentSimulation.h"
+#include "security/AuthConfig.h"
 
 #include <drogon/drogon.h>
 
@@ -101,6 +102,7 @@ int main(int argc, char *argv[])
         drogon::app().loadConfigFile(configPath);
         ticketing::SeatHoldService::validateConfiguration();
         ticketing::PaymentSimulation::validateConfiguration();
+        ticketing::AuthConfig::validate();
         const auto [batchSize, intervalSeconds] =
             loadOrderExpiryWorkerConfig();
         const auto checkoutReconciliationBatchSize =

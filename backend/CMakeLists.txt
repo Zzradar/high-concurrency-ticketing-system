@@ -81,6 +81,11 @@ add_executable(ticketing_backend
     src/repositories/UserSessionRepository.cpp
     src/services/AuthSessionCache.cpp
     src/services/AuthSessionService.cpp
+    src/security/AuthHttp.cpp
+    src/services/LoginRateLimiter.cpp
+    src/services/AuthService.cpp
+    src/filters/AuthFilter.cpp
+    src/controllers/AuthController.cpp
 )
 
 target_include_directories(ticketing_backend PRIVATE src "${ARGON2_INCLUDE_DIR}")
@@ -149,5 +154,9 @@ if(BUILD_TESTING)
     add_test(
         NAME auth_core_source_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/auth_core_source_contract_test.py"
+    )
+    add_test(
+        NAME auth_http_source_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/auth_http_source_contract_test.py"
     )
 endif()
