@@ -17,7 +17,7 @@
 | --- | --- |
 | getEvents | GET /events |
 | getSessions | GET /events/{eventId}/sessions |
-| getSeats | GET /sessions/{sessionId}/seats |
+| getSeats | GET /sessions/{sessionId}/seats?checkoutSessionId={optionalCheckoutSessionId} |
 | createReservation | POST /reservations |
 | createCheckoutSession | POST /checkout-sessions |
 | getCheckoutSession | GET /checkout-sessions/{id} |
@@ -106,12 +106,14 @@ date、time、weekday、gateTime 当前都是已经格式化的展示字符串�
 
 | 展示状态 | 是否属于 Seat.status | 语义 |
 | --- | --- | --- |
-| AVAILABLE | 是 | 最近一次座位接口返回可选；允许本地点选，但不代表已经锁座 |
+| AVAILABLE | 是 | 最近一次座位接口返回可选；允许本地点选，但不代表已经正式锁座 |
 | SELECTED | **否** | 纯前端派生状态：Seat.status 为 AVAILABLE 且 seat.id 位于 selectedSeatIds 中 |
-| HELD | 是 | 已被有效预订临时锁定；前端禁止点击 |
+| HELD | 是 | PostgreSQL 正式预订已锁定，或 PG AVAILABLE 座位被其他 CheckoutSession 的 live Redis Hold 临时覆盖；前端禁止点击 |
 | SOLD | 是 | 已售出；前端禁止点击 |
 
-用户点选 AVAILABLE 座位时不会发请求，也不会修改 Seat.status，只会增删 selectedSeatIds。selectedSeats 是从 seats 中按 selectedSeatIds 计算得到的 Seat[]。
+用户点选 AVAILABLE 座位时先增删 selectedSeatIds，并异步创建或更新 CheckoutSession
+完整座位集；后端会尝试取得或调整 Redis 临时 Hold，但不会把前端 Seat.status
+直接改成正式库存状态。selectedSeats 是从 seats 中按 selectedSeatIds 计算得到的 Seat[]。
 
 ### 3.4 Reservation
 
@@ -152,12 +154,13 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
 | 点击“查看场次” | 保存整个 event 为 currentEvent，切换视图并加载场次 | GET /events/{event.id}/sessions |
 | 点击“进入选座” | 保存整个 session 为 currentSession，清空本地选择并加载座位 | GET /sessions/{session.id}/seats |
 | 进入选座 | 先按 locator GET；无有效 locator 时查询全部可恢复会话且不自动选最新一条 | GET CheckoutSession / list recoverable |
-| 第一次点击 AVAILABLE 座位 | 立即更新 selectedSeatIds，并异步创建唯一 C1 | POST /checkout-sessions |
+| 第一次点击 AVAILABLE 座位 | 立即更新 selectedSeatIds，并异步创建唯一 C1；后端同时尝试取得首批 Redis 临时 Hold | POST /checkout-sessions |
 | 后续 add/remove | UI 立即更新；同一 C1 以 single-flight PUT 同步最新完整集合 | PUT seats，携带 seatIds、expectedRevision |
-| 点击刷新座位 | 重新获取 Seat[]；不删除恢复出的 HELD/SOLD 意图座位 | GET /sessions/{session.id}/seats |
+| 点击刷新座位 | 重新获取 Seat[]；已有 C1 时携带其 ID，不删除恢复出的 HELD/SOLD 意图座位 | GET /sessions/{session.id}/seats?checkoutSessionId={C1} |
 | 点击“提交预订” | 禁止继续编辑，等待 create/PUT 并把最终集合 flush 到服务端 checkpoint，再正式确认 | POST /checkout-sessions/{id}/confirm |
 | 确认成功 | 使用 CheckoutSession 响应中的 order，刷新座位图并进入订单页 | confirm 响应 RESERVED CheckoutSession；随后 GET seats |
 | SEAT_CONFLICT | GET 当前 C1 回到 SELECTING，保留服务端意图并刷新 Seat Map | GET CheckoutSession + GET seats |
+| SEAT_TEMPORARILY_HELD | 视为明确业务冲突，保留合理的本地意图并刷新 Seat Map，不进入结果未知轮询 | GET seats；Final PUT 冲突时不调用 confirm |
 | 点击订单“刷新状态” | 更新 currentOrder，并同步刷新座位 | GET /orders/{order.id}；随后 GET /sessions/{session.id}/seats |
 | 倒计时归零 | 倒计时组件只发出 expiryReached，不自行把订单设为 EXPIRED | GET /orders/{order.id}，以后端状态为准 |
 | 点击“模拟支付” | 用返回值替换 currentOrder，再刷新 seats | POST /orders/{order.id}/pay；随后 GET seats |
@@ -231,7 +234,7 @@ Axios 响应拦截器会提取字符串类型的 `code` 和 `message`，转换�
 对应进入选座、手动刷新座位，以及订单状态变更后的座位同步。
 
 - Path：sessionId，string，例如 ses-concert-1001。
-- Query：当前无。
+- Query：`checkoutSessionId` 可选。已有当前 C1 时传其 ID；没有 C1 时可省略。
 
 前端期望 response.data 直接为完整 Seat[]：
 
@@ -259,6 +262,14 @@ Axios 响应拦截器会提取字符串类型的 `code` 和 `message`，转换�
     ]
 
 当前代码明确依赖 id、label、row、number、status、zone、price。sessionId 当前不被组件读取。SELECTED 不应由此接口返回。
+
+Phase 7 的叠加规则为：
+
+- 不传 `checkoutSessionId` 时，任何 live Redis Hold 都视为其他购票会话占用；
+- 传当前 C1 时，该 C1 自己的 Hold 不把 PostgreSQL AVAILABLE 覆盖成不可选；
+- 其他 C1 的 Hold 把 PostgreSQL AVAILABLE 在响应中表现为 HELD；
+- PostgreSQL 已经 HELD/SOLD 时始终以正式状态为准；
+- Redis 批量读取失败时接口仍成功，退化为纯 PostgreSQL seat map。
 
 ### 5.4 POST /reservations
 
@@ -387,6 +398,28 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 
 前端使用返回对象整体替换 currentOrder，随后重新获取座位图，期望原 HELD 座位已经恢复为 AVAILABLE。
 
+### 5.8 CheckoutSession 临时占座冲突与 Confirm
+
+CheckoutSession 的 create、完整集合 PUT 和 `SELECTING` Confirm 可能返回：
+
+```text
+HTTP 409
+SEAT_TEMPORARILY_HELD
+```
+
+它表示一个或多个目标座位当前被其他 CheckoutSession 的 Redis 临时 Hold 占用。
+该错误与以下冲突必须区分：
+
+- `SEAT_TEMPORARILY_HELD`：SELECTING 阶段 Redis 临时竞争；
+- `SEAT_CONFLICT`：正式 Reservation 阶段 PostgreSQL 最终库存冲突；
+- `CHECKOUT_SESSION_VERSION_CONFLICT`：同一 C1 的 revision 冲突。
+
+`SELECTING` Confirm 在写入 SUBMITTING 之前确保当前 selectedSeats 没有被其他 C1
+临时占用。自己的 Hold 因 TTL 到期或 Redis 数据丢失而不存在时可以补建；其他 owner
+返回 `SEAT_TEMPORARILY_HELD`，不会进入 SUBMITTING，也不会持久化确认 K1。
+Redis 技术不可用时继续 PostgreSQL 正式确认。已经处于 SUBMITTING 的重试保持
+Phase 5/6 语义，复用原 K1，不重新把 Redis Hold 当作正式确认资格。
+
 ## 6. 前端状态流转与权威边界
 
     currentView = event-list
@@ -411,7 +444,7 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 | sessions | 后端权威数据的前端副本 | 选择活动后获取 |
 | currentSession | 前端内存引用 | 从 sessions 中选中 |
 | seats | 后端权威数据的前端副本 | 进入选座、刷新、订单变更后重新获取 |
-| selectedSeatIds | 完全属于前端 | 只是用户意向；不是锁座结果 |
+| selectedSeatIds | 完全属于前端 | 是本地用户意向；服务端可能已为对应 CheckoutSession 建立 Redis 临时 Hold，但它不是正式锁座结果 |
 | selectedSeats | 完全属于前端的计算值 | 从 seats 和 selectedSeatIds 派生 |
 | currentCheckoutSession | 后端权威 checkpoint 的前端副本 | 包含 seatIds、revision、status；成功 PUT 后整体替换 |
 | recoverableCheckoutSessions | 后端查询结果 | 多个候选必须由用户显式选择 |
@@ -423,7 +456,7 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 
 边界原则：
 
-1. 用户点选座位只改变 selectedSeatIds，不能视为锁座。
+1. 用户点选座位先改变 selectedSeatIds，并异步保存 CheckoutSession 意图和临时 Hold；只有 Phase 3 正式 Reservation 成功才是 PostgreSQL 正式锁座。
 2. 正常 UI 不直接调用 POST /reservations；confirm 返回 RESERVED + order 后才进入订单页。底层 createReservation 仍保留用于 Mock 竞争和较低层测试。
 3. Seat.status、Reservation.status 和 Order.status 的正式值必须以后端为准。
 4. 倒计时仅用于展示；是否过期由 GET /orders/{orderId} 的返回状态决定。
@@ -458,7 +491,15 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 服务端 `seatIds + revision` 并要求用户重新确认。`SUBMITTING` 每 2 秒 GET，最长 15 秒；
 仍未确定时显示“继续原确认”，不会显示预订失败。Phase 6 不使用 Redis 预占座。
 
-### 7.2 仍需联调确认的问题
+### 7.3 Phase 7 Redis 临时占座契约
+
+已有 C1 时，前端调用 `getSeats(sessionId, checkoutSessionId)`；恢复 C1 后也会以该
+C1 上下文重新刷新座位图。`SEAT_TEMPORARILY_HELD` 是明确业务冲突：前端刷新座位图、
+保留合理的本地购买意图、不自动 merge，也不进入“确认结果未知”的 SUBMITTING
+polling。Confirm barrier 的最终 PUT 遇到该冲突时不会调用 confirm endpoint。
+Redis 不可用的降级由后端处理，前端不感知 Redis 故障细节。
+
+### 7.4 仍需联调确认的问题
 
 1. **Reservation 返回但未保存。** ReservationResult 包含 reservation，App 当前只保存 order；后端仍需按当前类型完整返回。
 2. **订单页不能仅靠 GET /orders/{orderId} 独立恢复。** 页面展示依赖内存中的 currentEvent、currentSession 和完整 seats；刷新浏览器后这些状态会丢失。
@@ -479,6 +520,8 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 - 所有请求通过 X-User-Id 请求头接收 Demo 用户 U-1001。
 - 成功响应直接返回本文所列 JSON，不增加 data 外层包装。
 - 业务失败响应返回字符串类型的 code 和 message。
+- GET seats 接受可选 checkoutSessionId，并按当前 C1 上下文叠加 Redis 临时 Hold。
+- 临时占座冲突返回 HTTP 409 和 SEAT_TEMPORARILY_HELD。
 - price、priceFrom、totalAmount 使用整数分。
 - 使用本文列出的精确状态字符串。
 - expiresAt、createdAt、paidAt 使用可被浏览器 Date.parse 正确解析的 ISO 8601 字符串。

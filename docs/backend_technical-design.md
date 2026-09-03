@@ -13,7 +13,8 @@ MVP 重点解决以下问题：
 5. 服务重启后，如何继续处理已经超时但尚未释放的订单。
 6. 如何通过并发测试验证系统的核心业务不变量。
 
-本阶段不追求复杂微服务架构，也不提前引入 Redis、消息队列和实时推送。核心原则是：先用关系数据库事务把预订业务本身做正确。
+本阶段不追求复杂微服务架构，也不引入消息队列和实时推送。Phase 7 已增加 Redis
+临时占座，但核心原则不变：正式库存仍由关系数据库事务保证正确。
 
 ---
 
@@ -74,7 +75,7 @@ MVP 阶段数据库是唯一正式数据源。
 使用：
 
 - **CMake**：项目构建。
-- **Docker Compose**：本地启动 PostgreSQL 和后端服务。
+- **Docker Compose**：本地启动 PostgreSQL、Redis 和后端服务。
 - **GoogleTest**：核心业务逻辑和并发场景测试。
 - Drogon 自带日志能力或 **spdlog**：运行日志。
 
@@ -94,10 +95,11 @@ Drogon HTTP Server
   ├── Session Module
   ├── Seat Module
   ├── Reservation Module
+  ├── Checkout Session Module ── Redis 临时占座
   └── Order Module
           │
           ▼
-      PostgreSQL
+      PostgreSQL（正式业务事实）
 
 Background Worker
   │
@@ -119,7 +121,7 @@ Phase 3  POST /reservations + 幂等 + 原子锁座                已完成
 Phase 4  GET /orders/{orderId} + 超时释放 Worker             已完成
 Phase 5  服务端 Checkout Session（购票会话）                已完成
 Phase 6  前端购票会话恢复与独立多会话                        已完成
-Phase 7  Redis 临时占座                                      待实现
+Phase 7  Redis 临时占座                                      已完成
 Phase 8  支付 + 取消 + 支付/取消/超时状态竞争                待实现
 Phase 9  按压测决定限流/排队/异步受理/操作查询               暂缓
 ```
@@ -143,7 +145,8 @@ POST /checkout-sessions/{id}/abandon
 
 当前 Vue 页面实际调用活动列表、活动场次列表、场次座位图和全部 CheckoutSession 接口，
 尚未调用已经存在的 `GET /events/{eventId}`。Phase 3 后端预订能力与 Phase 4 订单查询、超时释放 Worker
-已经完成；支付和取消能力仍未实现。
+已经完成；Phase 7 的 Redis 临时占座和带 CheckoutSession 上下文的座位图也已完成；
+支付和取消能力仍未实现。
 
 ---
 
@@ -280,6 +283,10 @@ Session，且每个座位在一个会话中只出现一次。这些行不代表 
 在行锁事务中原子加 1；请求必须携带 `expectedRevision`。锁后版本不一致返回
 `409 CHECKOUT_SESSION_VERSION_CONFLICT`，且不修改座位关联。状态迁移和对账不增加 revision。
 
+Phase 7 复用 revision 作为 Redis Hold 的 fencing version。Redis Hold 只代表
+`SELECTING` 阶段的短期竞争，不把 `checkout_session_seats` 或 PostgreSQL
+`session_seats` 改成正式 `HELD`；正式 Reservation 仍由 Phase 3 事务创建。
+
 ---
 
 ## 5. 核心业务流程
@@ -300,9 +307,11 @@ Session，且每个座位在一个会话中只出现一次。这些行不代表 
 - 座位状态。
 - 是否可选择。
 
-MVP 直接从 PostgreSQL 查询。
-
-暂时不引入 Redis 缓存和 WebSocket。
+基础座位状态直接从 PostgreSQL 查询。Phase 7 再批量读取 Redis live Hold：PostgreSQL
+已经是 HELD/SOLD 时保持正式状态；PostgreSQL AVAILABLE 且被其他 CheckoutSession
+临时占座时在响应中表现为 HELD；当前 CheckoutSession 自己的 Hold 仍表现为 AVAILABLE。
+Redis 读取失败时退化为纯 PostgreSQL 座位图，不影响接口成功。当前不引入 Redis
+座位图缓存或 WebSocket。
 
 ### 5.3 提交座位预订
 
@@ -723,8 +732,8 @@ Order 和真实关联数据。并发测试不能反复污染这些记录。
 
 当前 Phase 3 及核心正确性验证阶段明确不实现：
 
-- Redis 座位缓存。
-- Redis 临时锁。
+- Redis 座位图缓存。
+- Redis 分布式锁。
 - Redis 限流。
 - Kafka / RabbitMQ。
 - WebSocket 实时座位推送。
@@ -738,8 +747,8 @@ Order 和真实关联数据。并发测试不能反复污染这些记录。
 - 推荐系统。
 - 复杂后台管理系统。
 
-这些能力都不影响使用 PostgreSQL 事务验证核心预订模型。当前四个只读接口和已经
-完成的 Phase 3 预订流程均直接访问 PostgreSQL，不增加 Redis 或应用层缓存。
+这些能力都不影响使用 PostgreSQL 事务验证核心预订模型。Phase 7 的 Redis 只用于
+SELECTING 阶段的临时竞争，不是缓存、分布式锁或正式库存来源。
 
 ---
 
@@ -758,7 +767,7 @@ Phase 5 已引入服务端 Checkout Session（购票会话），作为某个用�
 ↓
 选座
 ↓
-（未来 Redis 临时占座）
+Redis 临时占座
 ↓
 确认购票会话
 ↓
@@ -781,33 +790,36 @@ Phase 3 不是临时方案，也不因未来增加购票会话而废弃。
 主动重试 confirm。前两者只修复已存在的 Reservation/Order，找不到正式结果时保持
 `SUBMITTING`，启动对账绝不会自动购票。详见 [Phase 5 购票会话落地设计](checkout_session_phase5_design.md)。
 
-### Redis
+### Redis 临时占座（Phase 7 已完成）
 
-Phase 7 可以加入与购票会话关联、带 TTL 的临时占座：用户点击 A01 后向后端申请
-短期占用，让其他用户更早看到该座位正在被选择。这可以改善体验、提前暴露竞争并
-削减正式确认阶段的无效请求，但不是最终防超卖机制；即使未来加入 Redis，正式确认
-的 PostgreSQL 事务、`SessionSeat FOR UPDATE`、行锁与约束仍必须存在。
+Redis 是 `SELECTING` 阶段的临时竞争/软占座层；PostgreSQL 仍是正式库存、
+Reservation、Order 和 SessionSeat 的最终事实来源。正式 Confirm 仍调用 Phase 3
+PostgreSQL Reservation 事务，Redis 不能让 PostgreSQL 本应失败的请求成功。
 
-当前暂缓软占用，因为它需要同时增加：
+当前结构为：
 
-- Redis 与临时占用接口。
-- 取消选择和自动过期。
-- 前端点击异步化、页面关闭与多标签页处理。
-- Redis 与 PostgreSQL 正式状态协调。
+```text
+Key    ticketing:seat-hold:{sessionId}:sessionSeatId
+Value  checkoutSessionId|revision
+TTL    默认 300 秒
+配置   custom_config.checkout_seat_hold.ttl_seconds
+Client seat_holds
+```
 
-Phase 3 已经证明数据库正式 Reservation 在并发下不会把同一 SessionSeat 分给两个
-有效预订。Phase 7 实施前，`SELECTED` 继续只存在于浏览器本地。
+Redis `/data` 使用 tmpfs，不挂持久化 volume。Redis 丢失或不可用只会失去临时占座
+保护：命令超时、连接失败等技术异常按 `Unavailable` 处理并降级到 Phase 6，继续
+PostgreSQL 流程；临时残留依靠 TTL 自愈。
 
-当读取热点和实际压测结果证明有需要时，再考虑：
+同一 CheckoutSession 的 PUT 继续先由 PostgreSQL `FOR UPDATE + revision` 串行化。
+拿到行锁并验证版本后，对 full-set 计算 added、retained 和 removed：Redis Prepare
+先原子检查并取得目标 Hold，不提前释放旧 Hold；PostgreSQL 成功提交 selectedSeats
+与 revision 后，Finalize 才释放 removed；PostgreSQL 失败时 Abort 只撤销本次 added。
+revision 同时作为 Redis fencing version，旧 Abort/Finalize 不能删除更高 revision
+重新取得的 Hold。这不是 Redis 与 PostgreSQL 的强一致事务。
 
-- 缓存座位图。
-- 保存可丢失的页面软占用状态。
-- 限制热门场次请求速率。
-
-正式座位归属始终由 PostgreSQL 决定。
-
-Redis 故障最多使临时占座体验退化，不能导致正式超卖。Redis key 和协调细节留到
-Phase 7 具体设计时确定。
+第一版不增加 Redis 分布式锁、分布式事务、heartbeat、CheckoutSession 到 Hold
+集合的 Redis 索引或主动对账 Worker。详细设计见
+[Phase 7 Redis 临时占座设计](redis_seat_hold_phase7_design.md)。
 
 ### WebSocket
 
@@ -876,5 +888,5 @@ MVP 完成时必须能够完整演示：
 5. 服务重启不会导致超时订单永久占座。
 
 只要以上业务闭环和并发正确性成立，才认为核心 MVP 完成。当前 Phase 1～4 已经
-完成；支付/取消以及完整故障恢复验证仍属于后续阶段，不能因为 Reservation 和
+完成，Phase 5～7 的购票会话、恢复和 Redis 临时占座也已经落地；支付/取消以及完整故障恢复验证仍属于后续阶段，不能因为 Reservation 和
 过期回收已经可运行就把完整 MVP 标记为完成。

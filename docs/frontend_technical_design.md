@@ -227,6 +227,7 @@ B03
 - 如果当前未选择，则加入 selectedSeats。
 - 如果已经选择，则取消选择。
 - HELD 和 SOLD 状态不可点击。
+- UI 先本地乐观更新，再通过 CheckoutSession create/full-set PUT 异步同步购买意图和 Redis 临时 Hold。
 
 ---
 
@@ -351,6 +352,9 @@ status
 这些座位尚未真正锁定；`selectedSeatIds` 是 UI 最终意图，服务端 CheckoutSession 的
 `seatIds + revision` 是最近一次成功保存的 checkpoint。
 
+Phase 7 中，成功的 CheckoutSession create/PUT 还会尝试建立或刷新 Redis 临时 Hold；
+它只是 SELECTING 阶段的短期竞争保护，不等于 PostgreSQL 正式 Reservation 锁座。
+
 只有最终同步屏障完成并且 CheckoutSession confirm 成功返回后，才认为真正锁座成功。
 
 ### currentCheckoutSession
@@ -410,10 +414,11 @@ A01 已被其他用户抢占
 
 - 展示。
 - 用户交互。
-- 本地临时选择。
+- 本地乐观选择和 CheckoutSession 同步编排。
 
 后端负责：
 
+- SELECTING 阶段的 Redis 临时占座与降级。
 - 真正锁座。
 - 防止重复预订。
 - 创建订单。
@@ -450,10 +455,12 @@ GET /events/{eventId}/sessions
 ### 座位
 
 ```text
-GET /sessions/{sessionId}/seats
+GET /sessions/{sessionId}/seats?checkoutSessionId={optionalCheckoutSessionId}
 ```
 
-获取当前场次座位图。
+获取当前场次座位图。已有 C1 时携带其 ID；当前 C1 自己的 Redis Hold 不覆盖 PG
+AVAILABLE，其他 C1 的 live Hold 将 PG AVAILABLE 表现为 HELD。Redis 读取失败时后端
+退化为纯 PostgreSQL seat map。
 
 ---
 
@@ -598,9 +605,11 @@ AVAILABLE
 显示 SELECTED
 ```
 
-这样不需要为了用户点击一下座位就修改后端数据。
+这样不需要为了用户点击一下座位就直接修改 PostgreSQL 正式库存状态。
 
-只有点击“提交预订”以后才真正调用后端锁座接口。
+用户点选后会异步调用 CheckoutSession create/full-set PUT 取得临时 Hold；只有
+CheckoutSession confirm 复用 Phase 3 正式 Reservation 成功后，才成为 PostgreSQL
+正式 HELD。API 为其他 C1 的 Redis Hold 复用 HELD 展示，但它不等于数据库正式 HELD。
 
 ---
 
@@ -655,6 +664,14 @@ expiresAt - 当前时间
 ```
 
 然后刷新座位图，同时保留本次座位竞争提示。
+
+---
+
+### 临时占座冲突
+
+`SEAT_TEMPORARILY_HELD` 是 SELECTING 阶段的明确业务冲突。前端刷新 seat map、保留
+合理的本地购买意图，不自动 merge，也不进入“确认结果未知”的 SUBMITTING polling。
+Confirm barrier 的最终 PUT 遇到该错误时不会调用 confirm endpoint。
 
 ---
 
@@ -745,6 +762,12 @@ Order 状态或 Seat 状态当作权威事实。刷新后必须重新 GET 服务
 当前仍由 `App.vue` 编排，不引入 Pinia 或 Vue Router。Confirm 前先等待 C1 创建和已有
 PUT，再把固定的最终座位集合 flush 到最新 revision；发生版本冲突时 GET 最新 C1，
 不自动 merge。Phase 6 不增加 Redis 预占座。
+
+Phase 7 在上述本地乐观 `selectedSeatIds`、serialized PUT 和 Confirm barrier 基础上
+增加 Redis 临时占座。已有 C1 时 `getSeats()` 携带 `checkoutSessionId`；恢复 C1 后也会
+用该上下文刷新座位图，使自己的 Hold 继续作为本地已选展示，其他 C1 Hold 的座位则
+不可新选。`SEAT_TEMPORARILY_HELD` 只触发明确冲突提示和座位图刷新，不触发结果未知
+恢复。Redis 不可用由后端降级，前端不感知 Redis 故障细节。
 
 ### WebSocket 实时座位更新
 

@@ -17,7 +17,7 @@ MVP 阶段遵循以下原则：
 1. 前端负责展示、交互和本地临时选择状态。
 2. 后端负责正式座位状态、Reservation、Order 和所有业务状态迁移。
 3. PostgreSQL 是 MVP 阶段唯一正式数据源。
-4. Redis、消息队列、WebSocket、多实例部署不进入当前核心 MVP 阶段。
+4. Phase 7 的 Redis 只进入 SELECTING 临时占座层；消息队列、WebSocket、多实例部署不进入当前核心 MVP 阶段。
 5. 接口数量保持最小，以跑通完整预订闭环为目标。
 
 ## 2. MVP 接口范围与当前状态
@@ -56,6 +56,10 @@ PUT /checkout-sessions/{id}/seats
 POST /checkout-sessions/{id}/confirm
 POST /checkout-sessions/{id}/abandon
 ```
+
+Phase 7 已实现与 CheckoutSession 关联的 Redis 临时占座，以及带可选
+`checkoutSessionId` 查询参数的座位图叠加。Redis 不可用时退化为 Phase 6 行为，
+正式库存仍由 PostgreSQL 仲裁。
 
 当前 Vue 前端已调用上述 CheckoutSession 接口；正常 UI 不再直接调用 `POST /reservations`。
 
@@ -372,6 +376,8 @@ SOLD
 ```
 
 前端当前的 Seat DTO 实际是后端将物理 Seat 信息与 SessionSeat 状态、价格组合后的接口对象。
+Phase 7 还会在 PostgreSQL AVAILABLE 时叠加 Redis live Hold 的显示结果；这不会改变
+SessionSeat 的数据库状态。
 
 例如：
 
@@ -400,7 +406,9 @@ HELD
 SOLD
 ```
 
-用户点击 AVAILABLE 座位后，只修改浏览器本地 `selectedSeatIds`。
+用户点击 AVAILABLE 座位后，先修改浏览器本地 `selectedSeatIds`，再异步把完整购买
+意图同步到 CheckoutSession，并尝试建立 Redis 临时 Hold。`SELECTED` 仍只是前端派生
+展示，Redis Hold 也不是 PostgreSQL 正式库存状态。
 
 只有用户点击“提交预订”，CheckoutSession confirm 在服务端复用 Phase 3 正式预订并成功后，
 相应 SessionSeat 才正式从 AVAILABLE 进入 HELD。
@@ -775,10 +783,14 @@ EXPIRED、Reservation 进入 EXPIRED、SessionSeat 恢复 AVAILABLE 并清空
 PUT in-flight，Confirm 前执行最终同步屏障。`sessionStorage` 只保存 locator；
 `SUBMITTING` 每 2 秒查询，15 秒后仍未知时允许继续原确认。本阶段没有 Redis pre-hold。
 
-### Phase 7：Redis 临时占座（待实现）
+### Phase 7：Redis 临时占座（已完成）
 
-增加与购票会话关联、带 TTL 的前置临时占座，改善体验和削减无效竞争。正式库存
-仍由 PostgreSQL 事务、SessionSeat 行锁与约束决定。
+已增加与购票会话关联、默认 TTL 300 秒的前置临时占座，改善体验和削减无效竞争。
+Key 为 `ticketing:seat-hold:{sessionId}:sessionSeatId`，value 为
+`checkoutSessionId|revision`。同一 C1 的 full-set PUT 仍由 PostgreSQL 行锁和 revision
+串行化；Redis Prepare、Abort、Finalize 使用 revision fencing，避免失败换座丢失旧
+Hold 或迟到 cleanup 删除新版本 Hold。Redis unavailable 时继续 PostgreSQL 流程。
+正式库存仍由 PostgreSQL 事务、SessionSeat 行锁与约束决定。
 
 ### Phase 8：支付、取消与超时竞争（待实现）
 
@@ -826,7 +838,7 @@ Reservation 专用幂等和 COMMIT 确认能力。CheckoutSession 行锁保证�
 用户被明确告知旧确认仍可能成功后，可以显式开启第二个独立会话；系统不能因超时
 静默生成第二订单。主动放弃正在确认的会话暂缓，直到确认与取消的原子竞争被设计。
 
-Phase 7 的 Redis 临时占座只服务前置竞争与体验，正式确认仍由 PostgreSQL 仲裁。
+Phase 7 已实现的 Redis 临时占座只服务前置竞争与体验，正式确认仍由 PostgreSQL 仲裁。
 通用幂等记录和 Phase 9 异步受理都属于后续评估，不是当前实现事实。
 
 ## 22. 当前阶段边界
@@ -834,7 +846,7 @@ Phase 7 的 Redis 临时占座只服务前置竞争与体验，正式确认仍�
 核心 MVP 当前不加入：
 
 ```text
-Redis
+Redis 座位图缓存与分布式锁
 Kafka
 RabbitMQ
 WebSocket
@@ -886,8 +898,6 @@ SELECTED
 
 只是浏览器本地选择；
 
-```text
-HELD
-```
-
-才代表后端已经成功创建正式临时预订。
+PostgreSQL `SessionSeat.status = HELD` 才代表后端已经成功创建正式临时预订。
+座位图 API 可能把“PG AVAILABLE + 其他 C1 live Redis Hold”临时表现为 HELD；该展示
+叠加不等同于数据库正式 HELD，也不改变 PostgreSQL 的最终权威。
