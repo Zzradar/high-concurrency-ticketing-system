@@ -1,0 +1,160 @@
+name: ticketing-phase10a
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+      - -c
+      - track_io_timing=on
+      - -c
+      - log_lock_waits=on
+    environment:
+      POSTGRES_DB: ticketing
+      POSTGRES_USER: ticketing
+      POSTGRES_PASSWORD: ticketing_dev
+      TZ: Asia/Shanghai
+    ports:
+      - "15432:5432"
+    volumes:
+      - ticketing_postgres_data:/var/lib/postgresql/data
+      - ./postgres/000_observability.sql:/docker-entrypoint-initdb.d/000_observability.sql:ro
+      - ../db/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql:ro
+      - ../db/migrations/002_add_reservation_idempotency.sql:/docker-entrypoint-initdb.d/002_add_reservation_idempotency.sql:ro
+      - ../db/migrations/003_add_checkout_sessions.sql:/docker-entrypoint-initdb.d/003_add_checkout_sessions.sql:ro
+      - ../db/migrations/004_add_checkout_session_revision.sql:/docker-entrypoint-initdb.d/004_add_checkout_session_revision.sql:ro
+      - ../db/migrations/005_add_payment_lifecycle.sql:/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql:ro
+      - ../db/migrations/006_add_user_authentication.sql:/docker-entrypoint-initdb.d/006_add_user_authentication.sql:ro
+      - ../db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/007_demo_seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ticketing -d ticketing"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--latency-tracking", "yes"]
+    ports:
+      - "16379:6379"
+    volumes:
+      - type: tmpfs
+        target: /data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 2s
+      retries: 30
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: ["./ticketing_backend", "config/config.performance.json"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "18080:8080"
+    environment:
+      TICKETING_PAYMENT_FORCE_OUTCOME: ${TICKETING_PAYMENT_FORCE_OUTCOME:-}
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://127.0.0.1:8080/health >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  postgres-exporter:
+    image: ghcr.io/prometheus-community/postgres-exporter:v0.20.1
+    environment:
+      DATA_SOURCE_NAME: postgresql://ticketing_metrics:ticketing_metrics_dev@postgres:5432/ticketing?sslmode=disable
+      PG_EXPORTER_EXTEND_QUERY_PATH: /etc/postgres_exporter/queries.yml
+    volumes:
+      - ./postgres-exporter/queries.yml:/etc/postgres_exporter/queries.yml:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "19187:9187"
+    restart: unless-stopped
+
+  redis-exporter:
+    image: ghcr.io/oliver006/redis_exporter:v1.89.0
+    environment:
+      REDIS_ADDR: redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "19121:9121"
+    restart: unless-stopped
+
+  cadvisor:
+    image: ghcr.io/google/cadvisor:v0.60.5
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+    ports:
+      - "18081:8080"
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v3.14.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=7d
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      backend:
+        condition: service_healthy
+      postgres-exporter:
+        condition: service_started
+      redis-exporter:
+        condition: service_started
+      cadvisor:
+        condition: service_started
+    ports:
+      - "19090:9090"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:13.2.0
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      prometheus:
+        condition: service_started
+    ports:
+      - "13000:3000"
+    restart: unless-stopped
+
+volumes:
+  ticketing_postgres_data:
+    name: ticketing_phase10a_postgres_data
+  prometheus_data:
+    name: ticketing_phase10a_prometheus_data
+  grafana_data:
+    name: ticketing_phase10a_grafana_data
