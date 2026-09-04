@@ -1,13 +1,13 @@
 # 前端接口契约文档
 
 > 调查对象：当前仓库中的 Vue 3 前端实际代码。  
-> 主要依据：frontend/src/types.ts、frontend/src/api/ticketApi.ts、frontend/src/App.vue、frontend/src/views 和 frontend/src/components。  
+> 主要依据：frontend/src/types.ts、frontend/src/api/ticketApi.ts、frontend/src/router.ts、frontend/src/pages、frontend/src/views 和 frontend/src/components。
 > 本文只记录当前前端已经存在的数据模型、调用方式和状态语义，不代表后端最终方案。
 
 ## 1. 当前 API 运行方式
 
 - API 封装位于 frontend/src/api/ticketApi.ts。
-- Axios 的 baseURL 为 **/api**，超时时间为 **8000 ms**，请求统一携带 **Content-Type: application/json** 和 Demo 用户请求头 **X-User-Id: U-1001**。
+- Axios 的 baseURL 为 **/api**，超时时间为 **8000 ms**，并启用 `withCredentials`。不再发送 `X-User-Id`；认证身份来自 Session Cookie。
 - 开发环境会把 **/api** 代理到 **http://localhost:8080**，并移除路径前缀 **/api**。例如浏览器请求 **/api/events**，C++ 后端实际接收 **/events**。
 - 当 **VITE_USE_MOCK_API** 不等于字符串 **false** 时使用 mock；仓库中的 .env.example 当前为 **true**。
 - 真实 API 成功响应直接读取 Axios 的 response.data，不使用统一 data 外层包装，也不做响应字段转换。失败响应提取 `code` 和 `message`，并转换为兼容现有处理逻辑的 TicketApiError。
@@ -15,8 +15,13 @@
 
 | 前端方法 | HTTP |
 | --- | --- |
+| login | POST /auth/login |
+| me | GET /auth/me |
+| logout | POST /auth/logout |
 | getEvents | GET /events |
+| getEvent | GET /events/{eventId} |
 | getSessions | GET /events/{eventId}/sessions |
+| getSession | GET /sessions/{sessionId} |
 | getSeats | GET /sessions/{sessionId}/seats?checkoutSessionId={optionalCheckoutSessionId} |
 | createReservation | POST /reservations |
 | createCheckoutSession | POST /checkout-sessions |
@@ -26,32 +31,35 @@
 | confirmCheckoutSession | POST /checkout-sessions/{id}/confirm |
 | abandonCheckoutSession | POST /checkout-sessions/{id}/abandon |
 | getOrder | GET /orders/{orderId} |
+| getOrders | GET /orders?status=...&sessionId=...&limit=... |
 | payOrder | POST /orders/{orderId}/pay |
 | getPaymentAttempt | GET /payment-attempts/{paymentAttemptId} |
 | cancelOrder | POST /orders/{orderId}/cancel |
 | getNotifications | GET /notifications |
 | markNotificationRead | POST /notifications/{notificationId}/read |
 
-当前代码**没有**调用 GET /events/{eventId}。活动详情数据直接复用活动列表中选中的 TicketEvent。  
 expireOrderForDemo 仅用于 mock 演示；真实 API 模式会直接报 MOCK_ONLY，不能视为后端接口契约。
 
 当前后端已实际打通订单查询、异步支付、取消、PaymentAttempt 查询和用户通知接口。
 
 ## 2. 页面、组件与数据需求
 
-前端没有 Vue Router。App.vue 使用 currentView 在四个视图间切换；购票会话通过服务端恢复，`sessionStorage` 只保存当前 Tab 的 `checkoutSessionId + sessionId` locator。
+前端使用 Vue Router；`App.vue` 提供共享壳层和通知中心，各 route page 自行加载权威数据。
+购票会话通过服务端恢复，`sessionStorage` 只保存当前 Tab、当前用户命名空间下的
+`checkoutSessionId + sessionId` locator。
 
 | 页面 / 视图 | 主要组件 | 当前依赖数据 | 当前来源 | 后端联调需求 |
 | --- | --- | --- | --- | --- |
-| 活动列表 EventListView | EventCard | events、loading | App 挂载后调用 ticketApi.getEvents；默认来自 eventsSeed mock | TicketEvent[] 必须由 GET /events 提供 |
-| 场次选择 SessionListView | SessionCard | currentEvent、sessions、loading | currentEvent 来自用户刚选中的活动对象；sessions 来自 getSessions(event.id) | TicketSession[] 必须由 GET /events/{eventId}/sessions 提供 |
-| 座位选择 SeatSelectionView | SeatGrid、SeatItem、SelectedSeats、RecoverableCheckoutPanel | currentEvent、currentSession、seats、selectedSeatIds、currentCheckoutSession、恢复候选与确认状态 | seats 来自 getSeats；selectedSeatIds 为当前 UI 意图；CheckoutSession 是服务端 checkpoint | Seat[] 与 CheckoutSession API；提交时后端最终确认是否锁座成功 |
-| 订单 OrderView | OrderSummary | currentOrder、currentPaymentAttempt、currentEvent、currentSession、seats、paymentStarting、paymentPolling、cancelling、倒计时 | currentOrder 和 PaymentAttempt 来自后端；event/session/seats 沿用 App 内存；倒计时由 expiresAt 与浏览器当前时间计算 | 支付返回后轮询 Attempt；订单终态变化后重新获取 order、seats 和 notifications |
+| 活动列表 `/events` | EventCard | events、loading | EventListPage 调用 getEvents | TicketEvent[] 必须由 GET /events 提供 |
+| 场次选择 `/events/:eventId/sessions` | SessionCard | event、sessions、loading | SessionListPage 按 URL 调用 getEvent/getSessions | Event 与 TicketSession[] 详情接口 |
+| 座位选择 `/sessions/:sessionId/seats` | SeatGrid、SeatItem、SelectedSeats、RecoverableCheckoutPanel | event、session、seats、selectedSeatIds、checkout、恢复候选与确认状态 | 页面按 route 加载详情；CheckoutSession 是服务端 checkpoint | Seat[] 与 CheckoutSession API；提交时后端最终确认是否锁座成功 |
+| 订单 `/orders/:orderId` | OrderSummary | order、paymentAttempt、event、session、seats、操作状态、倒计时 | OrderPage 按 URL 获取 Order，再按 eventId/sessionId 补齐详情 | 支付返回后轮询 Attempt；订单终态变化后重新获取 order 和通知 |
+| 我的订单 `/orders` | OrderListPage | orders、status、loading | GET /orders，默认 limit=20 | 当前认证用户的订单列表 |
 
 页面中的以下内容目前是纯前端常量，不来自接口：
 
 - 品牌名称、页头步骤和说明文案。
-- 当前用户展示值和 Demo 请求头用户值 **U-1001**。
+- Mock 模式的 Demo 登录账号和展示文案。
 - 活动页“本周精选 2 场活动正在售票”中的数字 2。
 - 舞台文字、座位状态中文说明、状态提示文案。
 - 最多选择 6 个座位的前端限制。
@@ -147,7 +155,8 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
 | createdAt | string | 2026-08-30T05:15:00.000Z | 模型中存在；页面未读取 |
 | paidAt | string，可选 | 2026-08-30T05:17:00.000Z | 支付成功 mock 返回；页面未读取 |
 
-订单页展示活动、场次和座位详细信息时，使用的是 App 内存中的 currentEvent、currentSession 和 seats，并非 TicketOrder 自身提供的展开数据。
+订单页根据 TicketOrder 的 `eventId / sessionId` 调用详情接口恢复活动、场次和座位，
+因此可以直接刷新或打开订单深链接。
 
 ### 3.6 PaymentAttempt、PaymentStartResult 与 UserNotification
 
@@ -158,15 +167,24 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
 
 `PaymentStartResult` 固定包含 `order` 和可空的 `paymentAttempt`。`UserNotification`
 包含 `id`、`orderId`、`type`、`title`、`message`、`createdAt` 和可选 `readAt`；`type`
-为 `PAYMENT_SUCCEEDED / ORDER_CANCELLED / ORDER_EXPIRED / AUTO_REFUND_COMPLETED`。
+为 `ORDER_CREATED / PAYMENT_SUCCEEDED / ORDER_CANCELLED / ORDER_EXPIRED /
+AUTO_REFUND_COMPLETED`。
+
+### 3.7 CurrentUser 与认证 Cookie
+
+`CurrentUser` 直接包含 `id`、`username`、`displayName`。POST `/auth/login` 和 GET
+`/auth/me` 成功时都返回该对象。raw Session Token 只在 HttpOnly
+`ticketing_session` Cookie 中；前端可读取独立的 `ticketing_csrf` Cookie，并在
+POST、PUT、PATCH、DELETE 请求上发送 `X-CSRF-Token`。Cookie 由浏览器自动携带，
+业务请求体和 Header 都不再提交用户 ID。
 
 ## 4. 页面操作与接口调用关系
 
 | 时机 / 操作 | 当前前端行为 | 接口与数据 |
 | --- | --- | --- |
-| App 首次挂载 | loadEvents | GET /events，保存 TicketEvent[] 到 events |
-| 点击“查看场次” | 保存整个 event 为 currentEvent，切换视图并加载场次 | GET /events/{event.id}/sessions |
-| 点击“进入选座” | 保存整个 session 为 currentSession，清空本地选择并加载座位 | GET /sessions/{session.id}/seats |
+| App 首次挂载 | 恢复认证并启动通知同步 | GET /auth/me；已登录时 GET /notifications |
+| 点击“查看场次” | 路由到 eventId 并加载活动与场次 | GET event + GET /events/{event.id}/sessions |
+| 点击“进入选座” | 路由到 sessionId，加载场次、活动和座位 | GET session + GET event + GET seats |
 | 进入选座 | 先按 locator GET；无有效 locator 时查询全部可恢复会话且不自动选最新一条 | GET CheckoutSession / list recoverable |
 | 第一次点击 AVAILABLE 座位 | 立即更新 selectedSeatIds，并异步创建唯一 C1；后端同时尝试取得首批 Redis 临时 Hold | POST /checkout-sessions |
 | 后续 add/remove | UI 立即更新；同一 C1 以 single-flight PUT 同步最新完整集合 | PUT seats，携带 seatIds、expectedRevision |
@@ -175,7 +193,9 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
 | 确认成功 | 使用 CheckoutSession 响应中的 order，刷新座位图并进入订单页 | confirm 响应 RESERVED CheckoutSession；随后 GET seats |
 | SEAT_CONFLICT | GET 当前 C1 回到 SELECTING，保留服务端意图并刷新 Seat Map | GET CheckoutSession + GET seats |
 | SEAT_TEMPORARILY_HELD | 视为明确业务冲突，保留合理的本地意图并刷新 Seat Map，不进入结果未知轮询 | GET seats；Final PUT 冲突时不调用 confirm |
-| 点击订单“刷新状态” | 更新 currentOrder，并同步刷新座位 | GET /orders/{order.id}；随后 GET /sessions/{session.id}/seats |
+| 点击订单“刷新状态” | 更新页面 order | GET /orders/{order.id} |
+| 打开“我的订单” | 按状态筛选当前用户最近订单 | GET /orders?status=...&limit=20 |
+| 直接打开订单 URL | 按 orderId 恢复 Order，再恢复 Event、Session 与 Seat[] | GET /orders/{id}、GET /events/{id}、GET /sessions/{id}、GET seats |
 | 倒计时归零 | 倒计时组件只发出 expiryReached，不自行把订单设为 EXPIRED | GET /orders/{order.id}，以后端状态为准 |
 | 点击“模拟支付” | 保存返回的 order 和 PROCESSING Attempt，约每 1 秒轮询，最长约 15 秒 | POST /orders/{order.id}/pay；GET /payment-attempts/{id} |
 | 支付 Attempt 到达终态 | 重新查询订单、座位与通知；未接纳的 SUCCEEDED 以退款通知为准 | GET order、GET seats、GET notifications |
@@ -186,7 +206,7 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
 
 ## 5. 当前前端期望的接口契约
 
-所有真实 API 请求统一携带 `X-User-Id: U-1001`。成功响应的 JSON 直接作为 `response.data` 使用；业务失败响应统一为：
+成功响应的 JSON 直接作为 `response.data` 使用；业务失败响应统一为：
 
     {
       "code": "SEAT_CONFLICT",
@@ -194,6 +214,23 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
     }
 
 Axios 响应拦截器会提取字符串类型的 `code` 和 `message`，转换为 TicketApiError；无法匹配该结构的异常仍交给现有通用错误处理逻辑。
+
+### 5.0 认证接口与浏览器请求规则
+
+- `POST /auth/login` 请求 `{ "username": "demo", "password": "..." }`，成功直接返回
+  `{ "id", "username", "displayName" }` 并设置 Session/CSRF Cookie；必须带允许的 Origin。
+- `GET /auth/me` 使用 Session Cookie 恢复同一 CurrentUser；无效或过期 Session 返回
+  401 `UNAUTHENTICATED`，认证依赖暂不可用返回 503 `AUTH_UNAVAILABLE`。
+- `POST /auth/logout` 必须通过当前 Session、Origin 和 CSRF 校验，成功返回
+  `{ "status": "ok" }` 并清 Cookie；只撤销当前浏览器 Session。
+- Axios `withCredentials=true`。POST、PUT、PATCH、DELETE 自动发送从
+  `ticketing_csrf` Cookie 读取的 `X-CSRF-Token`；业务接口不再发送 `X-User-Id`。
+- Origin/CSRF 不合法返回 403 `CSRF_INVALID`；登录失败为 401
+  `INVALID_CREDENTIALS`，局部限流触发为 429 `TOO_MANY_LOGIN_ATTEMPTS`。
+
+PostgreSQL `user_sessions.revoked_at` 是撤销的正式事实。Redis Session Cache miss/error
+回源 PostgreSQL；cache hit 也会用 Session ID 与 token hash 轻量检查数据库有效性，
+所以 logout 后即使 Redis 删除失败，旧 Cookie 也不能继续通过认证。
 
 ### 5.1 GET /events
 
@@ -298,7 +335,8 @@ Phase 7 的叠加规则为：
       ]
     }
 
-当前请求不包含 userId、价格或前端计算的 totalAmount；用户由 `X-User-Id` 请求头提供。前端要求后端以 sessionId 和 seatIds 为准，原子确认全部座位。
+当前请求不包含 userId、价格或前端计算的 totalAmount；用户由服务器验证后的 Session
+和 `AuthContext` 提供。前端要求后端以 sessionId 和 seatIds 为准，原子确认全部座位。
 
 成功时前端期望 response.data 直接为 ReservationResult：
 
@@ -331,7 +369,8 @@ Phase 7 的叠加规则为：
       }
     }
 
-App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响应包含 reservation 和 order。
+底层 TypeScript 方法签名仍声明响应包含 reservation 和 order；正常路由 UI 通过
+CheckoutSession confirm 取得 order，不维护全局 Reservation 状态。
 
 ### 5.5 GET /orders/{orderId}
 
@@ -339,7 +378,7 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 
 - Path：orderId，string，例如 TKT-24082602。
 - Query：当前无。
-- Header：`X-User-Id`，当前 Demo 值为 `U-1001`。
+- 身份：由 `ticketing_session` Cookie 认证。
 
 该接口已由 Phase 4 后端实现。只返回当前用户自己的 Order；订单不存在或属于其他
 用户时统一返回 `404` 和 `ORDER_NOT_FOUND`。查询只读取后端正式状态，不顺手执行
@@ -373,6 +412,7 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 
 ```json
 {
+  "disposition": "STARTED_NEW",
   "order": {
     "id": "TKT-24082602",
     "reservationId": "RSV-24082601",
@@ -395,7 +435,8 @@ App 当前运行时只读取 order，但 TypeScript 方法签名明确声明响�
 }
 ```
 
-Order 已 PAID 时返回 HTTP 200，`order.status = PAID`；`paymentAttempt` 为已接纳 Attempt
+`disposition` 为 `STARTED_NEW / REUSED_PROCESSING / ALREADY_PAID`。Order 已 PAID 时
+返回 HTTP 200，`order.status = PAID`；`paymentAttempt` 为已接纳 Attempt
 或 `null`。找不到或不属于当前用户返回 404 `ORDER_NOT_FOUND`；CANCELLED 等不可支付
 状态返回 409 `ORDER_NOT_PAYABLE`；已过期并完成在线收尾返回 409 `ORDER_EXPIRED`。
 
@@ -403,26 +444,27 @@ Order 已 PAID 时返回 HTTP 200，`order.status = PAID`；`paymentAttempt` 为
 
 对应主动取消待支付订单。当前无请求体。
 
-前端期望 response.data 直接返回更新后的 TicketOrder，例如：
+前端期望 response.data 返回 `CancelOrderResult`，例如：
 
     {
-      "id": "TKT-24082602",
-      "reservationId": "RSV-24082601",
-      "eventId": "evt-concert-2026",
-      "sessionId": "ses-concert-1001",
-      "seatIds": [
-        "ses-concert-1001-A01",
-        "ses-concert-1001-A02"
-      ],
-      "status": "CANCELLED",
-      "totalAmount": 256000,
-      "expiresAt": "2026-08-30T05:30:00.000Z",
-      "createdAt": "2026-08-30T05:15:00.000Z"
+      "disposition": "CANCELLED_NOW",
+      "order": {
+        "id": "TKT-24082602",
+        "reservationId": "RSV-24082601",
+        "eventId": "evt-concert-2026",
+        "sessionId": "ses-concert-1001",
+        "seatIds": ["ses-concert-1001-A01", "ses-concert-1001-A02"],
+        "status": "CANCELLED",
+        "totalAmount": 256000,
+        "expiresAt": "2026-08-30T05:30:00.000Z",
+        "createdAt": "2026-08-30T05:15:00.000Z"
+      }
     }
 
-前端使用返回对象整体替换 currentOrder，随后重新获取座位图，期望原 HELD 座位已经恢复为 AVAILABLE。
+前端使用返回 wrapper 中的 `order` 整体替换页面订单状态，正式座位释放以后端事务为准。
 
-重复取消已经 CANCELLED 的订单仍返回 HTTP 200 和最新 TicketOrder。PAID 返回 409
+`disposition` 为 `CANCELLED_NOW / ALREADY_CANCELLED`。重复取消已经 CANCELLED 的
+订单仍返回 HTTP 200 和最新 TicketOrder。PAID 返回 409
 `ORDER_NOT_CANCELLABLE`。PROCESSING Attempt 不阻止取消，也不会被取消路径伪造成
 FAILED；若数据库权威时间已过期，在线收尾后返回 409 `ORDER_EXPIRED`。
 
@@ -461,38 +503,53 @@ SEAT_TEMPORARILY_HELD
 Redis 技术不可用时继续 PostgreSQL 正式确认。已经处于 SUBMITTING 的重试保持
 Phase 5/6 语义，复用原 K1，不重新把 Redis Hold 当作正式确认资格。
 
+Confirm 成功响应为 `{ "disposition", "checkoutSession" }`。`disposition` 精确为
+`CONFIRMED_NOW / REUSED_CONFIRMATION / ALREADY_CONFIRMED`，前端据此区分本次确认、
+复用在途确认和此前已经生成的订单。
+
+### 5.11 GET /orders
+
+该受保护接口直接返回当前用户的 `TicketOrder[]`，支持可选 `status`、`sessionId` 和
+`limit`。当前前端订单列表使用 `status` 与 `limit=20`，选座页使用 `sessionId` 与
+`limit=20` 查询本场次已有订单。非法状态或 limit 返回 400 `INVALID_ARGUMENT`；空结果
+返回空数组，不暴露其他用户订单。
+
+### 5.12 GET /events/{eventId} 与 GET /sessions/{sessionId}
+
+两个公开详情接口分别返回单个 `TicketEvent` 与 `TicketSession`。订单深链接和路由页面
+用 URL 参数及 Order 中的 `eventId / sessionId` 调用它们，不再依赖上一页的内存对象。
+
 ## 6. 前端状态流转与权威边界
 
-    currentView = event-list
+    Vue Router /events
       -> GET /events
-      -> currentEvent
+      -> /events/{eventId}/sessions
       -> GET /events/{eventId}/sessions
-      -> currentSession
+      -> /sessions/{sessionId}/seats
       -> GET /sessions/{sessionId}/seats
       -> seats
       -> 本地点选 selectedSeatIds / selectedSeats
       -> create / full-set PUT CheckoutSession
       -> final sync barrier
       -> POST /checkout-sessions/{id}/confirm
-      -> currentOrder
+      -> /orders/{orderId}
       -> POST pay / PaymentAttempt polling / cancel / GET order
       -> notifications
 
 | 状态 | 所有者 / 来源 | 说明 |
 | --- | --- | --- |
-| currentView | 完全属于前端 | event-list、session-list、seat-selection、order |
-| events | 后端权威数据的前端副本 | 首次挂载获取 |
-| currentEvent | 前端内存引用 | 从 events 中选中；没有活动详情请求 |
-| sessions | 后端权威数据的前端副本 | 选择活动后获取 |
-| currentSession | 前端内存引用 | 从 sessions 中选中 |
+| route | Vue Router | URL 保存 eventId、sessionId 或 orderId，受保护 route 由 guard 检查登录 |
+| currentUser | `/auth/me` 的前端副本 | 启动恢复，401 时清空；一个 Cookie Jar 对应一个 Session |
+| events / event | 后端权威数据的页面副本 | 列表和详情接口获取 |
+| sessions / session | 后端权威数据的页面副本 | 列表和详情接口获取 |
 | seats | 后端权威数据的前端副本 | 进入选座、刷新、订单变更后重新获取 |
 | selectedSeatIds | 完全属于前端 | 是本地用户意向；服务端可能已为对应 CheckoutSession 建立 Redis 临时 Hold，但它不是正式锁座结果 |
 | selectedSeats | 完全属于前端的计算值 | 从 seats 和 selectedSeatIds 派生 |
 | currentCheckoutSession | 后端权威 checkpoint 的前端副本 | 包含 seatIds、revision、status；成功 PUT 后整体替换 |
 | recoverableCheckoutSessions | 后端查询结果 | 多个候选必须由用户显式选择 |
-| currentReservation | **当前不存在** | 创建预订响应包含 reservation，但 App 未保存 |
-| currentOrder | 必须以后端返回为准 | 来自创建、查询、支付或取消接口 |
-| currentPaymentAttempt | 后端权威数据的前端副本 | POST pay 返回并由 GET Attempt 轮询更新 |
+| Reservation 页面状态 | **当前不存在** | 创建预订响应包含 reservation，但 route page 不单独保存全局 Reservation |
+| order | 必须以后端返回为准 | OrderPage 按深链接查询，并由支付或取消响应更新 |
+| paymentAttempt | 后端权威数据的页面副本 | POST pay 返回并由 GET Attempt 轮询更新 |
 | notifications | 后端权威数据的前端副本 | 启动、窗口 focus 和 5 秒低频刷新 |
 | 倒计时 | 前端展示状态 | 由 expiresAt - Date.now() 计算；归零不直接修改订单 |
 | checkoutCreating、checkoutSyncInFlight、confirming、submittingPolling、submitUncertain | 完全属于前端 | 区分后台同步、确认屏障、结果恢复和 15 秒不确定状态 |
@@ -513,7 +570,7 @@ Phase 5/6 语义，复用原 K1，不重新把 Redis Hold 当作正式确认资�
 
 1. POST /reservations 请求体字段统一为 camelCase：sessionId、seatIds；成功响应字段同样使用 camelCase。
 2. price、priceFrom、totalAmount 均为整数分。前端通过统一格式化函数转换为人民币元展示，例如 128000 分显示为 ¥1,280。
-3. 所有 Axios 请求统一携带 Demo 用户请求头 X-User-Id: U-1001，预订请求体不重复提交 userId。
+3. Axios 使用 Session Cookie，unsafe method 自动携带 CSRF Header；用户身份不出现在业务请求体，也不再使用 X-User-Id。
 4. 真实 API 业务错误统一提取 code 和 message，解析为 TicketApiError，并兼容当前通用异常处理。
 5. 预订失败后刷新座位时保留本次预订错误提示；支付结果未知后刷新订单时保留本次支付提示。
 6. Reservation 和 Order 的 expiresAt、createdAt、paidAt 使用可由 Date.parse 解析的 ISO 8601 字符串。
@@ -546,22 +603,19 @@ Redis 不可用的降级由后端处理，前端不感知 Redis 故障细节。
 
 ### 7.4 仍需联调确认的问题
 
-1. **Reservation 返回但未保存。** ReservationResult 包含 reservation，App 当前只保存 order；后端仍需按当前类型完整返回。
-2. **订单页不能仅靠 GET /orders/{orderId} 独立恢复。** 页面展示依赖内存中的 currentEvent、currentSession 和完整 seats；刷新浏览器后这些状态会丢失。
-3. **availability 是中文枚举。** 当前类型只接受充足、紧张、售罄，且样式类直接拼接该值；需要确认它由后端如何计算，以及它与 Session.status 的关系。
-4. **Event.status 当前未生效。** 类型允许 COMING_SOON，但活动卡始终显示“正在售票”，也不会根据 status 禁用进入流程。
-5. **cover 当前是前端静态路径。** GET /events mock 返回 /images/...；真实后端应返回何种可访问 URL 或资源标识尚未确认。
-6. **空列表、分页和排序没有契约。** 当前所有 GET 都假定直接返回完整数组，没有分页参数、分页元数据或排序字段。
-
-当前前端没有 GET /events/{eventId} 调用，活动详情复用 GET /events 返回的完整 TicketEvent；该接口不属于当前 MVP 对接清单。
+1. **availability 是中文枚举。** 当前类型只接受充足、紧张、售罄，且样式类直接拼接该值；需要确认未来国际化时是否调整。
+2. **Event.status 当前展示有限。** 类型允许 COMING_SOON，但活动卡的交互仍主要围绕 ON_SALE Demo。
+3. **cover 当前是前端静态路径。** GET /events 返回 `/images/...`，生产资源部署路径仍需与静态服务器保持一致。
+4. **订单列表是有界数组而非分页对象。** 当前支持 filter 和 limit，不返回分页元数据；更大历史列表留待后续。
 
 ## 8. 后端最小对接清单
 
 在不修改当前前端代码的前提下，后端至少需要满足：
 
-- 接受开发代理转发后的 /events、/sessions、/reservations、/orders 路径。
+- 接受开发代理转发后的 /auth、/events、/sessions、/reservations、/orders 路径。
 - 所有 HTTP JSON 字段使用 camelCase；POST /reservations 接受 sessionId 和 seatIds。
-- 所有请求通过 X-User-Id 请求头接收 Demo 用户 U-1001。
+- 通过 opaque Session Cookie 认证受保护接口；业务身份来自 AuthContext，不接受 X-User-Id。
+- 支持 `ticketing_csrf` + `X-CSRF-Token` + Origin 校验，并返回真实 401/403/503 认证错误。
 - 成功响应直接返回本文所列 JSON，不增加 data 外层包装。
 - 业务失败响应返回字符串类型的 code 和 message。
 - GET seats 接受可选 checkoutSessionId，并按当前 C1 上下文叠加 Redis 临时 Hold。
@@ -570,6 +624,8 @@ Redis 不可用的降级由后端处理，前端不感知 Redis 故障细节。
 - 使用本文列出的精确状态字符串。
 - expiresAt、createdAt、paidAt 使用可被浏览器 Date.parse 正确解析的 ISO 8601 字符串。
 - 支付启动返回 PaymentStartResult；取消和订单查询返回完整 TicketOrder；创建预订返回 ReservationResult。
+- Confirm、支付和取消 wrapper 返回本文列出的精确 disposition。
+- GET /orders 支持 status/sessionId/limit；Event 与 Session 详情接口支持订单深链接恢复。
 - PaymentAttempt、通知列表和通知已读接口按当前用户隔离；通知已读保持幂等。
 - 座位竞争、支付、取消或超时处理后，GET seats 和 GET order 能返回一致的最终状态。
 

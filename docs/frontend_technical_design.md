@@ -87,7 +87,6 @@ MVP 当前使用 TypeScript，入口文件为 `src/main.ts`。
 MVP 第一阶段暂不使用：
 
 - Pinia。
-- Vue Router。
 - Quasar。
 - Element Plus。
 - WebSocket。
@@ -96,13 +95,13 @@ MVP 第一阶段暂不使用：
 
 原因是第一阶段只有少量页面和状态，使用 Vue 自身的响应式能力即可完成。
 
-如果后续页面数量和跨页面状态明显增加，再引入 Pinia 和 Vue Router。
+Phase 9 已引入 Vue Router；跨页面全局业务状态仍不足以要求 Pinia。
 
 ---
 
 ## 4. 页面结构
 
-MVP 主要包含四个视图。
+MVP 由 Vue Router 管理登录、活动、场次、选座、订单列表和订单详情页面。
 
 ### 4.1 活动列表页
 
@@ -297,12 +296,11 @@ A02
 
 MVP 不使用 Pinia。
 
-当前 App.vue 使用 Vue `ref` 维护以下核心状态：
+当前各 route page 使用 Vue `ref` 维护页面局部状态，`authState` 维护共享当前用户，
+`App.vue` 只维护通知中心和壳层状态。核心状态包括：
 
 ```text
-currentEvent
-
-currentSession
+event / session
 
 seats
 
@@ -312,13 +310,11 @@ currentCheckoutSession
 
 recoverableCheckoutSessions
 
-currentOrder
+order
 
 currentPaymentAttempt
 
 notifications
-
-currentView
 
 checkoutCreating / checkoutSyncInFlight / confirming
 
@@ -329,11 +325,11 @@ paymentStarting / paymentPolling / cancelling
 
 其中：
 
-### currentEvent
+### event
 
 当前选择的活动。
 
-### currentSession
+### session
 
 当前选择的场次。
 
@@ -370,10 +366,10 @@ Phase 7 中，成功的 CheckoutSession create/PUT 还会尝试建立或刷新 R
 
 ### currentReservation（未来规划 / 目标状态）
 
-当前 App.vue 没有维护 `currentReservation`；创建预订成功后主要将
-`result.order` 保存到 `currentOrder`。是否在后续保存 Reservation 留待未来规划。
+当前前端没有维护全局 `currentReservation`；确认成功后进入 Order 深链接，页面以
+后端返回的 Order 为准。是否在后续保存 Reservation 留待未来规划。
 
-### currentOrder
+### order
 
 当前订单信息。
 
@@ -383,16 +379,10 @@ Phase 7 中，成功的 CheckoutSession create/PUT 还会尝试建立或刷新 R
 支付轮询与 Phase 6 的 Checkout SUBMITTING 轮询使用独立状态、generation 和 timer，
 避免两个会话恢复流程互相取消或覆盖。
 
-### currentView
+### route 与 currentUser
 
-控制当前展示：
-
-- event-list
-- session-list
-- seat-selection
-- order
-
-MVP 页面少，因此暂时不使用 Vue Router。
+Vue Router 的 URL 保存 eventId、sessionId 或 orderId；`authState.currentUser` 由
+`/auth/me` 恢复。订单列表和订单详情 route 需要登录，公开活动和选座 route 可直接浏览。
 
 ---
 
@@ -444,6 +434,18 @@ A01 已被其他用户抢占
 
 MVP 前端至少需要调用以下接口。
 
+### 认证
+
+```text
+POST /auth/login
+GET /auth/me
+POST /auth/logout
+```
+
+启动时 `/auth/me` 恢复当前用户；LoginView 提交用户名和密码。Session Token 位于
+HttpOnly Cookie，前端不读取；logout 清除当前用户、通知和当前用户命名空间的
+Checkout locator。
+
 ### 活动
 
 ```text
@@ -451,6 +453,7 @@ GET /events
 ```
 
 获取活动列表。当前前端直接复用列表中的完整活动对象，不调用 GET /events/{eventId}。
+路由页同时使用 `GET /events/{eventId}` 恢复活动详情。
 
 ---
 
@@ -458,6 +461,7 @@ GET /events
 
 ```text
 GET /events/{eventId}/sessions
+GET /sessions/{sessionId}
 ```
 
 获取活动场次。
@@ -496,11 +500,14 @@ seatIds[]
 - reservation 和 order 中的 expiresAt 使用 ISO 8601 字符串。
 - price、priceFrom、totalAmount 均使用整数分，前端统一格式化为人民币元展示。
 
+正常页面通过 CheckoutSession confirm 间接复用该正式预订能力，不直接提交用户 ID。
+
 ---
 
 ### 订单
 
 ```text
+GET /orders?status=...&sessionId=...&limit=...
 GET /orders/{orderId}
 ```
 
@@ -540,7 +547,9 @@ Axios 请求统一封装于：
 src/api/ticketApi.ts
 ```
 
-该封装统一携带 Demo 用户请求头 X-User-Id: U-1001，并将包含 code、message 的业务错误解析为 TicketApiError。
+该封装启用 `withCredentials`，unsafe method 自动把 `ticketing_csrf` Cookie 写入
+`X-CSRF-Token`，不再发送 `X-User-Id`；包含 code、message 的业务错误解析为
+TicketApiError，401 同时清理前端认证状态。
 
 ---
 
@@ -764,7 +773,7 @@ MVP 的交互重点是清晰，不追求复杂视觉效果。
 - 座位缩放和拖拽。
 - 活动搜索。
 - 推荐系统。
-- 登录注册完整页面。
+- 用户注册、找回密码、OAuth 与复杂账号管理。
 - 管理后台。
 - 优惠券。
 - 支付平台页面。
@@ -778,8 +787,8 @@ MVP 的交互重点是清晰，不追求复杂视觉效果。
 
 ### 服务端购票会话与恢复
 
-当前前端已经接入服务端 Checkout Session。活动、场次和页面视图仍由 Vue 内存管理，
-但选座/确认流程可通过服务端恢复。
+当前前端已经接入服务端 Checkout Session。活动、场次和页面由 Vue Router 参数定位，
+选座/确认流程可通过服务端恢复。
 
 Phase 6 已围绕服务端 Checkout Session（购票会话）恢复业务状态。浏览器只保存
 当前购票会话编号作为快速恢复线索，但正在选座、正在确认以及关联的 Reservation /
@@ -799,7 +808,7 @@ Order 状态或 Seat 状态当作权威事实。刷新后必须重新 GET 服务
 这只冻结当前会话，不阻塞整个用户。用户在被明确告知上一笔仍可能成功后，可以
 显式开始新的独立购票会话，旧会话继续解析；旧会话后来成功或失败都应明确通知。
 
-当前仍由 `App.vue` 编排，不引入 Pinia 或 Vue Router。Confirm 前先等待 C1 创建和已有
+当前由 `SeatSelectionPage` 编排，不引入 Pinia。Confirm 前先等待 C1 创建和已有
 PUT，再把固定的最终座位集合 flush 到最新 revision；发生版本冲突时 GET 最新 C1，
 不自动 merge。Phase 6 不增加 Redis 预占座。
 
@@ -808,6 +817,29 @@ Phase 7 在上述本地乐观 `selectedSeatIds`、serialized PUT 和 Confirm bar
 用该上下文刷新座位图，使自己的 Hold 继续作为本地已选展示，其他 C1 Hold 的座位则
 不可新选。`SEAT_TEMPORARILY_HELD` 只触发明确冲突提示和座位图刷新，不触发结果未知
 恢复。Redis 不可用由后端降级，前端不感知 Redis 故障细节。
+
+### 用户登录与多客户端一致体验（Phase 9 已完成）
+
+`main.ts` 安装 Vue Router；当前 route 为 `/login`、`/events`、
+`/events/:eventId/sessions`、`/sessions/:sessionId/seats`、`/orders` 和
+`/orders/:orderId`。Router guard 在第一次导航时通过 `authState.ensureAuthLoaded()`
+调用 `/auth/me`；订单列表和订单详情需要认证，活动、场次和座位浏览保持公开。未登录
+用户第一次点选或确认时跳到 LoginView，并使用 redirect query 返回原 URL。
+
+`App.vue` 是共享壳层，显示当前用户、退出入口和通知中心。Axios 使用 Cookie credentials
+与 CSRF interceptor。Checkout locator 的 sessionStorage key 为
+`ticketing.checkout.<userId>`，logout 或切换用户时不会继续使用旧用户定位信息。
+
+订单详情可以直接刷新：OrderPage 按 URL 查询 Order，再用 `GET /events/{id}`、
+`GET /sessions/{id}` 和座位接口恢复展示；OrderListPage 提供“我的订单”。选座页按
+场次查询订单并显示 existing-order banner。Confirm、Pay、Cancel 根据
+`CONFIRMED_NOW / REUSED_CONFIRMATION / ALREADY_CONFIRMED`、
+`STARTED_NEW / REUSED_PROCESSING / ALREADY_PAID`、
+`CANCELLED_NOW / ALREADY_CANCELLED` 显示新操作或既有结果的不同提示。
+
+`ORDER_CREATED` 等通知每 5 秒同步，并在 window focus 时刷新；点击通知进入订单 route。
+OrderPage 和 SeatSelectionPage 也在 focus 时读取正式状态，从而让同账号不同 Cookie Jar
+的操作结果收敛。退出后 currentUser 和通知立即清空，旧用户轮询没有身份时不再请求。
 
 ### WebSocket 实时座位更新
 
@@ -827,19 +859,24 @@ A01 自动变成 HELD
 
 ---
 
-### Vue Router
+### Vue Router（Phase 9 已完成）
 
-当页面数量增加后，引入正式路由，例如：
+当前正式路由为：
 
 ```text
 /events
 
-/events/:eventId
+/events/:eventId/sessions
 
 /sessions/:sessionId/seats
 
+/orders
+
 /orders/:orderId
 ```
+
+由于使用 `createWebHistory()`，生产静态服务器必须把未知路径 fallback 到 `index.html`；
+这是部署约束，不由前端路由代码或后端业务接口替代。
 
 ---
 

@@ -62,6 +62,7 @@ PostgreSQL 是 MVP 中最重要的基础设施，负责保存全部正式业务�
 - 支付尝试。
 - 自动退款。
 - 用户通知。
+- 用户账号与服务端 Session。
 - 订单与座位关联关系。
 
 同时，PostgreSQL 负责保证核心业务正确性：
@@ -99,6 +100,7 @@ Drogon HTTP Server
   ├── Seat Module
   ├── Reservation Module
   ├── Checkout Session Module ── Redis 临时占座
+  ├── Authentication Module ── PostgreSQL Session + Redis Cache
   ├── Order Lifecycle Module
   ├── Payment Module
   └── Notification Module
@@ -128,7 +130,8 @@ Phase 5  服务端 Checkout Session（购票会话）                已完成
 Phase 6  前端购票会话恢复与独立多会话                        已完成
 Phase 7  Redis 临时占座                                      已完成
 Phase 8  支付 + 取消 + 支付/取消/超时状态竞争                已完成
-Phase 9  按压测决定限流/排队/异步受理/操作查询               暂缓
+Phase 9  用户登录 + Session 认证 + 多客户端恢复               已完成
+Phase 10 按压测决定限流/排队/异步受理/操作查询               暂缓
 ```
 
 当前后端已经实现并验证：
@@ -137,8 +140,13 @@ Phase 9  按压测决定限流/排队/异步受理/操作查询               �
 GET /events
 GET /events/{eventId}
 GET /events/{eventId}/sessions
+GET /sessions/{sessionId}
 GET /sessions/{sessionId}/seats
+POST /auth/login
+GET /auth/me
+POST /auth/logout
 POST /reservations
+GET /orders
 GET /orders/{orderId}
 POST /checkout-sessions
 GET /checkout-sessions/{id}
@@ -153,8 +161,8 @@ GET /notifications
 POST /notifications/{notificationId}/read
 ```
 
-当前 Vue 页面实际调用活动列表、活动场次列表、场次座位图和全部 CheckoutSession 接口，
-尚未调用已经存在的 `GET /events/{eventId}`。Phase 3 后端预订能力与 Phase 4 订单查询、超时释放 Worker
+当前 Vue 页面实际调用活动/场次列表与详情、场次座位图和全部 CheckoutSession 接口。
+Phase 3 后端预订能力与 Phase 4 订单查询、超时释放 Worker
 已经完成；Phase 7 的 Redis 临时占座和带 CheckoutSession 上下文的座位图也已完成；
 Phase 8 的异步模拟支付、取消、超时竞争、自动退款和用户通知也已完成。
 
@@ -337,14 +345,15 @@ Redis 读取失败时退化为纯 PostgreSQL 座位图，不影响接口成功�
 
 ### 5.3 提交座位预订
 
-Phase 3 的 `POST /reservations` 接收 `X-User-Id`、`Idempotency-Key`，以及只包含
+Phase 3 的 `POST /reservations` 现在由 `AuthFilter` 提供认证用户，接口接收
+`Idempotency-Key`，以及只包含
 `sessionId / seatIds` 的请求体。`seatIds` 是 `session_seats.id`，不是物理
 `seats.id`；请求不携带用户 ID、价格或总金额。
 
 第一层先做不需要数据库锁的结构校验：
 
 ```text
-X-User-Id 存在
+有效的 Session Cookie 和 CSRF / Origin 校验已通过
 Idempotency-Key 存在
 sessionId 非空
 seatIds 数量为 1～6
@@ -637,8 +646,13 @@ Worker 通过 Drogon `registerBeginningAdvice` 在应用启动后立即执行一
 GET /events
 GET /events/{eventId}
 GET /events/{eventId}/sessions
+GET /sessions/{sessionId}
 GET /sessions/{sessionId}/seats
+POST /auth/login
+GET /auth/me
+POST /auth/logout
 POST /reservations
+GET /orders
 GET /orders/{orderId}
 POST /orders/{orderId}/pay
 POST /orders/{orderId}/cancel
@@ -793,6 +807,7 @@ Order 和真实关联数据。并发测试不能反复污染这些记录。
 - 优惠券。
 - 推荐系统。
 - 复杂后台管理系统。
+- 用户注册、找回密码、OAuth、SSO、设备管理和 logout-all。
 
 这些能力都不影响使用 PostgreSQL 事务验证核心预订模型。Phase 7 的 Redis 只用于
 SELECTING 阶段的临时竞争，不是缓存、分布式锁或正式库存来源。
@@ -800,6 +815,28 @@ SELECTING 阶段的临时竞争，不是缓存、分布式锁或正式库存来�
 ---
 
 ## 14. 后续演进方向
+
+### 用户登录、Session 认证与多客户端恢复（Phase 9 已完成）
+
+迁移 `006_add_user_authentication.sql` 为 `app_users` 增加规范化用户名、Argon2id
+密码哈希和账号状态，并建立 `user_sessions`。原始 opaque Session Token 只进入
+`ticketing_session` HttpOnly Cookie，PostgreSQL 只保存 SHA-256 token hash；
+`ticketing_csrf` 与 `X-CSRF-Token` 配合 Origin 白名单保护 unsafe method。
+Argon2id 验证由有界 `PasswordHashExecutor` 执行，用户不存在时也执行 dummy verify。
+
+PostgreSQL 是 Session 的正式事实；独立 Redis `auth_sessions` client 只缓存 Session
+快照并承担登录局部限流。Redis miss/error 回源 PostgreSQL。logout 只撤销当前
+Session，同一用户的其他 Session 继续有效，业务身份统一来自 `AuthFilter` 写入的
+`AuthContext`，不再接受 `X-User-Id`。
+
+安全审计后的最终撤销语义是：DB-first 写入 `revoked_at`，随后 best-effort 删除 Redis
+cache；任何 Redis cache hit 仍按 `session id + token hash` 轻量查询 PostgreSQL，检查
+未撤销、未过期和用户 ACTIVE 后才接受。因此 Redis `DEL` 失败不会让已撤销 Token
+继续认证。缓存 value 不包含 raw Token、密码、密码哈希或 CSRF Token，TTL 上限为
+300 秒。完整设计见 [Phase 9 用户认证设计](user_authentication_phase9_design.md)。
+
+Phase 9 同时完成 `GET /orders`、`GET /sessions/{id}`、订单深链接、`ORDER_CREATED`
+通知和 Confirm/Pay/Cancel disposition，使同账号不同客户端能区分新操作与既有结果。
 
 ### 购票会话与长期调用链
 
@@ -887,7 +924,7 @@ revision 同时作为 Redis fencing version，旧 Abort/Finalize 不能删除更
 - 订单事件。
 - 后台统计。
 
-限流、排队、异步受理和后台操作查询属于另一类高峰保护能力，只在 Phase 9 的真实
+限流、排队、异步受理和后台操作查询属于另一类高峰保护能力，只在 Phase 10 的真实
 压测证明同步确认出现大量连接等待、请求积压或数据库过载后评估。未来若使用
 HTTP 202 和后台操作编号，该编号只标识一次后台执行，不等于购票会话编号、
 幂等键或 Order ID；当前不提前选择消息队列或执行框架。
@@ -934,7 +971,7 @@ MVP 完成时必须能够完整演示：
 4. 取消和超时能够正确释放座位。
 5. 服务重启不会导致超时订单永久占座。
 
-只要以上业务闭环和并发正确性成立，才认为核心 MVP 完成。当前 Phase 1～8 已经完成：
+只要以上业务闭环和并发正确性成立，才认为核心 MVP 完成。当前 Phase 1～9 已经完成：
 购票会话、恢复、Redis 临时占座、异步支付、取消、超时竞争、自动退款和通知均已落地，
 并通过当前阶段的事务、并发与故障路径验证。真实第三方支付渠道及正常 PAID 订单的
 主动退票/退款仍属于后续能力。

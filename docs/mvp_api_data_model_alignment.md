@@ -15,7 +15,7 @@
 MVP 阶段遵循以下原则：
 
 1. 前端负责展示、交互和本地临时选择状态。
-2. 后端负责正式座位状态、Reservation、Order、PaymentAttempt、Refund、Notification 和所有业务状态迁移。
+2. 后端负责认证身份、正式座位状态、Reservation、Order、PaymentAttempt、Refund、Notification 和所有业务状态迁移。
 3. PostgreSQL 是 MVP 阶段唯一正式数据源。
 4. Phase 7 的 Redis 只进入 SELECTING 临时占座层；消息队列、WebSocket、多实例部署不进入当前核心 MVP 阶段。
 5. 接口数量保持最小，以跑通完整预订闭环为目标。
@@ -30,6 +30,7 @@ MVP 阶段遵循以下原则：
 GET /events
 GET /events/{eventId}
 GET /events/{eventId}/sessions
+GET /sessions/{sessionId}
 GET /sessions/{sessionId}/seats
 ```
 
@@ -62,17 +63,7 @@ Phase 7 已实现与 CheckoutSession 关联的 Redis 临时占座，以及带可
 正式库存仍由 PostgreSQL 仲裁。
 
 当前 Vue 前端已调用上述 CheckoutSession 接口；正常 UI 不再直接调用 `POST /reservations`。
-
-当前 Vue 页面实际调用其中三个列表接口：
-
-```text
-GET /events
-GET /events/{eventId}/sessions
-GET /sessions/{sessionId}/seats
-```
-
-`GET /events/{eventId}` 已经是正式后端接口，但当前页面选择活动时仍复用
-`GET /events` 返回的 `TicketEvent`，尚未调用活动详情接口。
+路由页面已调用 Event 与 Session 详情接口，以支持刷新和订单深链接恢复。
 
 Phase 8 已实现并完成前端接入：
 
@@ -83,6 +74,17 @@ GET /payment-attempts/{paymentAttemptId}
 GET /notifications
 POST /notifications/{notificationId}/read
 ```
+
+Phase 9 已完成并接入：
+
+```text
+POST /auth/login
+GET /auth/me
+POST /auth/logout
+GET /orders?status=...&sessionId=...&limit=...
+```
+
+受保护接口的身份来自服务器验证的 Session 和 `AuthContext`，不再接受 `X-User-Id`。
 
 前端的 `expireOrderForDemo` 仅存在于 Mock 模式，不是正式后端接口。
 
@@ -215,17 +217,19 @@ MVP 默认币种为 CNY。
 
 ## 7. 用户身份
 
-MVP 暂不实现完整登录、JWT 和用户系统。
+Phase 9 已实现 opaque server-side Session 登录，不使用 JWT。`006` migration 为
+`app_users` 增加 username、Argon2id password hash 和状态，并建立 `user_sessions`。
+原始 Session Token 只存在于 HttpOnly `ticketing_session` Cookie；PostgreSQL 只保存
+SHA-256 token hash，并以 `revoked_at`、idle/absolute expiry 作为正式有效性事实。
 
-当前前端固定使用 `U-1001`，建议通过请求头传递：
+`AuthFilter` 验证 Cookie 后创建 `AuthContext`，业务接口只能从该上下文取得 userId。
+`X-User-Id` 已移除，用户身份也不放在业务请求体中。unsafe method 还必须通过允许的
+Origin，以及 `ticketing_csrf` Cookie 与 `X-CSRF-Token` Header 的匹配校验。
 
-```text
-X-User-Id: U-1001
-```
-
-后端从 Header 获取当前用户。
-
-用户身份不放在 `POST /reservations` 请求体中，以避免业务请求任意指定其他用户身份。
+Redis `auth_sessions` 只缓存 Session 快照；miss/error 回源 PostgreSQL。cache hit 也会
+按 Session ID + token hash 轻量校验数据库中的未撤销、未过期和用户 ACTIVE 状态，
+因此 logout 的 best-effort Redis 删除失败不会让已撤销 Token 继续认证。一个 User
+可以有多个独立 Session，logout 只撤销当前 Session。
 
 Phase 3 后端 `POST /reservations` 已要求：
 
@@ -233,10 +237,10 @@ Phase 3 后端 `POST /reservations` 已要求：
 Idempotency-Key: <unique logical reservation request key>
 ```
 
-该 Header 标识“一次逻辑预订操作”，与 `X-User-Id` 共同确定请求幂等范围。它是
+该 Header 标识“一次逻辑预订操作”，与认证用户 ID 共同确定请求幂等范围。它是
 一次关键写操作的身份，不是整个长期购票流程的身份。
-当前前端代码尚未生成或发送 `Idempotency-Key`；这是后续前端联调需要补齐的
-契约，不能描述为已经落地的前端事实。
+正常前端通过 CheckoutSession confirm 由服务端生成并复用对应 Key；底层正式接口
+仍保留该 Header 契约。
 
 ## 8. 前端对象与后端领域模型
 
@@ -554,7 +558,9 @@ PAYMENT_PROCESSING 或 REFUNDED 状态。
 Headers：
 
 ```text
-X-User-Id: U-1001
+Cookie: ticketing_session=<opaque token>
+Origin: <allowed origin>
+X-CSRF-Token: <ticketing_csrf cookie value>
 Idempotency-Key: <unique logical reservation request key>
 ```
 
@@ -570,7 +576,7 @@ Body：
 }
 ```
 
-用户身份由 `X-User-Id` 提供，不放入请求体；请求体也不包含价格或前端计算的
+用户身份由 `AuthFilter / AuthContext` 提供，不放入请求体；请求体也不包含价格或前端计算的
 金额。`seatIds` 表示 `session_seats.id`，不是物理 `seats.id`。
 
 `Idempotency-Key` 表示一次逻辑预订操作。相同用户、相同 Key、相同
@@ -590,7 +596,7 @@ Fast path 未命中后，事务先验证用户和 Session，再执行
 
 后端必须保证：
 
-1. `X-User-Id` 和 `Idempotency-Key` 存在，`sessionId` 非空。
+1. Session 认证、Origin/CSRF 校验和 `Idempotency-Key` 已通过，`sessionId` 非空。
 2. `seatIds` 数量为 1～6 且不重复。
 3. 用户存在；Session 存在并且 `status = ON_SALE`，否则分别返回
    `INVALID_ARGUMENT`、`SESSION_NOT_FOUND` 或 `SESSION_NOT_AVAILABLE`。
@@ -635,7 +641,7 @@ Fast path 未命中后，事务先验证用户和 Session，再执行
 
 ## 16. GET /orders/{orderId} 契约
 
-Phase 4 后端已实现该接口。请求必须携带 `X-User-Id`，查询条件同时限定
+Phase 4 后端已实现、Phase 9 已接入认证。请求必须携带有效 Session Cookie，查询条件同时限定
 `order.id = orderId` 和 `order.user_id = currentUserId`。Order 不存在或属于其他用户
 都返回 `404 ORDER_NOT_FOUND`；GET 只读取正式状态，不执行过期写操作。
 
@@ -656,7 +662,8 @@ paidAt（数据库非 NULL 时输出）
 
 当前不要求 Order API 返回完整活动、场次和座位展开对象。
 
-浏览器刷新后恢复完整订单页面属于后续前端增强，不阻塞 MVP。
+浏览器现在可通过 `/orders/{orderId}` 深链接恢复 Order，并用 Event/Session 详情接口
+补齐展示。`GET /orders` 还支持可选 `status / sessionId / limit`，只列出当前认证用户订单。
 
 ## 17. 支付和取消契约
 
@@ -759,16 +766,16 @@ INVALID_ARGUMENT
 1. `POST /reservations` 请求体使用 `sessionId`、`seatIds`。
 2. `price`、`priceFrom`、`totalAmount` 按整数“分”处理并统一格式化。
 3. Axios 按 `code + message` 解析业务错误。
-4. 请求统一携带 `X-User-Id: U-1001`。
+4. Axios 使用 Session Cookie 与 CSRF Header，业务请求不再携带 `X-User-Id`。
 5. 预订失败刷新座位、支付结果未知刷新订单时会保留原错误提示。
+6. Vue Router、登录页、我的订单和订单深链接已经落地；Event/Session 详情可按 URL 恢复。
+7. Confirm、Pay、Cancel 使用 disposition 区分新操作、复用在途操作与已有结果。
 
-当前前端尚未生成或发送 `Idempotency-Key`，但 Phase 3 后端本身已经完成。后续
-前端接入不再采用一个全局 `pendingReservationAttempt` 直接承载整轮购票过程，
-而是在 Phase 6 围绕服务端购票会话接入：每次新的关键确认使用对应 Key，同一确认
-的网络重试复用原 Key。不能修改本文去声称这些能力已经存在于当前代码。
+正常 UI 不直接发送 Reservation 的 `Idempotency-Key`，而由服务端 CheckoutSession
+confirm 生成并保存 K1，同一确认复用原 Key。前端不采用全局
+`pendingReservationAttempt` 直接承载整轮购票过程。
 
-继续暂缓：Vue Router、保存 `currentReservation`、刷新浏览器后恢复订单详情、
-WebSocket 和页面结构重构。`GET /events/{eventId}` 后端已实现，但当前页面仍不调用。
+继续暂缓：保存全局 `currentReservation`、WebSocket 和 Pinia；这些不影响当前订单恢复。
 
 ## 20. 后端开发阶段划分
 
@@ -795,8 +802,8 @@ POST /reservations
 ```
 
 已完成请求幂等、多座位固定顺序原子锁座、Reservation / Order 同事务创建、
-价格快照、失败回滚和真实并发正确性测试。当前前端尚未发送 `Idempotency-Key`，
-所以前端真实 POST 联调仍留到后续阶段。
+价格快照、失败回滚和真实并发正确性测试。正常前端通过 CheckoutSession confirm
+复用该能力。
 
 ### Phase 4：订单查询与超时释放（后端已完成）
 
@@ -854,7 +861,19 @@ POST /notifications/{notificationId}/read
 在进程重启时不恢复；PROCESSING Attempt 由 processing deadline + Expiry Worker 最终
 收敛为 TIMED_OUT，真实渠道未来通过 callback / 主动查单恢复。
 
-### Phase 9：按压测决定高峰增强（暂缓）
+### Phase 9：用户认证与多客户端一致体验（已完成）
+
+已完成 `006_add_user_authentication.sql`、`app_users` 认证字段、`user_sessions`、
+Argon2id 有界 worker pool、opaque Session Cookie、CSRF/Origin、AuthFilter/AuthContext、
+Redis Session Cache 与 PostgreSQL fallback、登录局部限流和当前 Session logout。
+`X-User-Id` 已从正式业务接口移除。
+
+已完成 `GET /orders`、`GET /sessions/{id}`、`ORDER_CREATED` Notification、Confirm/Pay/
+Cancel disposition、Vue Router、我的订单、订单深链接、existing-order banner 和
+notification/focus 多客户端同步。最终撤销语义为：PostgreSQL `revoked_at` 是正式事实，
+Redis cache hit 必须做轻量数据库有效性校验，故 Redis 删除失败也不会接受已撤销 Token。
+
+### Phase 10：按压测决定高峰增强（暂缓）
 
 只有真实压测证明同步确认出现大量 HTTP 等待、请求积压或数据库过载时，才评估
 限流、排队、异步受理和后台操作 Polling（轮询查询）。未来后台操作编号不等于
@@ -890,7 +909,7 @@ Reservation 专用幂等和 COMMIT 确认能力。CheckoutSession 行锁保证�
 静默生成第二订单。主动放弃正在确认的会话暂缓，直到确认与取消的原子竞争被设计。
 
 Phase 7 已实现的 Redis 临时占座只服务前置竞争与体验，正式确认仍由 PostgreSQL 仲裁。
-通用幂等记录和 Phase 9 异步受理都属于后续评估，不是当前实现事实。
+通用幂等记录和 Phase 10 异步受理都属于后续评估，不是当前实现事实。
 
 ## 22. 当前阶段边界
 
@@ -908,7 +927,7 @@ Kubernetes
 真实支付平台
 正常 PAID 订单的主动退票/退款
 优惠券
-完整认证系统
+注册、找回密码、OAuth、SSO 与设备管理
 ```
 
 ## 23. 最终对齐原则
