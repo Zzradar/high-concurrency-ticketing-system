@@ -84,3 +84,27 @@ python performance/data/generate_dataset.py --profile baseline
 生成器会先完整校验 Profile，再在单个数据库事务中替换 Performance 作用域的数据。它复用 Demo 用户的合法 Argon2id 测试密码哈希来满足 Schema；本阶段业务压测直接使用离线 Session，不做 10,000 次密码哈希，也不代表 Login Stress（登录压力测试）。真实登录压力留到 Phase 10A-5。
 
 `performance/generated/dataset.json` 记录 Profile 哈希、Git HEAD、数量和 hot/low-conflict 目标；`sessions.json` 按用户顺序记录 raw Session Token（原始会话令牌）与独立 CSRF Token。原始令牌属于敏感测试凭据，整个生成目录默认被 Git 忽略，禁止复制到日志或提交仓库。生成器不会批量预热 Redis 认证缓存；仅用第一条凭据调用一次 `/auth/me` 做真实验证。
+
+## 安全 Reset 与权威校验
+
+以下命令会显示计划但不修改任何状态：
+
+```powershell
+python performance/scripts/reset_environment.py --profile baseline
+```
+
+显式确认后，Reset（重置）脚本只允许删除名称以 `ticketing_phase10a_` 开头的三个 Performance 卷，然后重建栈、验证观测链、生成数据、检查初始状态并调用 PostgreSQL 权威不变量校验：
+
+```powershell
+python performance/scripts/reset_environment.py --profile baseline --yes
+```
+
+脚本会拒绝 `backend_ticketing_postgres_data` 或任何非 Performance 卷，不会调用 Docker prune，也不会连接开发 Compose。支付夹具和大量 `PENDING_PAYMENT` 订单暂不预生成。
+
+业务测试写入数据后，可以随时运行只读 verifier（不变量检查器）：
+
+```powershell
+python performance/verification/verify_database.py
+```
+
+`verify.sql` 只读取 `perf-*` 用户或库存关联的事实，逐项输出 `check_name<TAB>violation_count`。全部为零才返回成功；任一跨表状态、金额、所有权、支付或退款不变量被破坏时返回非零。该结果用于否决不可信的测试运行，不等于容量测试。

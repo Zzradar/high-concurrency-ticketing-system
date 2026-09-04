@@ -11,6 +11,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "performance" / "data"))
 
 import generate_dataset  # noqa: E402
+sys.path.insert(0, str(REPO_ROOT / "performance" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / "performance" / "verification"))
+import reset_environment  # noqa: E402
+import verify_database  # noqa: E402
 
 
 class ProfileTests(unittest.TestCase):
@@ -103,6 +107,53 @@ class ProfileTests(unittest.TestCase):
             generate_dataset.auth_me_smoke("http://example.test", credential)
             request = opener.return_value.open.call_args.args[0]
             self.assertIn("ticketing_session", request.headers["Cookie"])
+
+
+class ResetAndVerifierTests(unittest.TestCase):
+    def test_reset_guard_accepts_only_named_performance_volumes(self):
+        reset_environment.validate_volume_names(
+            "ticketing-phase10a",
+            [
+                "ticketing_phase10a_postgres_data",
+                "ticketing_phase10a_prometheus_data",
+            ],
+        )
+        with self.assertRaisesRegex(reset_environment.ResetGuardError, "non-Performance"):
+            reset_environment.validate_volume_names(
+                "ticketing-phase10a", ["backend_ticketing_postgres_data"]
+            )
+        with self.assertRaisesRegex(reset_environment.ResetGuardError, "expected"):
+            reset_environment.validate_volume_names(
+                "ticketing", ["ticketing_phase10a_postgres_data"]
+            )
+
+    def test_reset_without_yes_is_a_non_destructive_plan(self):
+        model = {
+            "name": "ticketing-phase10a",
+            "volumes": {
+                "database": {"name": "ticketing_phase10a_postgres_data"}
+            },
+        }
+        with mock.patch.object(reset_environment.Path, "cwd", return_value=REPO_ROOT), mock.patch.object(
+            reset_environment, "read_compose_model", return_value=model
+        ), mock.patch.object(reset_environment, "run_command") as run, mock.patch.object(
+            reset_environment, "clear_generated"
+        ) as clear:
+            reset_environment.reset("smoke", confirmed=False)
+        run.assert_not_called()
+        clear.assert_not_called()
+
+    def test_verifier_parsing_and_violation_result(self):
+        clean = "\n".join(f"{name}\t0" for name in sorted(verify_database.EXPECTED_CHECKS))
+        parsed = verify_database.parse_verifier_output(clean)
+        self.assertTrue(all(count == 0 for count in parsed.values()))
+        broken = clean.replace("active_reservation_seat_mismatch\t0", "active_reservation_seat_mismatch\t1")
+        parsed = verify_database.parse_verifier_output(broken)
+        self.assertEqual(parsed["active_reservation_seat_mismatch"], 1)
+
+    def test_verifier_rejects_missing_checks(self):
+        with self.assertRaisesRegex(ValueError, "check set mismatch"):
+            verify_database.parse_verifier_output("effective_seat_overlap\t0")
 
 
 if __name__ == "__main__":

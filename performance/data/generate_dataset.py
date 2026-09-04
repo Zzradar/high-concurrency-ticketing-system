@@ -286,15 +286,23 @@ BEGIN;
 SET LOCAL TIME ZONE 'UTC';
 
 DELETE FROM user_notifications WHERE user_id LIKE 'perf-user-%';
-DELETE FROM refunds WHERE order_id LIKE 'perf-order-%';
-DELETE FROM payment_attempts WHERE order_id LIKE 'perf-order-%';
-DELETE FROM checkout_session_seats WHERE checkout_session_id LIKE 'perf-checkout-%';
-DELETE FROM checkout_sessions WHERE id LIKE 'perf-checkout-%' OR user_id LIKE 'perf-user-%';
-DELETE FROM orders WHERE id LIKE 'perf-order-%' OR user_id LIKE 'perf-user-%';
-DELETE FROM reservation_session_seats WHERE reservation_id LIKE 'perf-reservation-%';
+DELETE FROM refunds AS refund
+USING orders AS ticket_order
+WHERE refund.order_id = ticket_order.id AND ticket_order.user_id LIKE 'perf-user-%';
+DELETE FROM payment_attempts AS attempt
+USING orders AS ticket_order
+WHERE attempt.order_id = ticket_order.id AND ticket_order.user_id LIKE 'perf-user-%';
+DELETE FROM checkout_session_seats AS item
+USING checkout_sessions AS checkout
+WHERE item.checkout_session_id = checkout.id AND checkout.user_id LIKE 'perf-user-%';
+DELETE FROM checkout_sessions WHERE user_id LIKE 'perf-user-%';
+DELETE FROM orders WHERE user_id LIKE 'perf-user-%';
+DELETE FROM reservation_session_seats AS item
+USING reservations AS reservation
+WHERE item.reservation_id = reservation.id AND reservation.user_id LIKE 'perf-user-%';
 DELETE FROM session_seats WHERE id LIKE 'perf-ss-%';
-DELETE FROM reservations WHERE id LIKE 'perf-reservation-%' OR user_id LIKE 'perf-user-%';
-DELETE FROM user_sessions WHERE id LIKE 'perf-auth-%' OR user_id LIKE 'perf-user-%';
+DELETE FROM reservations WHERE user_id LIKE 'perf-user-%';
+DELETE FROM user_sessions WHERE user_id LIKE 'perf-user-%';
 DELETE FROM seats WHERE id LIKE 'perf-seat-%';
 DELETE FROM sessions WHERE id LIKE 'perf-session-%';
 DELETE FROM events WHERE id LIKE 'perf-event-%';
