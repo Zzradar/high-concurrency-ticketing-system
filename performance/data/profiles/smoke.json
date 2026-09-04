@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "name": "smoke",
+  "seed": 1001,
+  "users": 8,
+  "events": 1,
+  "sessionsPerEvent": 4,
+  "seatLayout": {
+    "rows": 3,
+    "seatsPerRow": 6
+  },
+  "futureStartOffsetDays": 30,
+  "sessionSpacingHours": 4,
+  "gateLeadMinutes": 90,
+  "priceZones": [
+    {
+      "name": "PREMIUM",
+      "rows": 1,
+      "price": 128000
+    },
+    {
+      "name": "STANDARD",
+      "rows": 2,
+      "price": 68000
+    }
+  ]
+}

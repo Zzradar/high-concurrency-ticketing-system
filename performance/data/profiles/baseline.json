@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "name": "baseline",
+  "seed": 1001,
+  "users": 10000,
+  "events": 2,
+  "sessionsPerEvent": 10,
+  "seatLayout": {
+    "rows": 20,
+    "seatsPerRow": 50
+  },
+  "futureStartOffsetDays": 30,
+  "sessionSpacingHours": 4,
+  "gateLeadMinutes": 90,
+  "priceZones": [
+    {
+      "name": "PREMIUM",
+      "rows": 5,
+      "price": 128000
+    },
+    {
+      "name": "STANDARD",
+      "rows": 10,
+      "price": 68000
+    },
+    {
+      "name": "ECONOMY",
+      "rows": 5,
+      "price": 38000
+    }
+  ]
+}

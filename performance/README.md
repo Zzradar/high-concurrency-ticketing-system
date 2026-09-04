@@ -1,4 +1,4 @@
-# Phase 10A-1 性能观测环境
+# Phase 10A 性能验证环境
 
 这套 Performance Stack（性能测试专用服务组）与日常 `backend/docker-compose.yml` 完全隔离：Compose project 固定为 `ticketing-phase10a`，PostgreSQL、Prometheus 和 Grafana 使用独立命名卷，主机端口也不与开发栈重叠。它只用于 Phase 1～9 Demo 数据上的观测冒烟，不应连接或复用开发数据库。
 
@@ -69,3 +69,18 @@ docker compose -p ticketing-phase10a -f performance/docker-compose.performance.y
 ## 当前范围
 
 Phase 10A-1 只建立可信的测量环境，尚未实现正式业务压测 workload、大数据生成、Run Harness、压测专用 `verify.sql`、Playwright、限流、Waiting Room、消息队列或 SQL/连接池优化。因此 Dashboard 有数据不代表系统容量已经测出；SQL Top N 也继续通过 PostgreSQL `pg_stat_statements` 查询，而不会把 SQL 文本放入 Prometheus label。后续压测前再重置统计并导出完整 Top SQL 报告。
+
+## 可重复数据 Profile
+
+`performance/data/profiles/` 中的 Profile（数据规模配置）用版本控制中的 JSON 描述用户、活动、场次、座位布局、价格分区与未来开场偏移。`smoke` 是脚本和浏览器 E2E 的小数据集；`baseline` 生成 10,000 个用户、2 个活动、20 个场次、1,000 个物理座位和 20,000 个场次座位。这些数量只是第一版可重复测试条件，不是容量目标或容量结论。
+
+Performance 数据统一使用 `perf-*` ID。生成器通过 PostgreSQL 集合操作写入业务实体，并批量导入真实格式的离线认证 Session（会话）：
+
+```powershell
+python performance/data/generate_dataset.py --profile smoke
+python performance/data/generate_dataset.py --profile baseline
+```
+
+生成器会先完整校验 Profile，再在单个数据库事务中替换 Performance 作用域的数据。它复用 Demo 用户的合法 Argon2id 测试密码哈希来满足 Schema；本阶段业务压测直接使用离线 Session，不做 10,000 次密码哈希，也不代表 Login Stress（登录压力测试）。真实登录压力留到 Phase 10A-5。
+
+`performance/generated/dataset.json` 记录 Profile 哈希、Git HEAD、数量和 hot/low-conflict 目标；`sessions.json` 按用户顺序记录 raw Session Token（原始会话令牌）与独立 CSRF Token。原始令牌属于敏感测试凭据，整个生成目录默认被 Git 忽略，禁止复制到日志或提交仓库。生成器不会批量预热 Redis 认证缓存；仅用第一条凭据调用一次 `/auth/me` 做真实验证。
