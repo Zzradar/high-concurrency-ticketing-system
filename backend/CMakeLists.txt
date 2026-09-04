@@ -43,6 +43,7 @@ endif()
 
 add_executable(ticketing_backend
     src/main.cpp
+    src/observability/PerformanceMetrics.cpp
     src/controllers/HealthController.cpp
     src/controllers/EventController.cpp
     src/repositories/EventRepository.cpp
@@ -170,5 +171,9 @@ if(BUILD_TESTING)
     add_test(
         NAME operation_disposition_source_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/operation_disposition_source_contract_test.py"
+    )
+    add_test(
+        NAME performance_metrics_source_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/performance_metrics_source_contract_test.py"
     )
 endif()

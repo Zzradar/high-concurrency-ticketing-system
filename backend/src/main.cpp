@@ -3,6 +3,7 @@
 #include "services/SeatHoldService.h"
 #include "services/PaymentSimulation.h"
 #include "security/AuthConfig.h"
+#include "observability/PerformanceMetrics.h"
 
 #include <drogon/drogon.h>
 
@@ -103,6 +104,7 @@ int main(int argc, char *argv[])
         ticketing::SeatHoldService::validateConfiguration();
         ticketing::PaymentSimulation::validateConfiguration();
         ticketing::AuthConfig::validate();
+        ticketing::PerformanceMetrics::registerWithApplication();
         const auto [batchSize, intervalSeconds] =
             loadOrderExpiryWorkerConfig();
         const auto checkoutReconciliationBatchSize =

@@ -1,0 +1,126 @@
+{
+  "listeners": [
+    {
+      "address": "0.0.0.0",
+      "port": 8080,
+      "https": false
+    }
+  ],
+  "db_clients": [
+    {
+      "name": "default",
+      "rdbms": "postgresql",
+      "host": "postgres",
+      "port": 5432,
+      "dbname": "ticketing",
+      "user": "ticketing",
+      "passwd": "ticketing_dev",
+      "is_fast": false,
+      "number_of_connections": 4,
+      "timeout": 5.0,
+      "client_encoding": "UTF8",
+      "connect_options": {
+        "application_name": "ticketing_backend_phase10a"
+      }
+    }
+  ],
+  "redis_clients": [
+    {
+      "name": "seat_holds",
+      "host": "redis",
+      "port": 6379,
+      "is_fast": false,
+      "number_of_connections": 2,
+      "timeout": 0.4
+    },
+    {
+      "name": "auth_sessions",
+      "host": "redis",
+      "port": 6379,
+      "is_fast": false,
+      "number_of_connections": 2,
+      "timeout": 0.4
+    }
+  ],
+  "app": {
+    "number_of_threads": 0,
+    "enable_session": false,
+    "document_root": "./public",
+    "upload_path": "uploads",
+    "client_max_body_size": "1M",
+    "client_max_memory_body_size": "64K"
+  },
+  "plugins": [
+    {
+      "name": "drogon::plugin::PromExporter",
+      "dependencies": [],
+      "config": {
+        "path": "/metrics",
+        "collectors": [
+          {
+            "name": "ticketing_http_requests_total",
+            "help": "Total ticketing backend HTTP requests",
+            "type": "counter",
+            "labels": ["method", "route", "status_class"]
+          },
+          {
+            "name": "ticketing_http_request_duration_seconds",
+            "help": "Ticketing backend HTTP request duration in seconds",
+            "type": "histogram",
+            "labels": ["method", "route", "status_class"]
+          },
+          {
+            "name": "ticketing_http_requests_in_flight",
+            "help": "Ticketing backend HTTP requests currently in flight",
+            "type": "gauge",
+            "labels": []
+          }
+        ]
+      }
+    }
+  ],
+  "custom_config": {
+    "order_expiry_worker": {
+      "batch_size": 100,
+      "interval_seconds": 5.0
+    },
+    "checkout_session_reconciliation": {
+      "batch_size": 100
+    },
+    "checkout_seat_hold": {
+      "ttl_seconds": 300
+    },
+    "payment_simulation": {
+      "min_delay_seconds": 2.0,
+      "max_delay_seconds": 6.0,
+      "failure_rate": 0.01,
+      "processing_grace_seconds": 10.0
+    },
+    "authentication": {
+      "idle_timeout_seconds": 86400,
+      "absolute_timeout_seconds": 604800,
+      "session_cache_ttl_seconds": 300,
+      "last_seen_write_interval_seconds": 300,
+      "cookie_name": "ticketing_session",
+      "csrf_cookie_name": "ticketing_csrf",
+      "cookie_secure": false,
+      "allowed_origins": [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://performance.local"
+      ],
+      "password_hash_workers": 2,
+      "password_hash_queue_capacity": 64,
+      "argon2_time_cost": 2,
+      "argon2_memory_cost_kib": 65536,
+      "argon2_parallelism": 1
+    },
+    "login_rate_limit": {
+      "window_seconds": 60,
+      "max_failures": 5
+    },
+    "performance_metrics": {
+      "enabled": true
+    }
+  }
+}
