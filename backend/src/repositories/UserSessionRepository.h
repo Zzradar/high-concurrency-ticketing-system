@@ -36,6 +36,10 @@ class UserSessionRepository
     void findActiveByTokenHash(const std::string &tokenHash,
                                Completion onSuccess,
                                ErrorCallback onError) const;
+    void isActive(const std::string &sessionId,
+                  const std::string &tokenHash,
+                  std::function<void(bool)> onSuccess,
+                  ErrorCallback onError) const;
     void touch(const std::string &sessionId,
                std::int64_t idleTimeoutSeconds,
                Completion onSuccess,

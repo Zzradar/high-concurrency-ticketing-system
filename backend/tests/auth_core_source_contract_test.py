@@ -40,6 +40,10 @@ class AuthCoreSourceContractTest(unittest.TestCase):
         self.assertIn('getRedisClient("auth_sessions")', CACHE)
         self.assertIn('"ticketing:auth-session:"', CACHE)
         self.assertIn("loadFromDatabase(tokenHash", SERVICE)
+        self.assertIn("validateCachedRecord(tokenHash", SERVICE)
+        self.assertIn("repository_.isActive(", SERVICE)
+        self.assertIn("auth.id = $1", SESSION_REPOSITORY)
+        self.assertIn("auth.token_hash = $2", SESSION_REPOSITORY)
         self.assertIn("lastSeenWriteIntervalSeconds", SERVICE)
 
 

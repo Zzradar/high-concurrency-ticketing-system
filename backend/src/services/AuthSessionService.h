@@ -36,6 +36,9 @@ class AuthSessionService
   private:
     void loadFromDatabase(const std::string &tokenHash,
                           Completion completion) const;
+    void validateCachedRecord(const std::string &tokenHash,
+                              AuthSessionRecord record,
+                              Completion completion) const;
     void finishRecord(const std::string &tokenHash,
                       AuthSessionRecord record,
                       Completion completion) const;

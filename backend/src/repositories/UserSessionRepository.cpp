@@ -108,6 +108,33 @@ void UserSessionRepository::findActiveByTokenHash(
         tokenHash);
 }
 
+void UserSessionRepository::isActive(
+    const std::string &sessionId,
+    const std::string &tokenHash,
+    std::function<void(bool)> onSuccess,
+    ErrorCallback onError) const
+{
+    constexpr const char *sql = R"SQL(
+        SELECT 1
+        FROM user_sessions AS auth
+        JOIN app_users AS app_user ON app_user.id = auth.user_id
+        WHERE auth.id = $1
+          AND auth.token_hash = $2
+          AND auth.revoked_at IS NULL
+          AND auth.idle_expires_at > clock_timestamp()
+          AND auth.absolute_expires_at > clock_timestamp()
+          AND app_user.status = 'ACTIVE'
+    )SQL";
+    drogon::app().getDbClient()->execSqlAsync(
+        sql,
+        [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) {
+            onSuccess(!rows.empty());
+        },
+        sessionError("Failed to validate cached user session",
+                     std::move(onError)),
+        sessionId, tokenHash);
+}
+
 void UserSessionRepository::touch(
     const std::string &sessionId,
     std::int64_t idleTimeoutSeconds,

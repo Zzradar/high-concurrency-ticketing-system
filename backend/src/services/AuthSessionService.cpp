@@ -43,19 +43,36 @@ void AuthSessionService::authenticate(std::string rawToken,
          completion = std::move(completion)](SessionCacheResult result) mutable {
             if (result.outcome == SessionCacheOutcome::Hit && result.value)
             {
-                const auto now = nowEpoch();
-                if (result.value->idleExpiresAtEpoch <= now ||
-                    result.value->absoluteExpiresAtEpoch <= now)
-                {
-                    completion({AuthenticateOutcome::Unauthenticated,
-                                std::nullopt, tokenHash});
-                    return;
-                }
-                finishRecord(tokenHash, std::move(*result.value),
-                             std::move(completion));
+                validateCachedRecord(tokenHash, std::move(*result.value),
+                                     std::move(completion));
                 return;
             }
             loadFromDatabase(tokenHash, std::move(completion));
+        });
+}
+
+void AuthSessionService::validateCachedRecord(
+    const std::string &tokenHash,
+    AuthSessionRecord record,
+    Completion completion) const
+{
+    auto done = std::make_shared<Completion>(std::move(completion));
+    auto cached = std::make_shared<AuthSessionRecord>(std::move(record));
+    repository_.isActive(
+        cached->sessionId, tokenHash,
+        [this, tokenHash, cached, done](bool active) mutable {
+            if (!active)
+            {
+                cache_.remove(tokenHash);
+                (*done)({AuthenticateOutcome::Unauthenticated,
+                         std::nullopt, tokenHash});
+                return;
+            }
+            finishRecord(tokenHash, std::move(*cached), std::move(*done));
+        },
+        [tokenHash, done]() mutable {
+            (*done)({AuthenticateOutcome::Unavailable, std::nullopt,
+                     tokenHash});
         });
 }
 

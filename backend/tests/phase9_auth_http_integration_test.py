@@ -1,3 +1,4 @@
+import hashlib
 import subprocess
 import time
 import unittest
@@ -7,6 +8,7 @@ from auth_test_support import (
     ALLOWED_ORIGIN,
     AuthenticatedClient,
     TEST_PASSWORD,
+    anonymous_request,
 )
 
 
@@ -136,6 +138,39 @@ class Phase9AuthHttpIntegrationTest(unittest.TestCase):
             psql("SELECT COUNT(*) FROM user_sessions WHERE user_id='U-1001' AND revoked_at IS NOT NULL;"),
             "1",
         )
+
+    def test_revoked_session_is_rejected_even_if_stale_cache_survives(self) -> None:
+        first = AuthenticatedClient()
+        second = AuthenticatedClient()
+        first.login()
+        second.login()
+        first_token = first.cookie("ticketing_session")
+        self.assertIsNotNone(first_token)
+        self.assertEqual(first.request("/auth/me")[0], 200)
+        self.assertEqual(second.request("/auth/me")[0], 200)
+
+        token_hash = hashlib.sha256(first_token.encode("utf-8")).hexdigest()
+        cache_key = "ticketing:auth-session:" + token_hash
+        cached_session = redis("GET", cache_key)
+        self.assertTrue(cached_session)
+
+        self.assertEqual(first.request("/auth/logout", method="POST")[0], 200)
+        self.assertEqual(
+            psql(
+                "SELECT COUNT(*) FROM user_sessions "
+                f"WHERE token_hash='{token_hash}' AND revoked_at IS NOT NULL;"
+            ),
+            "1",
+        )
+
+        # Recreate the exact post-commit state produced by a failed Redis DEL.
+        redis("SET", cache_key, cached_session, "EX", "300")
+        status, _, _ = anonymous_request(
+            "/auth/me",
+            headers={"Cookie": "ticketing_session=" + first_token},
+        )
+        self.assertEqual(status, 401)
+        self.assertEqual(second.request("/auth/me")[0], 200)
 
     def test_csrf_and_x_user_id_spoofing(self) -> None:
         client = AuthenticatedClient()
