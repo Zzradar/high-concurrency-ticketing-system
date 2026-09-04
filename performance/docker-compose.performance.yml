@@ -21,13 +21,13 @@ services:
     volumes:
       - ticketing_postgres_data:/var/lib/postgresql/data
       - ./postgres/000_observability.sql:/docker-entrypoint-initdb.d/000_observability.sql:ro
-      - ../db/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql:ro
-      - ../db/migrations/002_add_reservation_idempotency.sql:/docker-entrypoint-initdb.d/002_add_reservation_idempotency.sql:ro
-      - ../db/migrations/003_add_checkout_sessions.sql:/docker-entrypoint-initdb.d/003_add_checkout_sessions.sql:ro
-      - ../db/migrations/004_add_checkout_session_revision.sql:/docker-entrypoint-initdb.d/004_add_checkout_session_revision.sql:ro
-      - ../db/migrations/005_add_payment_lifecycle.sql:/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql:ro
-      - ../db/migrations/006_add_user_authentication.sql:/docker-entrypoint-initdb.d/006_add_user_authentication.sql:ro
-      - ../db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/007_demo_seed.sql:ro
+      - ../backend/db/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql:ro
+      - ../backend/db/migrations/002_add_reservation_idempotency.sql:/docker-entrypoint-initdb.d/002_add_reservation_idempotency.sql:ro
+      - ../backend/db/migrations/003_add_checkout_sessions.sql:/docker-entrypoint-initdb.d/003_add_checkout_sessions.sql:ro
+      - ../backend/db/migrations/004_add_checkout_session_revision.sql:/docker-entrypoint-initdb.d/004_add_checkout_session_revision.sql:ro
+      - ../backend/db/migrations/005_add_payment_lifecycle.sql:/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql:ro
+      - ../backend/db/migrations/006_add_user_authentication.sql:/docker-entrypoint-initdb.d/006_add_user_authentication.sql:ro
+      - ../backend/db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/007_demo_seed.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ticketing -d ticketing"]
       interval: 5s
@@ -52,7 +52,7 @@ services:
 
   backend:
     build:
-      context: ..
+      context: ../backend
       dockerfile: Dockerfile
     command: ["./ticketing_backend", "${TICKETING_CONFIG_PATH:-config/config.performance.json}"]
     depends_on:

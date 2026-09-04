@@ -17,7 +17,7 @@ Backend 的 PostgreSQL pool 仍为 4 条连接；`seat_holds` 与 `auth_sessions
 
 ## 启动和验证
 
-在 `backend/` 目录执行：
+在仓库根目录执行：
 
 ```powershell
 docker compose -p ticketing-phase10a -f performance/docker-compose.performance.yml up -d --build --wait

@@ -18,8 +18,8 @@ from urllib.request import (
 )
 
 
-BACKEND_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_COMPOSE_FILE = BACKEND_ROOT / "performance" / "docker-compose.performance.yml"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_COMPOSE_FILE = REPO_ROOT / "performance" / "docker-compose.performance.yml"
 
 
 class Checks:
@@ -85,7 +85,7 @@ def compose_psql(compose_file: Path, sql: str, *, monitoring_user=False) -> str:
             "-c",
             sql,
         ],
-        cwd=BACKEND_ROOT,
+        cwd=REPO_ROOT,
         text=True,
         encoding="utf-8",
         capture_output=True,
@@ -110,7 +110,7 @@ def compose_redis(compose_file: Path, *arguments: str) -> str:
             "--raw",
             *arguments,
         ],
-        cwd=BACKEND_ROOT,
+        cwd=REPO_ROOT,
         text=True,
         encoding="utf-8",
         capture_output=True,
@@ -183,6 +183,14 @@ def main() -> int:
     compose_file = args.compose_file.resolve()
     checks = Checks()
     dashboard_expressions = []
+
+    performance_root = REPO_ROOT / "performance"
+    checks.record(
+        "performance directory layout",
+        Path(__file__).resolve().parent.parent == performance_root
+        and not (REPO_ROOT / "backend" / "performance").exists(),
+        f"root={performance_root}",
+    )
 
     try:
         status, health = wait_for_url(f"{args.backend_url}/health")
