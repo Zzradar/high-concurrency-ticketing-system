@@ -24,3 +24,37 @@ pg_stat_statements:
     - shared_blocks_read:
         usage: COUNTER
         description: Total shared block reads by tracked statements
+
+pg_backend_activity:
+  query: |
+    SELECT
+      COALESCE(state, 'unknown') AS state,
+      COUNT(*)::bigint AS connections,
+      COUNT(*) FILTER (WHERE wait_event IS NOT NULL)::bigint AS waiting
+    FROM pg_stat_activity
+    WHERE application_name = 'ticketing_backend_phase10a'
+    GROUP BY COALESCE(state, 'unknown')
+  metrics:
+    - state:
+        usage: LABEL
+        description: Backend connection state
+    - connections:
+        usage: GAUGE
+        description: Ticketing backend connections by state
+    - waiting:
+        usage: GAUGE
+        description: Ticketing backend connections with a wait event by state
+
+pg_lock_summary:
+  query: |
+    SELECT
+      COUNT(*)::bigint AS total,
+      COUNT(*) FILTER (WHERE NOT granted)::bigint AS waiting
+    FROM pg_locks
+  metrics:
+    - total:
+        usage: GAUGE
+        description: Total PostgreSQL locks
+    - waiting:
+        usage: GAUGE
+        description: PostgreSQL locks waiting to be granted

@@ -54,7 +54,7 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile
-    command: ["./ticketing_backend", "config/config.performance.json"]
+    command: ["./ticketing_backend", "${TICKETING_CONFIG_PATH:-config/config.performance.json}"]
     depends_on:
       postgres:
         condition: service_healthy
@@ -74,7 +74,7 @@ services:
   postgres-exporter:
     image: ghcr.io/prometheus-community/postgres-exporter:v0.20.1
     environment:
-      DATA_SOURCE_NAME: postgresql://ticketing_metrics:ticketing_metrics_dev@postgres:5432/ticketing?sslmode=disable
+      DATA_SOURCE_NAME: postgresql://ticketing_metrics:ticketing_metrics_dev@postgres:5432/ticketing?sslmode=disable&application_name=ticketing_postgres_exporter
       PG_EXPORTER_EXTEND_QUERY_PATH: /etc/postgres_exporter/queries.yml
     volumes:
       - ./postgres-exporter/queries.yml:/etc/postgres_exporter/queries.yml:ro
@@ -118,7 +118,7 @@ services:
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.retention.time=7d
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     depends_on:
       backend:
@@ -141,8 +141,8 @@ services:
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
     volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning:ro
-      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana_data:/var/lib/grafana
     depends_on:
       prometheus:
