@@ -520,6 +520,48 @@ UNION ALL SELECT 'token_hash', count(*) FROM user_sessions WHERE id = {sql_liter
         raise DatasetError(f"dataset validation failed: {differences}")
 
 
+def build_workload_seats(database_rows: str, shape: DatasetShape) -> list[dict[str, str]]:
+    pool: list[dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for line in database_rows.splitlines():
+        if not line.strip():
+            continue
+        parts = line.split("\t")
+        if len(parts) != 4:
+            raise DatasetError("workload seat query returned an invalid row")
+        session_id, session_seat_id, status, owner_is_null = parts
+        pair = (session_id, session_seat_id)
+        if pair in seen:
+            raise DatasetError(f"duplicate workload seat: {pair}")
+        if not session_id.startswith("perf-session-") or not session_seat_id.startswith(
+            "perf-ss-"
+        ):
+            raise DatasetError(f"workload seat is outside Performance scope: {pair}")
+        if status != "AVAILABLE" or owner_is_null != "t":
+            raise DatasetError(f"workload seat is not initially available: {pair}")
+        seen.add(pair)
+        pool.append({"sessionId": session_id, "sessionSeatId": session_seat_id})
+    if len(pool) != shape.session_seats:
+        raise DatasetError(
+            f"workload seat count {len(pool)}, expected {shape.session_seats}"
+        )
+    if pool != sorted(pool, key=lambda item: (item["sessionId"], item["sessionSeatId"])):
+        raise DatasetError("workload seats are not deterministically sorted")
+    return pool
+
+
+def load_workload_seats(shape: DatasetShape) -> list[dict[str, str]]:
+    rows = run_psql(
+        """
+SELECT session_id, id, status, current_reservation_id IS NULL
+FROM session_seats
+WHERE id LIKE 'perf-ss-%'
+ORDER BY session_id, id;
+"""
+    )
+    return build_workload_seats(rows, shape)
+
+
 def write_json_atomic(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile(
@@ -594,10 +636,12 @@ def main() -> int:
         run_psql(sql)
         manifest = build_dataset_manifest(profile, shape, profile_sha256(profile))
         validate_database(shape, manifest, credentials)
+        workload_seats = load_workload_seats(shape)
         sessions_payload = public_sessions(credentials)
         if len(sessions_payload) != shape.users:
             raise DatasetError("session manifest count mismatch")
         write_json_atomic(GENERATED_ROOT / "sessions.json", sessions_payload)
+        write_json_atomic(GENERATED_ROOT / "workload-seats.json", workload_seats)
         write_json_atomic(GENERATED_ROOT / "dataset.json", manifest)
         if not args.skip_auth_check:
             auth_me_smoke(args.backend_url, credentials[0])

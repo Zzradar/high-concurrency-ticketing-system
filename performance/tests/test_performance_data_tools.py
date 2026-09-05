@@ -74,6 +74,32 @@ class ProfileTests(unittest.TestCase):
         self.assertIn("*", rules.splitlines())
         self.assertIn("!.gitignore", rules.splitlines())
 
+    def test_workload_seats_are_available_scoped_complete_and_sorted(self):
+        shape = generate_dataset.DatasetShape(2, 1, 1, 2, 2)
+        rows = "\n".join(
+            [
+                "perf-session-001-001\tperf-ss-001-001-000001\tAVAILABLE\tt",
+                "perf-session-001-001\tperf-ss-001-001-000002\tAVAILABLE\tt",
+            ]
+        )
+        self.assertEqual(
+            generate_dataset.build_workload_seats(rows, shape),
+            [
+                {
+                    "sessionId": "perf-session-001-001",
+                    "sessionSeatId": "perf-ss-001-001-000001",
+                },
+                {
+                    "sessionId": "perf-session-001-001",
+                    "sessionSeatId": "perf-ss-001-001-000002",
+                },
+            ],
+        )
+        with self.assertRaisesRegex(generate_dataset.DatasetError, "not initially available"):
+            generate_dataset.build_workload_seats(
+                rows.replace("AVAILABLE\tt", "HELD\tf", 1), shape
+            )
+
     def test_auth_timeouts_are_read_from_config(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "config.json"

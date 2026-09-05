@@ -117,6 +117,7 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.retention.time=7d
+      - --web.enable-remote-write-receiver
     volumes:
       - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -132,6 +133,24 @@ services:
     ports:
       - "19090:9090"
     restart: unless-stopped
+
+  k6:
+    image: grafana/k6:2.2.0
+    profiles: ["load"]
+    working_dir: /scripts
+    environment:
+      K6_PROMETHEUS_RW_SERVER_URL: http://prometheus:9090/api/v1/write
+      K6_PROMETHEUS_RW_TREND_STATS: p(50),p(95),p(99),min,max
+      K6_SUMMARY_TREND_STATS: p(50),p(95),p(99),min,max
+    volumes:
+      - ./k6:/scripts:ro
+      - ./generated:/data:ro
+      - ./results:/results
+    depends_on:
+      backend:
+        condition: service_healthy
+      prometheus:
+        condition: service_started
 
   grafana:
     image: grafana/grafana:13.2.0
