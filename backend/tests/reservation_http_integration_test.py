@@ -435,24 +435,37 @@ class ReservationHttpIntegrationTest(unittest.TestCase):
         finally:
             psql(f"UPDATE sessions SET status = 'ON_SALE' WHERE id = '{SESSION_ID}';")
 
-    def test_z_seed_distribution_is_restored(self) -> None:
-        distribution = psql(
-            """
-            SELECT session.id,
-                   COUNT(inventory.id),
-                   COUNT(*) FILTER (WHERE inventory.status = 'AVAILABLE'),
-                   COUNT(*) FILTER (WHERE inventory.status = 'HELD'),
-                   COUNT(*) FILTER (WHERE inventory.status = 'SOLD')
-            FROM sessions AS session
-            JOIN session_seats AS inventory ON inventory.session_id = session.id
-            GROUP BY session.id
-            ORDER BY session.id;
+    def test_z_phase3_test_scope_is_restored(self) -> None:
+        seat_list = ", ".join(f"'{seat}'" for seat in TEST_SEATS)
+        seats = psql(
+            f"""
+            SELECT id, status, current_reservation_id IS NULL
+            FROM session_seats
+            WHERE id IN ({seat_list})
+            ORDER BY id;
             """
         )
-        rows = [line.split("\t") for line in distribution.splitlines()]
-        self.assertEqual(len(rows), 5)
-        for row in rows:
-            self.assertEqual(row[1:], ["60", "51", "4", "5"])
+        self.assertEqual(
+            [line.split("\t") for line in seats.splitlines()],
+            [[seat, "AVAILABLE", "t"] for seat in sorted(TEST_SEATS)],
+        )
+
+        leftovers = psql(
+            """
+            SELECT
+                (SELECT count(*) FROM reservations
+                 WHERE idempotency_key LIKE 'it-phase3-%'),
+                (SELECT count(*) FROM orders AS ticket_order
+                 JOIN reservations AS reservation
+                   ON reservation.id = ticket_order.reservation_id
+                 WHERE reservation.idempotency_key LIKE 'it-phase3-%'),
+                (SELECT count(*) FROM reservation_session_seats AS item
+                 JOIN reservations AS reservation
+                   ON reservation.id = item.reservation_id
+                 WHERE reservation.idempotency_key LIKE 'it-phase3-%');
+            """
+        )
+        self.assertEqual(leftovers.split("\t"), ["0", "0", "0"])
 
 
 if __name__ == "__main__":
