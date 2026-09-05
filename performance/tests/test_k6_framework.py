@@ -79,7 +79,7 @@ class RunnerTests(unittest.TestCase):
             ]
         )
         plan = run_k6.build_pool_plan(args)
-        self.assertEqual(plan.planned_iterations_upper_bound, 20)
+        self.assertEqual(plan.planned_iterations_base, 20)
         self.assertEqual(plan.pool_headroom, 8)
         self.assertEqual(plan.pool_required, 28)
         with self.assertRaisesRegex(run_k6.RunError, "requires 28 unique Seats"):
@@ -152,11 +152,12 @@ class RunnerTests(unittest.TestCase):
         self.assertIn('result_code = 1', runner)
         for key in (
             "runId", "startUtc", "gitHead", "datasetProfile", "workload",
-            "mode", "plannedIterationsUpperBound", "poolRequired",
-            "poolAvailable", "poolHeadroom", "k6Image", "k6Version",
-            "k6ExitCode", "verdict",
+            "mode", "plannedIterationsBase", "plannedGroupsBase",
+            "poolRequired", "poolAvailable", "poolHeadroom", "k6Image",
+            "k6Version", "k6ExitCode", "verdict",
         ):
             self.assertIn(f'"{key}"', runner)
+        self.assertNotIn('"plannedIterationsUpperBound"', runner)
         self.assertLess(
             runner.index("series = verify_remote_write"),
             runner.index('if code == 99:'),

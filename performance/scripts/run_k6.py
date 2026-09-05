@@ -41,7 +41,7 @@ class RunError(RuntimeError):
 
 @dataclass(frozen=True)
 class PoolPlan:
-    planned_iterations_upper_bound: int
+    planned_iterations_base: int
     pool_headroom: int
     pool_required: int
 
@@ -121,7 +121,7 @@ def prometheus_query(expression: str) -> list[dict[str, Any]]:
     return payload["data"]["result"]
 
 
-def planned_iterations_upper_bound(args: argparse.Namespace) -> int:
+def planned_iterations_base(args: argparse.Namespace) -> int:
     if args.mode == "smoke":
         return 3
     if args.mode == "steady":
@@ -135,7 +135,7 @@ def planned_iterations_upper_bound(args: argparse.Namespace) -> int:
 
 
 def build_pool_plan(args: argparse.Namespace) -> PoolPlan:
-    planned = planned_iterations_upper_bound(args)
+    planned = planned_iterations_base(args)
     if args.mode == "smoke":
         headroom = 0
     else:
@@ -175,7 +175,7 @@ def validate_args(
             raise RunError(
                 "cold run requires "
                 f"{plan.pool_required} unique offline Sessions "
-                f"({plan.planned_iterations_upper_bound} planned + "
+                f"({plan.planned_iterations_base} planned + "
                 f"{plan.pool_headroom} boundary headroom), "
                 f"but only {session_count} are available"
             )
@@ -188,7 +188,7 @@ def validate_args(
             raise RunError(
                 "formal run requires "
                 f"{plan.pool_required} unique Seats "
-                f"({plan.planned_iterations_upper_bound} planned groups + "
+                f"({plan.planned_iterations_base} planned groups + "
                 f"{plan.pool_headroom} boundary headroom), "
                 f"but only {seat_count} are available"
             )
@@ -388,8 +388,17 @@ def main() -> int:
             "authMode": args.auth_mode if args.workload == "auth-read" else None,
             "authPoolSize": args.auth_pool_size if args.workload == "auth-read" else None,
             "contendersPerSeat": args.contenders if args.workload == "formal-seat-contention" else None,
-            "plannedIterations": pool_plan.planned_iterations_upper_bound,
-            "plannedIterationsUpperBound": pool_plan.planned_iterations_upper_bound,
+            "plannedIterations": pool_plan.planned_iterations_base,
+            "plannedIterationsBase": (
+                None
+                if args.workload == "formal-seat-contention"
+                else pool_plan.planned_iterations_base
+            ),
+            "plannedGroupsBase": (
+                pool_plan.planned_iterations_base
+                if args.workload == "formal-seat-contention"
+                else None
+            ),
             "poolRequired": pool_plan.pool_required if one_shot_pool else None,
             "poolAvailable": pool_available,
             "poolHeadroom": pool_plan.pool_headroom if one_shot_pool else None,

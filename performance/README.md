@@ -117,7 +117,7 @@ k6 是本阶段的 HTTP 负载生成器。正式 steady/discovery 模式使用 A
 
 Formal 中一个 iteration 是一个 contention group（争抢组），通过一次 `http.batch()` 发出 N 个并行请求。因此组到达速率与 HTTP 尝试速率不同：`GROUP_RATE × contenders = attempt rate`。每组预期恰好一个成功，其余为座位冲突。
 
-Cold Auth 的 Session 和 Formal 的 Seat 都是一次性资源，Runner 不做取模复用。Smoke 固定执行 3 次，因此精确要求 3 个资源；Steady/Discovery 的资源预检使用统一上界：`理论迭代上界 + max(preAllocatedVUs, 一个峰值到达 timeUnit 内的迭代数)`。其中 Discovery 的理论上界按整个 ramp/hold 时段都处于 target rate 保守计算。该余量不假设 Arrival Rate 在 duration 边界最多只多启动 1 次；运行 manifest 会同时记录 `plannedIterationsUpperBound`、`poolRequired`、`poolAvailable` 和 `poolHeadroom`，若仍发生越界，workload 会报告所需索引和可用数量并立即失败。
+Cold Auth 的 Session 和 Formal 的 Seat 都是一次性资源，Runner 不做取模复用。Smoke 固定执行 3 次，因此精确要求 3 个资源；Steady/Discovery 的资源预检使用统一计划量：`基础计划量 + max(preAllocatedVUs, 一个峰值到达 timeUnit 内的迭代数)`。其中 Discovery 的基础计划量按整个 ramp/hold 时段都处于 target rate 保守计算。该余量不假设 Arrival Rate 在 duration 边界最多只多启动 1 次；运行 manifest 会为普通 workload/Cold 记录 `plannedIterationsBase`，为 Formal 记录 `plannedGroupsBase`，并同时记录 `poolRequired`、`poolAvailable` 和 `poolHeadroom`。若仍发生越界，workload 会报告所需索引和可用数量并立即失败。
 
 先完成 baseline Reset 并确认栈健康，再从仓库根目录运行：
 
