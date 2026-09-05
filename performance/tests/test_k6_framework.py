@@ -66,7 +66,7 @@ class K6ConfigurationTests(unittest.TestCase):
 
 
 class RunnerTests(unittest.TestCase):
-    def test_runner_validates_pool_sizes_duration_and_contention_bounds(self):
+    def test_runner_uses_boundary_headroom_for_steady_one_shot_pools(self):
         parser = run_k6.build_parser()
         args = parser.parse_args(
             [
@@ -78,11 +78,69 @@ class RunnerTests(unittest.TestCase):
                 "--contenders", "4",
             ]
         )
-        self.assertEqual(run_k6.validate_args(args, session_count=100, seat_count=20), 20)
-        self.assertEqual(run_k6.planned_iterations(args), 20)
+        plan = run_k6.build_pool_plan(args)
+        self.assertEqual(plan.planned_iterations_upper_bound, 20)
+        self.assertEqual(plan.pool_headroom, 8)
+        self.assertEqual(plan.pool_required, 28)
+        with self.assertRaisesRegex(run_k6.RunError, "requires 28 unique Seats"):
+            run_k6.validate_args(args, session_count=100, seat_count=20)
+        self.assertEqual(
+            run_k6.validate_args(args, session_count=100, seat_count=28), plan
+        )
+        with self.assertRaisesRegex(run_k6.RunError, "only 27 are available"):
+            run_k6.validate_args(args, session_count=100, seat_count=27)
+
+    def test_runner_uses_peak_rate_or_vus_for_boundary_headroom(self):
+        parser = run_k6.build_parser()
+        args = parser.parse_args(
+            [
+                "auth-read", "--mode", "steady", "--auth-mode", "cold",
+                "--auth-pool-size", "50", "--rate", "10", "--duration", "5s",
+                "--preallocated-vus", "4",
+            ]
+        )
+        plan = run_k6.build_pool_plan(args)
+        self.assertEqual(plan, run_k6.PoolPlan(50, 10, 60))
+        with self.assertRaisesRegex(run_k6.RunError, "requires 60 unique offline Sessions"):
+            run_k6.validate_args(args, session_count=50, seat_count=100)
+        self.assertEqual(
+            run_k6.validate_args(args, session_count=60, seat_count=100), plan
+        )
+
+    def test_runner_discovery_upper_bound_and_smoke_exact_pool(self):
+        parser = run_k6.build_parser()
+        discovery = parser.parse_args(
+            [
+                "formal-seat-contention", "--mode", "discovery",
+                "--start-rate", "2", "--target-rate", "10",
+                "--ramp-duration", "10s", "--hold-duration", "5s",
+                "--preallocated-vus", "4",
+            ]
+        )
+        self.assertEqual(
+            run_k6.build_pool_plan(discovery), run_k6.PoolPlan(150, 10, 160)
+        )
+        smoke = parser.parse_args(
+            ["formal-seat-contention", "--mode", "smoke", "--contenders", "4"]
+        )
+        self.assertEqual(run_k6.build_pool_plan(smoke), run_k6.PoolPlan(3, 0, 3))
+        self.assertEqual(
+            run_k6.validate_args(smoke, session_count=4, seat_count=3),
+            run_k6.PoolPlan(3, 0, 3),
+        )
+
+    def test_runner_validates_contention_bounds(self):
+        parser = run_k6.build_parser()
+        args = parser.parse_args(
+            [
+                "formal-seat-contention", "--mode", "steady",
+                "--group-rate", "2", "--duration", "10s",
+                "--preallocated-vus", "8", "--contenders", "21",
+            ]
+        )
         args.contenders = 21
         with self.assertRaisesRegex(run_k6.RunError, "between 2 and 20"):
-            run_k6.validate_args(args, session_count=100, seat_count=20)
+            run_k6.validate_args(args, session_count=100, seat_count=28)
 
     def test_runner_never_uses_prune_or_embeds_result_credentials(self):
         runner = source("scripts/run_k6.py")
@@ -94,7 +152,9 @@ class RunnerTests(unittest.TestCase):
         self.assertIn('result_code = 1', runner)
         for key in (
             "runId", "startUtc", "gitHead", "datasetProfile", "workload",
-            "mode", "k6Image", "k6Version", "k6ExitCode", "verdict",
+            "mode", "plannedIterationsUpperBound", "poolRequired",
+            "poolAvailable", "poolHeadroom", "k6Image", "k6Version",
+            "k6ExitCode", "verdict",
         ):
             self.assertIn(f'"{key}"', runner)
         self.assertLess(

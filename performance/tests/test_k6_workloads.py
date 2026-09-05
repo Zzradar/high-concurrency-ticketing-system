@@ -22,11 +22,14 @@ class WorkloadTests(unittest.TestCase):
         workload = source("k6/workloads/auth-read.js")
         self.assertIn("exec.scenario.iterationInTest", workload)
         self.assertIn("authMode === 'cold' ? iteration : iteration % authPoolSize", workload)
+        self.assertIn("required index=${index}, available count=${sessions.length}", workload)
         self.assertIn("GET /auth/me", workload)
 
     def test_formal_contention_is_one_batch_per_unique_seat(self):
         workload = source("k6/workloads/formal-seat-contention.js")
         self.assertIn("const seat = seats[groupIndex]", workload)
+        self.assertNotIn("groupIndex % seats.length", workload)
+        self.assertIn("required index=${groupIndex}, available count=${seats.length}", workload)
         self.assertIn("http.batch(requests)", workload)
         self.assertIn("batch: contenders", workload)
         self.assertIn("batchPerHost: contenders", workload)

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 from datetime import datetime, timezone
 import json
 import math
@@ -36,6 +37,13 @@ RUN_ID_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 
 class RunError(RuntimeError):
     pass
+
+
+@dataclass(frozen=True)
+class PoolPlan:
+    planned_iterations_upper_bound: int
+    pool_headroom: int
+    pool_required: int
 
 
 def utc_now() -> str:
@@ -113,7 +121,7 @@ def prometheus_query(expression: str) -> list[dict[str, Any]]:
     return payload["data"]["result"]
 
 
-def planned_iterations(args: argparse.Namespace) -> int:
+def planned_iterations_upper_bound(args: argparse.Namespace) -> int:
     if args.mode == "smoke":
         return 3
     if args.mode == "steady":
@@ -126,7 +134,26 @@ def planned_iterations(args: argparse.Namespace) -> int:
     return math.ceil(target * total)
 
 
-def validate_args(args: argparse.Namespace, session_count: int, seat_count: int) -> int:
+def build_pool_plan(args: argparse.Namespace) -> PoolPlan:
+    planned = planned_iterations_upper_bound(args)
+    if args.mode == "smoke":
+        headroom = 0
+    else:
+        # Reserve one peak-rate time unit or one possible boundary start per VU.
+        peak_rate = (
+            args.target_rate
+            if args.mode == "discovery"
+            else args.group_rate
+            if args.workload == "formal-seat-contention"
+            else args.rate
+        )
+        headroom = max(args.preallocated_vus, math.ceil(peak_rate))
+    return PoolPlan(planned, headroom, planned + headroom)
+
+
+def validate_args(
+    args: argparse.Namespace, session_count: int, seat_count: int
+) -> PoolPlan:
     if args.mode in {"steady", "discovery"} and not args.preallocated_vus:
         raise RunError("--preallocated-vus is required for steady/discovery")
     if args.mode == "steady":
@@ -140,20 +167,32 @@ def validate_args(args: argparse.Namespace, session_count: int, seat_count: int)
         parse_duration(args.ramp_duration)
         if args.hold_duration:
             parse_duration(args.hold_duration)
-    planned = planned_iterations(args)
+    plan = build_pool_plan(args)
     if args.workload == "auth-read":
         if args.auth_pool_size <= 0 or args.auth_pool_size > session_count:
             raise RunError("auth pool size exceeds available sessions")
-        if args.auth_mode == "cold" and planned > session_count:
-            raise RunError("cold run would reuse an offline Session")
+        if args.auth_mode == "cold" and plan.pool_required > session_count:
+            raise RunError(
+                "cold run requires "
+                f"{plan.pool_required} unique offline Sessions "
+                f"({plan.planned_iterations_upper_bound} planned + "
+                f"{plan.pool_headroom} boundary headroom), "
+                f"but only {session_count} are available"
+            )
     if args.workload == "formal-seat-contention":
         if not 2 <= args.contenders <= 20:
             raise RunError("--contenders must be between 2 and 20")
         if args.contenders > session_count:
             raise RunError("not enough distinct users for one contention group")
-        if planned > seat_count:
-            raise RunError("planned contention groups would exhaust the Seat pool")
-    return planned
+        if plan.pool_required > seat_count:
+            raise RunError(
+                "formal run requires "
+                f"{plan.pool_required} unique Seats "
+                f"({plan.planned_iterations_upper_bound} planned groups + "
+                f"{plan.pool_headroom} boundary headroom), "
+                f"but only {seat_count} are available"
+            )
+    return plan
 
 
 def clear_auth_cache() -> int:
@@ -313,7 +352,18 @@ def main() -> int:
         seats = read_json(GENERATED_ROOT / "workload-seats.json")
         if not isinstance(sessions, list) or not isinstance(seats, list):
             raise RunError("generated Session/Seat manifests must be arrays")
-        planned = validate_args(args, len(sessions), len(seats))
+        pool_plan = validate_args(args, len(sessions), len(seats))
+        one_shot_pool = (
+            args.workload == "formal-seat-contention"
+            or args.workload == "auth-read" and args.auth_mode == "cold"
+        )
+        pool_available = (
+            len(seats)
+            if args.workload == "formal-seat-contention"
+            else len(sessions)
+            if one_shot_pool
+            else None
+        )
         http_json(f"{BACKEND_URL}/health")
         result_dir.mkdir(parents=True, exist_ok=False)
         version = k6_version()
@@ -338,7 +388,11 @@ def main() -> int:
             "authMode": args.auth_mode if args.workload == "auth-read" else None,
             "authPoolSize": args.auth_pool_size if args.workload == "auth-read" else None,
             "contendersPerSeat": args.contenders if args.workload == "formal-seat-contention" else None,
-            "plannedIterations": planned,
+            "plannedIterations": pool_plan.planned_iterations_upper_bound,
+            "plannedIterationsUpperBound": pool_plan.planned_iterations_upper_bound,
+            "poolRequired": pool_plan.pool_required if one_shot_pool else None,
+            "poolAvailable": pool_available,
+            "poolHeadroom": pool_plan.pool_headroom if one_shot_pool else None,
             "plannedAttemptRate": (
                 args.group_rate * args.contenders
                 if args.workload == "formal-seat-contention" and args.group_rate

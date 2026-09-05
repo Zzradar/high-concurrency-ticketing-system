@@ -31,7 +31,9 @@ export default function () {
     const iteration = exec.scenario.iterationInTest;
     const index = authMode === 'cold' ? iteration : iteration % authPoolSize;
     if (index >= sessions.length) {
-        throw new Error('cold auth Session pool exhausted');
+        throw new Error(
+            `cold auth Session pool exhausted: required index=${index}, available count=${sessions.length}`,
+        );
     }
     const session = sessions[index];
     const response = http.get(`${config.baseUrl}/auth/me`, {

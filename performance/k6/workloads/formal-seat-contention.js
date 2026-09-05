@@ -62,7 +62,9 @@ function classify(response) {
 export default function () {
     const groupIndex = exec.scenario.iterationInTest;
     if (groupIndex >= seats.length) {
-        throw new Error('formal Seat pool exhausted');
+        throw new Error(
+            `formal Seat pool exhausted: required index=${groupIndex}, available count=${seats.length}`,
+        );
     }
     const seat = seats[groupIndex];
     const requests = [];
