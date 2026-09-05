@@ -11,6 +11,28 @@ def source(relative: str) -> str:
 
 
 class WorkloadTests(unittest.TestCase):
+    def test_remaining_workloads_use_real_contracts_and_one_shot_indices(self):
+        seat_map = source("k6/workloads/seat-map-read.js")
+        temporary = source("k6/workloads/temporary-hold-contention.js")
+        checkout = source("k6/workloads/checkout.js")
+        payment_start = source("k6/workloads/payment-start.js")
+        payment_lifecycle = source("k6/workloads/payment-lifecycle.js")
+        login = source("k6/workloads/login.js")
+        self.assertIn("responseType: 'none'", seat_map)
+        self.assertIn("seat-map preflight contract failed", seat_map)
+        self.assertIn("SEAT_TEMPORARILY_HELD", temporary)
+        self.assertIn("created === 1 && conflicts === contenders - 1", temporary)
+        self.assertNotIn("groupIndex % seats.length", temporary)
+        self.assertIn("/checkout-sessions/${created.json('id')}/confirm", checkout)
+        self.assertIn("checkoutSession.status", checkout)
+        self.assertIn("STARTED_NEW", payment_start)
+        self.assertIn("paymentAttempt.status", payment_start)
+        self.assertIn("sleep(1)", payment_lifecycle)
+        self.assertIn("scenarioFor(config.mode, 'RATE', '20s')", payment_lifecycle)
+        self.assertIn("AUTH_BUSY", login)
+        self.assertIn("exec.scenario.iterationInTest", login)
+        self.assertNotIn("iteration % users.length", login)
+
     def test_public_read_checks_the_real_top_level_array_contract(self):
         workload = source("k6/workloads/public-read.js")
         metrics = source("k6/lib/metrics.js")

@@ -11,3 +11,13 @@ export function loadSessions() {
 export function loadWorkloadSeats() {
     return new SharedArray('formal workload seats', () => JSON.parse(open('/data/workload-seats.json')));
 }
+
+export function loadWorkloadUsers() {
+    return new SharedArray('login workload users', () => JSON.parse(open('/data/workload-users.json')));
+}
+
+export function loadPaymentOrders() {
+    const path = __ENV.PAYMENT_ORDERS_FILE;
+    if (!path) throw new Error('PAYMENT_ORDERS_FILE is required');
+    return new SharedArray('payment workload orders', () => JSON.parse(open(path)));
+}

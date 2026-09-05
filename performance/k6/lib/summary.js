@@ -24,10 +24,12 @@ export function summaryHandler(metadata) {
             system_error: count(data, 'ticketing_system_error_total'),
             unexpected: count(data, 'ticketing_unexpected_total'),
         };
-        if (metadata.workload === 'formal-seat-contention') {
+        if (metadata.workload === 'formal-seat-contention' || metadata.workload === 'temporary-hold-contention') {
             summary.groups = count(data, 'ticketing_contention_groups_total');
             summary.reservation_attempts = count(data, 'ticketing_reservation_attempts_total');
             summary.invalid_groups = count(data, 'ticketing_contention_group_invalid_total');
+            summary.workload_groups = count(data, 'ticketing_workload_groups_total');
+            summary.invalid_workload_groups = count(data, 'ticketing_workload_group_invalid_total');
             summary.group_rate = Number(__ENV.GROUP_RATE || 0);
             summary.contenders_per_seat = Number(__ENV.CONTENDERS_PER_SEAT || 0);
         }

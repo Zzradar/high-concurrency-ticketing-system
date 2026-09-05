@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 import json
 import math
+import os
 from pathlib import Path
 import re
 import secrets
@@ -32,6 +33,7 @@ K6_IMAGE = "grafana/k6:2.2.0"
 BACKEND_URL = "http://127.0.0.1:18080"
 PROMETHEUS_URL = "http://127.0.0.1:19090"
 AUTH_CACHE_PATTERN = "ticketing:auth-session:*"
+SEAT_HOLD_PATTERN = "ticketing:seat-hold:*"
 RUN_ID_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 
 
@@ -114,6 +116,26 @@ def http_json(url: str, *, headers: dict[str, str] | None = None, timeout: float
         raise RunError(f"HTTP request failed for {url}: {error}") from error
 
 
+def api_json(url: str, *, method: str, headers: dict[str, str], body: Any | None = None,
+             expected: tuple[int, ...] = (200,)) -> Any:
+    data = None if body is None else json.dumps(body).encode("utf-8")
+    request = Request(url, headers=headers, data=data, method=method)
+    opener = build_opener(ProxyHandler({}))
+    try:
+        with opener.open(request, timeout=15) as response:
+            status, raw = response.status, response.read().decode("utf-8")
+    except HTTPError as error:
+        status, raw = error.code, error.read().decode("utf-8")
+    except (URLError, OSError) as error:
+        raise RunError(f"HTTP request failed for {url}: {error}") from error
+    if status not in expected:
+        raise RunError(f"{method} {url} returned HTTP {status}: {raw[:500]}")
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as error:
+        raise RunError(f"{method} {url} returned invalid JSON") from error
+
+
 def prometheus_query(expression: str) -> list[dict[str, Any]]:
     payload = http_json(f"{PROMETHEUS_URL}/api/v1/query?{urlencode({'query': expression})}")
     if payload.get("status") != "success":
@@ -124,8 +146,8 @@ def prometheus_query(expression: str) -> list[dict[str, Any]]:
 def planned_iterations_base(args: argparse.Namespace) -> int:
     if args.mode == "smoke":
         return 3
-    if args.mode == "steady":
-        rate = args.group_rate if args.workload == "formal-seat-contention" else args.rate
+    if args.mode in {"steady", "soak"}:
+        rate = args.group_rate if args.workload in {"formal-seat-contention", "temporary-hold-contention"} else args.rate
         return math.ceil(rate * parse_duration(args.duration))
     target = args.target_rate
     total = parse_duration(args.ramp_duration)
@@ -142,9 +164,9 @@ def build_pool_plan(args: argparse.Namespace) -> PoolPlan:
         # Reserve one peak-rate time unit or one possible boundary start per VU.
         peak_rate = (
             args.target_rate
-            if args.mode == "discovery"
+            if args.mode in {"discovery", "spike"}
             else args.group_rate
-            if args.workload == "formal-seat-contention"
+            if args.workload in {"formal-seat-contention", "temporary-hold-contention"}
             else args.rate
         )
         headroom = max(args.preallocated_vus, math.ceil(peak_rate))
@@ -154,14 +176,14 @@ def build_pool_plan(args: argparse.Namespace) -> PoolPlan:
 def validate_args(
     args: argparse.Namespace, session_count: int, seat_count: int
 ) -> PoolPlan:
-    if args.mode in {"steady", "discovery"} and not args.preallocated_vus:
-        raise RunError("--preallocated-vus is required for steady/discovery")
-    if args.mode == "steady":
-        selected = args.group_rate if args.workload == "formal-seat-contention" else args.rate
+    if args.mode in {"steady", "discovery", "spike", "soak"} and not args.preallocated_vus:
+        raise RunError("--preallocated-vus is required for arrival-rate modes")
+    if args.mode in {"steady", "soak"}:
+        selected = args.group_rate if args.workload in {"formal-seat-contention", "temporary-hold-contention"} else args.rate
         if not selected or selected <= 0:
             raise RunError("steady mode requires a positive --rate/--group-rate")
         parse_duration(args.duration)
-    if args.mode == "discovery":
+    if args.mode in {"discovery", "spike"}:
         if not args.start_rate or not args.target_rate:
             raise RunError("discovery requires --start-rate and --target-rate")
         parse_duration(args.ramp_duration)
@@ -179,19 +201,38 @@ def validate_args(
                 f"{plan.pool_headroom} boundary headroom), "
                 f"but only {session_count} are available"
             )
-    if args.workload == "formal-seat-contention":
+    if args.workload in {"formal-seat-contention", "temporary-hold-contention"}:
         if not 2 <= args.contenders <= 20:
             raise RunError("--contenders must be between 2 and 20")
         if args.contenders > session_count:
             raise RunError("not enough distinct users for one contention group")
         if plan.pool_required > seat_count:
             raise RunError(
-                "formal run requires "
+                f"{args.workload} run requires "
                 f"{plan.pool_required} unique Seats "
                 f"({plan.planned_iterations_base} planned groups + "
                 f"{plan.pool_headroom} boundary headroom), "
                 f"but only {seat_count} are available"
             )
+        required_sessions = plan.pool_required * args.contenders
+        if args.workload == "temporary-hold-contention" and required_sessions > session_count:
+            raise RunError(
+                f"temporary hold run requires {required_sessions} distinct Sessions/users, "
+                f"but only {session_count} are available"
+            )
+    if args.workload in {"checkout", "payment-start", "payment-lifecycle", "login"}:
+        if plan.pool_required > session_count:
+            raise RunError(
+                f"{args.workload} run requires {plan.pool_required} unique users, "
+                f"but only {session_count} are available"
+            )
+        if args.workload != "login" and plan.pool_required > seat_count:
+            raise RunError(
+                f"{args.workload} run requires {plan.pool_required} unique Seats, "
+                f"but only {seat_count} are available"
+            )
+    if args.workload == "login" and args.mode == "soak":
+        raise RunError("login workload does not support soak mode")
     return plan
 
 
@@ -214,6 +255,97 @@ def auth_cache_count() -> int:
         )
     )
     return len([line for line in completed.stdout.splitlines() if line.strip()])
+
+
+def clear_seat_holds() -> int:
+    completed = run_command(
+        compose_command(
+            "exec", "-T", "redis", "redis-cli", "--raw", "EVAL",
+            "local c='0'; local n=0; repeat local r=redis.call('SCAN',c,'MATCH',ARGV[1],'COUNT',1000); c=r[1]; for _,k in ipairs(r[2]) do n=n+redis.call('DEL',k) end until c=='0'; return n",
+            "0", SEAT_HOLD_PATTERN,
+        )
+    )
+    return int(completed.stdout.strip() or "0")
+
+
+def prepare_seat_map_fixture(
+    seats: list[dict[str, str]], session_id: str, density: int,
+    ttl_seconds: int, owner: str,
+) -> dict[str, int]:
+    clear_seat_holds()
+    target = [item for item in seats if item["sessionId"] == session_id]
+    held = math.floor(len(target) * density / 100)
+    selected = target[:held]
+    for offset in range(0, len(selected), 100):
+        chunk = selected[offset: offset + 100]
+        keys = [
+            f"ticketing:seat-hold:{{{session_id}}}:{item['sessionSeatId']}"
+            for item in chunk
+        ]
+        run_command(compose_command(
+            "exec", "-T", "redis", "redis-cli", "--raw", "EVAL",
+            "for _,k in ipairs(KEYS) do redis.call('SET',k,ARGV[1],'EX',ARGV[2]) end return #KEYS",
+            str(len(keys)), *keys, f"{owner}|0", str(ttl_seconds),
+        ))
+    payload = http_json(f"{BACKEND_URL}/sessions/{session_id}/seats")
+    actual = sum(1 for seat in payload if seat.get("status") == "HELD")
+    if actual != held:
+        raise RunError(f"seat-map fixture mismatch: expected HELD={held}, actual={actual}")
+    return {"densityPercent": density, "seatCount": len(target),
+            "heldCount": held, "ttlSeconds": ttl_seconds}
+
+
+def mutation_headers(
+    session: dict[str, str], idempotency_key: str | None = None,
+) -> dict[str, str]:
+    headers = {
+        "Accept": "application/json", "Content-Type": "application/json",
+        "Cookie": f"ticketing_session={session['sessionToken']}; ticketing_csrf={session['csrfToken']}",
+        "Origin": "http://performance.local", "X-CSRF-Token": session["csrfToken"],
+    }
+    if idempotency_key:
+        headers["Idempotency-Key"] = idempotency_key
+    return headers
+
+
+def prepare_payment_orders(
+    sessions: list[dict[str, str]], seats: list[dict[str, str]],
+    count: int, short_token: str,
+) -> list[dict[str, Any]]:
+    orders = []
+    for index in range(count):
+        session, seat = sessions[index], seats[index]
+        payload = api_json(
+            f"{BACKEND_URL}/reservations", method="POST",
+            headers=mutation_headers(session, f"phase10a-payment-{short_token}-{index}"),
+            body={"sessionId": seat["sessionId"], "seatIds": [seat["sessionSeatId"]]},
+            expected=(201,),
+        )
+        orders.append({"orderId": payload["order"]["id"], "sessionIndex": index})
+    return orders
+
+
+def wait_payment_settlement(timeout_seconds: int = 30) -> int:
+    sql = (
+        "SELECT count(*) FROM payment_attempts AS attempt "
+        "JOIN orders AS ticket_order ON ticket_order.id=attempt.order_id "
+        "WHERE ticket_order.user_id LIKE 'perf-user-%' "
+        "AND attempt.status='PROCESSING';"
+    )
+    deadline = time.monotonic() + timeout_seconds
+    processing = -1
+    while time.monotonic() < deadline:
+        completed = run_command(compose_command(
+            "exec", "-T", "postgres", "psql", "-U", "ticketing", "-d", "ticketing",
+            "-v", "ON_ERROR_STOP=1", "-At", "-c", sql,
+        ))
+        processing = int(completed.stdout.strip())
+        if processing == 0:
+            return 0
+        time.sleep(1)
+    raise RunError(
+        f"payment settlement did not finish within {timeout_seconds}s; processing={processing}"
+    )
 
 
 def authenticate_session(session: dict[str, str]) -> None:
@@ -312,10 +444,15 @@ def run_observability_with_retries() -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("workload", choices=(
+        "public-read", "auth-read", "formal-seat-contention", "seat-map-read",
+        "temporary-hold-contention", "checkout", "payment-start",
+        "payment-lifecycle", "login",
+    ))
     parser.add_argument(
-        "workload", choices=("public-read", "auth-read", "formal-seat-contention")
+        "--mode", choices=("smoke", "steady", "discovery", "spike", "soak"),
+        default="smoke",
     )
-    parser.add_argument("--mode", choices=("smoke", "steady", "discovery"), default="smoke")
     parser.add_argument("--rate", type=int)
     parser.add_argument("--group-rate", type=int)
     parser.add_argument("--duration", default="10s")
@@ -327,6 +464,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--auth-mode", choices=("warm", "cold", "redis-down"), default="warm")
     parser.add_argument("--auth-pool-size", type=int, default=100)
     parser.add_argument("--contenders", type=int, default=4)
+    parser.add_argument("--seat-hold-density", type=int, choices=(0, 50, 90), default=0)
+    parser.add_argument(
+        "--login-password", default=os.environ.get("TICKETING_PERF_LOGIN_PASSWORD")
+    )
     return parser
 
 
@@ -342,6 +483,8 @@ def main() -> int:
         return 1
     result_dir = RESULTS_ROOT / run_id
     redis_stopped = False
+    payment_backend_forced = False
+    payment_orders_path: Path | None = None
     start_epoch = time.time()
     start_utc = utc_now()
     manifest: dict[str, Any] = {}
@@ -354,12 +497,18 @@ def main() -> int:
             raise RunError("generated Session/Seat manifests must be arrays")
         pool_plan = validate_args(args, len(sessions), len(seats))
         one_shot_pool = (
-            args.workload == "formal-seat-contention"
+            args.workload in {
+                "formal-seat-contention", "temporary-hold-contention", "checkout",
+                "payment-start", "payment-lifecycle", "login",
+            }
             or args.workload == "auth-read" and args.auth_mode == "cold"
         )
         pool_available = (
             len(seats)
-            if args.workload == "formal-seat-contention"
+            if args.workload in {
+                "formal-seat-contention", "temporary-hold-contention", "checkout",
+                "payment-start", "payment-lifecycle",
+            }
             else len(sessions)
             if one_shot_pool
             else None
@@ -387,16 +536,16 @@ def main() -> int:
             "preAllocatedVUs": args.preallocated_vus,
             "authMode": args.auth_mode if args.workload == "auth-read" else None,
             "authPoolSize": args.auth_pool_size if args.workload == "auth-read" else None,
-            "contendersPerSeat": args.contenders if args.workload == "formal-seat-contention" else None,
+            "contendersPerSeat": args.contenders if args.workload in {"formal-seat-contention", "temporary-hold-contention"} else None,
             "plannedIterations": pool_plan.planned_iterations_base,
             "plannedIterationsBase": (
                 None
-                if args.workload == "formal-seat-contention"
+                if args.workload in {"formal-seat-contention", "temporary-hold-contention"}
                 else pool_plan.planned_iterations_base
             ),
             "plannedGroupsBase": (
                 pool_plan.planned_iterations_base
-                if args.workload == "formal-seat-contention"
+                if args.workload in {"formal-seat-contention", "temporary-hold-contention"}
                 else None
             ),
             "poolRequired": pool_plan.pool_required if one_shot_pool else None,
@@ -404,7 +553,7 @@ def main() -> int:
             "poolHeadroom": pool_plan.pool_headroom if one_shot_pool else None,
             "plannedAttemptRate": (
                 args.group_rate * args.contenders
-                if args.workload == "formal-seat-contention" and args.group_rate
+                if args.workload in {"formal-seat-contention", "temporary-hold-contention"} and args.group_rate
                 else None
             ),
             "k6Image": K6_IMAGE,
@@ -421,6 +570,32 @@ def main() -> int:
             if args.auth_mode == "redis-down":
                 run_command(compose_command("stop", "redis"))
                 redis_stopped = True
+        if args.workload == "seat-map-read":
+            required_ttl = math.ceil(parse_duration(args.duration)) + 60
+            manifest["seatMapFixture"] = prepare_seat_map_fixture(
+                seats, dataset["seatMapSessionId"], args.seat_hold_density,
+                required_ttl, f"fixture-{short_token}",
+            )
+        if args.workload in {
+            "formal-seat-contention", "temporary-hold-contention", "checkout",
+            "payment-start", "payment-lifecycle",
+        }:
+            manifest["seatHoldsDeleted"] = clear_seat_holds()
+        if args.workload in {"payment-start", "payment-lifecycle"}:
+            forced_env = os.environ.copy()
+            forced_env["TICKETING_PAYMENT_FORCE_OUTCOME"] = "SUCCESS"
+            forced = subprocess.run(
+                compose_command("up", "-d", "--force-recreate", "--wait", "backend"),
+                cwd=REPO_ROOT, env=forced_env, text=True, encoding="utf-8",
+                errors="replace", capture_output=True, check=False,
+            )
+            if forced.returncode != 0:
+                raise RunError(f"cannot force payment outcome: {forced.stdout}{forced.stderr}")
+            payment_backend_forced = True
+            orders = prepare_payment_orders(sessions, seats, pool_plan.pool_required, short_token)
+            payment_orders_path = GENERATED_ROOT / f"payment-orders-{short_token}.json"
+            write_json(payment_orders_path, orders)
+            manifest["paymentFixtureCount"] = len(orders)
 
         environment = {
             "RUN_ID": run_id,
@@ -432,6 +607,12 @@ def main() -> int:
             "AUTH_POOL_SIZE": str(args.auth_pool_size),
             "CONTENDERS_PER_SEAT": str(args.contenders),
         }
+        if payment_orders_path:
+            environment["PAYMENT_ORDERS_FILE"] = f"/data/{payment_orders_path.name}"
+        if args.workload == "login":
+            if not args.login_password:
+                raise RunError("login workload requires --login-password or TICKETING_PERF_LOGIN_PASSWORD")
+            environment["LOGIN_PASSWORD"] = args.login_password
         optional = {
             "RATE": args.rate,
             "GROUP_RATE": args.group_rate,
@@ -497,7 +678,12 @@ def main() -> int:
             manifest["coldCacheKeysAfter"] = cache_count
             if cache_count < measured:
                 raise RunError("cold run did not create one cache entry per completed iteration")
-        if args.workload == "formal-seat-contention":
+        if args.workload in {"payment-start", "payment-lifecycle"}:
+            manifest["processingAttemptsAfterSettlement"] = wait_payment_settlement()
+        if args.workload in {
+            "formal-seat-contention", "temporary-hold-contention", "checkout",
+            "payment-start", "payment-lifecycle",
+        }:
             verifier = run_command([sys.executable, str(VERIFIER)], check=False)
             (result_dir / "verifier.txt").write_text(
                 verifier.stdout + verifier.stderr, encoding="utf-8"
@@ -516,6 +702,19 @@ def main() -> int:
         manifest["error"] = str(error)
         print(f"[FAIL] {error}", file=sys.stderr)
     finally:
+        if payment_backend_forced:
+            restored_env = os.environ.copy()
+            restored_env.pop("TICKETING_PAYMENT_FORCE_OUTCOME", None)
+            restored = subprocess.run(
+                compose_command("up", "-d", "--force-recreate", "--wait", "backend"),
+                cwd=REPO_ROOT, env=restored_env, text=True, encoding="utf-8",
+                errors="replace", capture_output=True, check=False,
+            )
+            manifest["paymentBackendRestoreExitCode"] = restored.returncode
+            if restored.returncode != 0:
+                manifest["verdict"] = "failed"
+                manifest["error"] = "payment backend restore failed"
+                result_code = 1
         if redis_stopped:
             restored = run_command(
                 compose_command("up", "-d", "--wait", "redis"), check=False

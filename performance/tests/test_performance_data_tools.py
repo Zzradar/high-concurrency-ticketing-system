@@ -58,6 +58,14 @@ class ProfileTests(unittest.TestCase):
             set(manifest[0]),
             {"userId", "username", "authSessionId", "sessionToken", "csrfToken"},
         )
+        self.assertEqual(
+            generate_dataset.workload_users(credentials),
+            [
+                {"userId": "perf-user-000001", "username": "perf-user-000001"},
+                {"userId": "perf-user-000002", "username": "perf-user-000002"},
+            ],
+        )
+        self.assertNotIn("sessionToken", generate_dataset.workload_users(credentials)[0])
         self.assertEqual(len(manifest), 2)
         self.assertRegex(manifest[0]["sessionToken"], r"^[0-9a-f]{64}$")
         self.assertRegex(manifest[0]["csrfToken"], r"^[0-9a-f]{64}$")

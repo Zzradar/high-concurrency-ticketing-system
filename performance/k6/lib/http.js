@@ -18,3 +18,11 @@ export function reservationHeaders(session, idempotencyKey) {
         'Idempotency-Key': idempotencyKey,
     });
 }
+
+export function mutationHeaders(session) {
+    return jsonHeaders({
+        Cookie: `${authCookie(session)}; ticketing_csrf=${session.csrfToken}`,
+        Origin: 'http://performance.local',
+        'X-CSRF-Token': session.csrfToken,
+    });
+}

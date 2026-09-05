@@ -7,8 +7,10 @@ import { reservationHeaders } from '../lib/http.js';
 import {
     contentionGroups,
     invalidContentionGroups,
+    invalidWorkloadGroups,
     recordResult,
     reservationAttempts,
+    workloadGroups,
 } from '../lib/metrics.js';
 import { correctnessThresholds, scenarioFor } from '../lib/scenarios.js';
 import { summaryHandler } from '../lib/summary.js';
@@ -94,6 +96,8 @@ export default function () {
     reservationAttempts.add(responses.length, {step: 'formal_reservation'});
     const validGroup = successes === 1 && conflicts === contenders - 1;
     invalidContentionGroups.add(validGroup ? 0 : 1, {step: 'formal_group'});
+    workloadGroups.add(1, {step: 'formal_group'});
+    invalidWorkloadGroups.add(validGroup ? 0 : 1, {step: 'formal_group'});
     if (!validGroup) {
         recordResult('unexpected', 'formal_group');
     }

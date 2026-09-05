@@ -10,6 +10,8 @@ export const expectedResult = new Rate('ticketing_expected_result_rate');
 export const contentionGroups = new Counter('ticketing_contention_groups_total');
 export const invalidContentionGroups = new Counter('ticketing_contention_group_invalid_total');
 export const reservationAttempts = new Counter('ticketing_reservation_attempts_total');
+export const workloadGroups = new Counter('ticketing_workload_groups_total');
+export const invalidWorkloadGroups = new Counter('ticketing_workload_group_invalid_total');
 
 const counters = {
     success: businessSuccess,

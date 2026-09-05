@@ -614,6 +614,14 @@ def public_sessions(credentials: list[dict[str, str]]) -> list[dict[str, str]]:
     ]
 
 
+def workload_users(credentials: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Return the non-sensitive login identity pool used by k6."""
+    return [
+        {"userId": item["userId"], "username": item["username"]}
+        for item in credentials
+    ]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--profile", default="smoke", help="profile name or JSON path")
@@ -641,6 +649,9 @@ def main() -> int:
         if len(sessions_payload) != shape.users:
             raise DatasetError("session manifest count mismatch")
         write_json_atomic(GENERATED_ROOT / "sessions.json", sessions_payload)
+        write_json_atomic(
+            GENERATED_ROOT / "workload-users.json", workload_users(credentials)
+        )
         write_json_atomic(GENERATED_ROOT / "workload-seats.json", workload_seats)
         write_json_atomic(GENERATED_ROOT / "dataset.json", manifest)
         if not args.skip_auth_check:

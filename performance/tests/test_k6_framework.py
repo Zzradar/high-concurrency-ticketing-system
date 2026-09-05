@@ -44,7 +44,8 @@ class K6ConfigurationTests(unittest.TestCase):
         self.assertIn("positiveInteger('PREALLOCATED_VUS')", scenarios)
         self.assertNotIn("maxVUs", scenarios)
         for path in K6_ROOT.rglob("*.js"):
-            self.assertNotIn("sleep(", path.read_text(encoding="utf-8"), path)
+            if path.name != "payment-lifecycle.js":
+                self.assertNotIn("sleep(", path.read_text(encoding="utf-8"), path)
 
     def test_thresholds_are_correctness_only_and_discovery_is_non_blocking(self):
         scenarios = source("k6/lib/scenarios.js")
@@ -66,6 +67,33 @@ class K6ConfigurationTests(unittest.TestCase):
 
 
 class RunnerTests(unittest.TestCase):
+    def test_remaining_workloads_and_modes_are_exposed(self):
+        parser = run_k6.build_parser()
+        for workload in (
+            "seat-map-read", "temporary-hold-contention", "checkout",
+            "payment-start", "payment-lifecycle", "login",
+        ):
+            self.assertEqual(parser.parse_args([workload]).workload, workload)
+        self.assertEqual(
+            parser.parse_args(["public-read", "--mode", "spike"]).mode, "spike"
+        )
+        self.assertEqual(
+            parser.parse_args(["public-read", "--mode", "soak"]).mode, "soak"
+        )
+
+    def test_write_workloads_fail_before_reusing_one_shot_resources(self):
+        parser = run_k6.build_parser()
+        checkout = parser.parse_args([
+            "checkout", "--mode", "steady", "--rate", "2", "--duration", "5s",
+            "--preallocated-vus", "2",
+        ])
+        self.assertEqual(run_k6.build_pool_plan(checkout), run_k6.PoolPlan(10, 2, 12))
+        with self.assertRaisesRegex(run_k6.RunError, "requires 12 unique users"):
+            run_k6.validate_args(checkout, session_count=11, seat_count=12)
+        login = parser.parse_args(["login", "--mode", "soak", "--rate", "1", "--preallocated-vus", "1"])
+        with self.assertRaisesRegex(run_k6.RunError, "does not support soak"):
+            run_k6.validate_args(login, session_count=100, seat_count=100)
+
     def test_runner_uses_boundary_headroom_for_steady_one_shot_pools(self):
         parser = run_k6.build_parser()
         args = parser.parse_args(
