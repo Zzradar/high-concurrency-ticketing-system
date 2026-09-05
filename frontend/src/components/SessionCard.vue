@@ -30,6 +30,7 @@ defineEmits<{ select: [session: TicketSession] }>()
       <button
         class="primary-button primary-button--small"
         type="button"
+        :aria-label="'进入选座 ' + session.date + ' ' + session.time"
         :disabled="session.status === 'SOLD_OUT'"
         @click="$emit('select', session)"
       >

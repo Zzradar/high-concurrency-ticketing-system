@@ -30,7 +30,7 @@ defineEmits<{ select: [event: TicketEvent] }>()
       </dl>
       <div class="event-card__footer">
         <span>{{ event.sessionCount }} 个可选场次</span>
-        <button class="text-button" type="button" @click="$emit('select', event)">
+        <button class="text-button" type="button" :aria-label="'查看场次 ' + event.name" @click="$emit('select', event)">
           查看场次
           <ArrowRight :size="17" aria-hidden="true" />
         </button>
