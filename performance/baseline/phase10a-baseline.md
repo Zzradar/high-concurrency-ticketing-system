@@ -22,7 +22,7 @@
 
 ## Confirmed stable 基线
 
-| 工作负载 | 固定负载 | 两次结果（iterations / HTTP） | p50 ms | p95 ms | p99 ms | dropped / system / unexpected | 判定 |
+| 工作负载 | 固定负载 | 两次结果（iterations / HTTP） | 聚合 HTTP 请求 p50 ms | 聚合 HTTP 请求 p95 ms | 聚合 HTTP 请求 p99 ms | dropped / system / unexpected | 判定 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | public-read | 300 iter/s | 4501/4502; 4501/4502 | 0.593; 0.609 | 0.930; 0.977 | 1.199; 1.226 | 0 / 0 / 0 | confirmed stable |
 | auth-read warm | 200 iter/s | 3001/3001; 3000/3000 | 0.847; 0.823 | 1.329; 1.321 | 1.650; 1.587 | 0 / 0 / 0 | confirmed stable |
@@ -39,24 +39,37 @@
 | synthetic-mixed-read | public 100 + auth 100 + seat 75 iter/s | 4127/4127; 4128/4128 | 0.910; 0.970 | 7.006; 7.380 | 9.011; 8.855 | 0 / 0 / 0 | confirmed stable |
 | synthetic-mixed-transactional | checkout 10 + payment 3 buyers/s | 132/375; 131/367 | 3.923; 4.317 | 7.680; 8.112 | 14.267; 10.948 | 0 / 0 / 0 | confirmed stable; verifier=0 |
 
+## 多请求流程延迟语义
+
+| 工作负载 | 聚合 HTTP 请求延迟（两次运行，ms） | 端点级 HTTP 延迟 | 完整流程时长（两次运行，ms） |
+| --- | --- | --- | --- |
+| payment-start | p50=4.501; 4.412; p95=6.173; 6.451; p99=10.202; 8.271 | 单次 pay-start HTTP 请求 | 不适用（该 workload 不等待完成） |
+| checkout | p50=5.440; 5.485; p95=8.312; 8.986; p99=10.937; 10.764 | create / confirm：未单独捕获 | p50=11.287; 11.538; p95=15.185; 16.709; p99=16.966; 19.802 (`iteration_duration`) |
+| payment-lifecycle | p50=1.126; 1.153; p95=4.948; 4.895; p99=6.855; 6.205 | pay-start / poll：未单独捕获 | p50=5012.963; 4015.627; p95=6016.721; 6019.418; p99=6019.299; 6021.515 (`iteration_duration`); poll/payment=4.804; 4.451 |
+
+- payment-start：单次 POST /orders/{orderId}/pay 的 HTTP 请求延迟；该 workload 只启动支付，不等待异步完成。
+- checkout：聚合 HTTP 指标覆盖 create + confirm；端点级 HTTP Trend 未单独捕获。一次 k6 iteration 正好覆盖完整 create → confirm 流程。
+- payment-lifecycle：聚合 HTTP 指标覆盖 pay-start + poll，不能代表支付完成时长；端点级 HTTP Trend 未单独捕获。一次 k6 iteration 正好覆盖 pay-start → polling → SUCCEEDED，flowDurationMs 包含 2～6 秒异步支付完成等待。
+- Mixed：synthetic mixed 表中的百分位均为跨 scenario / endpoint 的聚合 HTTP 请求延迟，不是业务流程时长。
+
 ## Discovery 与 first observed unstable
 
 | 工作负载 | 最高已测试点 | 结果 | first observed unstable | 说明 |
 | --- | --- | --- | --- | --- |
-| public-read | 20 → 300 iter/s | 3099 requests; p95 1.106 ms; zero errors/drops | 未达到 | 仅代表本机已测试范围，不是最大容量 |
-| auth-read warm | 20 → 200 iter/s | 2099 requests; p95 1.405 ms; zero errors/drops | 未达到 | 仅代表本机已测试范围 |
-| auth-read cold | 10 → 100 iter/s | 1049 unique sessions; p95 1.585 ms | 未达到 | pool 未复用 |
-| seat-map-read | 10 → 150 iter/s, density 90% | 1549 requests; p95 8.839 ms | 未达到 | 0/50/90% 均另做固定点 |
+| public-read | 20 → 300 iter/s | 3099 requests; HTTP p95 1.106 ms; zero errors/drops | 未达到 | 仅代表本机已测试范围，不是最大容量 |
+| auth-read warm | 20 → 200 iter/s | 2099 requests; HTTP p95 1.405 ms; zero errors/drops | 未达到 | 仅代表本机已测试范围 |
+| auth-read cold | 10 → 100 iter/s | 1049 unique sessions; HTTP p95 1.585 ms | 未达到 | pool 未复用 |
+| seat-map-read | 10 → 150 iter/s, density 90% | 1549 requests; HTTP p95 8.839 ms | 未达到 | 0/50/90% 均另做固定点 |
 | formal-seat-contention | 1 → 20 groups/s × 4 | 204 groups; 204 success + 612 conflict | 未达到 | 冲突为预期业务结果 |
 | temporary-hold-contention | 1 → 20 groups/s × 4 | 204 groups; 204 success + 612 conflict | 未达到 | Redis owner/fence 不变量通过 |
-| checkout | 1 → 20 buyers/s | 205 iterations / 410 HTTP; p95 7.250 ms | 未达到 | verifier=0 |
-| payment-start | 1 → 10 starts/s | 104 requests; p95 6.745 ms | 未达到 | verifier=0 |
-| payment-lifecycle | 1 → 5 buyers/s | 54 iterations / 299 HTTP; p95 5.391 ms | 未达到 | verifier=0 |
-| login | 1 → 30 logins/s | 304 success; p95 1625 ms; ramp 未拒绝 | 固定 30/s | 两次 451 attempts，分别 53/58 AUTH_BUSY；p95 2990/3010 ms。首个可复现不稳定点，不等于精确容量边界 |
+| checkout | 1 → 20 buyers/s | 205 iterations / 410 HTTP; aggregate HTTP p95 7.250 ms | 未达到 | verifier=0 |
+| payment-start | 1 → 10 starts/s | 104 requests; HTTP p95 6.745 ms | 未达到 | verifier=0 |
+| payment-lifecycle | 1 → 5 buyers/s | 54 iterations / 299 HTTP; aggregate HTTP p95 5.391 ms | 未达到 | verifier=0 |
+| login | 1 → 30 logins/s | 304 success; HTTP p95 1625 ms; ramp 未拒绝 | 固定 30/s | 两次 451 attempts，分别 53/58 AUTH_BUSY；HTTP p95 2990/3010 ms。首个可复现不稳定点，不等于精确容量边界 |
 
 ## Spike 与恢复
 
-| 工作负载 | base → peak | 结果 | p95 / p99 ms | 恢复与正确性 |
+| 工作负载 | base → peak | 结果 | 聚合 HTTP 请求 p95 / p99 ms | 恢复与正确性 |
 | --- | --- | --- | --- | --- |
 | public-read | 300 → 600 iter/s | 5849 requests | 0.966 / 1.200 | zero drops/errors |
 | seat-map-read 90% | 150 → 300 iter/s | 2924 requests | 8.896 / 11.244 | zero drops/errors |
@@ -65,9 +78,9 @@
 | login | 15 → 30 logins/s | 292 success | 1160.422 / 1193.634 | short hold had no rejection; does not supersede fixed 30/s instability |
 | synthetic-mixed-transactional | checkout 10→20 + payment 3→6 buyers/s | 252 iterations / 700 HTTP | 8.868 / 14.213 | zero drops/errors; verifier=0 |
 
-## Local endurance / short soak
+## Extended steady observation
 
-执行一次 60 秒本地 short soak：synthetic-mixed-read = public 50 + auth 50 + seat-map 30 iter/s。共 7,802 次请求，p50=1.044 ms、p95=7.645 ms、p99=8.697 ms，dropped/system/unexpected 均为 0。采样峰值约为 Backend CPU 28.32%、PostgreSQL CPU 13.78%、Redis CPU 4.41%、k6 CPU 10.31%、Backend memory 91.75 MiB；PostgreSQL connections=6，Redis connected clients 5→5、used memory 1.42→2.99 MiB。它只覆盖短时本地 soak，不是 30 分钟以上耐久或泄漏认证。
+执行一次 60 秒 extended steady observation（原始执行参数保留 `mode=soak` 以便追溯）：synthetic-mixed-read = public 50 + auth 50 + seat-map 30 iter/s。共 7,802 次请求，聚合 HTTP 请求延迟 p50=1.044 ms、p95=7.645 ms、p99=8.697 ms，dropped/system/unexpected 均为 0。短窗口采样峰值约为 Backend CPU 28.32%、PostgreSQL CPU 13.78%、Redis CPU 4.41%、k6 CPU 10.31%、Backend memory 91.75 MiB；PostgreSQL connections=6，Redis connected clients 5→5、used memory 1.42→2.99 MiB。本结果仅表示该 60 秒窗口内的观测事实，不构成长时间稳定性、内存/连接泄漏或生产耐久结论。
 
 ## 系统、PostgreSQL 与 Redis 证据
 
@@ -98,10 +111,10 @@
 ## 限制与未执行项
 
 - 未测出 public/auth/seat/transactional workload 的 first unstable 点；报告只写“最高已测试且稳定”，不写 max capacity。
-- steady 仅 10–15 秒，endurance 仅 60 秒；未执行 30 分钟/数小时 soak、故障注入、跨主机网络、多实例、真实支付渠道或生产数据分布。
+- steady 固定点仅 10–15 秒，另有一次 60 秒 extended steady observation；Long-duration soak / endurance test：未执行。未执行项还包括故障注入、跨主机网络、多实例、真实支付渠道或生产数据分布。
 - Login 的 fixed 30/s 是 first observed unstable，而不是经二分搜索确定的精确拐点。
 - Spike 每阶段 3 秒，只用于恢复与正确性观察，不能代表长期峰值承载。
-- p50/p95/p99 是客户端 HTTP 指标；未拆分排队、应用和数据库耗时。
+- 主表、discovery 与 spike 的 p50/p95/p99 是客户端聚合 `http_req_duration`；仅“多请求流程延迟语义”小节中的 flow duration 来自 `iteration_duration`。这些指标均未拆分排队、应用和数据库耗时。
 - 原始结果因含运行细节而保持 Git ignored；版本库只提交本脱敏聚合与可重复计划。
 
 ## 资料与开源参考

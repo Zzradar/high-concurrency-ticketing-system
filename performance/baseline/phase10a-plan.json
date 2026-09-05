@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "Evidence-guided local Phase 10A baseline; each fixed point has two repetitions, followed by one bounded endurance run.",
+  "description": "Evidence-guided local Phase 10A baseline; each fixed point has two repetitions, followed by one 60-second extended steady observation (executed with the raw k6 soak mode, not treated as an endurance result).",
   "runs": [
     {"name":"public-read-r1","profile":"baseline","reset":"logical","args":["public-read","--mode","steady","--rate","300","--duration","15s","--preallocated-vus","100"]},
     {"name":"public-read-r2","profile":"baseline","reset":"logical","args":["public-read","--mode","steady","--rate","300","--duration","15s","--preallocated-vus","100"]},
@@ -30,6 +30,6 @@
     {"name":"mixed-read-r2","profile":"baseline","reset":"logical","args":["synthetic-mixed-read","--mode","steady","--public-rate","100","--auth-rate","100","--seat-map-rate","75","--duration","15s","--preallocated-vus","100","--auth-pool-size","500","--seat-hold-density","50"]},
     {"name":"mixed-transactional-r1","profile":"baseline","reset":"logical","args":["synthetic-mixed-transactional","--mode","steady","--checkout-rate","10","--payment-rate","3","--duration","10s","--preallocated-vus","60"]},
     {"name":"mixed-transactional-r2","profile":"baseline","reset":"logical","args":["synthetic-mixed-transactional","--mode","steady","--checkout-rate","10","--payment-rate","3","--duration","10s","--preallocated-vus","60"]},
-    {"name":"mixed-read-endurance","profile":"baseline","reset":"logical","args":["synthetic-mixed-read","--mode","soak","--public-rate","50","--auth-rate","50","--seat-map-rate","30","--duration","60s","--preallocated-vus","80","--auth-pool-size","500","--seat-hold-density","50"]}
+    {"name":"mixed-read-extended-steady","profile":"baseline","reset":"logical","args":["synthetic-mixed-read","--mode","soak","--public-rate","50","--auth-rate","50","--seat-map-rate","30","--duration","60s","--preallocated-vus","80","--auth-pool-size","500","--seat-hold-density","50"]}
   ]
 }

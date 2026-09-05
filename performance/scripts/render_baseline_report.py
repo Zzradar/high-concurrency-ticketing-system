@@ -18,6 +18,58 @@ def table(headers: list[str], rows: list[list[Any]]) -> str:
     return "\n".join(lines)
 
 
+def percentiles(metric: dict[str, Any]) -> str:
+    values = []
+    for percentile in ("p50", "p95", "p99"):
+        pair = "; ".join(f"{value:.3f}" for value in metric[percentile])
+        values.append(f"{percentile}={pair}")
+    return "; ".join(values)
+
+
+def latency_semantics(data: dict[str, Any]) -> str:
+    details = data["multiRequestLatency"]
+    payment_start = details["paymentStart"]
+    checkout = details["checkout"]
+    payment = details["paymentLifecycle"]
+    rows = [
+        [
+            "payment-start",
+            percentiles(payment_start["aggregateHttpRequestLatencyMs"]),
+            "单次 pay-start HTTP 请求",
+            "不适用（该 workload 不等待完成）",
+        ],
+        [
+            "checkout",
+            percentiles(checkout["aggregateHttpRequestLatencyMs"]),
+            "create / confirm：未单独捕获",
+            percentiles(checkout["flowDurationMs"])
+            + " (`iteration_duration`)",
+        ],
+        [
+            "payment-lifecycle",
+            percentiles(payment["aggregateHttpRequestLatencyMs"]),
+            "pay-start / poll：未单独捕获",
+            percentiles(payment["flowDurationMs"])
+            + " (`iteration_duration`); poll/payment="
+            + "; ".join(f"{value:.3f}" for value in payment["pollRequestsPerPayment"]),
+        ],
+    ]
+    notes = "\n".join(
+        [
+            table(
+                ["工作负载", "聚合 HTTP 请求延迟（两次运行，ms）", "端点级 HTTP 延迟", "完整流程时长（两次运行，ms）"],
+                rows,
+            ),
+            "",
+            f"- payment-start：{payment_start['note']}",
+            f"- checkout：{checkout['note']}",
+            f"- payment-lifecycle：{payment['note']}",
+            f"- Mixed：{details['mixedLatencyScope']}",
+        ]
+    )
+    return notes
+
+
 def render(data: dict[str, Any]) -> str:
     metadata = data["metadata"]
     sections = [
@@ -37,6 +89,10 @@ def render(data: dict[str, Any]) -> str:
         "",
         table(data["stable"]["headers"], data["stable"]["rows"]),
         "",
+        "## 多请求流程延迟语义",
+        "",
+        latency_semantics(data),
+        "",
         "## Discovery 与 first observed unstable",
         "",
         table(data["discovery"]["headers"], data["discovery"]["rows"]),
@@ -45,9 +101,9 @@ def render(data: dict[str, Any]) -> str:
         "",
         table(data["spikes"]["headers"], data["spikes"]["rows"]),
         "",
-        "## Local endurance / short soak",
+        "## Extended steady observation",
         "",
-        data["endurance"].strip(),
+        data["extendedSteady"].strip(),
         "",
         "## 系统、PostgreSQL 与 Redis 证据",
         "",
