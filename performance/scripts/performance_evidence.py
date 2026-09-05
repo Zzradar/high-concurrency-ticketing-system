@@ -136,6 +136,17 @@ def collect_logs(root: Path, since: str) -> None:
     (root / "abnormal-logs.txt").write_text("\n".join(abnormal) + ("\n" if abnormal else ""), encoding="utf-8")
 
 
+def collect_docker_stats(root: Path) -> None:
+    raw = command([
+        "docker", "stats", "--no-stream", "--format", "{{json .}}",
+        *command([
+            "docker", "ps", "--filter", f"label=com.docker.compose.project={PROJECT}",
+            "--format", "{{.Names}}",
+        ]).split(),
+    ])
+    (root / "docker-stats.jsonl").write_text(raw, encoding="utf-8")
+
+
 def environment_fingerprint() -> dict[str, Any]:
     inspect = json.loads(command(["docker", "compose", "-p", PROJECT, "-f", str(COMPOSE_FILE), "images", "--format", "json"]))
     return {

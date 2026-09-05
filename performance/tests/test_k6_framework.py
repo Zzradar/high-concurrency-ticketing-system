@@ -103,6 +103,36 @@ class RunnerTests(unittest.TestCase):
         ])
         self.assertEqual(run_k6.mixed_transactional_plan(args), (14, 24))
 
+    def test_mixed_transactional_spike_has_independent_rates_and_safe_pools(self):
+        parser = run_k6.build_parser()
+        args = parser.parse_args([
+            "synthetic-mixed-transactional", "--mode", "spike",
+            "--checkout-rate", "2", "--checkout-target-rate", "4",
+            "--payment-rate", "1", "--payment-target-rate", "2",
+            "--base-duration", "1s", "--ramp-duration", "1s",
+            "--hold-duration", "1s", "--recovery-duration", "1s",
+            "--ramp-down-duration", "1s", "--preallocated-vus", "4",
+        ])
+        self.assertEqual(run_k6.build_pool_plan(args), run_k6.PoolPlan(30, 6, 36))
+        self.assertEqual(run_k6.mixed_transactional_plan(args), (14, 24))
+        self.assertEqual(
+            run_k6.validate_args(args, session_count=100, seat_count=100),
+            run_k6.PoolPlan(30, 6, 36),
+        )
+        mixed = source("k6/workloads/synthetic-mixed-transactional.js")
+        self.assertIn("CHECKOUT_TARGET_RATE", mixed)
+        self.assertIn("PAYMENT_TARGET_RATE", mixed)
+        self.assertIn("ramping-arrival-rate", mixed)
+
+    def test_spike_has_baseline_hold_recovery_and_ramp_down_stages(self):
+        scenarios = source("k6/lib/scenarios.js")
+        for variable in (
+            "BASE_DURATION", "RAMP_DURATION", "HOLD_DURATION",
+            "RECOVERY_DURATION", "RAMP_DOWN_DURATION",
+        ):
+            self.assertIn(variable, scenarios)
+        self.assertIn("{target: 0", scenarios)
+
     def test_runner_uses_boundary_headroom_for_steady_one_shot_pools(self):
         parser = run_k6.build_parser()
         args = parser.parse_args(

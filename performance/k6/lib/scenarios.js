@@ -34,8 +34,11 @@ export function scenarioFor(mode, rateVariable = 'RATE', gracefulStop = '30s') {
                 preAllocatedVUs,
                 gracefulStop,
                 stages: [
-                    {target: positiveInteger('TARGET_RATE'), duration: __ENV.RAMP_DURATION || '10s'},
-                    {target: positiveInteger('START_RATE'), duration: __ENV.HOLD_DURATION || '10s'},
+                    {target: positiveInteger('START_RATE'), duration: __ENV.BASE_DURATION || '5s'},
+                    {target: positiveInteger('TARGET_RATE'), duration: __ENV.RAMP_DURATION || '5s'},
+                    {target: positiveInteger('TARGET_RATE'), duration: __ENV.HOLD_DURATION || '5s'},
+                    {target: positiveInteger('START_RATE'), duration: __ENV.RECOVERY_DURATION || '5s'},
+                    {target: 0, duration: __ENV.RAMP_DOWN_DURATION || '5s'},
                 ],
             },
         };

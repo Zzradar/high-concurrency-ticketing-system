@@ -159,10 +159,18 @@ def planned_iterations_base(args: argparse.Namespace) -> int:
             )
         rate = args.group_rate if args.workload in {"formal-seat-contention", "temporary-hold-contention"} else args.rate
         return math.ceil(rate * parse_duration(args.duration))
-    target = args.target_rate
-    total = parse_duration(args.ramp_duration)
-    if args.hold_duration:
-        total += parse_duration(args.hold_duration)
+    if args.workload == "synthetic-mixed-read":
+        target = args.public_target_rate + args.auth_target_rate + args.seat_map_target_rate
+    elif args.workload == "synthetic-mixed-transactional":
+        target = args.checkout_target_rate + args.payment_target_rate
+    else:
+        target = args.target_rate
+    total = sum(parse_duration(value) for value in (
+        args.base_duration, args.ramp_duration, args.hold_duration or "5s",
+        args.recovery_duration, args.ramp_down_duration,
+    )) if args.mode == "spike" else parse_duration(args.ramp_duration) + (
+        parse_duration(args.hold_duration) if args.hold_duration else 0
+    )
     return math.ceil(target * total)
 
 
@@ -173,7 +181,11 @@ def build_pool_plan(args: argparse.Namespace) -> PoolPlan:
     else:
         # Reserve one peak-rate time unit or one possible boundary start per VU.
         peak_rate = (
-            args.target_rate
+            (args.public_target_rate + args.auth_target_rate + args.seat_map_target_rate)
+            if args.workload == "synthetic-mixed-read" and args.mode == "spike"
+            else (args.checkout_target_rate + args.payment_target_rate)
+            if args.workload == "synthetic-mixed-transactional" and args.mode == "spike"
+            else args.target_rate
             if args.mode in {"discovery", "spike"}
             else args.public_rate + args.auth_rate + args.seat_map_rate
             if args.workload == "synthetic-mixed-read"
@@ -203,11 +215,23 @@ def validate_args(
             raise RunError("steady mode requires a positive --rate/--group-rate")
         parse_duration(args.duration)
     if args.mode in {"discovery", "spike"}:
-        if not args.start_rate or not args.target_rate:
-            raise RunError("discovery requires --start-rate and --target-rate")
-        parse_duration(args.ramp_duration)
-        if args.hold_duration:
-            parse_duration(args.hold_duration)
+        if args.workload == "synthetic-mixed-read":
+            selected = all((args.public_rate, args.auth_rate, args.seat_map_rate,
+                            args.public_target_rate, args.auth_target_rate,
+                            args.seat_map_target_rate))
+        elif args.workload == "synthetic-mixed-transactional":
+            selected = all((args.checkout_rate, args.payment_rate,
+                            args.checkout_target_rate, args.payment_target_rate))
+        else:
+            selected = args.start_rate and args.target_rate
+        if not selected:
+            raise RunError("discovery/spike requires positive base and target rates")
+        for value in (args.ramp_duration, args.hold_duration):
+            if value:
+                parse_duration(value)
+        if args.mode == "spike":
+            for value in (args.base_duration, args.recovery_duration, args.ramp_down_duration):
+                parse_duration(value)
     plan = build_pool_plan(args)
     if args.workload == "auth-read":
         if args.auth_pool_size <= 0 or args.auth_pool_size > session_count:
@@ -252,17 +276,26 @@ def validate_args(
             )
     if args.workload == "login" and args.mode == "soak":
         raise RunError("login workload does not support soak mode")
-    if args.workload.startswith("synthetic-mixed") and args.mode not in {"steady", "soak"}:
-        raise RunError("synthetic mixed workloads support only steady/soak")
+    if args.workload == "synthetic-mixed-read" and args.mode not in {"steady", "spike", "soak"}:
+        raise RunError("synthetic mixed read supports only steady/spike/soak")
+    if args.workload == "synthetic-mixed-transactional" and args.mode not in {"steady", "spike"}:
+        raise RunError("synthetic mixed transactional supports only steady/spike")
     return plan
 
 
 def mixed_transactional_plan(args: argparse.Namespace) -> tuple[int, int]:
-    duration = parse_duration(args.duration)
-    payment_base = math.ceil(args.payment_rate * duration)
-    checkout_base = math.ceil(args.checkout_rate * duration)
-    payment_required = payment_base + max(args.preallocated_vus, args.payment_rate)
-    checkout_required = checkout_base + max(args.preallocated_vus, args.checkout_rate)
+    duration = parse_duration(args.duration) if args.mode == "steady" else sum(
+        parse_duration(value) for value in (
+            args.base_duration, args.ramp_duration, args.hold_duration or "5s",
+            args.recovery_duration, args.ramp_down_duration,
+        )
+    )
+    payment_rate = args.payment_target_rate if args.mode == "spike" else args.payment_rate
+    checkout_rate = args.checkout_target_rate if args.mode == "spike" else args.checkout_rate
+    payment_base = math.ceil(payment_rate * duration)
+    checkout_base = math.ceil(checkout_rate * duration)
+    payment_required = payment_base + max(args.preallocated_vus, payment_rate)
+    checkout_required = checkout_base + max(args.preallocated_vus, checkout_rate)
     return payment_required, checkout_required
 
 
@@ -492,6 +525,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--target-rate", type=int)
     parser.add_argument("--ramp-duration", default="10s")
     parser.add_argument("--hold-duration")
+    parser.add_argument("--base-duration", default="5s")
+    parser.add_argument("--recovery-duration", default="5s")
+    parser.add_argument("--ramp-down-duration", default="5s")
     parser.add_argument("--auth-mode", choices=("warm", "cold", "redis-down"), default="warm")
     parser.add_argument("--auth-pool-size", type=int, default=100)
     parser.add_argument("--contenders", type=int, default=4)
@@ -501,6 +537,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--seat-map-rate", type=int)
     parser.add_argument("--checkout-rate", type=int)
     parser.add_argument("--payment-rate", type=int)
+    parser.add_argument("--public-target-rate", type=int)
+    parser.add_argument("--auth-target-rate", type=int)
+    parser.add_argument("--seat-map-target-rate", type=int)
+    parser.add_argument("--checkout-target-rate", type=int)
+    parser.add_argument("--payment-target-rate", type=int)
     parser.add_argument(
         "--login-password", default=os.environ.get("TICKETING_PERF_LOGIN_PASSWORD")
     )
@@ -586,6 +627,23 @@ def main() -> int:
             "rate": args.rate,
             "groupRate": args.group_rate,
             "duration": args.duration,
+            "startRate": args.start_rate,
+            "targetRate": args.target_rate,
+            "baseDuration": args.base_duration if args.mode == "spike" else None,
+            "spikeRampDuration": args.ramp_duration if args.mode == "spike" else None,
+            "spikeHoldDuration": (args.hold_duration or "5s") if args.mode == "spike" else None,
+            "recoveryDuration": args.recovery_duration if args.mode == "spike" else None,
+            "rampDownDuration": args.ramp_down_duration if args.mode == "spike" else None,
+            "publicRate": args.public_rate,
+            "authRate": args.auth_rate,
+            "seatMapRate": args.seat_map_rate,
+            "checkoutRate": args.checkout_rate,
+            "paymentRate": args.payment_rate,
+            "publicTargetRate": args.public_target_rate,
+            "authTargetRate": args.auth_target_rate,
+            "seatMapTargetRate": args.seat_map_target_rate,
+            "checkoutTargetRate": args.checkout_target_rate,
+            "paymentTargetRate": args.payment_target_rate,
             "preAllocatedVUs": args.preallocated_vus,
             "authMode": args.auth_mode if args.workload == "auth-read" else None,
             "authPoolSize": args.auth_pool_size if args.workload == "auth-read" else None,
@@ -684,11 +742,19 @@ def main() -> int:
             "TARGET_RATE": args.target_rate,
             "RAMP_DURATION": args.ramp_duration,
             "HOLD_DURATION": args.hold_duration,
+            "BASE_DURATION": args.base_duration,
+            "RECOVERY_DURATION": args.recovery_duration,
+            "RAMP_DOWN_DURATION": args.ramp_down_duration,
             "PUBLIC_RATE": args.public_rate,
             "AUTH_RATE": args.auth_rate,
             "SEAT_MAP_RATE": args.seat_map_rate,
             "CHECKOUT_RATE": args.checkout_rate,
             "PAYMENT_RATE": args.payment_rate,
+            "PUBLIC_TARGET_RATE": args.public_target_rate,
+            "AUTH_TARGET_RATE": args.auth_target_rate,
+            "SEAT_MAP_TARGET_RATE": args.seat_map_target_rate,
+            "CHECKOUT_TARGET_RATE": args.checkout_target_rate,
+            "PAYMENT_TARGET_RATE": args.payment_target_rate,
         }
         environment.update({name: str(value) for name, value in optional.items() if value is not None})
         command = compose_command(

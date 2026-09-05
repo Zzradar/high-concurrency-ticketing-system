@@ -40,6 +40,11 @@ def logical_reset(profile: str) -> None:
     clear_auth_cache(); clear_seat_holds()
 
 
+def warmup_system() -> None:
+    evidence.command(["curl.exe", "-fsS", "http://127.0.0.1:18080/health"])
+    evidence.command(["curl.exe", "-fsS", "http://127.0.0.1:18080/events"])
+
+
 def reset_environment(kind: str, profile: str, allow_destructive: bool) -> None:
     if kind == "none": return
     if kind == "logical": logical_reset(profile); return
@@ -60,6 +65,7 @@ def run_entry(entry: dict, password: str | None, allow_destructive: bool) -> Pat
         entry.get("reset", "logical"), entry.get("profile", "baseline"),
         allow_destructive,
     )
+    warmup_system()
     for warmup in entry.get("warmup", []):
         execute([sys.executable, str(REPO_ROOT / "performance/scripts/run_k6.py"), *warmup])
     stats_reset = evidence.reset_statement_stats()
@@ -79,6 +85,7 @@ def run_entry(entry: dict, password: str | None, allow_destructive: bool) -> Pat
     evidence.collect_redis(root, "after")
     evidence.collect_postgres(root)
     evidence.collect_prometheus(root, start_epoch, end_epoch)
+    evidence.collect_docker_stats(root)
     evidence.collect_logs(root, since)
     evidence.write_json(root / "environment.json", evidence.environment_fingerprint())
     evidence.write_json(root / "evidence-manifest.json", {
@@ -94,10 +101,18 @@ def main() -> int:
     parser.add_argument("--plan", type=Path, required=True)
     parser.add_argument("--login-password", default=os.environ.get("TICKETING_PERF_LOGIN_PASSWORD"))
     parser.add_argument("--allow-destructive-reset", action="store_true")
+    parser.add_argument("--only", action="append", default=[], help="run only matching plan entry names")
     args = parser.parse_args()
     try:
         plan = json.loads(args.plan.read_text(encoding="utf-8"))
-        for entry in plan["runs"]:
+        entries = plan["runs"]
+        if args.only:
+            requested = set(args.only)
+            entries = [entry for entry in entries if entry["name"] in requested]
+            missing = requested - {entry["name"] for entry in entries}
+            if missing:
+                raise RuntimeError(f"plan entries not found: {sorted(missing)}")
+        for entry in entries:
             print(f"=== {entry['name']} ===")
             root = run_entry(entry, args.login_password, args.allow_destructive_reset)
             print(f"[PASS] evidence: {root}")

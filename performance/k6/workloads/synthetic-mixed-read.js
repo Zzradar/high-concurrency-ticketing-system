@@ -4,10 +4,20 @@ import { loadDataset, loadSessions } from '../lib/data.js'; import { authCookie 
 import { classifyRead, recordResult } from '../lib/metrics.js'; import { correctnessThresholds } from '../lib/scenarios.js'; import { summaryHandler } from '../lib/summary.js';
 const config = loadConfig('synthetic-mixed-read'); const dataset = loadDataset(); const sessions = loadSessions();
 const duration = __ENV.DURATION || '60s'; const vus = positiveInteger('PREALLOCATED_VUS');
+function mixedScenario(execName, baseVariable, targetVariable) {
+    if (config.mode !== 'spike') return {executor: 'constant-arrival-rate', exec: execName, rate: positiveInteger(baseVariable), timeUnit: '1s', duration, preAllocatedVUs: vus};
+    return {executor: 'ramping-arrival-rate', exec: execName, startRate: positiveInteger(baseVariable), timeUnit: '1s', preAllocatedVUs: vus, stages: [
+        {target: positiveInteger(baseVariable), duration: __ENV.BASE_DURATION || '5s'},
+        {target: positiveInteger(targetVariable), duration: __ENV.RAMP_DURATION || '5s'},
+        {target: positiveInteger(targetVariable), duration: __ENV.HOLD_DURATION || '5s'},
+        {target: positiveInteger(baseVariable), duration: __ENV.RECOVERY_DURATION || '5s'},
+        {target: 0, duration: __ENV.RAMP_DOWN_DURATION || '5s'},
+    ]};
+}
 export const options = {discardResponseBodies: true, systemTags: SYSTEM_TAGS, thresholds: correctnessThresholds(config.mode), scenarios: {
-    public_read: {executor: 'constant-arrival-rate', exec: 'publicRead', rate: positiveInteger('PUBLIC_RATE'), timeUnit: '1s', duration, preAllocatedVUs: vus},
-    auth_warm: {executor: 'constant-arrival-rate', exec: 'authWarm', rate: positiveInteger('AUTH_RATE'), timeUnit: '1s', duration, preAllocatedVUs: vus},
-    seat_map: {executor: 'constant-arrival-rate', exec: 'seatMap', rate: positiveInteger('SEAT_MAP_RATE'), timeUnit: '1s', duration, preAllocatedVUs: vus},
+    public_read: mixedScenario('publicRead', 'PUBLIC_RATE', 'PUBLIC_TARGET_RATE'),
+    auth_warm: mixedScenario('authWarm', 'AUTH_RATE', 'AUTH_TARGET_RATE'),
+    seat_map: mixedScenario('seatMap', 'SEAT_MAP_RATE', 'SEAT_MAP_TARGET_RATE'),
 }};
 http.setResponseCallback(http.expectedStatuses(200));
 export function publicRead() { const response = http.get(`${config.baseUrl}/events`, {responseType: 'none', tags: {name: 'GET /events'}}); recordResult(classifyRead(response, 200, () => true), 'mixed_public_read'); }

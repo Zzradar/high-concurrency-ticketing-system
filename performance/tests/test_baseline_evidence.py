@@ -9,6 +9,7 @@ sys.path.insert(0, str(REPO_ROOT / "performance" / "scripts"))
 
 import performance_evidence as evidence  # noqa: E402
 import run_baseline  # noqa: E402
+import render_baseline_report  # noqa: E402
 
 
 class EvidenceTests(unittest.TestCase):
@@ -43,6 +44,27 @@ class EvidenceTests(unittest.TestCase):
         source = Path(run_baseline.__file__).read_text(encoding="utf-8")
         self.assertNotIn("down -v", source)
         self.assertNotIn("volume prune", source)
+
+    def test_report_renderer_has_required_sections_and_rejects_credentials(self):
+        data = {
+            "metadata": {"Git commit": "abc"},
+            "methodology": "Measured facts.",
+            "stable": {"headers": ["workload"], "rows": [["public-read"]]},
+            "discovery": {"headers": ["workload"], "rows": [["public-read"]]},
+            "spikes": {"headers": ["workload"], "rows": [["public-read"]]},
+            "endurance": "Short local run.",
+            "observations": "Observed evidence.",
+            "correctness": "Verifier passed.",
+            "candidates": "No optimization implemented.",
+            "limitations": "Not production capacity.",
+            "references": ["k6 official documentation"],
+        }
+        report = render_baseline_report.render(data)
+        self.assertIn("# Phase 10A 本地性能 Baseline", report)
+        self.assertIn("## Phase 10B 候选实验（未实施）", report)
+        data["limitations"] = "leaked ticketing_session=value"
+        with self.assertRaisesRegex(ValueError, "sensitive"):
+            render_baseline_report.render(data)
 
 
 if __name__ == "__main__": unittest.main()
