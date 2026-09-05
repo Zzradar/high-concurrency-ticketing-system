@@ -305,8 +305,9 @@ def wait_for_blocked_by(
     )
 
 
-def cleanup_users(user_ids: list[str], seat_ids: list[str]) -> None:
+def cleanup_users(user_ids: list[str], session_ids: list[str], seat_ids: list[str]) -> None:
     users = ", ".join(sql_literal(value) for value in user_ids)
+    sessions = ", ".join(sql_literal(value) for value in session_ids)
     seats = ", ".join(sql_literal(value) for value in seat_ids)
     psql(
         f"""
@@ -314,22 +315,45 @@ def cleanup_users(user_ids: list[str], seat_ids: list[str]) -> None:
         DELETE FROM checkout_session_seats AS item
         USING checkout_sessions AS checkout
         WHERE item.checkout_session_id = checkout.id
-          AND checkout.user_id IN ({users});
-        DELETE FROM checkout_sessions WHERE user_id IN ({users});
+          AND checkout.user_id IN ({users})
+          AND checkout.session_id IN ({sessions});
+        DELETE FROM checkout_sessions
+        WHERE user_id IN ({users}) AND session_id IN ({sessions});
         UPDATE session_seats
         SET status = 'AVAILABLE', current_reservation_id = NULL
         WHERE id IN ({seats}) OR current_reservation_id IN (
-            SELECT id FROM reservations WHERE user_id IN ({users})
+            SELECT id FROM reservations
+            WHERE user_id IN ({users}) AND session_id IN ({sessions})
         );
-        DELETE FROM user_notifications WHERE user_id IN ({users});
-        DELETE FROM refunds AS refund USING orders AS ticket_order
-        WHERE refund.order_id = ticket_order.id AND ticket_order.user_id IN ({users});
-        DELETE FROM payment_attempts AS attempt USING orders AS ticket_order
-        WHERE attempt.order_id = ticket_order.id AND ticket_order.user_id IN ({users});
-        DELETE FROM orders WHERE user_id IN ({users});
+        DELETE FROM user_notifications AS notification
+        USING orders AS ticket_order, reservations AS reservation
+        WHERE notification.order_id = ticket_order.id
+          AND ticket_order.reservation_id = reservation.id
+          AND reservation.user_id IN ({users})
+          AND reservation.session_id IN ({sessions});
+        DELETE FROM refunds AS refund
+        USING orders AS ticket_order, reservations AS reservation
+        WHERE refund.order_id = ticket_order.id
+          AND ticket_order.reservation_id = reservation.id
+          AND reservation.user_id IN ({users})
+          AND reservation.session_id IN ({sessions});
+        DELETE FROM payment_attempts AS attempt
+        USING orders AS ticket_order, reservations AS reservation
+        WHERE attempt.order_id = ticket_order.id
+          AND ticket_order.reservation_id = reservation.id
+          AND reservation.user_id IN ({users})
+          AND reservation.session_id IN ({sessions});
+        DELETE FROM orders AS ticket_order
+        USING reservations AS reservation
+        WHERE ticket_order.reservation_id = reservation.id
+          AND reservation.user_id IN ({users})
+          AND reservation.session_id IN ({sessions});
         DELETE FROM reservation_session_seats AS item USING reservations AS reservation
-        WHERE item.reservation_id = reservation.id AND reservation.user_id IN ({users});
-        DELETE FROM reservations WHERE user_id IN ({users});
+        WHERE item.reservation_id = reservation.id
+          AND reservation.user_id IN ({users})
+          AND reservation.session_id IN ({sessions});
+        DELETE FROM reservations
+        WHERE user_id IN ({users}) AND session_id IN ({sessions});
         COMMIT;
         """
     )

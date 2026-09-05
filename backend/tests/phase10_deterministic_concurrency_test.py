@@ -27,10 +27,10 @@ class DeterministicConcurrencyTest(unittest.TestCase):
         cls.user_ids = [value["userId"] for value in cls.credentials]
 
     def setUp(self) -> None:
-        cleanup_users(self.user_ids, SEATS)
+        cleanup_users(self.user_ids, [SESSION_ID], SEATS)
 
     def tearDown(self) -> None:
-        cleanup_users(self.user_ids, SEATS)
+        cleanup_users(self.user_ids, [SESSION_ID], SEATS)
 
     def create_reservation(self, client_index: int, seat_id: str, key: str):
         return self.clients[client_index].request(
