@@ -1,0 +1,10 @@
+{
+  "runs": [
+    {"name":"public-read-spike","profile":"baseline","reset":"logical","args":["public-read","--mode","spike","--start-rate","300","--target-rate","600","--base-duration","3s","--ramp-duration","3s","--hold-duration","3s","--recovery-duration","3s","--ramp-down-duration","3s","--preallocated-vus","200"]},
+    {"name":"seat-map-spike","profile":"baseline","reset":"logical","args":["seat-map-read","--mode","spike","--start-rate","150","--target-rate","300","--base-duration","3s","--ramp-duration","3s","--hold-duration","3s","--recovery-duration","3s","--ramp-down-duration","3s","--preallocated-vus","200","--seat-hold-density","90"]},
+    {"name":"formal-spike","profile":"baseline","reset":"logical","args":["formal-seat-contention","--mode","spike","--start-rate","20","--target-rate","40","--base-duration","3s","--ramp-duration","3s","--hold-duration","3s","--recovery-duration","3s","--ramp-down-duration","3s","--preallocated-vus","100","--contenders","4"]},
+    {"name":"checkout-spike","profile":"baseline","reset":"logical","args":["checkout","--mode","spike","--start-rate","20","--target-rate","40","--base-duration","3s","--ramp-duration","3s","--hold-duration","3s","--recovery-duration","3s","--ramp-down-duration","3s","--preallocated-vus","100"]},
+    {"name":"login-spike","profile":"baseline","reset":"logical","args":["login","--mode","spike","--start-rate","15","--target-rate","30","--base-duration","3s","--ramp-duration","3s","--hold-duration","3s","--recovery-duration","3s","--ramp-down-duration","3s","--preallocated-vus","100"]},
+    {"name":"mixed-transactional-spike","profile":"baseline","reset":"logical","args":["synthetic-mixed-transactional","--mode","spike","--checkout-rate","10","--checkout-target-rate","20","--payment-rate","3","--payment-target-rate","6","--base-duration","3s","--ramp-duration","3s","--hold-duration","3s","--recovery-duration","3s","--ramp-down-duration","3s","--preallocated-vus","100"]}
+  ]
+}
