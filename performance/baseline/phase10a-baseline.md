@@ -1,0 +1,122 @@
+# Phase 10A 本地性能 Baseline
+
+> 这是单机 Docker Desktop / WSL2 环境下的可追溯基线，不是生产 SLO、生产容量或生产级耐久认证。
+
+## 测试身份与环境
+
+| 字段 | 值 |
+| --- | --- |
+| 测试时间 | 2026-09-05 (Asia/Shanghai) |
+| 基线代码 | 1c7e342c4f37f61f29bfc2e364e7c246d74ff84c (report commit is recorded in Git history) |
+| 宿主机 | Windows 11 Home / WSL2 Linux 6.18.33.2 / Intel Core Ultra 7 255H / 16 logical CPU / 31.59 GiB RAM |
+| 容器运行时 | Docker Desktop 4.88.1 / Engine 29.7.2 / Compose 5.4.0 / Linux containers |
+| 服务版本 | PostgreSQL 16.15 / Redis 7.4.11 / k6 2.2.0 |
+| k6 镜像 | grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6 |
+| 数据集 | baseline: 10,000 users / 2 events / 20 sessions / 1,000 seats / 20,000 session seats |
+| 配置指纹 | config SHA-256 CA002950F95C662D61B17BBC7F85CDAB491B371CE40FE2CBAFCFAC8671F0808B / profile SHA-256 F60047E49D014A9A91D85CAE6BA8DB437296999AB45470F2DE236BA6BC84E5A7 / campaign dataset SHA-256 9209bd0030970b3877a293fed4194f97396b44baef233413638559b7e1ed38a8 |
+| 固定资源池 | PostgreSQL connections=4; Redis seat_holds=2; Redis auth_sessions=2 |
+
+## 方法与判据
+
+所有 steady、discovery 和 spike workload 均使用 k6 open-model Arrival Rate executor；因此目标到达速率不随 SUT 响应时间降低。每个 confirmed stable 点固定参数重复两次；读取类每次 15 秒，事务类每次 10 秒。Spike 采用 base → ramp → hold → recovery → ramp-down 五阶段，每段 3 秒。阈值只把 dropped iteration、System Error、Unexpected Result 和业务不变量作为可信度否决条件，不把本机延迟数字包装成生产 SLO。Business Conflict 是预期领域结果，单独计数。每次运行都生成 run manifest、k6/business summary、Prometheus range query、PostgreSQL Top SQL/active/locks、Redis 前后快照、容器统计、日志与 verifier 结果；原始 evidence 位于被 Git 忽略的 performance/results/<RUN_ID>/。
+
+## Confirmed stable 基线
+
+| 工作负载 | 固定负载 | 两次结果（iterations / HTTP） | p50 ms | p95 ms | p99 ms | dropped / system / unexpected | 判定 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| public-read | 300 iter/s | 4501/4502; 4501/4502 | 0.593; 0.609 | 0.930; 0.977 | 1.199; 1.226 | 0 / 0 / 0 | confirmed stable |
+| auth-read warm | 200 iter/s | 3001/3001; 3000/3000 | 0.847; 0.823 | 1.329; 1.321 | 1.650; 1.587 | 0 / 0 / 0 | confirmed stable |
+| auth-read cold | 100 iter/s, unique sessions | 1501/1501; 1500/1500 | 1.110; 1.027 | 1.552; 1.436 | 1.840; 1.673 | 0 / 0 / 0 | confirmed stable |
+| seat-map-read density 0% | 150 iter/s | 2251/2252; 2251/2252 | 6.676; 7.034 | 8.302; 8.636 | 9.139; 9.838 | 0 / 0 / 0 | confirmed stable |
+| seat-map-read density 50% | 150 iter/s | 2251/2252; 2251/2252 | 6.871; 7.206 | 8.447; 9.086 | 9.569; 10.502 | 0 / 0 / 0 | confirmed stable |
+| seat-map-read density 90% | 150 iter/s | 2251/2252; 2250/2251 | 7.177; 6.714 | 8.934; 8.585 | 10.224; 9.432 | 0 / 0 / 0 | confirmed stable |
+| formal-seat-contention | 20 groups/s × 4 contenders | 201 groups/804; 200 groups/800 | 4.903; 4.701 | 6.282; 5.878 | 8.135; 6.427 | 0 / 0 / 0 | 201/603 and 200/600 success/conflict; verifier=0 |
+| temporary-hold-contention | 20 groups/s × 4 contenders | 201 groups/804; 201 groups/804 | 2.509; 2.295 | 4.587; 4.458 | 5.045; 5.013 | 0 / 0 / 0 | one owner per group; verifier=0 |
+| checkout | 20 buyers/s | 200/400; 200/400 | 5.440; 5.485 | 8.312; 8.986 | 10.937; 10.764 | 0 / 0 / 0 | confirmed stable; verifier=0 |
+| payment-start | 10 starts/s | 101/101; 100/100 | 4.501; 4.412 | 6.173; 6.451 | 10.202; 8.271 | 0 / 0 / 0 | confirmed stable; verifier=0 |
+| payment-lifecycle | 5 buyers/s | 51/296; 51/278 | 1.126; 1.153 | 4.948; 4.895 | 6.855; 6.205 | 0 / 0 / 0 | confirmed stable; verifier=0 |
+| login | 15 logins/s | 226/226; 225/225 | 87.023; 89.100 | 95.645; 94.304 | 104.749; 97.418 | 0 / 0 / 0 | confirmed stable; capacity rejection=0 |
+| synthetic-mixed-read | public 100 + auth 100 + seat 75 iter/s | 4127/4127; 4128/4128 | 0.910; 0.970 | 7.006; 7.380 | 9.011; 8.855 | 0 / 0 / 0 | confirmed stable |
+| synthetic-mixed-transactional | checkout 10 + payment 3 buyers/s | 132/375; 131/367 | 3.923; 4.317 | 7.680; 8.112 | 14.267; 10.948 | 0 / 0 / 0 | confirmed stable; verifier=0 |
+
+## Discovery 与 first observed unstable
+
+| 工作负载 | 最高已测试点 | 结果 | first observed unstable | 说明 |
+| --- | --- | --- | --- | --- |
+| public-read | 20 → 300 iter/s | 3099 requests; p95 1.106 ms; zero errors/drops | 未达到 | 仅代表本机已测试范围，不是最大容量 |
+| auth-read warm | 20 → 200 iter/s | 2099 requests; p95 1.405 ms; zero errors/drops | 未达到 | 仅代表本机已测试范围 |
+| auth-read cold | 10 → 100 iter/s | 1049 unique sessions; p95 1.585 ms | 未达到 | pool 未复用 |
+| seat-map-read | 10 → 150 iter/s, density 90% | 1549 requests; p95 8.839 ms | 未达到 | 0/50/90% 均另做固定点 |
+| formal-seat-contention | 1 → 20 groups/s × 4 | 204 groups; 204 success + 612 conflict | 未达到 | 冲突为预期业务结果 |
+| temporary-hold-contention | 1 → 20 groups/s × 4 | 204 groups; 204 success + 612 conflict | 未达到 | Redis owner/fence 不变量通过 |
+| checkout | 1 → 20 buyers/s | 205 iterations / 410 HTTP; p95 7.250 ms | 未达到 | verifier=0 |
+| payment-start | 1 → 10 starts/s | 104 requests; p95 6.745 ms | 未达到 | verifier=0 |
+| payment-lifecycle | 1 → 5 buyers/s | 54 iterations / 299 HTTP; p95 5.391 ms | 未达到 | verifier=0 |
+| login | 1 → 30 logins/s | 304 success; p95 1625 ms; ramp 未拒绝 | 固定 30/s | 两次 451 attempts，分别 53/58 AUTH_BUSY；p95 2990/3010 ms。首个可复现不稳定点，不等于精确容量边界 |
+
+## Spike 与恢复
+
+| 工作负载 | base → peak | 结果 | p95 / p99 ms | 恢复与正确性 |
+| --- | --- | --- | --- | --- |
+| public-read | 300 → 600 iter/s | 5849 requests | 0.966 / 1.200 | zero drops/errors |
+| seat-map-read 90% | 150 → 300 iter/s | 2924 requests | 8.896 / 11.244 | zero drops/errors |
+| formal-seat-contention | 20 → 40 groups/s × 4 | 389 groups / 1556 HTTP; 389 success + 1167 conflict | 6.319 / 7.773 | zero drops/errors; verifier=0 |
+| checkout | 20 → 40 buyers/s | 389 iterations / 778 HTTP | 9.306 / 12.156 | zero drops/errors; verifier=0 |
+| login | 15 → 30 logins/s | 292 success | 1160.422 / 1193.634 | short hold had no rejection; does not supersede fixed 30/s instability |
+| synthetic-mixed-transactional | checkout 10→20 + payment 3→6 buyers/s | 252 iterations / 700 HTTP | 8.868 / 14.213 | zero drops/errors; verifier=0 |
+
+## Local endurance / short soak
+
+执行一次 60 秒本地 short soak：synthetic-mixed-read = public 50 + auth 50 + seat-map 30 iter/s。共 7,802 次请求，p50=1.044 ms、p95=7.645 ms、p99=8.697 ms，dropped/system/unexpected 均为 0。采样峰值约为 Backend CPU 28.32%、PostgreSQL CPU 13.78%、Redis CPU 4.41%、k6 CPU 10.31%、Backend memory 91.75 MiB；PostgreSQL connections=6，Redis connected clients 5→5、used memory 1.42→2.99 MiB。它只覆盖短时本地 soak，不是 30 分钟以上耐久或泄漏认证。
+
+## 系统、PostgreSQL 与 Redis 证据
+
+- 正式座位 spike 的 Top SQL 是 `SELECT ... FROM session_seats ... FOR UPDATE`：1,556 calls、total 2642.0 ms、mean 1.698 ms；这是预期库存行锁路径的事实证据，不单独证明连接池或数据库已到瓶颈。
+- mixed transactional spike 中，Backend CPU 峰值约 47.10%、PostgreSQL 14.67%、Redis 1.86%、k6 2.22%，Backend memory 48.84 MiB；PostgreSQL connections=6，Redis clients 5→5。Top SQL 包含 reservations insert 384 calls、session_seats update 384、orders insert 384、checkout update 194。
+- login spike 中 Backend CPU 峰值约 35.24%，但固定 30/s 长一点的运行已出现 `AUTH_BUSY`，因此首先记录为密码哈希执行器/排队行为候选，而不将 CPU 百分比直接解释成根因。
+- clean evidence spot-check：`20260905T140416Z-public-read-steady-8935` 与 `20260905T140448Z-formal-seat-contention-steady-f070` 的 manifest 均为 `gitDirty=false`，并包含 PostgreSQL activity/locks 快照。快照中 4 个业务连接为 idle/ClientRead，locks 数组为空；Prometheus wait-event=4 对应 idle ClientRead，而非锁等待计数。
+- 所有数字来自单机 Docker Desktop/WSL2，容器共用宿主资源；未做独占 CPU、网络隔离或生产拓扑校准。
+
+## 正确性与回归
+
+- 每次正式事务运行后 `verify_database.py` 均返回 0 violations；正式/临时占座、Checkout、支付与混合事务未发现跨表状态、金额或所有权不变量破坏。
+- Dockerfile 无缓存构建成功：CMake configure、C++20 编译、链接、动态依赖检查通过；CTest 19/19。
+- 纯净 Seed 隔离栈正常模式回归 62 项通过；支付强制失败分支 1 项通过；默认 Docker 网络上的双 Worker 过期并发 1 项通过，共 64 项。
+- Playwright：TypeScript typecheck 通过；真实 Chromium E2E 4/4（Checkout、支付、订单深链、多客户端）通过。
+- 默认开发卷中既有 `U-1001` 已支付订单被保留；隔离回归卷避免为了 Seed 分布断言删除用户数据。E2E 产生的单个 Performance 测试订单按精确 ID 清理后，baseline profile 已重新生成并通过离线 Session `/auth/me`。
+
+## Phase 10B 候选实验（未实施）
+
+1. **Login 哈希执行器容量实验**：固定 30/s 已稳定复现 `AUTH_BUSY`。下一阶段应单独改变密码哈希 worker/queue 配置，保持数据、到达率和观测窗口不变，比较成功率、排队拒绝与延迟；在实验前不认定最佳参数。
+2. **PostgreSQL pool A/B**：仅对 mixed transactional 以 4/8/16 连接做受控比较，同时观察请求延迟、pg_stat_activity、锁等待、CPU 与 Top SQL；当前 `connections=6` 是含 exporter 的观测值，不能据此断言 pool=4 已饱和。
+3. **正式库存锁竞争实验**：围绕 `session_seats ... FOR UPDATE` 调整 admission/batching 或等待策略，保持“一座一胜者”和 verifier 为硬门槛；不通过放宽事务或锁语义换吞吐。
+4. **Seat-map Redis 读取实验**：对 0/50/90% hold density 比较 pipeline/batch 方案；当前三档 p95 接近，优先级低于已复现的 Login 拒绝。
+5. **混合负载隔离实验**：给 read 与 transactional scenario 保留独立 tag/metric，逐步叠加，确认资源竞争来源；不把 synthetic mix 宣称为真实生产流量模型。
+
+以上均只是 Phase 10B 候选实验，本提交没有改变连接池、SQL、事务、锁、Redis 语义、认证参数或业务代码。
+
+## 限制与未执行项
+
+- 未测出 public/auth/seat/transactional workload 的 first unstable 点；报告只写“最高已测试且稳定”，不写 max capacity。
+- steady 仅 10–15 秒，endurance 仅 60 秒；未执行 30 分钟/数小时 soak、故障注入、跨主机网络、多实例、真实支付渠道或生产数据分布。
+- Login 的 fixed 30/s 是 first observed unstable，而不是经二分搜索确定的精确拐点。
+- Spike 每阶段 3 秒，只用于恢复与正确性观察，不能代表长期峰值承载。
+- p50/p95/p99 是客户端 HTTP 指标；未拆分排队、应用和数据库耗时。
+- 原始结果因含运行细节而保持 Git ignored；版本库只提交本脱敏聚合与可重复计划。
+
+## 资料与开源参考
+
+- [Grafana k6: Scenarios](https://grafana.com/docs/k6/latest/using-k6/scenarios/)
+- [Grafana k6: Constant arrival rate](https://grafana.com/docs/k6/latest/using-k6/scenarios/executors/constant-arrival-rate/)
+- [Grafana k6: Ramping arrival rate](https://grafana.com/docs/k6/latest/using-k6/scenarios/executors/ramping-arrival-rate/)
+- [Grafana k6: Dropped iterations](https://grafana.com/docs/k6/latest/using-k6/scenarios/concepts/dropped-iterations/)
+- [Grafana k6: Thresholds](https://grafana.com/docs/k6/latest/using-k6/thresholds/)
+- [Grafana k6: Custom summary](https://grafana.com/docs/k6/latest/results-output/end-of-test/custom-summary/)
+- [Prometheus HTTP API](https://prometheus.io/docs/prometheus/3.5/querying/api/)
+- [PostgreSQL 16: pg_stat_statements](https://www.postgresql.org/docs/16/pgstatstatements.html)
+- [PostgreSQL 16: Monitoring statistics](https://www.postgresql.org/docs/16/monitoring-stats.html)
+- [PostgreSQL 16: pg_locks](https://www.postgresql.org/docs/16/view-pg-locks.html)
+- [Redis INFO](https://redis.io/docs/latest/commands/info/)
+- [Hi.Events k6 examples](https://github.com/HiEventsDev/Hi.Events/tree/develop/misc/k6)
+- [pretix locking design](https://docs.pretix.eu/dev/development/implementation/locking.html)
+- [alf.io](https://github.com/alfio-event/alf.io)

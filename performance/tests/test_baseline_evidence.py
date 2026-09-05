@@ -73,5 +73,15 @@ class EvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "sensitive"):
             render_baseline_report.render(data)
 
+    def test_checked_in_baseline_report_matches_sanitized_source(self):
+        source = REPO_ROOT / "performance" / "baseline" / "phase10a-baseline-data.json"
+        report = REPO_ROOT / "performance" / "baseline" / "phase10a-baseline.md"
+        rendered = render_baseline_report.render(
+            json.loads(source.read_text(encoding="utf-8"))
+        )
+        self.assertEqual(report.read_text(encoding="utf-8"), rendered)
+        self.assertIn("first observed unstable", rendered)
+        self.assertIn("Phase 10B 候选实验（未实施）", rendered)
+
 
 if __name__ == "__main__": unittest.main()

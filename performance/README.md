@@ -66,9 +66,9 @@ docker compose -p ticketing-phase10a -f performance/docker-compose.performance.y
 
 对照必须对同一个公开 `GET /events` 做相同 warm-up，并以同一工具、固定 duration 和 concurrency 分别运行 OFF/ON 各三次。结果只用于判断互斥锁指标埋点是否明显超过自然波动，不是容量结论。
 
-## 当前范围
+## 已完成范围
 
-Phase 10A-1 只建立可信的测量环境，尚未实现正式业务压测 workload、大数据生成、Run Harness、压测专用 `verify.sql`、Playwright、限流、Waiting Room、消息队列或 SQL/连接池优化。因此 Dashboard 有数据不代表系统容量已经测出；SQL Top N 也继续通过 PostgreSQL `pg_stat_statements` 查询，而不会把 SQL 文本放入 Prometheus label。后续压测前再重置统计并导出完整 Top SQL 报告。
+Phase 10A 已建立测量环境、可重复大数据、Run Harness、业务不变量 verifier、Playwright smoke 和本地 Baseline。它仍未实现限流、Waiting Room、消息队列或 SQL/连接池优化。Dashboard 有数据不等于生产容量；SQL Top N 继续通过 PostgreSQL `pg_stat_statements` 查询，不会把 SQL 文本放入 Prometheus label。
 
 ## 可重复数据 Profile
 
@@ -113,7 +113,7 @@ python performance/verification/verify_database.py
 
 k6 是本阶段的 HTTP 负载生成器。正式 steady/discovery 模式使用 Arrival Rate（按到达速率发起迭代），因为固定 VU（虚拟用户）的吞吐会随响应时间变化，不适合单独作为容量判据。当预分配 VU 无法跟上目标速率时，`dropped_iterations` 会记录未能启动的迭代；Smoke（冒烟）只验证链路，Steady（稳定低负载）验证持续到达速率，Discovery（探索）用递增速率收集现象且不设拍脑袋的延迟阈值。
 
-当前 workload（工作负载）只有三个：`public-read` 请求 `GET /events`；`auth-read` 请求 `GET /auth/me`，支持 warm（预热 Redis 认证缓存）、cold（清缓存后每次使用唯一 Session）和 redis-down（停 Redis 验证 PostgreSQL fallback）；`formal-seat-contention` 使多个独立用户并发争抢同一张票。Business Conflict（如 `SEAT_CONFLICT`）是预期业务结果，不是 System Error（系统错误）。
+当前 workload（工作负载）包括 `public-read`、`auth-read`（warm/cold/redis-down）、`seat-map-read`、`formal-seat-contention`、`temporary-hold-contention`、`checkout`、`payment-start`、`payment-lifecycle`、`login`，以及读取/事务 synthetic mixed。Business Conflict（如 `SEAT_CONFLICT`）是预期业务结果，不是 System Error（系统错误）。
 
 Formal 中一个 iteration 是一个 contention group（争抢组），通过一次 `http.batch()` 发出 N 个并行请求。因此组到达速率与 HTTP 尝试速率不同：`GROUP_RATE × contenders = attempt rate`。每组预期恰好一个成功，其余为座位冲突。
 
@@ -132,4 +132,23 @@ python performance/scripts/run_k6.py formal-seat-contention --mode steady --cont
 
 Runner 为每次运行生成唯一 `RUN_ID`，将原始 k6 summary、简化业务 summary、控制台日志和 run manifest 写入已忽略的 `performance/results/<RUN_ID>/`，并用同一 `testid` 标记 Prometheus Remote Write 时序。输出不写入 Session Token、CSRF Token、Cookie 或业务 ID label。
 
-这些低强度运行只验证 Phase 10A-4 框架、分类和可观测链路，不代表系统支持某个 RPS，也不得作为容量结论。完整 Harness（运行编排器）、Baseline（基准试验）和容量分析属于 Phase 10A-5。
+这些命令中的低强度示例只验证框架、分类和可观测链路，不代表系统支持某个 RPS，也不得作为容量结论。
+
+## Phase 10A-5 Baseline Campaign
+
+`performance/baseline/phase10a-plan.json` 与 `phase10a-spike-plan.json` 固化正式点位。Runner 在每个点位前逻辑重建 `perf-*` 数据、重置观测统计并采集完整 evidence；只有明确传入 `--allow-destructive-reset` 时，Campaign 才允许调用带二次 guard 的卷级 Reset。
+
+```powershell
+python performance/scripts/run_baseline.py --plan performance/baseline/phase10a-plan.json
+python performance/scripts/run_baseline.py --plan performance/baseline/phase10a-spike-plan.json
+```
+
+可提交的脱敏聚合报告为 `performance/baseline/phase10a-baseline.md`，由版本化 JSON 生成：
+
+```powershell
+python performance/scripts/render_baseline_report.py `
+  --input performance/baseline/phase10a-baseline-data.json `
+  --output performance/baseline/phase10a-baseline.md
+```
+
+报告区分 confirmed stable、highest tested、first observed unstable 和未测试边界。当前结果只适用于报告中记录的单机 Docker Desktop / WSL2 环境，不是生产 SLO 或最大容量声明；Phase 10B 条目均为尚未实施的受控实验候选。
