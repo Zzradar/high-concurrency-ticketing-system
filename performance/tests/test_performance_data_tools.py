@@ -143,6 +143,31 @@ class ResetAndVerifierTests(unittest.TestCase):
         run.assert_not_called()
         clear.assert_not_called()
 
+    def test_observability_retry_allows_startup_convergence(self):
+        failed = mock.Mock(returncode=1)
+        passed = mock.Mock(returncode=0)
+        with mock.patch.object(
+            reset_environment.subprocess, "run", side_effect=[failed, passed]
+        ) as run, mock.patch.object(reset_environment.time, "sleep") as sleep:
+            reset_environment.run_command_with_retries(
+                ["verify-observability"], attempts=3, delay_seconds=5
+            )
+        self.assertEqual(run.call_count, 2)
+        sleep.assert_called_once_with(5)
+
+    def test_observability_retry_fails_after_bound(self):
+        failed = mock.Mock(returncode=1)
+        with mock.patch.object(
+            reset_environment.subprocess, "run", return_value=failed
+        ) as run, mock.patch.object(reset_environment.time, "sleep"):
+            with self.assertRaisesRegex(
+                reset_environment.ResetGuardError, "after 2 attempts"
+            ):
+                reset_environment.run_command_with_retries(
+                    ["verify-observability"], attempts=2, delay_seconds=0
+                )
+        self.assertEqual(run.call_count, 2)
+
     def test_verifier_parsing_and_violation_result(self):
         clean = "\n".join(f"{name}\t0" for name in sorted(verify_database.EXPECTED_CHECKS))
         parsed = verify_database.parse_verifier_output(clean)

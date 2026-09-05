@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import time
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -43,6 +44,26 @@ def run_command(arguments: list[str]) -> None:
             f"command failed with exit code {completed.returncode}: "
             f"{subprocess.list2cmdline(arguments)}"
         )
+
+
+def run_command_with_retries(
+    arguments: list[str], *, attempts: int, delay_seconds: float
+) -> None:
+    for attempt in range(1, attempts + 1):
+        print(f"+ {subprocess.list2cmdline(arguments)} (attempt {attempt}/{attempts})")
+        completed = subprocess.run(arguments, cwd=REPO_ROOT, check=False)
+        if completed.returncode == 0:
+            return
+        if attempt < attempts:
+            print(
+                "Observability stack has not converged yet; "
+                f"retrying in {delay_seconds:g} seconds."
+            )
+            time.sleep(delay_seconds)
+    raise ResetGuardError(
+        f"command failed after {attempts} attempts: "
+        f"{subprocess.list2cmdline(arguments)}"
+    )
 
 
 def read_compose_model() -> dict:
@@ -124,7 +145,11 @@ def reset(profile: str, *, confirmed: bool) -> None:
     clear_generated()
     run_command(compose_command("down", "-v"))
     run_command(compose_command("up", "-d", "--build", "--wait"))
-    run_command([sys.executable, str(PERFORMANCE_ROOT / "scripts" / "verify_observability.py")])
+    run_command_with_retries(
+        [sys.executable, str(PERFORMANCE_ROOT / "scripts" / "verify_observability.py")],
+        attempts=6,
+        delay_seconds=5,
+    )
     run_command(
         [
             sys.executable,
