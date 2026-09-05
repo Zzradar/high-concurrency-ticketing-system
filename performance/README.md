@@ -108,3 +108,26 @@ python performance/verification/verify_database.py
 ```
 
 `verify.sql` 只读取 `perf-*` 用户或库存关联的事实，逐项输出 `check_name<TAB>violation_count`。全部为零才返回成功；任一跨表状态、金额、所有权、支付或退款不变量被破坏时返回非零。该结果用于否决不可信的测试运行，不等于容量测试。
+
+## Phase 10A-4 k6 初始工作负载
+
+k6 是本阶段的 HTTP 负载生成器。正式 steady/discovery 模式使用 Arrival Rate（按到达速率发起迭代），因为固定 VU（虚拟用户）的吞吐会随响应时间变化，不适合单独作为容量判据。当预分配 VU 无法跟上目标速率时，`dropped_iterations` 会记录未能启动的迭代；Smoke（冒烟）只验证链路，Steady（稳定低负载）验证持续到达速率，Discovery（探索）用递增速率收集现象且不设拍脑袋的延迟阈值。
+
+当前 workload（工作负载）只有三个：`public-read` 请求 `GET /events`；`auth-read` 请求 `GET /auth/me`，支持 warm（预热 Redis 认证缓存）、cold（清缓存后每次使用唯一 Session）和 redis-down（停 Redis 验证 PostgreSQL fallback）；`formal-seat-contention` 使多个独立用户并发争抢同一张票。Business Conflict（如 `SEAT_CONFLICT`）是预期业务结果，不是 System Error（系统错误）。
+
+Formal 中一个 iteration 是一个 contention group（争抢组），通过一次 `http.batch()` 发出 N 个并行请求。因此组到达速率与 HTTP 尝试速率不同：`GROUP_RATE × contenders = attempt rate`。每组预期恰好一个成功，其余为座位冲突。
+
+先完成 baseline Reset 并确认栈健康，再从仓库根目录运行：
+
+```powershell
+python performance/scripts/run_k6.py public-read --mode smoke
+python performance/scripts/run_k6.py public-read --mode steady --rate 50 --duration 10s --preallocated-vus 20
+python performance/scripts/run_k6.py auth-read --mode steady --auth-mode warm --auth-pool-size 100 --rate 20 --duration 10s --preallocated-vus 20
+python performance/scripts/run_k6.py auth-read --mode steady --auth-mode cold --auth-pool-size 100 --rate 10 --duration 5s --preallocated-vus 10
+python performance/scripts/run_k6.py auth-read --mode smoke --auth-mode redis-down --auth-pool-size 3
+python performance/scripts/run_k6.py formal-seat-contention --mode steady --contenders 4 --group-rate 2 --duration 10s --preallocated-vus 8
+```
+
+Runner 为每次运行生成唯一 `RUN_ID`，将原始 k6 summary、简化业务 summary、控制台日志和 run manifest 写入已忽略的 `performance/results/<RUN_ID>/`，并用同一 `testid` 标记 Prometheus Remote Write 时序。输出不写入 Session Token、CSRF Token、Cookie 或业务 ID label。
+
+这些低强度运行只验证 Phase 10A-4 框架、分类和可观测链路，不代表系统支持某个 RPS，也不得作为容量结论。完整 Harness（运行编排器）、Baseline（基准试验）和容量分析属于 Phase 10A-5。
