@@ -102,6 +102,32 @@ LIMIT 20;
                  "sharedReads", "tempWrites", "query"), parts,
             )))
     write_json(root / "postgres-top-sql.json", rows)
+    activity = psql("""
+SELECT COALESCE(state, 'unknown'), COALESCE(wait_event_type, ''),
+       COALESCE(wait_event, ''), count(*)
+FROM pg_stat_activity
+WHERE application_name = 'ticketing_backend_phase10a'
+GROUP BY state, wait_event_type, wait_event
+ORDER BY state, wait_event_type, wait_event;
+""")
+    write_json(root / "postgres-activity.json", [
+        dict(zip(("state", "waitEventType", "waitEvent", "connections"), line.split("\t", 3)))
+        for line in activity.splitlines() if len(line.split("\t", 3)) == 4
+    ])
+    locks = psql("""
+SELECT locktype, mode, granted, count(*)
+FROM pg_locks
+WHERE pid IN (
+    SELECT pid FROM pg_stat_activity
+    WHERE application_name = 'ticketing_backend_phase10a'
+)
+GROUP BY locktype, mode, granted
+ORDER BY locktype, mode, granted;
+""")
+    write_json(root / "postgres-locks.json", [
+        dict(zip(("lockType", "mode", "granted", "count"), line.split("\t", 3)))
+        for line in locks.splitlines() if len(line.split("\t", 3)) == 4
+    ])
 
 
 PROMETHEUS_QUERIES = {

@@ -29,6 +29,13 @@ class EvidenceTests(unittest.TestCase):
         self.assertIn("redis-clients", evidence.PROMETHEUS_QUERIES)
         self.assertIn("container-cpu", evidence.PROMETHEUS_QUERIES)
 
+    def test_postgres_evidence_includes_activity_and_lock_snapshots(self):
+        source = Path(evidence.__file__).read_text(encoding="utf-8")
+        self.assertIn("FROM pg_stat_activity", source)
+        self.assertIn("FROM pg_locks", source)
+        self.assertIn('postgres-activity.json', source)
+        self.assertIn('postgres-locks.json', source)
+
     def test_full_reset_requires_explicit_second_guard(self):
         with self.assertRaisesRegex(RuntimeError, "requires --allow-destructive-reset"):
             run_baseline.reset_environment("full", "baseline", False)
