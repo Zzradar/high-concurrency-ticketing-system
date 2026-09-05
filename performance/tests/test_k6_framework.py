@@ -44,7 +44,7 @@ class K6ConfigurationTests(unittest.TestCase):
         self.assertIn("positiveInteger('PREALLOCATED_VUS')", scenarios)
         self.assertNotIn("maxVUs", scenarios)
         for path in K6_ROOT.rglob("*.js"):
-            if path.name != "payment-lifecycle.js":
+            if path.name not in {"payment-lifecycle.js", "synthetic-mixed-transactional.js"}:
                 self.assertNotIn("sleep(", path.read_text(encoding="utf-8"), path)
 
     def test_thresholds_are_correctness_only_and_discovery_is_non_blocking(self):
@@ -93,6 +93,15 @@ class RunnerTests(unittest.TestCase):
         login = parser.parse_args(["login", "--mode", "soak", "--rate", "1", "--preallocated-vus", "1"])
         with self.assertRaisesRegex(run_k6.RunError, "does not support soak"):
             run_k6.validate_args(login, session_count=100, seat_count=100)
+
+    def test_mixed_transactional_pool_slices_are_disjoint(self):
+        parser = run_k6.build_parser()
+        args = parser.parse_args([
+            "synthetic-mixed-transactional", "--mode", "steady",
+            "--checkout-rate", "2", "--payment-rate", "1", "--duration", "10s",
+            "--preallocated-vus", "4",
+        ])
+        self.assertEqual(run_k6.mixed_transactional_plan(args), (14, 24))
 
     def test_runner_uses_boundary_headroom_for_steady_one_shot_pools(self):
         parser = run_k6.build_parser()

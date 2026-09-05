@@ -33,6 +33,19 @@ class WorkloadTests(unittest.TestCase):
         self.assertIn("exec.scenario.iterationInTest", login)
         self.assertNotIn("iteration % users.length", login)
 
+    def test_synthetic_mixes_use_independent_k6_scenarios(self):
+        reads = source("k6/workloads/synthetic-mixed-read.js")
+        writes = source("k6/workloads/synthetic-mixed-transactional.js")
+        for scenario in ("public_read", "auth_warm", "seat_map"):
+            self.assertIn(f"{scenario}:", reads)
+        self.assertIn("PUBLIC_RATE", reads)
+        self.assertIn("AUTH_RATE", reads)
+        self.assertIn("SEAT_MAP_RATE", reads)
+        self.assertIn("checkout:", writes)
+        self.assertIn("payment:", writes)
+        self.assertIn("CHECKOUT_POOL_OFFSET", writes)
+        self.assertNotIn("% seats.length", writes)
+
     def test_public_read_checks_the_real_top_level_array_contract(self):
         workload = source("k6/workloads/public-read.js")
         metrics = source("k6/lib/metrics.js")

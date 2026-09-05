@@ -1,0 +1,10 @@
+{
+  "runs": [
+    {
+      "name": "evidence-smoke-public-read",
+      "profile": "smoke",
+      "reset": "logical",
+      "args": ["public-read", "--mode", "smoke"]
+    }
+  ]
+}

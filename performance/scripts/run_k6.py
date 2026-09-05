@@ -147,6 +147,16 @@ def planned_iterations_base(args: argparse.Namespace) -> int:
     if args.mode == "smoke":
         return 3
     if args.mode in {"steady", "soak"}:
+        if args.workload == "synthetic-mixed-read":
+            return math.ceil(
+                (args.public_rate + args.auth_rate + args.seat_map_rate)
+                * parse_duration(args.duration)
+            )
+        if args.workload == "synthetic-mixed-transactional":
+            return math.ceil(
+                (args.checkout_rate + args.payment_rate)
+                * parse_duration(args.duration)
+            )
         rate = args.group_rate if args.workload in {"formal-seat-contention", "temporary-hold-contention"} else args.rate
         return math.ceil(rate * parse_duration(args.duration))
     target = args.target_rate
@@ -165,6 +175,10 @@ def build_pool_plan(args: argparse.Namespace) -> PoolPlan:
         peak_rate = (
             args.target_rate
             if args.mode in {"discovery", "spike"}
+            else args.public_rate + args.auth_rate + args.seat_map_rate
+            if args.workload == "synthetic-mixed-read"
+            else args.checkout_rate + args.payment_rate
+            if args.workload == "synthetic-mixed-transactional"
             else args.group_rate
             if args.workload in {"formal-seat-contention", "temporary-hold-contention"}
             else args.rate
@@ -179,7 +193,12 @@ def validate_args(
     if args.mode in {"steady", "discovery", "spike", "soak"} and not args.preallocated_vus:
         raise RunError("--preallocated-vus is required for arrival-rate modes")
     if args.mode in {"steady", "soak"}:
-        selected = args.group_rate if args.workload in {"formal-seat-contention", "temporary-hold-contention"} else args.rate
+        if args.workload == "synthetic-mixed-read":
+            selected = args.public_rate and args.auth_rate and args.seat_map_rate
+        elif args.workload == "synthetic-mixed-transactional":
+            selected = args.checkout_rate and args.payment_rate
+        else:
+            selected = args.group_rate if args.workload in {"formal-seat-contention", "temporary-hold-contention"} else args.rate
         if not selected or selected <= 0:
             raise RunError("steady mode requires a positive --rate/--group-rate")
         parse_duration(args.duration)
@@ -233,7 +252,18 @@ def validate_args(
             )
     if args.workload == "login" and args.mode == "soak":
         raise RunError("login workload does not support soak mode")
+    if args.workload.startswith("synthetic-mixed") and args.mode not in {"steady", "soak"}:
+        raise RunError("synthetic mixed workloads support only steady/soak")
     return plan
+
+
+def mixed_transactional_plan(args: argparse.Namespace) -> tuple[int, int]:
+    duration = parse_duration(args.duration)
+    payment_base = math.ceil(args.payment_rate * duration)
+    checkout_base = math.ceil(args.checkout_rate * duration)
+    payment_required = payment_base + max(args.preallocated_vus, args.payment_rate)
+    checkout_required = checkout_base + max(args.preallocated_vus, args.checkout_rate)
+    return payment_required, checkout_required
 
 
 def clear_auth_cache() -> int:
@@ -448,6 +478,7 @@ def build_parser() -> argparse.ArgumentParser:
         "public-read", "auth-read", "formal-seat-contention", "seat-map-read",
         "temporary-hold-contention", "checkout", "payment-start",
         "payment-lifecycle", "login",
+        "synthetic-mixed-read", "synthetic-mixed-transactional",
     ))
     parser.add_argument(
         "--mode", choices=("smoke", "steady", "discovery", "spike", "soak"),
@@ -465,6 +496,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--auth-pool-size", type=int, default=100)
     parser.add_argument("--contenders", type=int, default=4)
     parser.add_argument("--seat-hold-density", type=int, choices=(0, 50, 90), default=0)
+    parser.add_argument("--public-rate", type=int)
+    parser.add_argument("--auth-rate", type=int)
+    parser.add_argument("--seat-map-rate", type=int)
+    parser.add_argument("--checkout-rate", type=int)
+    parser.add_argument("--payment-rate", type=int)
     parser.add_argument(
         "--login-password", default=os.environ.get("TICKETING_PERF_LOGIN_PASSWORD")
     )
@@ -496,10 +532,26 @@ def main() -> int:
         if not isinstance(sessions, list) or not isinstance(seats, list):
             raise RunError("generated Session/Seat manifests must be arrays")
         pool_plan = validate_args(args, len(sessions), len(seats))
+        mixed_payment_required = 0
+        mixed_checkout_required = 0
+        if args.workload == "synthetic-mixed-transactional":
+            mixed_payment_required, mixed_checkout_required = mixed_transactional_plan(args)
+            total_required = mixed_payment_required + mixed_checkout_required
+            pool_plan = PoolPlan(
+                pool_plan.planned_iterations_base,
+                total_required - pool_plan.planned_iterations_base,
+                total_required,
+            )
+            if total_required > len(sessions) or total_required > len(seats):
+                raise RunError(
+                    f"synthetic mixed transactional run requires {total_required} "
+                    f"disjoint users/Seats, available users={len(sessions)}, seats={len(seats)}"
+                )
         one_shot_pool = (
             args.workload in {
                 "formal-seat-contention", "temporary-hold-contention", "checkout",
                 "payment-start", "payment-lifecycle", "login",
+                "synthetic-mixed-transactional",
             }
             or args.workload == "auth-read" and args.auth_mode == "cold"
         )
@@ -508,6 +560,7 @@ def main() -> int:
             if args.workload in {
                 "formal-seat-contention", "temporary-hold-contention", "checkout",
                 "payment-start", "payment-lifecycle",
+                "synthetic-mixed-transactional",
             }
             else len(sessions)
             if one_shot_pool
@@ -570,7 +623,9 @@ def main() -> int:
             if args.auth_mode == "redis-down":
                 run_command(compose_command("stop", "redis"))
                 redis_stopped = True
-        if args.workload == "seat-map-read":
+        if args.workload == "synthetic-mixed-read":
+            manifest["authPreparation"] = prepare_auth(args, sessions)
+        if args.workload in {"seat-map-read", "synthetic-mixed-read"}:
             required_ttl = math.ceil(parse_duration(args.duration)) + 60
             manifest["seatMapFixture"] = prepare_seat_map_fixture(
                 seats, dataset["seatMapSessionId"], args.seat_hold_density,
@@ -579,9 +634,10 @@ def main() -> int:
         if args.workload in {
             "formal-seat-contention", "temporary-hold-contention", "checkout",
             "payment-start", "payment-lifecycle",
+            "synthetic-mixed-transactional",
         }:
             manifest["seatHoldsDeleted"] = clear_seat_holds()
-        if args.workload in {"payment-start", "payment-lifecycle"}:
+        if args.workload in {"payment-start", "payment-lifecycle", "synthetic-mixed-transactional"}:
             forced_env = os.environ.copy()
             forced_env["TICKETING_PAYMENT_FORCE_OUTCOME"] = "SUCCESS"
             forced = subprocess.run(
@@ -592,7 +648,12 @@ def main() -> int:
             if forced.returncode != 0:
                 raise RunError(f"cannot force payment outcome: {forced.stdout}{forced.stderr}")
             payment_backend_forced = True
-            orders = prepare_payment_orders(sessions, seats, pool_plan.pool_required, short_token)
+            payment_count = (
+                mixed_payment_required
+                if args.workload == "synthetic-mixed-transactional"
+                else pool_plan.pool_required
+            )
+            orders = prepare_payment_orders(sessions, seats, payment_count, short_token)
             payment_orders_path = GENERATED_ROOT / f"payment-orders-{short_token}.json"
             write_json(payment_orders_path, orders)
             manifest["paymentFixtureCount"] = len(orders)
@@ -609,6 +670,8 @@ def main() -> int:
         }
         if payment_orders_path:
             environment["PAYMENT_ORDERS_FILE"] = f"/data/{payment_orders_path.name}"
+        if args.workload == "synthetic-mixed-transactional":
+            environment["CHECKOUT_POOL_OFFSET"] = str(mixed_payment_required)
         if args.workload == "login":
             if not args.login_password:
                 raise RunError("login workload requires --login-password or TICKETING_PERF_LOGIN_PASSWORD")
@@ -621,6 +684,11 @@ def main() -> int:
             "TARGET_RATE": args.target_rate,
             "RAMP_DURATION": args.ramp_duration,
             "HOLD_DURATION": args.hold_duration,
+            "PUBLIC_RATE": args.public_rate,
+            "AUTH_RATE": args.auth_rate,
+            "SEAT_MAP_RATE": args.seat_map_rate,
+            "CHECKOUT_RATE": args.checkout_rate,
+            "PAYMENT_RATE": args.payment_rate,
         }
         environment.update({name: str(value) for name, value in optional.items() if value is not None})
         command = compose_command(
@@ -678,11 +746,12 @@ def main() -> int:
             manifest["coldCacheKeysAfter"] = cache_count
             if cache_count < measured:
                 raise RunError("cold run did not create one cache entry per completed iteration")
-        if args.workload in {"payment-start", "payment-lifecycle"}:
+        if args.workload in {"payment-start", "payment-lifecycle", "synthetic-mixed-transactional"}:
             manifest["processingAttemptsAfterSettlement"] = wait_payment_settlement()
         if args.workload in {
             "formal-seat-contention", "temporary-hold-contention", "checkout",
             "payment-start", "payment-lifecycle",
+            "synthetic-mixed-transactional",
         }:
             verifier = run_command([sys.executable, str(VERIFIER)], check=False)
             (result_dir / "verifier.txt").write_text(
