@@ -28,7 +28,7 @@ export function recordResult(result, step) {
 }
 
 export function classifyRead(response, expectedStatus, contractIsValid) {
-    if (!response || response.status === 0 || response.error_code) {
+    if (!response || response.status === 0) {
         return 'system_error';
     }
     if (response.status >= 500) {

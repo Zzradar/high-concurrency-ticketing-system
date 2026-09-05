@@ -13,8 +13,10 @@ def source(relative: str) -> str:
 class WorkloadTests(unittest.TestCase):
     def test_public_read_checks_the_real_top_level_array_contract(self):
         workload = source("k6/workloads/public-read.js")
+        metrics = source("k6/lib/metrics.js")
         self.assertIn("Array.isArray(payload)", workload)
         self.assertIn("GET /events", workload)
+        self.assertNotIn("response.error_code", metrics)
 
     def test_auth_read_selects_unique_cold_sessions_and_bounded_warm_pool(self):
         workload = source("k6/workloads/auth-read.js")
@@ -28,7 +30,8 @@ class WorkloadTests(unittest.TestCase):
         self.assertIn("http.batch(requests)", workload)
         self.assertIn("batch: contenders", workload)
         self.assertIn("batchPerHost: contenders", workload)
-        self.assertIn("successes === 1 && conflicts === contenders - 1", workload)
+        self.assertIn("const validGroup = successes === 1 && conflicts === contenders - 1", workload)
+        self.assertIn("recordResult('unexpected', 'formal_group')", workload)
         self.assertIn("reservationHeaders(session, key)", workload)
         self.assertNotIn("response.error_code", workload)
 

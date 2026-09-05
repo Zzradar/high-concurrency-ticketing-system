@@ -90,10 +90,11 @@ export default function () {
     }
     contentionGroups.add(1, {step: 'formal_group'});
     reservationAttempts.add(responses.length, {step: 'formal_reservation'});
-    invalidContentionGroups.add(
-        successes === 1 && conflicts === contenders - 1 ? 0 : 1,
-        {step: 'formal_group'},
-    );
+    const validGroup = successes === 1 && conflicts === contenders - 1;
+    invalidContentionGroups.add(validGroup ? 0 : 1, {step: 'formal_group'});
+    if (!validGroup) {
+        recordResult('unexpected', 'formal_group');
+    }
 }
 
 export const handleSummary = summaryHandler(config);
