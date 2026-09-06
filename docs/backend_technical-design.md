@@ -142,6 +142,8 @@ GET /events/{eventId}
 GET /events/{eventId}/sessions
 GET /sessions/{sessionId}
 GET /sessions/{sessionId}/seats
+GET /sessions/{sessionId}/seat-layout
+GET /sessions/{sessionId}/seat-availability
 POST /auth/login
 GET /auth/me
 POST /auth/logout
@@ -329,7 +331,8 @@ Phase 7 复用 revision 作为 Redis Hold 的 fencing version。Redis Hold 只�
 
 ### 5.2 查看座位图
 
-用户查询某个 Session 的所有 SessionSeat。
+用户查询某个 Session 的所有 SessionSeat。legacy `/seats` 继续返回完整 Seat[]；Phase10B-3.3
+新增 `/seat-layout` 与 `/seat-availability`，把首次加载的静态展示属性和高频变化的展示状态拆开。
 
 返回：
 
@@ -342,6 +345,12 @@ Phase 7 复用 revision 作为 Redis Hold 的 fencing version。Redis Hold 只�
 临时占座时在响应中表现为 HELD；当前 CheckoutSession 自己的 Hold 仍表现为 AVAILABLE。
 Redis 读取失败时退化为纯 PostgreSQL 座位图，不影响接口成功。当前不引入 Redis
 座位图缓存或 WebSocket。
+
+Layout 查询只 JOIN 物理 Seat 并读取 `id/label/row/number/zone/price`，不读 status 或 Redis；
+Availability 查询只从 `session_seats` 读取 `id/status`，不 JOIN `seats`，随后复用同一 ownership-safe
+Redis Hold overlay。两条路径的 owned row 进入既有 4-worker / queue16 有界 Seat Map executor 完成
+DTO/JSON/Response 构造；queue full 与 legacy 一样返回 `503 SEAT_MAP_BUSY`。Layout 与 Availability
+以 Seat ID 合并，数组顺序不构成对应关系。展示 status 不替代 Confirm 事务的最终库存裁决。
 
 ### 5.3 提交座位预订
 
@@ -648,6 +657,8 @@ GET /events/{eventId}
 GET /events/{eventId}/sessions
 GET /sessions/{sessionId}
 GET /sessions/{sessionId}/seats
+GET /sessions/{sessionId}/seat-layout
+GET /sessions/{sessionId}/seat-availability
 POST /auth/login
 GET /auth/me
 POST /auth/logout

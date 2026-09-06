@@ -23,6 +23,8 @@
 | getSessions | GET /events/{eventId}/sessions |
 | getSession | GET /sessions/{sessionId} |
 | getSeats | GET /sessions/{sessionId}/seats?checkoutSessionId={optionalCheckoutSessionId} |
+| getSeatLayout（后续前端接入） | GET /sessions/{sessionId}/seat-layout |
+| getSeatAvailability（后续前端接入） | GET /sessions/{sessionId}/seat-availability?checkoutSessionId={optionalCheckoutSessionId} |
 | createReservation | POST /reservations |
 | createCheckoutSession | POST /checkout-sessions |
 | getCheckoutSession | GET /checkout-sessions/{id} |
@@ -323,6 +325,48 @@ Phase 7 的叠加规则为：
 - PostgreSQL 已经 HELD/SOLD 时始终以正式状态为准；
 - Redis 批量读取失败时接口仍成功，退化为纯 PostgreSQL seat map。
 
+#### 静态 Layout 与动态 Availability
+
+后端 Phase10B-3.3 新增两个可由前端后续接入的读取接口；当前 legacy `/seats` 继续保留且响应不变。
+
+`GET /sessions/{sessionId}/seat-layout` 匿名可读，不接受或使用 `checkoutSessionId`，response 为：
+
+    {
+      "sessionId": "ses-concert-1001",
+      "seats": [
+        {
+          "id": "ses-concert-1001-A01",
+          "label": "A01",
+          "row": "A",
+          "number": 1,
+          "zone": "星光区",
+          "price": 128000
+        }
+      ]
+    }
+
+Layout Seat 只包含 `id/label/row/number/zone/price`，不含 `status`，也不在每项重复
+`sessionId`。
+
+`GET /sessions/{sessionId}/seat-availability?checkoutSessionId={optionalCheckoutSessionId}` response 为：
+
+    {
+      "sessionId": "ses-concert-1001",
+      "seats": [
+        { "id": "ses-concert-1001-A01", "status": "AVAILABLE" }
+      ]
+    }
+
+Availability Seat 每项只包含 `id/status`。可选 `checkoutSessionId` 的认证、用户所有权和 Session
+匹配规则与 legacy `/seats` 完全相同：只有当前登录用户拥有且属于当前 Session 的 C1 才获得 own Hold
+视图；匿名、他人 C1 或跨 Session C1 都按无 own context 处理。正式 HELD/SOLD 不被 Redis 覆盖；
+正式 AVAILABLE 的 own Hold 显示 AVAILABLE、other Hold 显示 HELD。Redis 读取失败时仍返回 PostgreSQL
+正式状态，不返回 owner 或 degraded 标记。
+
+两个接口在 Session 不存在时返回 `404 SESSION_NOT_FOUND`；Session 存在但无 Seat 时返回
+`{ "sessionId": "...", "seats": [] }`。Layout 与 Availability 数组顺序不保证按索引对应，前端必须按
+Seat ID merge。Availability status 只用于展示，Confirm/正式 Reservation 才是最终交易裁决。
+
 ### 5.4 POST /reservations
 
 对应点击“提交预订”。当前请求 JSON 使用 camelCase：
@@ -619,6 +663,7 @@ Redis 不可用的降级由后端处理，前端不感知 Redis 故障细节。
 - 成功响应直接返回本文所列 JSON，不增加 data 外层包装。
 - 业务失败响应返回字符串类型的 code 和 message。
 - GET seats 接受可选 checkoutSessionId，并按当前 C1 上下文叠加 Redis 临时 Hold。
+- 后端提供静态 seat-layout 与动态 seat-availability；前者无 status，后者每项只有 id/status，legacy GET seats 保持兼容。
 - 临时占座冲突返回 HTTP 409 和 SEAT_TEMPORARILY_HELD。
 - price、priceFrom、totalAmount 使用整数分。
 - 使用本文列出的精确状态字符串。
