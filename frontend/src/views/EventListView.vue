@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Sparkles } from '@lucide/vue'
 import EventCard from '../components/EventCard.vue'
+import PageBreadcrumbs from '../components/PageBreadcrumbs.vue'
+import PageState from '../components/PageState.vue'
 import type { TicketEvent } from '../types'
 
 defineProps<{
@@ -8,11 +10,15 @@ defineProps<{
   loading: boolean
 }>()
 
-defineEmits<{ select: [event: TicketEvent] }>()
+defineEmits<{
+  select: [event: TicketEvent]
+  refresh: []
+}>()
 </script>
 
 <template>
   <main class="page-shell">
+    <PageBreadcrumbs :items="[{ label: '活动' }]" />
     <section class="page-intro">
       <div>
         <p class="eyebrow">CURATED EVENTS · SHANGHAI</p>
@@ -33,6 +39,14 @@ defineEmits<{ select: [event: TicketEvent] }>()
       <div v-if="loading" class="event-list" aria-label="正在加载活动">
         <div v-for="index in 2" :key="index" class="event-card skeleton-card"></div>
       </div>
+      <PageState
+        v-else-if="!events.length"
+        eyebrow="EVENTS"
+        title="暂无在售活动"
+        description="当前没有可浏览的活动，请稍后再来看看。"
+        action-label="重新加载"
+        @action="$emit('refresh')"
+      />
       <div v-else class="event-list">
         <EventCard v-for="event in events" :key="event.id" :event="event" @select="$emit('select', $event)" />
       </div>

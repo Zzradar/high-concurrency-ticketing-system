@@ -8,6 +8,8 @@ const props = defineProps<{
   seats: Seat[]
   selectedSeatIds: string[]
   editingDisabled: boolean
+  zoneName: string
+  availableCount: number
 }>()
 
 defineEmits<{ toggle: [seat: Seat] }>()
@@ -23,13 +25,13 @@ const groupedRows = computed(() => {
 </script>
 
 <template>
-  <section class="seat-map-panel" aria-labelledby="seat-map-title">
+  <section :class="['seat-map-panel', { 'is-editing-disabled': editingDisabled }]" aria-labelledby="seat-map-title" :aria-busy="editingDisabled">
     <div class="seat-map-panel__heading">
       <div>
         <p class="eyebrow">SEAT MAP</p>
-        <h2 id="seat-map-title">选择你的座位</h2>
+        <h2 id="seat-map-title">{{ zoneName }}</h2>
       </div>
-      <p>点击空闲座位选择，再次点击取消</p>
+      <p>{{ seats.length }} 个座位 · {{ availableCount }} 个可选</p>
     </div>
 
     <div class="seat-stage" aria-label="舞台位于座位图前方">
@@ -63,7 +65,7 @@ const groupedRows = computed(() => {
 
     <div class="seat-map-note">
       <Armchair :size="18" aria-hidden="true" />
-      座位状态以提交预订时服务端的最终确认为准
+      {{ editingDisabled ? '正在同步座位状态，暂时无法编辑' : '座位状态以提交预订时服务端的最终确认为准' }}
     </div>
   </section>
 </template>

@@ -14,6 +14,7 @@ import type {
   TicketSession,
   UserNotification,
 } from '../types'
+import { normalizeLegacySeatSnapshot } from '../utils/seatMap'
 
 export class TicketApiError extends Error {
   readonly code: string
@@ -745,13 +746,15 @@ export const ticketApi = {
     return (await http.get<TicketSession>('/sessions/' + sessionId)).data
   },
   async getSeats(sessionId: string, checkoutSessionId?: string): Promise<Seat[]> {
-    if (isMockMode) return mockGetSeats(sessionId)
-    return (
+    const seats = isMockMode
+      ? await mockGetSeats(sessionId)
+      : (
       await http.get<Seat[]>(
         '/sessions/' + sessionId + '/seats',
         buildSeatMapRequestConfig(checkoutSessionId),
       )
     ).data
+    return normalizeLegacySeatSnapshot(seats)
   },
   async createReservation(sessionId: string, seatIds: string[]): Promise<ReservationResult> {
     if (isMockMode) return mockCreateReservation(sessionId, seatIds)

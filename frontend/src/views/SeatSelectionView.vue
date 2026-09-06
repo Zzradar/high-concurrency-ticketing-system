@@ -1,11 +1,16 @@
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
 import { ArrowLeft, CalendarDays, MapPin } from '@lucide/vue'
+import PageBreadcrumbs from '../components/PageBreadcrumbs.vue'
+import PageState from '../components/PageState.vue'
 import SeatGrid from '../components/SeatGrid.vue'
 import RecoverableCheckoutPanel from '../components/RecoverableCheckoutPanel.vue'
 import SelectedSeats from '../components/SelectedSeats.vue'
+import { routeNames } from '../navigation'
 import type { CheckoutSession, Seat, TicketEvent, TicketSession } from '../types'
+import { countSeatStatuses, summarizeSeatZones } from '../utils/seatMap'
 
-defineProps<{
+const props = defineProps<{
   event: TicketEvent
   session: TicketSession
   seats: Seat[]
@@ -14,6 +19,8 @@ defineProps<{
   checkoutSession: CheckoutSession | null
   recoverableCheckoutSessions: CheckoutSession[]
   loading: boolean
+  refreshing: boolean
+  availabilityWarning: string
   checkoutCreating: boolean
   checkoutSyncInFlight: boolean
   confirming: boolean
@@ -33,10 +40,33 @@ defineEmits<{
   startNewCheckout: []
   retryConfirm: []
 }>()
+
+const activeZone = ref('')
+const zoneSummaries = computed(() => summarizeSeatZones(props.seats))
+const overallCounts = computed(() => countSeatStatuses(props.seats))
+const visibleSeats = computed(() =>
+  activeZone.value ? props.seats.filter((seat) => seat.zone === activeZone.value) : props.seats,
+)
+const visibleCounts = computed(() => countSeatStatuses(visibleSeats.value))
+const currentZoneName = computed(() => activeZone.value || '全部区域')
+
+watch(zoneSummaries, (zones) => {
+  if (activeZone.value && !zones.some((zone) => zone.zone === activeZone.value)) {
+    activeZone.value = ''
+  }
+})
 </script>
 
 <template>
   <main class="page-shell page-shell--wide">
+    <PageBreadcrumbs
+      :items="[
+        { label: '活动', to: { name: routeNames.events } },
+        { label: event.name, to: { name: routeNames.eventSessions, params: { eventId: event.id } } },
+        { label: session.date + ' ' + session.time },
+        { label: '选座' },
+      ]"
+    />
     <button class="back-button" type="button" @click="$emit('back')">
       <ArrowLeft :size="17" aria-hidden="true" />
       返回选择场次
@@ -53,10 +83,49 @@ defineEmits<{
       </div>
     </section>
 
+    <section v-if="!loading && seats.length" class="seat-overview" aria-label="场次座位状态与区域筛选">
+      <div class="seat-status-summary" aria-label="当前场次座位统计">
+        <span><small>可选</small><strong>{{ overallCounts.available }}</strong></span>
+        <span><small>锁定中</small><strong>{{ overallCounts.held }}</strong></span>
+        <span><small>已售</small><strong>{{ overallCounts.sold }}</strong></span>
+        <span><small>已选</small><strong>{{ selectedSeatIds.length }} / 6</strong></span>
+      </div>
+      <div class="zone-browser" role="group" aria-label="按座位区域浏览">
+        <button
+          type="button"
+          :class="{ 'is-active': !activeZone }"
+          :aria-pressed="!activeZone"
+          @click="activeZone = ''"
+        >
+          <strong>全部</strong><span>可选 {{ overallCounts.available }} · 共 {{ overallCounts.total }}</span>
+        </button>
+        <button
+          v-for="zone in zoneSummaries"
+          :key="zone.zone"
+          type="button"
+          :class="{ 'is-active': activeZone === zone.zone }"
+          :aria-pressed="activeZone === zone.zone"
+          @click="activeZone = zone.zone"
+        >
+          <strong>{{ zone.zone }}</strong><span>可选 {{ zone.available }} · 共 {{ zone.total }}</span>
+        </button>
+      </div>
+    </section>
+
+    <p v-if="availabilityWarning" class="availability-warning" role="status">
+      {{ availabilityWarning }} 已保留当前座位图，你仍可查看已有状态。
+    </p>
+
     <div v-if="loading" class="seat-layout">
       <div class="seat-map-panel skeleton-card"></div>
       <div class="selection-panel skeleton-card"></div>
     </div>
+    <PageState
+      v-else-if="!seats.length"
+      eyebrow="SEAT MAP"
+      title="当前场次暂无座位信息"
+      description="座位图尚未开放，请返回场次列表选择其他场次。"
+    />
     <RecoverableCheckoutPanel
       v-else-if="recoverableCheckoutSessions.length"
       :sessions="recoverableCheckoutSessions"
@@ -67,9 +136,11 @@ defineEmits<{
     />
     <div v-else class="seat-layout">
       <SeatGrid
-        :seats="seats"
+        :seats="visibleSeats"
         :selected-seat-ids="selectedSeatIds"
         :editing-disabled="editingDisabled"
+        :zone-name="currentZoneName"
+        :available-count="visibleCounts.available"
         @toggle="$emit('toggle', $event)"
       />
       <SelectedSeats
@@ -82,6 +153,7 @@ defineEmits<{
         :submitting-polling="submittingPolling"
         :submit-uncertain="submitUncertain"
         :editing-disabled="editingDisabled"
+        :refreshing="refreshing"
         @remove="$emit('toggle', $event)"
         @reserve="$emit('reserve')"
         @refresh="$emit('refresh')"

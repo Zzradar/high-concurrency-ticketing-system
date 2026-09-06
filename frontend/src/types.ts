@@ -40,15 +40,23 @@ export interface TicketSession {
   availability: '充足' | '紧张' | '售罄'
 }
 
-export interface Seat {
+export interface SeatStatic {
   id: string
   sessionId: string
   label: string
   row: string
   number: number
-  status: SeatStatus
   zone: string
   price: number // 整数“分”
+}
+
+export interface SeatAvailability {
+  id: string
+  status: SeatStatus
+}
+
+export interface Seat extends SeatStatic {
+  status: SeatStatus
 }
 
 export interface Reservation {

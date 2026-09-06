@@ -14,6 +14,7 @@ const props = defineProps<{
   submittingPolling: boolean
   submitUncertain: boolean
   editingDisabled: boolean
+  refreshing: boolean
 }>()
 
 defineEmits<{
@@ -36,8 +37,8 @@ const totalAmount = computed(() =>
         <p class="eyebrow">YOUR SELECTION</p>
         <h2 id="selection-title">已选座位</h2>
       </div>
-      <button class="icon-button" type="button" aria-label="刷新座位状态" @click="$emit('refresh')">
-        <RefreshCw :size="18" aria-hidden="true" />
+      <button class="icon-button" type="button" :aria-label="refreshing ? '正在刷新座位状态' : '刷新座位状态'" :disabled="refreshing" @click="$emit('refresh')">
+        <RefreshCw :class="{ 'is-spinning': refreshing }" :size="18" aria-hidden="true" />
       </button>
     </div>
 

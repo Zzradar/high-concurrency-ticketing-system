@@ -3,6 +3,9 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authState, checkoutLocatorKey } from '../auth/authState'
 import { ticketApi, TicketApiError } from '../api/ticketApi'
+import PageBreadcrumbs from '../components/PageBreadcrumbs.vue'
+import PageState from '../components/PageState.vue'
+import { routeNames, setPageTitle } from '../navigation'
 import { requestNotificationRefresh, showNotice } from '../uiSignals'
 import SeatSelectionView from '../views/SeatSelectionView.vue'
 import type { CheckoutSession, Seat, TicketEvent, TicketOrder, TicketSession } from '../types'
@@ -18,14 +21,16 @@ const recoverable = ref<CheckoutSession[]>([])
 const sessionOrders = ref<TicketOrder[]>([])
 const loading = ref(true)
 const syncing = ref(false)
+const refreshing = ref(false)
 const confirming = ref(false)
 const submittingPolling = ref(false)
 const submitUncertain = ref(false)
 const error = ref('')
+const availabilityWarning = ref('')
 let pollingGeneration = 0
 
 const selectedSeats = computed(() => seats.value.filter((seat) => selectedSeatIds.value.includes(seat.id)))
-const editingDisabled = computed(() => syncing.value || confirming.value || submittingPolling.value || checkout.value?.status !== 'SELECTING' && !!checkout.value)
+const editingDisabled = computed(() => refreshing.value || syncing.value || confirming.value || submittingPolling.value || checkout.value?.status !== 'SELECTING' && !!checkout.value)
 const existingOrder = computed(() => sessionOrders.value.find((order) => order.status === 'PENDING_PAYMENT') ?? sessionOrders.value.find((order) => order.status === 'PAID'))
 
 function locatorWrite(value: CheckoutSession) {
@@ -39,8 +44,19 @@ function locatorClear() {
 }
 
 async function refreshSeats() {
-  if (!session.value) return
-  seats.value = await ticketApi.getSeats(session.value.id, checkout.value?.id)
+  if (!session.value) return false
+  refreshing.value = true
+  try {
+    const latestSeats = await ticketApi.getSeats(session.value.id, checkout.value?.id)
+    seats.value = latestSeats
+    availabilityWarning.value = ''
+    return true
+  } catch {
+    availabilityWarning.value = '座位状态暂未刷新，请稍后重试。'
+    return false
+  } finally {
+    refreshing.value = false
+  }
 }
 
 async function refreshSessionOrders() {
@@ -59,7 +75,7 @@ async function activate(value: CheckoutSession) {
   await refreshSeats()
   if (value.status === 'RESERVED' && value.order) {
     showNotice('该购票会话此前已经确认，已同步现有订单。')
-    await router.push(`/orders/${value.order.id}`)
+    await router.push({ name: routeNames.orderDetail, params: { orderId: value.order.id } })
   } else if (value.status === 'SUBMITTING') {
     startSubmittingPoll(value.id)
   }
@@ -95,6 +111,7 @@ async function load() {
       ticketApi.getEvent(session.value.eventId),
       ticketApi.getSeats(sessionId),
     ])
+    setPageTitle(event.value.name + ' · 选座')
     await Promise.all([recoverCheckout(), refreshSessionOrders()])
   } catch (cause) {
     error.value = cause instanceof TicketApiError ? cause.message : '座位图加载失败。'
@@ -105,7 +122,7 @@ async function load() {
 
 async function requireLogin() {
   if (authState.currentUser.value) return true
-  await router.push({ path: '/login', query: { redirect: route.fullPath } })
+  await router.push({ name: routeNames.login, query: { redirect: route.fullPath } })
   return false
 }
 
@@ -171,7 +188,12 @@ async function confirmCheckout() {
     }
     showNotice(messages[result.disposition])
     requestNotificationRefresh()
-    if (result.checkoutSession.order) await router.push(`/orders/${result.checkoutSession.order.id}`)
+    if (result.checkoutSession.order) {
+      await router.push({
+        name: routeNames.orderDetail,
+        params: { orderId: result.checkoutSession.order.id },
+      })
+    }
   } catch (cause) {
     error.value = cause instanceof TicketApiError ? cause.message : '确认结果暂时未知，正在恢复同一购票会话。'
     startSubmittingPoll(checkout.value.id)
@@ -193,7 +215,7 @@ function startSubmittingPoll(id: string) {
       if (value.status === 'RESERVED' && value.order) {
         submittingPolling.value = false
         showNotice('该购票会话此前已经生成订单，已同步现有订单。')
-        await router.push(`/orders/${value.order.id}`)
+        await router.push({ name: routeNames.orderDetail, params: { orderId: value.order.id } })
         return
       }
       if (value.status !== 'SUBMITTING') {
@@ -242,20 +264,30 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <p v-if="error" class="message-banner message-banner--error" role="alert">{{ error }}</p>
+  <main v-if="!loading && error && (!event || !session)" class="page-shell">
+    <PageBreadcrumbs
+      :items="[
+        { label: '活动', to: { name: routeNames.events } },
+        { label: '选座' },
+      ]"
+    />
+    <PageState eyebrow="SEAT MAP" title="无法打开选座页" :description="error" action-label="重新加载" @action="load" />
+  </main>
+  <p v-else-if="error" class="message-banner message-banner--error" role="alert">{{ error }}</p>
   <section v-if="existingOrder" class="message-banner" role="status">
     <span>{{ existingOrder.status === 'PENDING_PAYMENT' ? '你有本场次待支付订单' : '你已经购买过本场次' }}</span>
-    <button type="button" @click="router.push(`/orders/${existingOrder.id}`)">查看订单</button><span>也可继续购票</span>
+    <button type="button" @click="router.push({ name: routeNames.orderDetail, params: { orderId: existingOrder.id } })">查看订单</button><span>也可继续购票</span>
   </section>
   <SeatSelectionView
     v-if="event && session"
     :event="event" :session="session" :seats="seats" :selected-seats="selectedSeats"
     :selected-seat-ids="selectedSeatIds" :checkout-session="checkout"
     :recoverable-checkout-sessions="recoverable" :loading="loading"
+    :refreshing="refreshing" :availability-warning="availabilityWarning"
     :checkout-creating="syncing && !checkout" :checkout-sync-in-flight="syncing"
     :confirming="confirming" :submitting-polling="submittingPolling"
     :submit-uncertain="submitUncertain" :editing-disabled="editingDisabled"
-    @back="router.push(`/events/${session.eventId}/sessions`)" @toggle="toggleSeat"
+    @back="router.push({ name: routeNames.eventSessions, params: { eventId: session.eventId } })" @toggle="toggleSeat"
     @reserve="confirmCheckout" @refresh="refreshSeats" @clear="clearSeats"
     @continue-checkout="activate" @abandon-checkout="abandon"
     @start-new-checkout="recoverable = []" @retry-confirm="confirmCheckout"

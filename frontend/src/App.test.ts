@@ -2,7 +2,8 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App.vue'
 import { authState } from './auth/authState'
-import { resetMockData, setMockLatency, ticketApi } from './api/ticketApi'
+import { resetMockData, setMockLatency, ticketApi, TicketApiError } from './api/ticketApi'
+import { routeNames } from './navigation'
 import { router } from './router'
 
 describe('Phase 9 application shell and routes', () => {
@@ -27,6 +28,7 @@ describe('Phase 9 application shell and routes', () => {
       ]),
     )
     expect(routes.find((route) => route.path === '/orders')?.meta.requiresAuth).toBe(true)
+    expect(routes.find((route) => route.path === '/orders')?.name).toBe(routeNames.orders)
   })
 
   it('shows login when anonymous and current user navigation after login', async () => {
@@ -61,5 +63,38 @@ describe('Phase 9 application shell and routes', () => {
     expect(getNotifications.mock.calls.length).toBeGreaterThan(callsBeforeFocus)
     wrapper.unmount()
     getNotifications.mockRestore()
+  })
+
+  it('keeps a missing resource URL visible with an explicit error state', async () => {
+    await router.push({ name: routeNames.eventSessions, params: { eventId: 'missing-event' } })
+    const wrapper = mount(App, { global: { plugins: [router] } })
+    await vi.waitFor(() => {
+      expect(wrapper.text()).toContain('无法打开该活动')
+    })
+
+    expect(router.currentRoute.value.fullPath).toBe('/events/missing-event/sessions')
+    expect(wrapper.text()).toContain('活动不存在')
+    wrapper.unmount()
+  })
+
+  it('keeps the current seat snapshot when a manual availability refresh fails', async () => {
+    await authState.login('demo', 'Ticketing123!')
+    await router.push({ name: routeNames.sessionSeats, params: { sessionId: 'ses-concert-1001' } })
+    const wrapper = mount(App, { global: { plugins: [router] } })
+    await vi.waitFor(() => {
+      expect(wrapper.find('button[aria-label="刷新座位状态"]').exists()).toBe(true)
+    })
+    const countBeforeRefresh = wrapper.findAll('.seat-item').length
+    const getSeats = vi.spyOn(ticketApi, 'getSeats').mockRejectedValueOnce(
+      new TicketApiError('availability unavailable', 'SERVICE_UNAVAILABLE'),
+    )
+
+    await wrapper.get('button[aria-label="刷新座位状态"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.findAll('.seat-item')).toHaveLength(countBeforeRefresh)
+    expect(wrapper.text()).toContain('已保留当前座位图')
+    getSeats.mockRestore()
+    wrapper.unmount()
   })
 })

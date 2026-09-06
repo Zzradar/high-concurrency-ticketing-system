@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ArrowLeft, CreditCard, Hourglass, RotateCcw, X } from '@lucide/vue'
 import OrderSummary from '../components/OrderSummary.vue'
+import PageBreadcrumbs from '../components/PageBreadcrumbs.vue'
 import { isMockMode } from '../api/ticketApi'
+import { routeNames } from '../navigation'
 import type { PaymentAttempt, Seat, TicketEvent, TicketOrder, TicketSession } from '../types'
 import { formatCny } from '../utils/money'
 
@@ -28,6 +30,12 @@ defineEmits<{
 
 <template>
   <main class="page-shell">
+    <PageBreadcrumbs
+      :items="[
+        { label: '我的订单', to: { name: routeNames.orders } },
+        { label: order.id.length > 14 ? order.id.slice(0, 14) + '…' : order.id },
+      ]"
+    />
     <button class="back-button" type="button" @click="$emit('startOver')">
       <ArrowLeft :size="17" aria-hidden="true" />
       返回活动列表

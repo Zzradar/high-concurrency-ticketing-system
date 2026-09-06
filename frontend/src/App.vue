@@ -4,6 +4,7 @@ import { Bell, CircleUserRound, Database, TicketCheck } from '@lucide/vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { authState } from './auth/authState'
 import { isMockMode, ticketApi } from './api/ticketApi'
+import { routeNames } from './navigation'
 import type { UserNotification } from './types'
 
 const router = useRouter()
@@ -32,14 +33,14 @@ async function openNotification(notification: UserNotification) {
     if (!notification.readAt) await ticketApi.markNotificationRead(notification.id)
   } finally {
     notificationsOpen.value = false
-    await router.push(`/orders/${notification.orderId}`)
+    await router.push({ name: routeNames.orderDetail, params: { orderId: notification.orderId } })
   }
 }
 
 async function logout() {
   await authState.logout()
   notifications.value = []
-  await router.push('/login')
+  await router.push({ name: routeNames.login })
 }
 
 function handleNotice(event: Event) {
@@ -74,13 +75,13 @@ onBeforeUnmount(() => {
 <template>
   <div class="app-shell">
     <header class="site-header">
-      <RouterLink class="brand" to="/events" aria-label="返回活动首页">
+      <RouterLink class="brand" :to="{ name: routeNames.events }" aria-label="返回活动首页">
         <span class="brand__mark"><TicketCheck :size="21" aria-hidden="true" /></span>
         <span><strong>票迹</strong><small>TICKET TRACE</small></span>
       </RouterLink>
       <nav class="progress-nav" aria-label="主要导航">
-        <RouterLink to="/events">活动</RouterLink>
-        <RouterLink v-if="authState.currentUser.value" to="/orders">我的订单</RouterLink>
+        <RouterLink :to="{ name: routeNames.events }">活动</RouterLink>
+        <RouterLink v-if="authState.currentUser.value" :to="{ name: routeNames.orders }">我的订单</RouterLink>
       </nav>
       <div class="header-actions">
         <span v-if="isMockMode" class="mode-badge"><Database :size="14" />演示数据</span>
@@ -96,7 +97,7 @@ onBeforeUnmount(() => {
             </button>
           </section>
         </div>
-        <RouterLink v-if="!authState.currentUser.value" class="user-button" to="/login">登录</RouterLink>
+        <RouterLink v-if="!authState.currentUser.value" class="user-button" :to="{ name: routeNames.login }">登录</RouterLink>
         <button v-else class="user-button" type="button" @click="logout">
           <CircleUserRound :size="20" /><span>{{ authState.currentUser.value.displayName }}</span><small>退出</small>
         </button>

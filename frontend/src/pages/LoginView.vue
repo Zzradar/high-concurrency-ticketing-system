@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authState } from '../auth/authState'
 import { TicketApiError } from '../api/ticketApi'
+import { routeNames } from '../navigation'
 
 const route = useRoute()
 const router = useRouter()
@@ -18,7 +19,7 @@ async function submit() {
     await authState.login(username.value, password.value)
     const redirect = typeof route.query.redirect === 'string' && route.query.redirect.startsWith('/')
       ? route.query.redirect
-      : '/events'
+      : { name: routeNames.events }
     await router.replace(redirect)
   } catch (cause) {
     error.value = cause instanceof TicketApiError ? cause.message : '登录失败，请稍后重试。'

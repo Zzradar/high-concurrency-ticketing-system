@@ -344,6 +344,76 @@ h2 {
   width: min(1320px, calc(100% - 48px));
 }
 
+.breadcrumbs {
+  display: flex;
+  overflow-x: auto;
+  align-items: center;
+  gap: 7px;
+  margin: -18px 0 24px;
+  padding-bottom: 4px;
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.breadcrumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.breadcrumbs a {
+  color: var(--accent-dark);
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.breadcrumbs span[aria-current="page"] {
+  color: var(--ink);
+  font-weight: 750;
+}
+
+.page-state-page {
+  display: grid;
+  place-items: center;
+}
+
+.page-state {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+  align-content: center;
+  padding: 38px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+}
+
+.page-state h1,
+.page-state h2 {
+  margin-bottom: 10px;
+}
+
+.page-state > p:not(.eyebrow) {
+  max-width: 520px;
+  margin: 0 0 22px;
+  color: var(--ink-soft);
+  line-height: 1.65;
+}
+
+.page-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
 .page-intro {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.7fr);
@@ -789,6 +859,97 @@ h2 {
   align-items: start;
 }
 
+.seat-overview {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.seat-status-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.seat-status-summary > span {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 18px;
+  border-right: 1px solid var(--line);
+}
+
+.seat-status-summary > span:last-child {
+  border-right: 0;
+}
+
+.seat-status-summary small {
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+}
+
+.seat-status-summary strong {
+  color: var(--ink);
+  font-family: Georgia, serif;
+  font-size: 1.2rem;
+}
+
+.zone-browser {
+  display: flex;
+  overflow-x: auto;
+  gap: 9px;
+  padding: 2px 1px 6px;
+  scrollbar-width: thin;
+}
+
+.zone-browser button {
+  display: grid;
+  min-width: 154px;
+  gap: 3px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  color: var(--ink-soft);
+  background: var(--surface);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.zone-browser button:hover {
+  border-color: var(--line-strong);
+}
+
+.zone-browser button.is-active {
+  border-color: var(--accent);
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+
+.zone-browser strong {
+  font-size: 0.78rem;
+}
+
+.zone-browser span {
+  font-size: 0.66rem;
+}
+
+.availability-warning {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1px solid #dfc68d;
+  border-radius: 10px;
+  color: #765719;
+  background: #fff8e8;
+  font-size: 0.75rem;
+  line-height: 1.55;
+}
+
 .seat-map-panel,
 .selection-panel {
   border: 1px solid var(--line);
@@ -800,6 +961,11 @@ h2 {
 .seat-map-panel {
   min-height: 650px;
   padding: clamp(24px, 4vw, 42px);
+}
+
+.seat-map-panel.is-editing-disabled {
+  border-color: #c9b993;
+  background: #fcfaf5;
 }
 
 .seat-map-panel__heading,
@@ -1057,6 +1223,15 @@ h2 {
 .icon-button:hover {
   border-color: var(--ink);
   color: var(--ink);
+}
+
+.icon-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.is-spinning {
+  animation: spin 800ms linear infinite;
 }
 
 .selected-list {
@@ -1749,6 +1924,18 @@ h2 {
     grid-template-columns: 1fr;
   }
 
+  .seat-status-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .seat-status-summary > span:nth-child(2) {
+    border-right: 0;
+  }
+
+  .seat-status-summary > span:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+
   .selection-panel {
     position: static;
   }
@@ -1808,6 +1995,19 @@ h2 {
   .page-shell--wide {
     width: min(100% - 24px, 500px);
     padding-bottom: 48px;
+  }
+
+  .breadcrumbs {
+    margin-top: -12px;
+  }
+
+  .page-state {
+    min-height: 200px;
+    padding: 28px 20px;
+  }
+
+  .zone-browser button {
+    min-width: 140px;
   }
 
   h1 {

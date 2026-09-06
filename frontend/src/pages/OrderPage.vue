@@ -2,6 +2,9 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ticketApi, TicketApiError } from '../api/ticketApi'
+import PageBreadcrumbs from '../components/PageBreadcrumbs.vue'
+import PageState from '../components/PageState.vue'
+import { routeNames } from '../navigation'
 import { requestNotificationRefresh, showNotice } from '../uiSignals'
 import OrderView from '../views/OrderView.vue'
 import type { PaymentAttempt, Seat, TicketEvent, TicketOrder, TicketSession } from '../types'
@@ -22,6 +25,7 @@ let paymentGeneration = 0
 
 async function refreshOrder(silent = false) {
   if (!silent) loading.value = true
+  if (!silent) error.value = ''
   try {
     const value = await ticketApi.getOrder(String(route.params.orderId))
     order.value = value
@@ -128,7 +132,16 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <p v-if="error" class="message-banner message-banner--error" role="alert">{{ error }}</p>
+  <main v-if="!loading && error && !order" class="page-shell">
+    <PageBreadcrumbs
+      :items="[
+        { label: '我的订单', to: { name: routeNames.orders } },
+        { label: String(route.params.orderId) },
+      ]"
+    />
+    <PageState eyebrow="ORDER" title="订单不存在或不可访问" :description="error" action-label="重新加载" @action="refreshOrder" />
+  </main>
+  <p v-else-if="error" class="message-banner message-banner--error" role="alert">{{ error }}</p>
   <p v-if="loading && !order" class="page-shell">正在加载订单…</p>
-  <OrderView v-else-if="order && event && session" :order="order" :event="event" :session="session" :seats="seats" :refreshing="loading" :payment-starting="paymentStarting" :payment-polling="paymentPolling" :cancelling="cancelling" :payment-attempt="paymentAttempt" @pay="pay" @cancel="cancel" @expire="expire" @refresh="refreshOrder" @start-over="router.push('/events')" />
+  <OrderView v-else-if="order && event && session" :order="order" :event="event" :session="session" :seats="seats" :refreshing="loading" :payment-starting="paymentStarting" :payment-polling="paymentPolling" :cancelling="cancelling" :payment-attempt="paymentAttempt" @pay="pay" @cancel="cancel" @expire="expire" @refresh="refreshOrder" @start-over="router.push({ name: routeNames.events })" />
 </template>
