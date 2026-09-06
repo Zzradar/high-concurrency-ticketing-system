@@ -15,12 +15,13 @@ class PerformanceMetrics final
     {
         DbFetchAndMaterialize, RowBuild, DtoBuild, SeatIdsBuild,
         RedisInputBuild, RedisLookup, OwnerParse, Overlay, JsonBuild,
-        ResponseCreate, JsonSerialize, ResponseCallback, Count
+        ResponseCreate, ResponseCallback, Count
     };
+    enum class SeatMapRedisOutcome { Success, Timeout, Error, ParseError, Count };
     using TimePoint = std::chrono::steady_clock::time_point;
     static TimePoint seatMapStart();
     static void observeSeatMap(SeatMapStage stage, TimePoint start);
-    static void observeSeatMapBytes(std::size_t bytes);
+    static void observeSeatMapRedisOutcome(SeatMapRedisOutcome outcome);
     static void registerWithApplication();
     static std::shared_ptr<PasswordHashObserver> passwordHashObserver();
 };

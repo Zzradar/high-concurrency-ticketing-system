@@ -64,10 +64,10 @@
             "labels": ["stage"]
           },
           {
-            "name": "ticketing_seat_map_response_bytes",
-            "help": "Seat map serialized JSON body bytes before compression",
-            "type": "histogram",
-            "labels": []
+            "name": "ticketing_seat_map_redis_lookup_total",
+            "help": "Seat map Redis read outcomes, including owner decoding failures",
+            "type": "counter",
+            "labels": ["outcome"]
           },
           {
             "name": "ticketing_seat_map_requests_in_flight",

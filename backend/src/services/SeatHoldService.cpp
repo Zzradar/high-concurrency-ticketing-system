@@ -415,6 +415,7 @@ void SeatHoldService::readOwners(
         auto success = [done, lookupStarted](const drogon::nosql::RedisResult &result) {
             PerformanceMetrics::observeSeatMap(
                 PerformanceMetrics::SeatMapStage::RedisLookup, lookupStarted);
+            bool parsed = false;
             try
             {
                 const auto parseStarted = PerformanceMetrics::seatMapStart();
@@ -435,16 +436,30 @@ void SeatHoldService::readOwners(
                 }
                 PerformanceMetrics::observeSeatMap(
                     PerformanceMetrics::SeatMapStage::OwnerParse, parseStarted);
+                parsed = true;
+                PerformanceMetrics::observeSeatMapRedisOutcome(
+                    PerformanceMetrics::SeatMapRedisOutcome::Success);
                 (*done)(std::move(read));
             }
             catch (...)
             {
+                // Preserve the existing completion/fallback boundary; an
+                // exception from downstream completion is not a parse error.
+                if (!parsed)
+                    PerformanceMetrics::observeSeatMapRedisOutcome(
+                        PerformanceMetrics::SeatMapRedisOutcome::ParseError);
                 (*done)({SeatHoldOutcome::Unavailable, {}});
             }
         };
-        auto error = [done, lookupStarted](const std::exception &) {
+        auto error = [done, lookupStarted](const std::exception &exception) {
             PerformanceMetrics::observeSeatMap(
                 PerformanceMetrics::SeatMapStage::RedisLookup, lookupStarted);
+            const auto *redisError =
+                dynamic_cast<const drogon::nosql::RedisException *>(&exception);
+            PerformanceMetrics::observeSeatMapRedisOutcome(
+                redisError && redisError->code() == drogon::nosql::RedisErrorCode::kTimeout
+                    ? PerformanceMetrics::SeatMapRedisOutcome::Timeout
+                    : PerformanceMetrics::SeatMapRedisOutcome::Error);
             (*done)({SeatHoldOutcome::Unavailable, {}});
         };
         drogon::app().getRedisClient("seat_holds")->execCommandAsync(
@@ -458,6 +473,8 @@ void SeatHoldService::readOwners(
     }
     catch (...)
     {
+        PerformanceMetrics::observeSeatMapRedisOutcome(
+            PerformanceMetrics::SeatMapRedisOutcome::Error);
         (*done)({SeatHoldOutcome::Unavailable, {}});
     }
 }

@@ -91,15 +91,8 @@ void SeatController::listWithOwnCheckout(
             const auto responseStarted = Metrics::seatMapStart();
             auto response = drogon::HttpResponse::newHttpJsonResponse(body);
             Metrics::observeSeatMap(Metrics::SeatMapStage::ResponseCreate, responseStarted);
-            if (responseStarted != Metrics::TimePoint{})
-            {
-                // Performance-only: trigger Drogon's lazy serializer once, on
-                // the same callback thread, before handing off the response.
-                const auto serializeStarted = Metrics::seatMapStart();
-                const auto bytes = response->getBody().size();
-                Metrics::observeSeatMap(Metrics::SeatMapStage::JsonSerialize, serializeStarted);
-                Metrics::observeSeatMapBytes(bytes);
-            }
+            // Leave lazy serialization to Drogon's ordinary send path.
+            // Body sizes are measured by an out-of-load HTTP encoding probe.
             const auto callbackStarted = Metrics::seatMapStart();
             (*callbackPtr)(response);
             // Includes synchronous framework work (e.g. compression), NOT a

@@ -44,7 +44,8 @@ struct MetricsState
 {
     std::array<std::shared_ptr<drogon::monitoring::Histogram>,
                static_cast<std::size_t>(ticketing::PerformanceMetrics::SeatMapStage::Count)> seatMapStages;
-    std::shared_ptr<drogon::monitoring::Histogram> seatMapBytes;
+    std::array<std::shared_ptr<drogon::monitoring::Counter>,
+               static_cast<std::size_t>(ticketing::PerformanceMetrics::SeatMapRedisOutcome::Count)> seatMapRedisOutcomes;
     std::shared_ptr<drogon::monitoring::Gauge> seatMapInFlight;
     std::shared_ptr<CounterCollector> requests;
     std::shared_ptr<HistogramCollector> durations;
@@ -147,10 +148,14 @@ void PerformanceMetrics::observeSeatMap(SeatMapStage stage, TimePoint start)
     state->seatMapStages[index]->observe(seconds);
 }
 
-void PerformanceMetrics::observeSeatMapBytes(std::size_t bytes)
+void PerformanceMetrics::observeSeatMapRedisOutcome(SeatMapRedisOutcome outcome)
 {
     if (auto *state = seatMapMetrics.load(std::memory_order_acquire))
-        state->seatMapBytes->observe(static_cast<double>(bytes));
+    {
+        const auto index = static_cast<std::size_t>(outcome);
+        if (index < state->seatMapRedisOutcomes.size())
+            state->seatMapRedisOutcomes[index]->increment();
+    }
 }
 
 void PerformanceMetrics::registerWithApplication()
@@ -215,26 +220,26 @@ void PerformanceMetrics::registerWithApplication()
         const std::vector<std::string> stages{
             "db_fetch_and_materialize", "row_build", "dto_build", "seat_ids_build",
             "redis_input_build", "redis_lookup", "owner_parse", "overlay",
-            "json_build", "response_create", "json_serialize", "response_callback"};
+            "json_build", "response_create", "response_callback"};
         const std::vector<double> buckets{
             0.00001, 0.000025, 0.00005, 0.0001, 0.00025, 0.0005,
             0.001, 0.0025, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25,
             0.5, 1, 2.5, 5, 10, 30, 60, 120};
         auto stageCollector = exporter->getCollector<drogon::monitoring::Histogram>(
             "ticketing_seat_map_stage_duration_seconds");
-        auto bytesCollector = exporter->getCollector<drogon::monitoring::Histogram>(
-            "ticketing_seat_map_response_bytes");
+        auto outcomeCollector = exporter->getCollector<drogon::monitoring::Counter>(
+            "ticketing_seat_map_redis_lookup_total");
         auto flightCollector = exporter->getCollector<drogon::monitoring::Gauge>(
             "ticketing_seat_map_requests_in_flight");
-        if (!stageCollector || !bytesCollector || !flightCollector)
+        if (!stageCollector || !outcomeCollector || !flightCollector)
             throw std::runtime_error("seat map diagnostic collectors are missing");
         for (std::size_t index = 0; index < stages.size(); ++index)
             state->seatMapStages[index] = stageCollector->metric(
                 {stages[index]}, buckets, std::chrono::duration<double>{0}, 1);
-        state->seatMapBytes = bytesCollector->metric(
-            {}, std::vector<double>{1024, 16384, 65536, 131072, 262144,
-                                   524288, 1048576, 2097152, 4194304},
-            std::chrono::duration<double>{0}, 1);
+        const std::array<std::string, 4> outcomes{
+            "success", "timeout", "error", "parse_error"};
+        for (std::size_t index = 0; index < outcomes.size(); ++index)
+            state->seatMapRedisOutcomes[index] = outcomeCollector->metric({outcomes[index]});
         state->seatMapInFlight = flightCollector->metric({});
         state->seatMapInFlight->set(0);
         // Application advice owns state for the application's lifetime.
