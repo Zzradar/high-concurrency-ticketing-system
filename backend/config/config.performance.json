@@ -74,6 +74,36 @@
             "help": "Ticketing backend HTTP requests currently in flight",
             "type": "gauge",
             "labels": []
+          },
+          {
+            "name": "ticketing_password_hash_queue_depth",
+            "help": "Password hash tasks currently waiting in the bounded queue",
+            "type": "gauge",
+            "labels": []
+          },
+          {
+            "name": "ticketing_password_hash_active_workers",
+            "help": "Password hash workers currently executing Argon2",
+            "type": "gauge",
+            "labels": []
+          },
+          {
+            "name": "ticketing_password_hash_submissions_total",
+            "help": "Password hash task submissions by bounded queue outcome",
+            "type": "counter",
+            "labels": ["outcome"]
+          },
+          {
+            "name": "ticketing_password_hash_queue_wait_seconds",
+            "help": "Time password hash tasks spend waiting in the bounded queue",
+            "type": "histogram",
+            "labels": []
+          },
+          {
+            "name": "ticketing_password_hash_execution_seconds",
+            "help": "Time spent executing Argon2 password verification",
+            "type": "histogram",
+            "labels": []
           }
         ]
       }

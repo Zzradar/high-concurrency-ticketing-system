@@ -11,6 +11,7 @@ option(TICKETING_FETCH_DROGON "Fetch the pinned Drogon release when it is not in
 include(CTest)
 
 find_package(OpenSSL REQUIRED)
+find_package(Threads REQUIRED)
 find_path(ARGON2_INCLUDE_DIR NAMES argon2.h REQUIRED)
 find_library(ARGON2_LIBRARY NAMES argon2 REQUIRED)
 
@@ -176,4 +177,13 @@ if(BUILD_TESTING)
         NAME performance_metrics_source_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/performance_metrics_source_contract_test.py"
     )
+    add_executable(password_hash_executor_unit
+        tests/password_hash_executor_unit.cpp
+        src/security/PasswordHashExecutor.cpp
+        src/security/PasswordHasher.cpp
+    )
+    target_include_directories(password_hash_executor_unit PRIVATE src "${ARGON2_INCLUDE_DIR}")
+    target_link_libraries(password_hash_executor_unit PRIVATE
+        "${ARGON2_LIBRARY}" OpenSSL::Crypto Threads::Threads)
+    add_test(NAME password_hash_executor_unit COMMAND password_hash_executor_unit)
 endif()

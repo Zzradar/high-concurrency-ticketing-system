@@ -1,5 +1,6 @@
 #include "services/AuthService.h"
 
+#include "observability/PerformanceMetrics.h"
 #include "security/AuthConfig.h"
 #include "security/Crypto.h"
 #include "security/PasswordHashExecutor.h"
@@ -21,7 +22,9 @@ ticketing::PasswordHashExecutor &passwordExecutor()
 {
     static const auto config = ticketing::AuthConfig::load();
     static ticketing::PasswordHashExecutor executor{
-        config.passwordHashWorkers, config.passwordHashQueueCapacity};
+        config.passwordHashWorkers,
+        config.passwordHashQueueCapacity,
+        ticketing::PerformanceMetrics::passwordHashObserver()};
     return executor;
 }
 

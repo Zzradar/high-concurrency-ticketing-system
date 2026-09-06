@@ -43,6 +43,11 @@ class PerformanceMetricsSourceContractTest(unittest.TestCase):
                 "ticketing_http_requests_total",
                 "ticketing_http_request_duration_seconds",
                 "ticketing_http_requests_in_flight",
+                "ticketing_password_hash_queue_depth",
+                "ticketing_password_hash_active_workers",
+                "ticketing_password_hash_submissions_total",
+                "ticketing_password_hash_queue_wait_seconds",
+                "ticketing_password_hash_execution_seconds",
             },
         )
         self.assertEqual(
@@ -56,6 +61,17 @@ class PerformanceMetricsSourceContractTest(unittest.TestCase):
         self.assertEqual(
             by_name["ticketing_http_requests_in_flight"]["labels"], []
         )
+        self.assertEqual(
+            by_name["ticketing_password_hash_submissions_total"]["labels"],
+            ["outcome"],
+        )
+        for name in (
+            "ticketing_password_hash_queue_depth",
+            "ticketing_password_hash_active_workers",
+            "ticketing_password_hash_queue_wait_seconds",
+            "ticketing_password_hash_execution_seconds",
+        ):
+            self.assertEqual(by_name[name]["labels"], [])
         labels = {
             label
             for collector in collectors
@@ -63,7 +79,11 @@ class PerformanceMetricsSourceContractTest(unittest.TestCase):
         }
         self.assertTrue(
             labels.isdisjoint(
-                {"userId", "orderId", "sessionId", "checkoutSessionId", "token"}
+                {
+                    "username", "userId", "password", "hash", "token",
+                    "requestId", "threadId", "orderId", "sessionId",
+                    "checkoutSessionId",
+                }
             )
         )
         self.assertTrue(config["custom_config"]["performance_metrics"]["enabled"])
@@ -90,6 +110,7 @@ class PerformanceMetricsSourceContractTest(unittest.TestCase):
         self.assertIn("PerformanceMetrics::registerWithApplication();", main)
         self.assertIn("src/observability/PerformanceMetrics.cpp", cmake)
         self.assertIn("performance_metrics_source_contract", cmake)
+        self.assertIn("password_hash_executor_unit", cmake)
 
 
 if __name__ == "__main__":

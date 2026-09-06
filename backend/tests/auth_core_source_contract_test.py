@@ -28,6 +28,9 @@ class AuthCoreSourceContractTest(unittest.TestCase):
         self.assertIn("queue_.size() >= queueCapacity_", EXECUTOR)
         self.assertNotIn("detach()", EXECUTOR)
         self.assertNotIn("std::async", EXECUTOR)
+        self.assertIn("PasswordHashObserver", EXECUTOR)
+        self.assertIn("onExecutionStarted", EXECUTOR)
+        self.assertIn("executionSeconds", EXECUTOR)
 
     def test_database_stores_hash_and_uses_authoritative_clock(self) -> None:
         self.assertIn("token_hash", SESSION_REPOSITORY)

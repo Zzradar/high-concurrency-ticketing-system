@@ -1,5 +1,7 @@
 #include "observability/PerformanceMetrics.h"
 
+#include "security/PasswordHashExecutor.h"
+
 #include <drogon/drogon.h>
 #include <drogon/plugins/PromExporter.h>
 #include <drogon/utils/monitoring/Counter.h>
@@ -9,6 +11,7 @@
 #include <atomic>
 #include <chrono>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -31,11 +34,67 @@ const std::vector<double> kDurationBuckets{
     0.25,  0.5,    1.0,   2.5,  5.0,   10.0,
 };
 
+const std::vector<double> kPasswordHashDurationBuckets{
+    0.001, 0.0025, 0.005, 0.01, 0.025, 0.05, 0.1,
+    0.25,  0.5,    1.0,   2.5,  5.0,   10.0, 30.0,
+};
+
 struct MetricsState
 {
     std::shared_ptr<CounterCollector> requests;
     std::shared_ptr<HistogramCollector> durations;
     std::shared_ptr<GaugeCollector> inFlight;
+    std::shared_ptr<GaugeCollector> passwordHashQueueDepth;
+    std::shared_ptr<GaugeCollector> passwordHashActiveWorkers;
+    std::shared_ptr<CounterCollector> passwordHashSubmissions;
+    std::shared_ptr<HistogramCollector> passwordHashQueueWait;
+    std::shared_ptr<HistogramCollector> passwordHashExecution;
+};
+
+std::mutex passwordHashObserverMutex;
+std::shared_ptr<ticketing::PasswordHashObserver> passwordHashObserverSink;
+
+class PasswordHashMetricsObserver final
+    : public ticketing::PasswordHashObserver
+{
+  public:
+    explicit PasswordHashMetricsObserver(std::shared_ptr<MetricsState> state)
+        : state_(std::move(state))
+    {
+    }
+
+    void onSubmission(bool accepted, std::size_t queueDepth) noexcept override
+    {
+        state_->passwordHashSubmissions
+            ->metric({accepted ? "accepted" : "rejected"})
+            ->increment();
+        state_->passwordHashQueueDepth->metric({})->set(queueDepth);
+    }
+
+    void onExecutionStarted(std::size_t queueDepth,
+                            std::size_t activeWorkers,
+                            double queueWaitSeconds) noexcept override
+    {
+        state_->passwordHashQueueDepth->metric({})->set(queueDepth);
+        state_->passwordHashActiveWorkers->metric({})->set(activeWorkers);
+        state_->passwordHashQueueWait
+            ->metric({}, kPasswordHashDurationBuckets,
+                     std::chrono::duration<double>{0}, 1)
+            ->observe(queueWaitSeconds);
+    }
+
+    void onExecutionFinished(std::size_t activeWorkers,
+                             double executionSeconds) noexcept override
+    {
+        state_->passwordHashActiveWorkers->metric({})->set(activeWorkers);
+        state_->passwordHashExecution
+            ->metric({}, kPasswordHashDurationBuckets,
+                     std::chrono::duration<double>{0}, 1)
+            ->observe(executionSeconds);
+    }
+
+  private:
+    std::shared_ptr<MetricsState> state_;
 };
 
 bool isExcluded(const drogon::HttpRequestPtr &request)
@@ -97,12 +156,38 @@ void PerformanceMetrics::registerWithApplication()
                 "ticketing_http_request_duration_seconds");
         state->inFlight = exporter->getCollector<drogon::monitoring::Gauge>(
             "ticketing_http_requests_in_flight");
-        if (!state->requests || !state->durations || !state->inFlight)
+        state->passwordHashQueueDepth =
+            exporter->getCollector<drogon::monitoring::Gauge>(
+                "ticketing_password_hash_queue_depth");
+        state->passwordHashActiveWorkers =
+            exporter->getCollector<drogon::monitoring::Gauge>(
+                "ticketing_password_hash_active_workers");
+        state->passwordHashSubmissions =
+            exporter->getCollector<drogon::monitoring::Counter>(
+                "ticketing_password_hash_submissions_total");
+        state->passwordHashQueueWait =
+            exporter->getCollector<drogon::monitoring::Histogram>(
+                "ticketing_password_hash_queue_wait_seconds");
+        state->passwordHashExecution =
+            exporter->getCollector<drogon::monitoring::Histogram>(
+                "ticketing_password_hash_execution_seconds");
+        if (!state->requests || !state->durations || !state->inFlight ||
+            !state->passwordHashQueueDepth ||
+            !state->passwordHashActiveWorkers ||
+            !state->passwordHashSubmissions || !state->passwordHashQueueWait ||
+            !state->passwordHashExecution)
         {
             throw std::runtime_error(
                 "performance metric collector types do not match their configuration");
         }
         state->inFlight->metric({})->set(0.0);
+        state->passwordHashQueueDepth->metric({})->set(0.0);
+        state->passwordHashActiveWorkers->metric({})->set(0.0);
+        {
+            std::lock_guard lock{passwordHashObserverMutex};
+            passwordHashObserverSink =
+                std::make_shared<PasswordHashMetricsObserver>(state);
+        }
     });
 
     drogon::app().registerPreRoutingAdvice(
@@ -152,5 +237,12 @@ void PerformanceMetrics::registerWithApplication()
                 ->observe(elapsed);
             state->inFlight->metric({})->decrement();
         });
+}
+
+std::shared_ptr<PasswordHashObserver>
+PerformanceMetrics::passwordHashObserver()
+{
+    std::lock_guard lock{passwordHashObserverMutex};
+    return passwordHashObserverSink;
 }
 }  // namespace ticketing

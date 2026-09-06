@@ -28,6 +28,11 @@ class EvidenceTests(unittest.TestCase):
         self.assertIn("postgres-connections", evidence.PROMETHEUS_QUERIES)
         self.assertIn("redis-clients", evidence.PROMETHEUS_QUERIES)
         self.assertIn("container-cpu", evidence.PROMETHEUS_QUERIES)
+        self.assertIn("password-hash-queue-depth", evidence.PROMETHEUS_QUERIES)
+        self.assertIn("password-hash-active-workers", evidence.PROMETHEUS_QUERIES)
+        self.assertIn("password-hash-submissions", evidence.PROMETHEUS_QUERIES)
+        self.assertIn("password-hash-queue-wait-p95", evidence.PROMETHEUS_QUERIES)
+        self.assertIn("password-hash-execution-p95", evidence.PROMETHEUS_QUERIES)
 
     def test_postgres_evidence_includes_activity_and_lock_snapshots(self):
         source = Path(evidence.__file__).read_text(encoding="utf-8")
