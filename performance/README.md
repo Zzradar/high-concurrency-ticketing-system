@@ -74,6 +74,8 @@ Phase 10A 已建立测量环境、可重复大数据、Run Harness、业务不�
 
 `performance/data/profiles/` 中的 Profile（数据规模配置）用版本控制中的 JSON 描述用户、活动、场次、座位布局、价格分区与未来开场偏移。`smoke` 是脚本和浏览器 E2E 的小数据集；`baseline` 生成 10,000 个用户、2 个活动、20 个场次、1,000 个物理座位和 20,000 个场次座位。这些数量只是第一版可重复测试条件，不是容量目标或容量结论。
 
+Phase10B Profile 可用 `registeredUsers` 和 `activeAuthSessions` 分别控制注册用户表基数与离线 Session 测试池；旧 `users` 字段仍向后兼容，缺省时 active Session 数等于用户数。`scale-100k` 提供 100,000 注册用户、20,000 活跃 Session 和 100,000 个 one-shot SessionSeat；`cardinality-1m` 提供 1,000,000 注册用户、5,000 活跃 Session，但不把库存或 VU 伪装成百万级。生成器在写库前打印预估行数与文件字节数，写库后在 dataset manifest 记录生成时间、数据库大小、关键表/索引大小和实际 manifest 文件大小。
+
 Performance 数据统一使用 `perf-*` ID。生成器通过 PostgreSQL 集合操作写入业务实体，并批量导入真实格式的离线认证 Session（会话）：
 
 ```powershell

@@ -24,12 +24,43 @@ class ProfileTests(unittest.TestCase):
 
         self.assertEqual(
             generate_dataset.validate_profile(smoke),
-            generate_dataset.DatasetShape(8, 1, 4, 18, 72),
+            generate_dataset.DatasetShape(8, 8, 1, 4, 18, 72),
         )
         self.assertEqual(
             generate_dataset.validate_profile(baseline),
-            generate_dataset.DatasetShape(10000, 2, 20, 1000, 20000),
+            generate_dataset.DatasetShape(10000, 10000, 2, 20, 1000, 20000),
         )
+
+        scale, _ = generate_dataset.load_profile("scale-100k")
+        cardinality, _ = generate_dataset.load_profile("cardinality-1m")
+        self.assertEqual(
+            generate_dataset.validate_profile(scale),
+            generate_dataset.DatasetShape(100000, 20000, 2, 20, 5000, 100000),
+        )
+        self.assertEqual(
+            generate_dataset.validate_profile(cardinality),
+            generate_dataset.DatasetShape(1000000, 5000, 2, 20, 1000, 20000),
+        )
+
+    def test_active_sessions_are_independent_and_legacy_users_remain_supported(self):
+        profile, _ = generate_dataset.load_profile("smoke")
+        modern = json.loads(json.dumps(profile))
+        modern.pop("users")
+        modern["registeredUsers"] = 10
+        modern["activeAuthSessions"] = 3
+        shape = generate_dataset.validate_profile(modern)
+        self.assertEqual((shape.registered_users, shape.active_auth_sessions), (10, 3))
+        self.assertEqual(shape.users, 10)
+
+        modern["activeAuthSessions"] = 11
+        with self.assertRaisesRegex(ValueError, "cannot exceed"):
+            generate_dataset.validate_profile(modern)
+
+    def test_prewrite_estimate_accounts_for_users_sessions_and_inventory(self):
+        shape = generate_dataset.DatasetShape(100, 20, 2, 4, 10, 40)
+        estimate = generate_dataset.estimate_generation(shape)
+        self.assertEqual(estimate["databaseRows"], 177)
+        self.assertGreater(estimate["generatedFileBytes"], 0)
 
     def test_profile_validation_fails_before_database_work(self):
         profile, _ = generate_dataset.load_profile("smoke")
@@ -83,7 +114,7 @@ class ProfileTests(unittest.TestCase):
         self.assertIn("!.gitignore", rules.splitlines())
 
     def test_workload_seats_are_available_scoped_complete_and_sorted(self):
-        shape = generate_dataset.DatasetShape(2, 1, 1, 2, 2)
+        shape = generate_dataset.DatasetShape(2, 2, 1, 1, 2, 2)
         rows = "\n".join(
             [
                 "perf-session-001-001\tperf-ss-001-001-000001\tAVAILABLE\tt",

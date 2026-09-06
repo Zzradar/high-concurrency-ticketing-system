@@ -14,6 +14,7 @@ import secrets
 import subprocess
 import sys
 import tempfile
+import time
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import ProxyHandler, Request, build_opener
@@ -40,11 +41,17 @@ class DatasetError(RuntimeError):
 
 @dataclass(frozen=True)
 class DatasetShape:
-    users: int
+    registered_users: int
+    active_auth_sessions: int
     events: int
     sessions: int
     seats: int
     session_seats: int
+
+    @property
+    def users(self) -> int:
+        """Compatibility alias for pre-Phase10B callers and manifests."""
+        return self.registered_users
 
 
 def canonical_json(payload: Any) -> bytes:
@@ -80,7 +87,6 @@ def validate_profile(profile: dict[str, Any]) -> DatasetShape:
         "version",
         "name",
         "seed",
-        "users",
         "events",
         "sessionsPerEvent",
         "seatLayout",
@@ -99,9 +105,17 @@ def validate_profile(profile: dict[str, Any]) -> DatasetShape:
     ):
         raise ValueError("profile name must contain lowercase letters, digits or hyphens")
 
+    has_legacy_users = "users" in profile
+    has_registered_users = "registeredUsers" in profile
+    if not has_legacy_users and not has_registered_users:
+        raise ValueError("profile requires registeredUsers or legacy users")
+    if has_legacy_users and has_registered_users and profile["users"] != profile["registeredUsers"]:
+        raise ValueError("users and registeredUsers must match when both are present")
+    registered_users = profile.get("registeredUsers", profile.get("users"))
+    active_auth_sessions = profile.get("activeAuthSessions", registered_users)
+
     positive_fields = (
         "seed",
-        "users",
         "events",
         "sessionsPerEvent",
         "futureStartOffsetDays",
@@ -112,6 +126,14 @@ def validate_profile(profile: dict[str, Any]) -> DatasetShape:
         value = profile[field]
         if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
             raise ValueError(f"{field} must be a positive integer")
+    for field, value in (
+        ("registeredUsers", registered_users),
+        ("activeAuthSessions", active_auth_sessions),
+    ):
+        if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+            raise ValueError(f"{field} must be a positive integer")
+    if active_auth_sessions > registered_users:
+        raise ValueError("activeAuthSessions cannot exceed registeredUsers")
 
     layout = profile["seatLayout"]
     if not isinstance(layout, dict):
@@ -154,12 +176,36 @@ def validate_profile(profile: dict[str, Any]) -> DatasetShape:
     sessions = profile["events"] * profile["sessionsPerEvent"]
     seats = layout["rows"] * layout["seatsPerRow"]
     return DatasetShape(
-        users=profile["users"],
+        registered_users=registered_users,
+        active_auth_sessions=active_auth_sessions,
         events=profile["events"],
         sessions=sessions,
         seats=seats,
         session_seats=sessions * seats,
     )
+
+
+def estimate_generation(shape: DatasetShape) -> dict[str, int]:
+    """Conservative pre-write estimate used to expose accidental scale explosions."""
+    database_rows = (
+        1
+        + shape.registered_users
+        + shape.active_auth_sessions
+        + shape.events
+        + shape.sessions
+        + shape.seats
+        + shape.session_seats
+    )
+    generated_file_bytes = (
+        shape.active_auth_sessions * 420
+        + shape.active_auth_sessions * 100
+        + shape.session_seats * 120
+        + 16_384
+    )
+    return {
+        "databaseRows": database_rows,
+        "generatedFileBytes": generated_file_bytes,
+    }
 
 
 def load_profile(name_or_path: str) -> tuple[dict[str, Any], Path]:
@@ -368,7 +414,7 @@ SELECT 'perf-user-' || lpad(user_index::text, 6, '0'),
        'perf-user-' || lpad(user_index::text, 6, '0'),
        {sql_literal(PASSWORD_HASH)},
        'ACTIVE'
-FROM generate_series(1, {shape.users}) AS user_index;
+FROM generate_series(1, {shape.registered_users}) AS user_index;
 
 CREATE TEMP TABLE perf_auth_input (
     id TEXT NOT NULL,
@@ -399,9 +445,9 @@ DECLARE
     actual BIGINT;
 BEGIN
     SELECT count(*) INTO actual FROM app_users WHERE id LIKE 'perf-user-%';
-    IF actual <> {shape.users} THEN RAISE EXCEPTION 'perf user count %, expected {shape.users}', actual; END IF;
+    IF actual <> {shape.registered_users} THEN RAISE EXCEPTION 'perf user count %, expected {shape.registered_users}', actual; END IF;
     SELECT count(*) INTO actual FROM user_sessions WHERE id LIKE 'perf-auth-%';
-    IF actual <> {shape.users} THEN RAISE EXCEPTION 'perf auth count %, expected {shape.users}', actual; END IF;
+    IF actual <> {shape.active_auth_sessions} THEN RAISE EXCEPTION 'perf auth count %, expected {shape.active_auth_sessions}', actual; END IF;
     SELECT count(*) INTO actual FROM events WHERE id LIKE 'perf-event-%';
     IF actual <> {shape.events} THEN RAISE EXCEPTION 'perf event count %, expected {shape.events}', actual; END IF;
     SELECT count(*) INTO actual FROM sessions WHERE id LIKE 'perf-session-%';
@@ -430,8 +476,37 @@ def git_head() -> str:
     return completed.stdout.strip()
 
 
+def collect_storage_sizes() -> dict[str, Any]:
+    rows = run_psql(
+        """
+SELECT 'database', pg_database_size(current_database())
+UNION ALL SELECT 'table:app_users', pg_total_relation_size('app_users')
+UNION ALL SELECT 'table:user_sessions', pg_total_relation_size('user_sessions')
+UNION ALL SELECT 'table:session_seats', pg_total_relation_size('session_seats')
+UNION ALL
+SELECT 'index:' || indexrelid::regclass::text, pg_relation_size(indexrelid)
+FROM pg_stat_user_indexes
+WHERE relname IN ('app_users', 'user_sessions', 'session_seats')
+ORDER BY 1;
+"""
+    )
+    values: dict[str, int] = {}
+    for line in rows.splitlines():
+        name, size = line.split("\t", 1)
+        values[name] = int(size)
+    return {
+        "databaseBytes": values.pop("database"),
+        "relationBytes": values,
+    }
+
+
 def build_dataset_manifest(
-    profile: dict[str, Any], shape: DatasetShape, profile_hash: str
+    profile: dict[str, Any],
+    shape: DatasetShape,
+    profile_hash: str,
+    generation_seconds: float,
+    estimate: dict[str, int],
+    storage: dict[str, Any],
 ) -> dict[str, Any]:
     low_conflict_count = min(4, shape.sessions)
     low_conflict = []
@@ -447,7 +522,9 @@ def build_dataset_manifest(
         "generatedAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "scope": {"prefix": PERF_PREFIX},
         "counts": {
-            "users": shape.users,
+            "users": shape.registered_users,
+            "registeredUsers": shape.registered_users,
+            "activeAuthSessions": shape.active_auth_sessions,
             "events": shape.events,
             "sessions": shape.sessions,
             "physicalSeats": shape.seats,
@@ -458,6 +535,12 @@ def build_dataset_manifest(
         "hotSessionId": performance_id("session", 1, 1),
         "hotSessionSeatId": performance_id("session-seat", 1, 1, 1),
         "lowConflictSessionIds": low_conflict,
+        "generation": {
+            "seconds": round(generation_seconds, 3),
+            "estimatedDatabaseRows": estimate["databaseRows"],
+            "estimatedGeneratedFileBytes": estimate["generatedFileBytes"],
+        },
+        "storage": storage,
     }
 
 
@@ -493,8 +576,8 @@ UNION ALL SELECT 'token_hash', count(*) FROM user_sessions WHERE id = {sql_liter
         name, count = line.split("\t", 1)
         parsed[name] = int(count)
     expected = {
-        "users": shape.users,
-        "user_sessions": shape.users,
+        "users": shape.registered_users,
+        "user_sessions": shape.active_auth_sessions,
         "events": shape.events,
         "sessions": shape.sessions,
         "seats": shape.seats,
@@ -631,28 +714,51 @@ def main() -> int:
     try:
         profile, path = load_profile(args.profile)
         shape = validate_profile(profile)
+        estimate = estimate_generation(shape)
         idle_timeout, absolute_timeout = load_auth_timeouts()
-        credentials = generate_session_credentials(shape.users)
+        credentials = generate_session_credentials(shape.active_auth_sessions)
         sql = build_generation_sql(
             profile, shape, credentials, idle_timeout, absolute_timeout
         )
         print(
-            f"Generating profile={profile['name']} users={shape.users} "
+            f"Generating profile={profile['name']} "
+            f"registered_users={shape.registered_users} "
+            f"active_auth_sessions={shape.active_auth_sessions} "
             f"events={shape.events} sessions={shape.sessions} seats={shape.seats} "
-            f"session_seats={shape.session_seats}"
+            f"session_seats={shape.session_seats}; "
+            f"estimated_rows={estimate['databaseRows']} "
+            f"estimated_generated_bytes={estimate['generatedFileBytes']}"
         )
+        started = time.monotonic()
         run_psql(sql)
-        manifest = build_dataset_manifest(profile, shape, profile_sha256(profile))
+        generation_seconds = time.monotonic() - started
+        storage = collect_storage_sizes()
+        manifest = build_dataset_manifest(
+            profile,
+            shape,
+            profile_sha256(profile),
+            generation_seconds,
+            estimate,
+            storage,
+        )
         validate_database(shape, manifest, credentials)
         workload_seats = load_workload_seats(shape)
         sessions_payload = public_sessions(credentials)
-        if len(sessions_payload) != shape.users:
+        if len(sessions_payload) != shape.active_auth_sessions:
             raise DatasetError("session manifest count mismatch")
         write_json_atomic(GENERATED_ROOT / "sessions.json", sessions_payload)
         write_json_atomic(
             GENERATED_ROOT / "workload-users.json", workload_users(credentials)
         )
         write_json_atomic(GENERATED_ROOT / "workload-seats.json", workload_seats)
+        generated_sizes = {
+            name: (GENERATED_ROOT / name).stat().st_size
+            for name in ("sessions.json", "workload-users.json", "workload-seats.json")
+        }
+        manifest["generation"]["generatedFileBytes"] = generated_sizes
+        manifest["generation"]["generatedFilesTotalBytes"] = sum(
+            generated_sizes.values()
+        )
         write_json_atomic(GENERATED_ROOT / "dataset.json", manifest)
         if not args.skip_auth_check:
             auth_me_smoke(args.backend_url, credentials[0])
