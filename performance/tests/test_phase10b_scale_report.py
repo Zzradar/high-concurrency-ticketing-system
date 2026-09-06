@@ -62,6 +62,13 @@ class Phase10BScaleReportTests(unittest.TestCase):
         self.assertIn("Ticket-Blitz", self.report)
         self.assertIn("不是本项目目标", self.report)
 
+    def test_display_correctness_addendum_preserves_historical_scope(self):
+        self.assertIn("## B-3 追加校正：Temporary Hold 展示正确性", self.report)
+        for fact in ("901 个压力响应", "189 个完整显示", "712 个发生 Redis timeout fallback",
+                     "60/s / 90% 已确认不满足完整 Seat Map 展示正确性",
+                     "原始事实及数字均保留", "尚未确定 10~60/s 之间的准确稳定边界"):
+            self.assertIn(fact, self.report)
+
 
 if __name__ == "__main__":
     unittest.main()

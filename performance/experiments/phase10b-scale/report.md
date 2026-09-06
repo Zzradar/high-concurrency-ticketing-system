@@ -209,3 +209,17 @@ Wave 是短窗口 burst，不声称纳秒级同步；低速 public/auth control 
 - Mixed：`782e`、`a3f4`、`875a`、`c7ed`、`69bc`；中止的 30 分钟观察：`3d28`。
 
 Raw artifacts 位于 Git ignored 的 `performance/results/<run_id>/`。已完成运行都有 summary、manifest、Prometheus、PostgreSQL、Redis 和日志证据；中止的 `3d28` 没有 runner 最终 manifest，但保留 k6 summary/console 及手工收集的 Prometheus、PostgreSQL、Redis 和环境快照。
+
+## B-3 追加校正：Temporary Hold 展示正确性
+
+上文 Seat Map 表及 Workload 总结中的 `highest confirmed stable` / `highest tested stable`
+保留为 B-2 当时的历史判定，不再代表完整 Seat Map 展示正确性已经确认。
+B-2 的 HTTP 200、零 dropped/system_error 和数据库 verifier 通过等原始事实及数字均保留；
+当时没有逐响应验证 temporary hold 是否仍正确显示，HTTP/数据库 correctness 不等于展示 correctness。
+
+[B-3 calibration](../phase10b-seat-map/calibration.md) 新增了 temporary-hold display correctness 维度：
+5,000 seats / 90% hold / 60 req/s 的 901 个压力响应中，只有 189 个完整显示
+4500 HELD / 500 AVAILABLE，712 个发生 Redis timeout fallback，显示为 0 HELD / 5000 AVAILABLE。
+因此 60/s / 90% 已确认不满足完整 Seat Map 展示正确性，不能继续称为该维度的 confirmed stable。
+这不是对 B-2 历史响应重新计数，也不表示发生超卖；正式库存裁决与展示退化是不同问题。
+校准的 10/s 点展示通过，但尚未确定 10~60/s 之间的准确稳定边界，不据此虚构新的容量值。
