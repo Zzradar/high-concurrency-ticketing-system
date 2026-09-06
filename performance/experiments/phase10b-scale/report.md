@@ -37,6 +37,8 @@ Phase 10B-2 没有修改 PostgreSQL/Redis pool、SQL、索引、Seat Map cache�
 
 百万用户首次生成暴露了 `lpad(text, 6, '0')` 会截断第 1,000,000 个编号并与 `perf-user-100000` 冲突的问题。失败事务完整回滚，修复为动态宽度后重跑成功；该修复独立记录在 `14e80aa`。随后回载 scale-100k 时 PostgreSQL 关系文件保留了曾装载百万行后的空间，因此不能把回载后的 relation size 当成首次 scale-100k 的干净大小。
 
+最终浏览器回归还暴露了 profile 替换只按 `perf-user-*` 清理业务行、却没有覆盖“非 perf 用户引用 perf inventory”的依赖闭包。原事务被外键拒绝并完整回滚；生成器现先建立 Reservation、Order、Checkout scope，再按外键依赖顺序清理其子记录。使用 Playwright 已结算订单作为真实前置状态重跑后，scale-100k 替换成功且 14 项不变量为零。
+
 两种新 profile 生成后均通过 14 项数据库不变量检查。
 
 ### 固定 Login rate 下的基数度对比

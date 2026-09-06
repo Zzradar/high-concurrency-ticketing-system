@@ -92,6 +92,29 @@ class ProfileTests(unittest.TestCase):
         self.assertEqual(sql.count(expected), 2)
         self.assertEqual(generate_dataset.performance_id("user", 1_000_000), "perf-user-1000000")
 
+    def test_profile_replacement_cleans_business_rows_referencing_perf_inventory(self):
+        profile, _ = generate_dataset.load_profile("smoke")
+        shape = generate_dataset.validate_profile(profile)
+        sql = generate_dataset.build_generation_sql(
+            profile, shape, generate_dataset.generate_session_credentials(1), 60, 120
+        )
+
+        self.assertIn("CREATE TEMP TABLE perf_reservation_scope", sql)
+        self.assertIn("reservation.session_id LIKE 'perf-session-%'", sql)
+        self.assertIn("inventory.id LIKE 'perf-ss-%'", sql)
+        self.assertIn("ticket_order.reservation_id IN (SELECT id FROM perf_reservation_scope)", sql)
+        self.assertIn("checkout.session_id LIKE 'perf-session-%'", sql)
+        self.assertIn("order_id IN (SELECT id FROM perf_order_scope)", sql)
+        self.assertIn("session_seat_id LIKE 'perf-ss-%'", sql)
+        self.assertLess(
+            sql.index("DELETE FROM reservation_session_seats"),
+            sql.index("DELETE FROM session_seats WHERE id LIKE 'perf-ss-%'"),
+        )
+        self.assertLess(
+            sql.index("DELETE FROM session_seats WHERE id LIKE 'perf-ss-%'"),
+            sql.index("DELETE FROM reservations WHERE id IN"),
+        )
+
     def test_session_manifest_has_required_fields_and_token_shapes(self):
         credentials = generate_dataset.generate_session_credentials(2)
         manifest = generate_dataset.public_sessions(credentials)

@@ -331,23 +331,49 @@ def build_generation_sql(
 BEGIN;
 SET LOCAL TIME ZONE 'UTC';
 
-DELETE FROM user_notifications WHERE user_id LIKE 'perf-user-%';
-DELETE FROM refunds AS refund
-USING orders AS ticket_order
-WHERE refund.order_id = ticket_order.id AND ticket_order.user_id LIKE 'perf-user-%';
-DELETE FROM payment_attempts AS attempt
-USING orders AS ticket_order
-WHERE attempt.order_id = ticket_order.id AND ticket_order.user_id LIKE 'perf-user-%';
-DELETE FROM checkout_session_seats AS item
-USING checkout_sessions AS checkout
-WHERE item.checkout_session_id = checkout.id AND checkout.user_id LIKE 'perf-user-%';
-DELETE FROM checkout_sessions WHERE user_id LIKE 'perf-user-%';
-DELETE FROM orders WHERE user_id LIKE 'perf-user-%';
-DELETE FROM reservation_session_seats AS item
-USING reservations AS reservation
-WHERE item.reservation_id = reservation.id AND reservation.user_id LIKE 'perf-user-%';
+CREATE TEMP TABLE perf_reservation_scope ON COMMIT DROP AS
+SELECT DISTINCT reservation.id
+FROM reservations AS reservation
+LEFT JOIN reservation_session_seats AS item
+  ON item.reservation_id = reservation.id
+LEFT JOIN session_seats AS inventory
+  ON inventory.id = item.session_seat_id
+ AND inventory.session_id = item.session_id
+WHERE reservation.user_id LIKE 'perf-user-%'
+   OR reservation.session_id LIKE 'perf-session-%'
+   OR inventory.id LIKE 'perf-ss-%';
+
+CREATE TEMP TABLE perf_order_scope ON COMMIT DROP AS
+SELECT ticket_order.id
+FROM orders AS ticket_order
+WHERE ticket_order.user_id LIKE 'perf-user-%'
+   OR ticket_order.reservation_id IN (SELECT id FROM perf_reservation_scope);
+
+CREATE TEMP TABLE perf_checkout_scope ON COMMIT DROP AS
+SELECT checkout.id
+FROM checkout_sessions AS checkout
+WHERE checkout.user_id LIKE 'perf-user-%'
+   OR checkout.session_id LIKE 'perf-session-%'
+   OR checkout.reservation_id IN (SELECT id FROM perf_reservation_scope);
+
+DELETE FROM user_notifications
+WHERE user_id LIKE 'perf-user-%'
+   OR order_id IN (SELECT id FROM perf_order_scope);
+DELETE FROM refunds
+WHERE order_id IN (SELECT id FROM perf_order_scope);
+DELETE FROM payment_attempts
+WHERE order_id IN (SELECT id FROM perf_order_scope);
+DELETE FROM checkout_session_seats
+WHERE checkout_session_id IN (SELECT id FROM perf_checkout_scope);
+DELETE FROM checkout_sessions
+WHERE id IN (SELECT id FROM perf_checkout_scope);
+DELETE FROM orders
+WHERE id IN (SELECT id FROM perf_order_scope);
+DELETE FROM reservation_session_seats
+WHERE reservation_id IN (SELECT id FROM perf_reservation_scope)
+   OR session_seat_id LIKE 'perf-ss-%';
 DELETE FROM session_seats WHERE id LIKE 'perf-ss-%';
-DELETE FROM reservations WHERE user_id LIKE 'perf-user-%';
+DELETE FROM reservations WHERE id IN (SELECT id FROM perf_reservation_scope);
 DELETE FROM user_sessions WHERE user_id LIKE 'perf-user-%';
 DELETE FROM seats WHERE id LIKE 'perf-seat-%';
 DELETE FROM sessions WHERE id LIKE 'perf-session-%';

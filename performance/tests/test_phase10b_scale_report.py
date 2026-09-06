@@ -44,6 +44,12 @@ class Phase10BScaleReportTests(unittest.TestCase):
         self.assertIn("1,000 个请求仍在途", self.report)
         self.assertIn("in-flight 回到 0", self.report)
 
+    def test_generator_failures_record_transactional_rollback_and_recovery(self):
+        self.assertIn("第 1,000,000 个编号", self.report)
+        self.assertIn("非 perf 用户引用 perf inventory", self.report)
+        self.assertIn("外键拒绝并完整回滚", self.report)
+        self.assertIn("按外键依赖顺序清理", self.report)
+
     def test_report_does_not_claim_unimplemented_optimizations(self):
         self.assertIn("B-3 以后候选（未实施）", self.report)
         self.assertIn("不进入自动实施", self.report)
