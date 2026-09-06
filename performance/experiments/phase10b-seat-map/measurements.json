@@ -1,0 +1,3308 @@
+{
+  "measuredAt": "2026-09-06",
+  "metricsCacheSeconds": 5,
+  "measurementCaveat": "Drogon PromExporter caches responses per HTTP loop; metric sample timestamps and SQL reset windows are not exactly aligned. The 2500-seat 10/s run preserves 151 histogram samples versus 153 SQL calls. Peaks are sampled, not instantaneous maxima.",
+  "units": {
+    "stages": "seconds, histogram estimates",
+    "http": "k6 milliseconds",
+    "cpu": "cores, max 30-second average",
+    "memory": "bytes"
+  },
+  "runs": [
+    {
+      "evidenceDirectory": "20260906T100104Z-seat-diagnosis-1000-10",
+      "runId": "20260906T100121Z-seat-map-read-steady-d267",
+      "arguments": {
+        "seats": 1000,
+        "rate": 10,
+        "duration": 15,
+        "drain_seconds": 0,
+        "prepare": true
+      },
+      "startEpoch": 1788688881.037344,
+      "runnerFinishedEpoch": 1788688899.5588293,
+      "endEpoch": 1788688905.7590861,
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "samplingErrors": 0,
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "163621",
+          "transferEncoding": null,
+          "receivedBodyBytes": 163621
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "6961",
+          "transferEncoding": null,
+          "receivedBodyBytes": 6961
+        },
+        "rawBodyBytes": 163621,
+        "seatCount": 1000,
+        "bodyEquality": true
+      },
+      "http": {
+        "http_req_duration": {
+          "p(50)": 8.730996,
+          "p(95)": 10.434272,
+          "p(99)": 12.021915499999999,
+          "min": 7.599787,
+          "max": 14.513083
+        },
+        "http_req_receiving": {
+          "p(99)": 2.3948954999999996,
+          "min": 0.684053,
+          "max": 2.502044,
+          "p(50)": 1.520753,
+          "p(95)": 2.2590985
+        },
+        "http_req_waiting": {
+          "p(95)": 8.9900465,
+          "p(99)": 10.755517,
+          "min": 6.519137,
+          "max": 12.056124,
+          "p(50)": 7.096704
+        },
+        "iterations": {
+          "count": 150,
+          "rate": 9.989127076913656
+        },
+        "http_reqs": {
+          "count": 151,
+          "rate": 10.055721257426413
+        },
+        "data_received": {
+          "rate": 1646835.5260499811,
+          "count": 24729421
+        },
+        "dropped_iterations": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_unexpected_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "applicationDurationEstimatedMs": {
+        "p50": 7.516556291390728,
+        "p95": 9.781456953642385,
+        "p99": 9.98278145695364
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 152,
+          "p50Seconds": 0.0020754716981132076,
+          "p95Seconds": 0.004586956521739131,
+          "p99Seconds": 0.004917391304347826
+        },
+        "dto_build": {
+          "samples": 152,
+          "p50Seconds": 0.000040447154471544714,
+          "p95Seconds": 0.00008962962962962965,
+          "p99Seconds": 0.00013599999999999924
+        },
+        "json_build": {
+          "samples": 152,
+          "p50Seconds": 0.0009086021505376343,
+          "p95Seconds": 0.0023067796610169496,
+          "p99Seconds": 0.0024613559322033897
+        },
+        "json_serialize": {
+          "samples": 152,
+          "p50Seconds": 0.0007638888888888888,
+          "p95Seconds": 0.001075000000000001,
+          "p99Seconds": 0.0022149999999999982
+        },
+        "overlay": {
+          "samples": 152,
+          "p50Seconds": 0.000008172043010752689,
+          "p95Seconds": 0.00002937500000000002,
+          "p99Seconds": 0.00004837499999999997
+        },
+        "owner_parse": {
+          "samples": 152,
+          "p50Seconds": 0.0000175,
+          "p95Seconds": 0.00002425,
+          "p99Seconds": 0.00002485
+        },
+        "redis_input_build": {
+          "samples": 152,
+          "p50Seconds": 0.0003838028169014084,
+          "p95Seconds": 0.0006200000000000003,
+          "p99Seconds": 0.0009239999999999995
+        },
+        "redis_lookup": {
+          "samples": 152,
+          "p50Seconds": 0.0015731707317073172,
+          "p95Seconds": 0.0024073170731707316,
+          "p99Seconds": 0.002481463414634146
+        },
+        "response_callback": {
+          "samples": 152,
+          "p50Seconds": 0.00003238095238095238,
+          "p95Seconds": 0.000048666666666666666,
+          "p99Seconds": 0.00006199999999999975
+        },
+        "response_create": {
+          "samples": 152,
+          "p50Seconds": 0.0007483443708609272,
+          "p95Seconds": 0.0009748344370860927,
+          "p99Seconds": 0.0009949668874172186
+        },
+        "row_build": {
+          "samples": 152,
+          "p50Seconds": 0.0003857142857142857,
+          "p95Seconds": 0.0006833333333333335,
+          "p99Seconds": 0.0009366666666666662
+        },
+        "seat_ids_build": {
+          "samples": 152,
+          "p50Seconds": 0.000018444444444444445,
+          "p95Seconds": 0.000038823529411764716,
+          "p99Seconds": 0.00004776470588235293
+        }
+      },
+      "postgres": {
+        "calls": 152,
+        "meanExecMs": 2.0147658815789478,
+        "connectionsMax": 7,
+        "ungrantedLocks": 0
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 0.05821755556645894,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 60444672,
+            "seriesCount": 2
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 1634864.2853638192,
+            "seriesCount": 1
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.021567956640536647,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 22323200,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 32813.95468831654,
+            "seriesCount": 1
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.014311127393040595,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 235069440,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 5359.167854279861,
+            "seriesCount": 1
+          }
+        }
+      },
+      "peakInFlight": 1,
+      "finalInFlight": 0,
+      "rssBytes": {
+        "before": 66404352,
+        "peak": 70053888,
+        "after": 70053888
+      },
+      "workingSetBytes": {
+        "before": 60903424,
+        "peak": 65536000,
+        "after": 64520192
+      },
+      "redisUsedMemoryBytes": {
+        "before": 3321584,
+        "peak": 3280640,
+        "after": 1809272
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "clientMaxSumOmem": 0
+    },
+    {
+      "evidenceDirectory": "20260906T100325Z-seat-diagnosis-1000-30",
+      "runId": "20260906T100327Z-seat-map-read-steady-4ea8",
+      "arguments": {
+        "seats": 1000,
+        "rate": 30,
+        "duration": 15,
+        "drain_seconds": 0,
+        "prepare": false
+      },
+      "startEpoch": 1788689007.384435,
+      "runnerFinishedEpoch": 1788689025.9924965,
+      "endEpoch": 1788689032.2058952,
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "samplingErrors": 0,
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "163621",
+          "transferEncoding": null,
+          "receivedBodyBytes": 163621
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "6961",
+          "transferEncoding": null,
+          "receivedBodyBytes": 6961
+        },
+        "rawBodyBytes": 163621,
+        "seatCount": 1000,
+        "bodyEquality": true
+      },
+      "http": {
+        "http_req_duration": {
+          "p(50)": 8.9110035,
+          "p(95)": 10.730152,
+          "p(99)": 12.21098116,
+          "min": 7.283502,
+          "max": 36.11282
+        },
+        "http_req_receiving": {
+          "max": 2.768253,
+          "p(50)": 1.8841565,
+          "p(95)": 2.43030645,
+          "p(99)": 2.63013551,
+          "min": 0.578631
+        },
+        "http_req_waiting": {
+          "p(50)": 6.8878865000000005,
+          "p(95)": 8.634186,
+          "p(99)": 9.956630940000002,
+          "min": 5.988013,
+          "max": 33.767892
+        },
+        "iterations": {
+          "rate": 30.021244985331034,
+          "count": 451
+        },
+        "http_reqs": {
+          "count": 452,
+          "rate": 30.087810938735316
+        },
+        "data_received": {
+          "count": 74024492,
+          "rate": 4927510.885247622
+        },
+        "dropped_iterations": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_unexpected_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "applicationDurationEstimatedMs": {
+        "p50": 7.505530973451328,
+        "p95": 9.760508849557523,
+        "p99": 9.960951327433628
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 453,
+          "p50Seconds": 0.001855793450881612,
+          "p95Seconds": 0.003988839285714285,
+          "p99Seconds": 0.004797767857142856
+        },
+        "dto_build": {
+          "samples": 453,
+          "p50Seconds": 0.000040995762711864406,
+          "p95Seconds": 0.0000914945652173913,
+          "p99Seconds": 0.0001529285714285708
+        },
+        "json_build": {
+          "samples": 453,
+          "p50Seconds": 0.0014220257234726689,
+          "p95Seconds": 0.002405225080385852,
+          "p99Seconds": 0.002492620578778135
+        },
+        "json_serialize": {
+          "samples": 453,
+          "p50Seconds": 0.0007533557046979866,
+          "p95Seconds": 0.0009813758389261744,
+          "p99Seconds": 0.0013674999999999926
+        },
+        "overlay": {
+          "samples": 453,
+          "p50Seconds": 0.000008515037593984963,
+          "p95Seconds": 0.000024587278106508875,
+          "p99Seconds": 0.00004370833333333329
+        },
+        "owner_parse": {
+          "samples": 453,
+          "p50Seconds": 0.00001772159090909091,
+          "p95Seconds": 0.00002467102272727273,
+          "p99Seconds": 0.000041288461538461483
+        },
+        "redis_input_build": {
+          "samples": 453,
+          "p50Seconds": 0.00038644578313253014,
+          "p95Seconds": 0.0007019736842105259,
+          "p99Seconds": 0.0009403947368421049
+        },
+        "redis_lookup": {
+          "samples": 453,
+          "p50Seconds": 0.0017258620689655172,
+          "p95Seconds": 0.002428793103448276,
+          "p99Seconds": 0.0024912758620689655
+        },
+        "response_callback": {
+          "samples": 453,
+          "p50Seconds": 0.000023375984251968504,
+          "p95Seconds": 0.000047379441624365476,
+          "p99Seconds": 0.00004967893401015228
+        },
+        "response_create": {
+          "samples": 453,
+          "p50Seconds": 0.0007505530973451328,
+          "p95Seconds": 0.0009760508849557521,
+          "p99Seconds": 0.000996095132743363
+        },
+        "row_build": {
+          "samples": 453,
+          "p50Seconds": 0.00039594072164948453,
+          "p95Seconds": 0.0008308593749999998,
+          "p99Seconds": 0.0009724218749999998
+        },
+        "seat_ids_build": {
+          "samples": 453,
+          "p50Seconds": 0.00001889397905759162,
+          "p95Seconds": 0.00004304104477611939,
+          "p99Seconds": 0.00004980223880597014
+        }
+      },
+      "postgres": {
+        "calls": 453,
+        "meanExecMs": 1.6296448123620317,
+        "connectionsMax": 6,
+        "ungrantedLocks": 0
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 0.1527998218479229,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 67706880,
+            "seriesCount": 2
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 4323341.8495424725,
+            "seriesCount": 1
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.031686994373948084,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 21086208,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 99333.70292801117,
+            "seriesCount": 1
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.026081250000000004,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 244994048,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 11443.150000000001,
+            "seriesCount": 1
+          }
+        }
+      },
+      "peakInFlight": 1,
+      "finalInFlight": 0,
+      "rssBytes": {
+        "before": 70090752,
+        "peak": 73568256,
+        "after": 73568256
+      },
+      "workingSetBytes": {
+        "before": 65003520,
+        "peak": 68452352,
+        "after": 67784704
+      },
+      "redisUsedMemoryBytes": {
+        "before": 1665648,
+        "peak": 1973120,
+        "after": 1809296
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "clientMaxSumOmem": 0
+    },
+    {
+      "evidenceDirectory": "20260906T100716Z-seat-diagnosis-1000-60",
+      "runId": "20260906T100718Z-seat-map-read-steady-0caa",
+      "arguments": {
+        "seats": 1000,
+        "rate": 60,
+        "duration": 15,
+        "drain_seconds": 0,
+        "prepare": false
+      },
+      "startEpoch": 1788689238.0099995,
+      "runnerFinishedEpoch": 1788689256.5942194,
+      "endEpoch": 1788689262.7225995,
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "samplingErrors": 0,
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "163621",
+          "transferEncoding": null,
+          "receivedBodyBytes": 163621
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "6961",
+          "transferEncoding": null,
+          "receivedBodyBytes": 6961
+        },
+        "rawBodyBytes": 163621,
+        "seatCount": 1000,
+        "bodyEquality": true
+      },
+      "http": {
+        "http_req_duration": {
+          "p(50)": 8.583669,
+          "p(95)": 9.816482,
+          "p(99)": 10.336513,
+          "min": 6.833018,
+          "max": 11.064677
+        },
+        "http_req_receiving": {
+          "p(50)": 1.833296,
+          "p(95)": 2.572229,
+          "p(99)": 2.778606,
+          "min": 0.05889,
+          "max": 2.963039
+        },
+        "http_req_waiting": {
+          "p(99)": 8.469889,
+          "min": 5.969196,
+          "max": 9.032388,
+          "p(50)": 6.843651,
+          "p(95)": 7.751574
+        },
+        "iterations": {
+          "count": 900,
+          "rate": 59.93589611771327
+        },
+        "http_reqs": {
+          "count": 901,
+          "rate": 60.00249155784406
+        },
+        "data_received": {
+          "count": 147557671,
+          "rate": 9826668.04491968
+        },
+        "dropped_iterations": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_unexpected_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "applicationDurationEstimatedMs": {
+        "p50": 7.5,
+        "p95": 9.750000000000002,
+        "p99": 9.950000000000001
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 902,
+          "p50Seconds": 0.0017618243243243243,
+          "p95Seconds": 0.0024474662162162165,
+          "p99Seconds": 0.0033892857142857175
+        },
+        "dto_build": {
+          "samples": 902,
+          "p50Seconds": 0.00003871654501216545,
+          "p95Seconds": 0.0000720886075949367,
+          "p99Seconds": 0.00009492405063291141
+        },
+        "json_build": {
+          "samples": 902,
+          "p50Seconds": 0.0016051587301587301,
+          "p95Seconds": 0.002410515873015873,
+          "p99Seconds": 0.0024821031746031746
+        },
+        "json_serialize": {
+          "samples": 902,
+          "p50Seconds": 0.0007577142857142857,
+          "p95Seconds": 0.000989657142857143,
+          "p99Seconds": 0.00199888888888889
+        },
+        "overlay": {
+          "samples": 902,
+          "p50Seconds": 0.000007696245733788395,
+          "p95Seconds": 0.0000402801724137931,
+          "p99Seconds": 0.000048056034482758624
+        },
+        "owner_parse": {
+          "samples": 902,
+          "p50Seconds": 0.000017592592592592595,
+          "p95Seconds": 0.00002442592592592593,
+          "p99Seconds": 0.000032071428571428636
+        },
+        "redis_input_build": {
+          "samples": 902,
+          "p50Seconds": 0.00037711386696730556,
+          "p95Seconds": 0.0004915163472378805,
+          "p99Seconds": 0.0006993333333333339
+        },
+        "redis_lookup": {
+          "samples": 902,
+          "p50Seconds": 0.0017380952380952382,
+          "p95Seconds": 0.002428401360544218,
+          "p99Seconds": 0.0024897619047619048
+        },
+        "response_callback": {
+          "samples": 902,
+          "p50Seconds": 0.000022211191335740073,
+          "p95Seconds": 0.00004787764350453172,
+          "p99Seconds": 0.00007493750000000005
+        },
+        "response_create": {
+          "samples": 902,
+          "p50Seconds": 0.0007497225305216427,
+          "p95Seconds": 0.0009749722530521642,
+          "p99Seconds": 0.000994994450610433
+        },
+        "row_build": {
+          "samples": 902,
+          "p50Seconds": 0.00037959770114942527,
+          "p95Seconds": 0.0004962356321839081,
+          "p99Seconds": 0.0008590625000000002
+        },
+        "seat_ids_build": {
+          "samples": 902,
+          "p50Seconds": 0.00001791228070175439,
+          "p95Seconds": 0.00002615853658536584,
+          "p99Seconds": 0.00004815853658536587
+        }
+      },
+      "postgres": {
+        "calls": 902,
+        "meanExecMs": 1.466041915742794,
+        "connectionsMax": 6,
+        "ungrantedLocks": 0
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 0.29055063619321125,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 67018752,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 8443165.649555262,
+            "seriesCount": 1
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.04466711376661674,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 20840448,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 192910.4580742186,
+            "seriesCount": 1
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.048359700000000005,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 272269312,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 24000.425000000003,
+            "seriesCount": 1
+          }
+        }
+      },
+      "peakInFlight": 1,
+      "finalInFlight": 0,
+      "rssBytes": {
+        "before": 73678848,
+        "peak": 75399168,
+        "after": 75399168
+      },
+      "workingSetBytes": {
+        "before": 68595712,
+        "peak": 73138176,
+        "after": 66322432
+      },
+      "redisUsedMemoryBytes": {
+        "before": 1809296,
+        "peak": 1973120,
+        "after": 1809296
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "clientMaxSumOmem": 0
+    },
+    {
+      "evidenceDirectory": "20260906T100805Z-seat-diagnosis-2500-10",
+      "runId": "20260906T100822Z-seat-map-read-steady-2374",
+      "arguments": {
+        "seats": 2500,
+        "rate": 10,
+        "duration": 15,
+        "drain_seconds": 0,
+        "prepare": true
+      },
+      "startEpoch": 1788689302.2938125,
+      "runnerFinishedEpoch": 1788689320.83436,
+      "endEpoch": 1788689326.9328215,
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "samplingErrors": 0,
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "410671",
+          "transferEncoding": null,
+          "receivedBodyBytes": 410671
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "22773",
+          "transferEncoding": null,
+          "receivedBodyBytes": 22773
+        },
+        "rawBodyBytes": 410671,
+        "seatCount": 2500,
+        "bodyEquality": true
+      },
+      "http": {
+        "http_req_duration": {
+          "p(95)": 25.410528449999997,
+          "p(99)": 26.69816297,
+          "min": 19.832034,
+          "max": 28.106515,
+          "p(50)": 22.932774000000002
+        },
+        "http_req_receiving": {
+          "max": 9.752181,
+          "p(50)": 7.005576,
+          "p(95)": 8.4268004,
+          "p(99)": 9.258860210000003,
+          "min": 3.367905
+        },
+        "http_req_waiting": {
+          "p(50)": 15.7713585,
+          "p(95)": 18.983482499999997,
+          "p(99)": 19.627303910000002,
+          "min": 14.248977,
+          "max": 20.448607
+        },
+        "iterations": {
+          "count": 151,
+          "rate": 10.029957137217298
+        },
+        "http_reqs": {
+          "count": 152,
+          "rate": 10.096380694417414
+        },
+        "data_received": {
+          "count": 62444792,
+          "rate": 4147805.213261256
+        },
+        "dropped_iterations": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_unexpected_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "applicationDurationEstimatedMs": {
+        "p50": 17.5,
+        "p95": 24.25,
+        "p99": 24.850000000000005
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 151,
+          "p50Seconds": 0.004113247863247863,
+          "p95Seconds": 0.00888970588235294,
+          "p99Seconds": 0.00977794117647059
+        },
+        "dto_build": {
+          "samples": 151,
+          "p50Seconds": 0.00017399328859060405,
+          "p95Seconds": 0.0002423993288590604,
+          "p99Seconds": 0.0002484798657718121
+        },
+        "json_build": {
+          "samples": 151,
+          "p50Seconds": 0.002029545454545455,
+          "p95Seconds": 0.004539634146341463,
+          "p99Seconds": 0.004907926829268293
+        },
+        "json_serialize": {
+          "samples": 151,
+          "p50Seconds": 0.0019207317073170731,
+          "p95Seconds": 0.004325892857142856,
+          "p99Seconds": 0.004865178571428572
+        },
+        "overlay": {
+          "samples": 151,
+          "p50Seconds": 0.00003198529411764706,
+          "p95Seconds": 0.00004863970588235294,
+          "p99Seconds": 0.00006225000000000023
+        },
+        "owner_parse": {
+          "samples": 151,
+          "p50Seconds": 0.000039191729323308274,
+          "p95Seconds": 0.00007902777777777774,
+          "p99Seconds": 0.00009580555555555557
+        },
+        "redis_input_build": {
+          "samples": 151,
+          "p50Seconds": 0.0007550675675675676,
+          "p95Seconds": 0.0009846283783783783,
+          "p99Seconds": 0.0017450000000000048
+        },
+        "redis_lookup": {
+          "samples": 151,
+          "p50Seconds": 0.0019516806722689076,
+          "p95Seconds": 0.004683035714285713,
+          "p99Seconds": 0.008112500000000012
+        },
+        "response_callback": {
+          "samples": 151,
+          "p50Seconds": 0.00003767006802721088,
+          "p95Seconds": 0.00004922619047619048,
+          "p99Seconds": 0.00007483333333333349
+        },
+        "response_create": {
+          "samples": 151,
+          "p50Seconds": 0.0017600671140939597,
+          "p95Seconds": 0.0024441275167785236,
+          "p99Seconds": 0.0031125000000000115
+        },
+        "row_build": {
+          "samples": 151,
+          "p50Seconds": 0.0008119834710743801,
+          "p95Seconds": 0.0021224999999999994,
+          "p99Seconds": 0.0024245000000000004
+        },
+        "seat_ids_build": {
+          "samples": 151,
+          "p50Seconds": 0.00004127155172413793,
+          "p95Seconds": 0.00009036764705882351,
+          "p99Seconds": 0.00009925000000000003
+        }
+      },
+      "postgres": {
+        "calls": 153,
+        "meanExecMs": 4.199330503267975,
+        "connectionsMax": 6,
+        "ungrantedLocks": 0
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 0.14924792920926094,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 73261056,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 3667136.2883348824,
+            "seriesCount": 1
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.028950813563532848,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 23158784,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 84506.56233180143,
+            "seriesCount": 1
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.012754500000000002,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 225533952,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 6525.683333333333,
+            "seriesCount": 1
+          }
+        }
+      },
+      "peakInFlight": 1,
+      "finalInFlight": 0,
+      "rssBytes": {
+        "before": 77864960,
+        "peak": 83984384,
+        "after": 83984384
+      },
+      "workingSetBytes": {
+        "before": 72073216,
+        "peak": 79339520,
+        "after": 78376960
+      },
+      "redisUsedMemoryBytes": {
+        "before": 2391712,
+        "peak": 2875376,
+        "after": 2482176
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "clientMaxSumOmem": 0
+    },
+    {
+      "evidenceDirectory": "20260906T100936Z-seat-diagnosis-2500-30",
+      "runId": "20260906T100938Z-seat-map-read-steady-a365",
+      "arguments": {
+        "seats": 2500,
+        "rate": 30,
+        "duration": 15,
+        "drain_seconds": 0,
+        "prepare": false
+      },
+      "startEpoch": 1788689378.3611305,
+      "runnerFinishedEpoch": 1788689397.1035361,
+      "endEpoch": 1788689403.287007,
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "samplingErrors": 0,
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "410671",
+          "transferEncoding": null,
+          "receivedBodyBytes": 410671
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "22773",
+          "transferEncoding": null,
+          "receivedBodyBytes": 22773
+        },
+        "rawBodyBytes": 410671,
+        "seatCount": 2500,
+        "bodyEquality": true
+      },
+      "http": {
+        "http_req_duration": {
+          "p(50)": 21.996188,
+          "p(95)": 24.682099,
+          "p(99)": 28.2858125,
+          "min": 17.922475,
+          "max": 40.186506
+        },
+        "http_req_receiving": {
+          "p(50)": 7.032385,
+          "p(95)": 8.702131999999999,
+          "p(99)": 10.0826445,
+          "min": 3.19548,
+          "max": 19.4592
+        },
+        "http_req_waiting": {
+          "p(99)": 18.2351635,
+          "min": 13.546604,
+          "max": 27.505171,
+          "p(50)": 14.851636,
+          "p(95)": 16.622898999999997
+        },
+        "iterations": {
+          "count": 450,
+          "rate": 29.940566271335157
+        },
+        "http_reqs": {
+          "count": 451,
+          "rate": 30.00710086304924
+        },
+        "data_received": {
+          "rate": 12327547.18365875,
+          "count": 185280271
+        },
+        "dropped_iterations": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_unexpected_total": {
+          "rate": 0,
+          "count": 0
+        }
+      },
+      "applicationDurationEstimatedMs": {
+        "p50": 17.5,
+        "p95": 24.25,
+        "p99": 24.850000000000005
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 452,
+          "p50Seconds": 0.0037929061784897026,
+          "p95Seconds": 0.004956521739130434,
+          "p99Seconds": 0.008493333333333339
+        },
+        "dto_build": {
+          "samples": 452,
+          "p50Seconds": 0.00017241379310344826,
+          "p95Seconds": 0.00024255172413793107,
+          "p99Seconds": 0.0002487862068965518
+        },
+        "json_build": {
+          "samples": 452,
+          "p50Seconds": 0.0020149700598802397,
+          "p95Seconds": 0.004521186440677965,
+          "p99Seconds": 0.004904237288135594
+        },
+        "json_serialize": {
+          "samples": 452,
+          "p50Seconds": 0.001864795918367347,
+          "p95Seconds": 0.004084745762711863,
+          "p99Seconds": 0.0048508474576271195
+        },
+        "overlay": {
+          "samples": 452,
+          "p50Seconds": 0.000028952569169960474,
+          "p95Seconds": 0.00004905138339920949,
+          "p99Seconds": 0.00008533333333333342
+        },
+        "owner_parse": {
+          "samples": 452,
+          "p50Seconds": 0.00003994708994708995,
+          "p95Seconds": 0.00008779411764705881,
+          "p99Seconds": 0.00013700000000000046
+        },
+        "redis_input_build": {
+          "samples": 452,
+          "p50Seconds": 0.0007505543237250555,
+          "p95Seconds": 0.0009760532150776054,
+          "p99Seconds": 0.0009960975609756098
+        },
+        "redis_lookup": {
+          "samples": 452,
+          "p50Seconds": 0.0018110047846889954,
+          "p95Seconds": 0.003363636363636362,
+          "p99Seconds": 0.004733333333333334
+        },
+        "response_callback": {
+          "samples": 452,
+          "p50Seconds": 0.00003812056737588653,
+          "p95Seconds": 0.000055454545454545403,
+          "p99Seconds": 0.0000965454545454546
+        },
+        "response_create": {
+          "samples": 452,
+          "p50Seconds": 0.0017583892617449664,
+          "p95Seconds": 0.0024409395973154363,
+          "p99Seconds": 0.002740000000000009
+        },
+        "row_build": {
+          "samples": 452,
+          "p50Seconds": 0.0007562358276643991,
+          "p95Seconds": 0.0009868480725623583,
+          "p99Seconds": 0.001883636363636366
+        },
+        "seat_ids_build": {
+          "samples": 452,
+          "p50Seconds": 0.000038170163170163174,
+          "p95Seconds": 0.00005086956521739126,
+          "p99Seconds": 0.00009017391304347831
+        }
+      },
+      "postgres": {
+        "calls": 452,
+        "meanExecMs": 3.698051867256637,
+        "connectionsMax": 6,
+        "ungrantedLocks": 0
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 0.40037293162660015,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 78704640,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 10359718.81829535,
+            "seriesCount": 1
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.04249197169165071,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 23789568,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 222214.10090556275,
+            "seriesCount": 1
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.03998624020397209,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 242266112,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 18037.80407944176,
+            "seriesCount": 1
+          }
+        }
+      },
+      "peakInFlight": 1,
+      "finalInFlight": 0,
+      "rssBytes": {
+        "before": 83984384,
+        "peak": 84074496,
+        "after": 84074496
+      },
+      "workingSetBytes": {
+        "before": 78499840,
+        "peak": 80408576,
+        "after": 79224832
+      },
+      "redisUsedMemoryBytes": {
+        "before": 2219360,
+        "peak": 3006784,
+        "after": 2613584
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "clientMaxSumOmem": 0
+    },
+    {
+      "evidenceDirectory": "20260906T101024Z-seat-diagnosis-2500-60",
+      "runId": "20260906T101026Z-seat-map-read-steady-1936",
+      "arguments": {
+        "seats": 2500,
+        "rate": 60,
+        "duration": 15,
+        "drain_seconds": 0,
+        "prepare": false
+      },
+      "startEpoch": 1788689426.2194934,
+      "runnerFinishedEpoch": 1788689444.9518871,
+      "endEpoch": 1788689451.0221412,
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "samplingErrors": 0,
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "410671",
+          "transferEncoding": null,
+          "receivedBodyBytes": 410671
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "22773",
+          "transferEncoding": null,
+          "receivedBodyBytes": 22773
+        },
+        "rawBodyBytes": 410671,
+        "seatCount": 2500,
+        "bodyEquality": true
+      },
+      "http": {
+        "http_req_duration": {
+          "min": 14.520032,
+          "max": 32.06795,
+          "p(50)": 21.649149,
+          "p(95)": 25.114831949999996,
+          "p(99)": 28.33637533
+        },
+        "http_req_receiving": {
+          "p(50)": 6.8519725000000005,
+          "p(95)": 8.6082398,
+          "p(99)": 9.842610870000001,
+          "min": 0.090926,
+          "max": 12.258385
+        },
+        "http_req_waiting": {
+          "min": 13.585681,
+          "max": 24.043205,
+          "p(50)": 14.9783765,
+          "p(95)": 17.730458649999996,
+          "p(99)": 21.79084535
+        },
+        "iterations": {
+          "count": 901,
+          "rate": 59.87871720146472
+        },
+        "http_reqs": {
+          "count": 902,
+          "rate": 59.945175267171116
+        },
+        "data_received": {
+          "count": 370560542,
+          "rate": 24626736.848434504
+        },
+        "dropped_iterations": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_unexpected_total": {
+          "rate": 0,
+          "count": 0
+        }
+      },
+      "applicationDurationEstimatedMs": {
+        "p50": 17.5,
+        "p95": 24.25,
+        "p99": 24.850000000000005
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 903,
+          "p50Seconds": 0.0037569599109131403,
+          "p95Seconds": 0.004888223830734967,
+          "p99Seconds": 0.004988780623608018
+        },
+        "dto_build": {
+          "samples": 903,
+          "p50Seconds": 0.00011697834645669291,
+          "p95Seconds": 0.00023696358267716533,
+          "p99Seconds": 0.000247628937007874
+        },
+        "json_build": {
+          "samples": 903,
+          "p50Seconds": 0.0031951121794871794,
+          "p95Seconds": 0.004823116987179486,
+          "p99Seconds": 0.004967828525641026
+        },
+        "json_serialize": {
+          "samples": 903,
+          "p50Seconds": 0.0019042056074766356,
+          "p95Seconds": 0.004278594771241829,
+          "p99Seconds": 0.004868790849673203
+        },
+        "overlay": {
+          "samples": 903,
+          "p50Seconds": 0.0000343975468975469,
+          "p95Seconds": 0.000049056637806637805,
+          "p99Seconds": 0.00008115625000000009
+        },
+        "owner_parse": {
+          "samples": 903,
+          "p50Seconds": 0.000040494227994228,
+          "p95Seconds": 0.00008860810810810808,
+          "p99Seconds": 0.00009837027027027028
+        },
+        "redis_input_build": {
+          "samples": 903,
+          "p50Seconds": 0.0007508333333333334,
+          "p95Seconds": 0.0009765833333333332,
+          "p99Seconds": 0.00099665
+        },
+        "redis_lookup": {
+          "samples": 903,
+          "p50Seconds": 0.0020168918918918918,
+          "p95Seconds": 0.0045237341772151884,
+          "p99Seconds": 0.004904746835443039
+        },
+        "response_callback": {
+          "samples": 903,
+          "p50Seconds": 0.00003741166077738516,
+          "p95Seconds": 0.00004937720848056537,
+          "p99Seconds": 0.00008742500000000008
+        },
+        "response_create": {
+          "samples": 903,
+          "p50Seconds": 0.0017516648168701444,
+          "p95Seconds": 0.002428163152053274,
+          "p99Seconds": 0.002488296337402886
+        },
+        "row_build": {
+          "samples": 903,
+          "p50Seconds": 0.0007562429057888763,
+          "p95Seconds": 0.0009868615209988648,
+          "p99Seconds": 0.0018843181818181836
+        },
+        "seat_ids_build": {
+          "samples": 903,
+          "p50Seconds": 0.000038279411764705886,
+          "p95Seconds": 0.00005912790697674408,
+          "p99Seconds": 0.00011818750000000052
+        }
+      },
+      "postgres": {
+        "calls": 903,
+        "meanExecMs": 3.5546554795127356,
+        "connectionsMax": 6,
+        "ungrantedLocks": 0
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 0.8037615795258282,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 77762560,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 20761392.76181504,
+            "seriesCount": 1
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.05541927939248058,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 22949888,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 363363.85041647515,
+            "seriesCount": 1
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.05064575000000002,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 267554816,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 38404.025,
+            "seriesCount": 1
+          }
+        }
+      },
+      "peakInFlight": 2,
+      "finalInFlight": 0,
+      "rssBytes": {
+        "before": 84074496,
+        "peak": 85336064,
+        "after": 85336064
+      },
+      "workingSetBytes": {
+        "before": 79294464,
+        "peak": 82804736,
+        "after": 79929344
+      },
+      "redisUsedMemoryBytes": {
+        "before": 2350768,
+        "peak": 3006784,
+        "after": 2350768
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "clientMaxSumOmem": 0
+    },
+    {
+      "evidenceDirectory": "20260906T101121Z-seat-diagnosis-5000-10",
+      "runId": "20260906T101142Z-seat-map-read-steady-5c9c",
+      "arguments": {
+        "seats": 5000,
+        "rate": 10,
+        "duration": 15,
+        "drain_seconds": 0,
+        "prepare": true
+      },
+      "startEpoch": 1788689501.9057982,
+      "runnerFinishedEpoch": 1788689520.586833,
+      "endEpoch": 1788689526.7824814,
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "samplingErrors": 0,
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "http": {
+        "http_req_duration": {
+          "p(50)": 48.64583,
+          "p(95)": 52.5127315,
+          "p(99)": 54.400681500000005,
+          "min": 39.983851,
+          "max": 55.140162
+        },
+        "http_req_receiving": {
+          "p(50)": 17.405955,
+          "p(95)": 20.184497,
+          "p(99)": 21.5321645,
+          "min": 9.077626,
+          "max": 22.41549
+        },
+        "http_req_waiting": {
+          "max": 35.671567,
+          "p(50)": 31.173132,
+          "p(95)": 33.820088999999996,
+          "p(99)": 34.941700499999996,
+          "min": 28.907136
+        },
+        "iterations": {
+          "count": 150,
+          "rate": 9.959590410697016
+        },
+        "http_reqs": {
+          "count": 151,
+          "rate": 10.025987680101663
+        },
+        "data_received": {
+          "count": 124208221,
+          "rate": 8247086.712008905
+        },
+        "dropped_iterations": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_unexpected_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "applicationDurationEstimatedMs": {
+        "p50": 37.50000000000001,
+        "p95": 48.75,
+        "p99": 49.75
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 152,
+          "p50Seconds": 0.007567567567567568,
+          "p95Seconds": 0.00987837837837838,
+          "p99Seconds": 0.019299999999999963
+        },
+        "dto_build": {
+          "samples": 152,
+          "p50Seconds": 0.00018260869565217392,
+          "p95Seconds": 0.0003642857142857144,
+          "p99Seconds": 0.0004728571428571427
+        },
+        "json_build": {
+          "samples": 152,
+          "p50Seconds": 0.003917910447761195,
+          "p95Seconds": 0.00788888888888889,
+          "p99Seconds": 0.009577777777777775
+        },
+        "json_serialize": {
+          "samples": 152,
+          "p50Seconds": 0.0075,
+          "p95Seconds": 0.009750000000000002,
+          "p99Seconds": 0.00995
+        },
+        "overlay": {
+          "samples": 152,
+          "p50Seconds": 0.00007500000000000001,
+          "p95Seconds": 0.00009978260869565218,
+          "p99Seconds": 0.00021742857142857122
+        },
+        "owner_parse": {
+          "samples": 152,
+          "p50Seconds": 0.00007638888888888889,
+          "p95Seconds": 0.0001075000000000001,
+          "p99Seconds": 0.00022149999999999983
+        },
+        "redis_input_build": {
+          "samples": 152,
+          "p50Seconds": 0.00175,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.002485
+        },
+        "redis_lookup": {
+          "samples": 152,
+          "p50Seconds": 0.003775167785234899,
+          "p95Seconds": 0.0049228187919463096,
+          "p99Seconds": 0.007466666666666649
+        },
+        "response_callback": {
+          "samples": 152,
+          "p50Seconds": 0.000038194444444444444,
+          "p95Seconds": 0.00005333333333333338,
+          "p99Seconds": 0.00013599999999999924
+        },
+        "response_create": {
+          "samples": 152,
+          "p50Seconds": 0.003758278145695364,
+          "p95Seconds": 0.004890728476821192,
+          "p99Seconds": 0.004991390728476821
+        },
+        "row_build": {
+          "samples": 152,
+          "p50Seconds": 0.0018142857142857145,
+          "p95Seconds": 0.003416666666666668,
+          "p99Seconds": 0.004683333333333331
+        },
+        "seat_ids_build": {
+          "samples": 152,
+          "p50Seconds": 0.00008304347826086956,
+          "p95Seconds": 0.00021918918918918922,
+          "p99Seconds": 0.0002438378378378378
+        }
+      },
+      "postgres": {
+        "calls": 152,
+        "meanExecMs": 8.239666638157892,
+        "connectionsMax": 6,
+        "ungrantedLocks": 0
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 0.3115006191826789,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 90447872,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 7183222.106818999,
+            "seriesCount": 1
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.03680627791460028,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 25309184,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 165344.24176649828,
+            "seriesCount": 1
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.012398849999999996,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 238284800,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 8691.300000000001,
+            "seriesCount": 1
+          }
+        }
+      },
+      "peakInFlight": 1,
+      "finalInFlight": 0,
+      "rssBytes": {
+        "before": 88895488,
+        "peak": 101367808,
+        "after": 100335616
+      },
+      "workingSetBytes": {
+        "before": 84189184,
+        "peak": 97153024,
+        "after": 94785536
+      },
+      "redisUsedMemoryBytes": {
+        "before": 3172384,
+        "peak": 4180336,
+        "after": 3131440
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "clientMaxSumOmem": 0
+    },
+    {
+      "evidenceDirectory": "20260906T101227Z-seat-diagnosis-5000-30",
+      "runId": "20260906T101229Z-seat-map-read-steady-0449",
+      "arguments": {
+        "seats": 5000,
+        "rate": 30,
+        "duration": 15,
+        "drain_seconds": 0,
+        "prepare": false
+      },
+      "startEpoch": 1788689549.2441664,
+      "runnerFinishedEpoch": 1788689568.031127,
+      "endEpoch": 1788689574.176481,
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "samplingErrors": 0,
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "http": {
+        "http_req_duration": {
+          "max": 71.596043,
+          "p(50)": 48.870115,
+          "p(95)": 56.0686445,
+          "p(99)": 66.5541715,
+          "min": 40.519871
+        },
+        "http_req_receiving": {
+          "min": 10.147021,
+          "max": 26.487349,
+          "p(50)": 18.406126,
+          "p(95)": 21.3787445,
+          "p(99)": 22.72694
+        },
+        "http_req_waiting": {
+          "p(99)": 46.6200405,
+          "min": 27.887216,
+          "max": 49.911335,
+          "p(50)": 30.23383,
+          "p(95)": 35.188047499999996
+        },
+        "iterations": {
+          "rate": 29.85400571810901,
+          "count": 450
+        },
+        "http_reqs": {
+          "count": 451,
+          "rate": 29.920347953038142
+        },
+        "data_received": {
+          "count": 370979521,
+          "rate": 24611610.53607854
+        },
+        "dropped_iterations": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_unexpected_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "applicationDurationEstimatedMs": {
+        "p50": 37.50000000000001,
+        "p95": 48.75,
+        "p99": 49.75
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 452,
+          "p50Seconds": 0.007516703786191537,
+          "p95Seconds": 0.00978173719376392,
+          "p99Seconds": 0.009983073496659244
+        },
+        "dto_build": {
+          "samples": 452,
+          "p50Seconds": 0.0001786542923433875,
+          "p95Seconds": 0.0002494431554524362,
+          "p99Seconds": 0.00044619047619047644
+        },
+        "json_build": {
+          "samples": 452,
+          "p50Seconds": 0.0038294117647058824,
+          "p95Seconds": 0.005814814814814811,
+          "p99Seconds": 0.009162962962962967
+        },
+        "json_serialize": {
+          "samples": 452,
+          "p50Seconds": 0.007494432071269488,
+          "p95Seconds": 0.00975946547884187,
+          "p99Seconds": 0.009960801781737194
+        },
+        "overlay": {
+          "samples": 452,
+          "p50Seconds": 0.00007557339449541285,
+          "p95Seconds": 0.00009889908256880734,
+          "p99Seconds": 0.00019784615384615408
+        },
+        "owner_parse": {
+          "samples": 452,
+          "p50Seconds": 0.00007810945273631841,
+          "p95Seconds": 0.0001838775510204081,
+          "p99Seconds": 0.00023922448979591846
+        },
+        "redis_input_build": {
+          "samples": 452,
+          "p50Seconds": 0.00175,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.0024850000000000002
+        },
+        "redis_lookup": {
+          "samples": 452,
+          "p50Seconds": 0.00375,
+          "p95Seconds": 0.004875,
+          "p99Seconds": 0.004975
+        },
+        "response_callback": {
+          "samples": 452,
+          "p50Seconds": 0.000037850467289719626,
+          "p95Seconds": 0.00004973130841121496,
+          "p99Seconds": 0.00009814285714285722
+        },
+        "response_create": {
+          "samples": 452,
+          "p50Seconds": 0.0037753950338600454,
+          "p95Seconds": 0.004923250564334085,
+          "p99Seconds": 0.007488888888888899
+        },
+        "row_build": {
+          "samples": 452,
+          "p50Seconds": 0.00175,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.0024850000000000002
+        },
+        "seat_ids_build": {
+          "samples": 452,
+          "p50Seconds": 0.00007853535353535355,
+          "p95Seconds": 0.00019452830188679238,
+          "p99Seconds": 0.0002456981132075472
+        }
+      },
+      "postgres": {
+        "calls": 452,
+        "meanExecMs": 7.192626267699121,
+        "connectionsMax": 6,
+        "ungrantedLocks": 0
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 0.907229701153094,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 95080448,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 20848288.074053384,
+            "seriesCount": 1
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.0642795613160515,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 25276416,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 440924.18743768695,
+            "seriesCount": 1
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.06805602474329354,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 247640064,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 23773.23359966628,
+            "seriesCount": 1
+          }
+        }
+      },
+      "peakInFlight": 1,
+      "finalInFlight": 0,
+      "rssBytes": {
+        "before": 100335616,
+        "peak": 104292352,
+        "after": 100782080
+      },
+      "workingSetBytes": {
+        "before": 95248384,
+        "peak": 100028416,
+        "after": 94908416
+      },
+      "redisUsedMemoryBytes": {
+        "before": 2868960,
+        "peak": 4180336,
+        "after": 2868960
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "clientMaxSumOmem": 0
+    },
+    {
+      "evidenceDirectory": "20260906T101327Z-seat-diagnosis-5000-60",
+      "runId": "20260906T101328Z-seat-map-read-steady-5a29",
+      "arguments": {
+        "seats": 5000,
+        "rate": 60,
+        "duration": 15,
+        "drain_seconds": 0,
+        "prepare": false
+      },
+      "startEpoch": 1788689608.7985995,
+      "runnerFinishedEpoch": 1788689627.6577952,
+      "endEpoch": 1788689633.926789,
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "samplingErrors": 0,
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "http": {
+        "http_req_duration": {
+          "min": 45.243161,
+          "max": 703.79794,
+          "p(50)": 501.114935,
+          "p(95)": 655.28012065,
+          "p(99)": 678.5078240299999
+        },
+        "http_req_receiving": {
+          "p(99)": 28.3555972,
+          "min": 0.113489,
+          "max": 36.701646,
+          "p(50)": 18.839750000000002,
+          "p(95)": 22.370808
+        },
+        "http_req_waiting": {
+          "p(99)": 678.24937988,
+          "min": 29.721398,
+          "max": 703.160732,
+          "p(50)": 482.0429705,
+          "p(95)": 654.48414825
+        },
+        "iterations": {
+          "count": 901,
+          "rate": 57.393678879998554
+        },
+        "http_reqs": {
+          "count": 902,
+          "rate": 57.45737885655793
+        },
+        "data_received": {
+          "count": 741959042,
+          "rate": 47262773.58341771
+        },
+        "dropped_iterations": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_unexpected_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "applicationDurationEstimatedMs": {
+        "p50": 452.96610169491527,
+        "p95": 942.9924242424241,
+        "p99": 988.5984848484849
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 903,
+          "p50Seconds": 0.007519531249999999,
+          "p95Seconds": 0.009787109375,
+          "p99Seconds": 0.009988671875
+        },
+        "dto_build": {
+          "samples": 903,
+          "p50Seconds": 0.00019277397260273975,
+          "p95Seconds": 0.00046027960526315775,
+          "p99Seconds": 0.0007992500000000007
+        },
+        "json_build": {
+          "samples": 903,
+          "p50Seconds": 0.004856471816283925,
+          "p95Seconds": 0.023123961218836565,
+          "p99Seconds": 0.024624792243767315
+        },
+        "json_serialize": {
+          "samples": 903,
+          "p50Seconds": 0.007488851727982163,
+          "p95Seconds": 0.009753901895206243,
+          "p99Seconds": 0.009955239687848384
+        },
+        "overlay": {
+          "samples": 903,
+          "p50Seconds": 0.000009011976047904193,
+          "p95Seconds": 0.0000961046511627907,
+          "p99Seconds": 0.00015970000000000028
+        },
+        "owner_parse": {
+          "samples": 402,
+          "p50Seconds": 0.00007244897959183673,
+          "p95Seconds": 0.00009881924198250729,
+          "p99Seconds": 0.0002197000000000003
+        },
+        "redis_input_build": {
+          "samples": 903,
+          "p50Seconds": 0.00175,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.0024850000000000002
+        },
+        "redis_lookup": {
+          "samples": 903,
+          "p50Seconds": 0.4033385093167702,
+          "p95Seconds": 0.9309633027522934,
+          "p99Seconds": 0.9861926605504587
+        },
+        "response_callback": {
+          "samples": 903,
+          "p50Seconds": 0.000033490922844175493,
+          "p95Seconds": 0.00004885968229954614,
+          "p99Seconds": 0.00007713636363636377
+        },
+        "response_create": {
+          "samples": 903,
+          "p50Seconds": 0.003806423611111111,
+          "p95Seconds": 0.004982204861111112,
+          "p99Seconds": 0.00983387096774194
+        },
+        "row_build": {
+          "samples": 903,
+          "p50Seconds": 0.0017516648168701444,
+          "p95Seconds": 0.002428163152053274,
+          "p99Seconds": 0.002488296337402886
+        },
+        "seat_ids_build": {
+          "samples": 903,
+          "p50Seconds": 0.00007928015564202334,
+          "p95Seconds": 0.0002025787401574802,
+          "p99Seconds": 0.000245240157480315
+        }
+      },
+      "postgres": {
+        "calls": 903,
+        "meanExecMs": 7.449758695459578,
+        "connectionsMax": 6,
+        "ungrantedLocks": 0
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 1.8721534246575338,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 224718848,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 43240072.05070538,
+            "seriesCount": 1
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.11037722248918425,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 27639808,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 916262.6541726734,
+            "seriesCount": 1
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.10239801111111112,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 271384576,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 58903.24999999999,
+            "seriesCount": 1
+          }
+        }
+      },
+      "peakInFlight": 38,
+      "finalInFlight": 0,
+      "rssBytes": {
+        "before": 100782080,
+        "peak": 222998528,
+        "after": 222998528
+      },
+      "workingSetBytes": {
+        "before": 95862784,
+        "peak": 224800768,
+        "after": 217346048
+      },
+      "redisUsedMemoryBytes": {
+        "before": 3393920,
+        "peak": 4745464,
+        "after": 2868960
+      },
+      "clientMaxOmem": 1220816,
+      "clientMaxOll": 94,
+      "clientMaxSumOmem": 1220816
+    },
+    {
+      "evidenceDirectory": "20260906T101426Z-seat-diagnosis-5000-60",
+      "runId": "20260906T101428Z-seat-map-read-steady-6cca",
+      "arguments": {
+        "seats": 5000,
+        "rate": 60,
+        "duration": 30,
+        "drain_seconds": 180,
+        "prepare": false
+      },
+      "startEpoch": 1788689667.859835,
+      "runnerFinishedEpoch": 1788689703.1638715,
+      "endEpoch": 1788689890.4407918,
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "samplingErrors": 0,
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "http": {
+        "http_req_duration": {
+          "p(50)": 593.939683,
+          "p(95)": 1306.137947,
+          "p(99)": 1429.670467,
+          "min": 46.06088,
+          "max": 1468.414538
+        },
+        "http_req_receiving": {
+          "p(50)": 0.275932,
+          "p(95)": 21.40804,
+          "p(99)": 27.700687,
+          "min": 0.119187,
+          "max": 40.03518
+        },
+        "http_req_waiting": {
+          "max": 1468.210348,
+          "p(50)": 592.991848,
+          "p(95)": 1305.887418,
+          "p(99)": 1429.415737,
+          "min": 28.796656
+        },
+        "iterations": {
+          "count": 1800,
+          "rate": 57.21183279279385
+        },
+        "http_reqs": {
+          "count": 1801,
+          "rate": 57.2436171443454
+        },
+        "data_received": {
+          "count": 1481450371,
+          "rate": 47086939.398041345
+        },
+        "dropped_iterations": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_unexpected_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "applicationDurationEstimatedMs": {
+        "p50": 604.31654676259,
+        "p95": 2114.9572649572647,
+        "p99": 2422.991452991453
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 1802,
+          "p50Seconds": 0.00751535455053043,
+          "p95Seconds": 0.009779173646007817,
+          "p99Seconds": 0.009980402010050252
+        },
+        "dto_build": {
+          "samples": 1802,
+          "p50Seconds": 0.00018914907651715042,
+          "p95Seconds": 0.0005049999999999993,
+          "p99Seconds": 0.0009054444444444446
+        },
+        "json_build": {
+          "samples": 1802,
+          "p50Seconds": 0.010728616684266104,
+          "p95Seconds": 0.02357286166842661,
+          "p99Seconds": 0.024714572333685323
+        },
+        "json_serialize": {
+          "samples": 1802,
+          "p50Seconds": 0.007493036211699165,
+          "p95Seconds": 0.009751810584958217,
+          "p99Seconds": 0.00995259052924791
+        },
+        "overlay": {
+          "samples": 1802,
+          "p50Seconds": 0.00000823583180987203,
+          "p95Seconds": 0.00009631934032983507,
+          "p99Seconds": 0.00018617500000000007
+        },
+        "owner_parse": {
+          "samples": 708,
+          "p50Seconds": 0.00007414860681114552,
+          "p95Seconds": 0.00009880804953560372,
+          "p99Seconds": 0.0002019999999999997
+        },
+        "redis_input_build": {
+          "samples": 1802,
+          "p50Seconds": 0.0017499999999999998,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.0024850000000000002
+        },
+        "redis_lookup": {
+          "samples": 1802,
+          "p50Seconds": 0.5776119402985075,
+          "p95Seconds": 2.096567164179104,
+          "p99Seconds": 2.4193134328358212
+        },
+        "response_callback": {
+          "samples": 1802,
+          "p50Seconds": 0.0000357981220657277,
+          "p95Seconds": 0.00004939470154258887,
+          "p99Seconds": 0.00009497500000000002
+        },
+        "response_create": {
+          "samples": 1802,
+          "p50Seconds": 0.0038802083333333336,
+          "p95Seconds": 0.007717687074829928,
+          "p99Seconds": 0.013247826086956535
+        },
+        "row_build": {
+          "samples": 1802,
+          "p50Seconds": 0.0017508333333333334,
+          "p95Seconds": 0.0024265833333333335,
+          "p99Seconds": 0.00248665
+        },
+        "seat_ids_build": {
+          "samples": 1802,
+          "p50Seconds": 0.00008229390681003585,
+          "p95Seconds": 0.00022157289002557541,
+          "p99Seconds": 0.00024922506393861894
+        }
+      },
+      "postgres": {
+        "calls": 1802,
+        "meanExecMs": 7.44649018923417,
+        "connectionsMax": 7,
+        "ungrantedLocks": 0
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 2.910479870430357,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 402710528,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 67622701.44293468,
+            "seriesCount": 1
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.15968450139184837,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 32092160,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 1180501.350908793,
+            "seriesCount": 1
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.09809964993237331,
+            "seriesCount": 1
+          },
+          "workingSetBytes": {
+            "max": 271810560,
+            "seriesCount": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 81922.33499217652,
+            "seriesCount": 1
+          }
+        }
+      },
+      "peakInFlight": 77,
+      "finalInFlight": 0,
+      "rssBytes": {
+        "before": 222998528,
+        "peak": 404668416,
+        "after": 336822272
+      },
+      "workingSetBytes": {
+        "before": 218525696,
+        "peak": 416641024,
+        "after": 332050432
+      },
+      "redisUsedMemoryBytes": {
+        "before": 3131440,
+        "peak": 7574728,
+        "after": 3131440
+      },
+      "clientMaxOmem": 3919000,
+      "clientMaxOll": 305,
+      "clientMaxSumOmem": 3919000,
+      "timeline": [
+        {
+          "epoch": 1788689667.86945,
+          "inFlight": 0,
+          "responses": 4557,
+          "rssBytes": 222998528,
+          "workingSetBytes": 217772032,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689670.128291,
+          "inFlight": 4,
+          "responses": 4577,
+          "rssBytes": 224141312,
+          "workingSetBytes": 219779072,
+          "redisUsedMemoryBytes": 3917856,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689672.392014,
+          "inFlight": 6,
+          "responses": 4711,
+          "rssBytes": 228745216,
+          "workingSetBytes": 225021952,
+          "redisUsedMemoryBytes": 3917856,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689674.6724942,
+          "inFlight": 9,
+          "responses": 4844,
+          "rssBytes": 229425152,
+          "workingSetBytes": 226586624,
+          "redisUsedMemoryBytes": 4180336,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689676.9546762,
+          "inFlight": 14,
+          "responses": 4976,
+          "rssBytes": 230850560,
+          "workingSetBytes": 227291136,
+          "redisUsedMemoryBytes": 3655376,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689679.2690842,
+          "inFlight": 19,
+          "responses": 5110,
+          "rssBytes": 233951232,
+          "workingSetBytes": 232329216,
+          "redisUsedMemoryBytes": 4442816,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689681.5515933,
+          "inFlight": 24,
+          "responses": 5242,
+          "rssBytes": 234016768,
+          "workingSetBytes": 232763392,
+          "redisUsedMemoryBytes": 3655376,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689683.8564079,
+          "inFlight": 31,
+          "responses": 5372,
+          "rssBytes": 234016768,
+          "workingSetBytes": 235069440,
+          "redisUsedMemoryBytes": 4180336,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689686.1283934,
+          "inFlight": 36,
+          "responses": 5504,
+          "rssBytes": 243740672,
+          "workingSetBytes": 247439360,
+          "redisUsedMemoryBytes": 3524648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689688.4089255,
+          "inFlight": 36,
+          "responses": 5504,
+          "rssBytes": 263270400,
+          "workingSetBytes": 267812864,
+          "redisUsedMemoryBytes": 3262168,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689690.6746926,
+          "inFlight": 47,
+          "responses": 5765,
+          "rssBytes": 262307840,
+          "workingSetBytes": 268390400,
+          "redisUsedMemoryBytes": 3524648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689692.9202197,
+          "inFlight": 53,
+          "responses": 5894,
+          "rssBytes": 288825344,
+          "workingSetBytes": 296550400,
+          "redisUsedMemoryBytes": 4411360,
+          "sumClientOmem": 1149016,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689695.171236,
+          "inFlight": 59,
+          "responses": 6024,
+          "rssBytes": 326356992,
+          "workingSetBytes": 335749120,
+          "redisUsedMemoryBytes": 6381272,
+          "sumClientOmem": 2200584,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689697.456811,
+          "inFlight": 69,
+          "responses": 6151,
+          "rssBytes": 353452032,
+          "workingSetBytes": 364974080,
+          "redisUsedMemoryBytes": 6882232,
+          "sumClientOmem": 3226504,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689699.728539,
+          "inFlight": 77,
+          "responses": 6279,
+          "rssBytes": 404668416,
+          "workingSetBytes": 416641024,
+          "redisUsedMemoryBytes": 7574728,
+          "sumClientOmem": 3919000,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689701.945311,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331530240,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689704.1754036,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331722752,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689706.3735604,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331886592,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689708.5843737,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332107776,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689710.783374,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331972608,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689712.9614973,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332136448,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689715.1436844,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331960320,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689717.3372414,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 337117184,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689719.5273185,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332115968,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689721.7433438,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331616256,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689723.9722254,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332283904,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689726.1549668,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331350016,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 7
+        },
+        {
+          "epoch": 1788689728.366062,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331579392,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689730.5670428,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331943936,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689732.7638335,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332292096,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689734.9781027,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332193792,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689737.1599796,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332255232,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689739.3484871,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332255232,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689741.5487142,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 327495680,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689743.7732098,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331784192,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689745.9755125,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332345344,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689748.2081022,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 328425472,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689750.3908396,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331776000,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689752.581397,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332533760,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689754.7829494,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332570624,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689756.9678972,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331948032,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689759.1817915,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332210176,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689761.3779898,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332611584,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689763.5953012,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332210176,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689765.7883823,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331640832,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689767.991406,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332021760,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689770.1684282,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331563008,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689772.3529782,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332140544,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689774.5287838,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331493376,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689776.7360518,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331870208,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689778.9525683,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332029952,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689781.1548903,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331763712,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 7
+        },
+        {
+          "epoch": 1788689783.3519154,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332689408,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689785.5554273,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332156928,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689787.7522664,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 337272832,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689789.9586556,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331952128,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689792.1514328,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331640832,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689794.3374112,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332075008,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689796.5337098,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331743232,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689798.736973,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 327892992,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689800.9676614,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332304384,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689803.1843672,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332337152,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689805.3625038,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332156928,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689807.5416996,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331489280,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689809.729531,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332402688,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689811.9263086,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 327036928,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689814.1207962,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331513856,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689816.3182569,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 327380992,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689818.5423818,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331751424,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689820.7203326,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332017664,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689822.9036646,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331948032,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689825.0884821,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332288000,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689827.2852917,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331894784,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689829.4698176,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331722752,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689831.670489,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332525568,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689833.8796973,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331374592,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689836.0737712,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332062720,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689838.2718272,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331722752,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689840.4588637,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332173312,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689842.630372,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331935744,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689844.833886,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 327536640,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689847.044557,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 327151616,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689849.2581246,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331608064,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689851.429306,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331210752,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689853.7612214,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332103680,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689856.062509,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332689408,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 7
+        },
+        {
+          "epoch": 1788689858.3515515,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332070912,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689860.6857955,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332247040,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689862.9908597,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332263424,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689865.2837152,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331968512,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689867.571692,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332357632,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689869.8270354,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332431360,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689872.104042,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332050432,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689874.440479,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332242944,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689876.7466333,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 331591680,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689879.0347595,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332812288,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689881.3216224,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332509184,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788689883.5885289,
+          "inFlight": 0,
+          "responses": 6359,
+          "rssBytes": 336822272,
+          "workingSetBytes": 332050432,
+          "redisUsedMemoryBytes": 3131440,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        }
+      ],
+      "largestClient": {
+        "id": "28772",
+        "addr": "172.19.0.6:39466",
+        "laddr": "172.19.0.3:6379",
+        "fd": "10",
+        "name": "",
+        "age": "962",
+        "idle": "0",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "39323",
+        "qbuf-free": "353883",
+        "argv-mem": "81",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "305",
+        "omem": "3919000",
+        "tot-mem": "4314241",
+        "events": "rw",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      }
+    }
+  ]
+}

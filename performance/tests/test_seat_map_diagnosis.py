@@ -32,6 +32,64 @@ class DiagnosisTests(unittest.TestCase):
     def test_empty_histogram_has_no_fabricated_percentile(self):
         self.assertIsNone(diagnosis.quantile([(1, 0), (float("inf"), 0)], .5))
 
+    def test_resource_queries_scope_k6_to_this_run_and_reject_invalid_token(self):
+        with mock.patch.object(diagnosis.run_k6, "read_json", return_value={"shortRunToken": "1234abcd"}), \
+             mock.patch.object(diagnosis.evidence, "query_range") as query, \
+             mock.patch.object(diagnosis.evidence, "write_json"):
+            diagnosis.collect_run_resources(Path("unused"), Path("run"), 1, 2)
+            self.assertEqual(query.call_count, 9)
+            k6_queries = [call.args[0] for call in query.call_args_list if "k6-" in call.args[0]]
+            self.assertEqual(len(k6_queries), 3)
+            self.assertTrue(all('name="ticketing-phase10a-k6-1234abcd"' in value for value in k6_queries))
+        with mock.patch.object(diagnosis.run_k6, "read_json", return_value={"shortRunToken": "invalid"}):
+            with self.assertRaises(ValueError):
+                diagnosis.collect_run_resources(Path("unused"), Path("run"), 1, 2)
+
+    def test_encoding_probe_compares_default_and_explicit_gzip_without_changing_workload(self):
+        probe = (ROOT / "performance/k6/diagnostics/seat-map-encoding.js").read_text()
+        self.assertIn("['default', 'gzip']", probe)
+        self.assertIn("'Accept-Encoding': 'gzip'", probe)
+        self.assertIn("response.headers['Content-Encoding']", probe)
+        self.assertIn("response.headers['Content-Length']", probe)
+        self.assertIn("response.headers['Transfer-Encoding']", probe)
+        workload = (ROOT / "performance/k6/workloads/seat-map-read.js").read_text()
+        self.assertNotIn("Accept-Encoding", workload)
+
+    def test_checked_in_measurements_cover_matrix_and_recovery_without_fabricated_success(self):
+        directory = ROOT / "performance/experiments/phase10b-seat-map"
+        data = json.loads((directory / "measurements.json").read_text(encoding="utf-8"))
+        runs = data["runs"]
+        self.assertEqual(len(runs), 10)
+        matrix = [r for r in runs if r["arguments"]["duration"] == 15]
+        self.assertEqual({(r["arguments"]["seats"], r["arguments"]["rate"]) for r in matrix},
+                         {(seats, rate) for seats in (1000, 2500, 5000) for rate in (10, 30, 60)})
+        for run in runs:
+            self.assertEqual((run["runnerExit"], run["verifierExit"], run["samplingErrors"]), (0, 0, 0))
+            self.assertEqual(run["gzip"]["seatCount"], run["arguments"]["seats"])
+            self.assertTrue(run["gzip"]["bodyEquality"])
+            self.assertEqual(len(run["stages"]), 12)
+            # The exporter caches /metrics for 5s. Preserve the measured
+            # snapshot/SQL window mismatch; do not invent exact sample alignment.
+            expected_gap = 2 if run["runId"].endswith("-2374") else 0
+            self.assertEqual(run["postgres"]["calls"] - run["stages"]["db_fetch_and_materialize"]["samples"], expected_gap)
+            self.assertEqual(run["resources"]["k6"]["workingSetBytes"]["seriesCount"], 1)
+        drain = next(r for r in runs if r["arguments"]["drain_seconds"])
+        self.assertGreater(drain["rssBytes"]["after"], drain["rssBytes"]["before"])
+        self.assertLess(drain["rssBytes"]["after"], drain["rssBytes"]["peak"])
+        self.assertEqual(drain["timeline"][-1]["inFlight"], 0)
+        self.assertEqual(drain["timeline"][-1]["sumClientOmem"], 0)
+        self.assertGreaterEqual(drain["timeline"][-1]["epoch"] - drain["runnerFinishedEpoch"], 180)
+        self.assertLess(drain["stages"]["owner_parse"]["samples"], drain["stages"]["redis_lookup"]["samples"])
+        report = (directory / "diagnosis.md").read_text(encoding="utf-8")
+        self.assertIn("B：部分恢复", report)
+        self.assertIn("默认 Seat Map 请求不接受 gzip", report)
+        self.assertIn("不能称为 Redis server execution", report)
+        self.assertIn("未进入真正 B-3 优化", report)
+        self.assertIn("151 / 153", report)
+        self.assertIn("5 秒缓存", report)
+        for run in runs:
+            self.assertIn(run["runId"], report)
+
     def test_profiles_change_only_name_and_seats_per_row(self):
         original = json.loads((ROOT / "performance/data/profiles/scale-100k.json").read_text())
         for seats in (1000, 2500, 5000):

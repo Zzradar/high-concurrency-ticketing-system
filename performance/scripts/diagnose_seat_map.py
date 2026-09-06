@@ -71,6 +71,28 @@ def stage_summary(before, after):
             for stage, buckets in grouped.items()}
 
 
+def collect_run_resources(root, run_root, start, end):
+    """Do not sum stale cAdvisor series from previous one-off k6 containers."""
+    manifest = run_k6.read_json(run_root / "run-manifest.json")
+    token = manifest["shortRunToken"]
+    if not re.fullmatch(r"[a-f0-9]{8}", token):
+        raise ValueError("invalid k6 container token")
+    names = {"backend": "ticketing-phase10a-backend-1",
+             "redis": "ticketing-phase10a-redis-1",
+             "k6": f"ticketing-phase10a-k6-{token}"}
+    captured = {}
+    for service, name in names.items():
+        selector = '{container_label_com_docker_compose_project="ticketing-phase10a",name="' + name + '"}'
+        queries = {
+            "cpuCores30s": f"rate(container_cpu_usage_seconds_total{selector}[30s])",
+            "workingSetBytes": f"container_memory_working_set_bytes{selector}",
+            "networkTransmitBytesPerSecond30s": f"rate(container_network_transmit_bytes_total{selector}[30s])",
+        }
+        captured[service] = {key: evidence.query_range(query, start, end)
+                             for key, query in queries.items()}
+    evidence.write_json(root / "scoped-resources.json", captured)
+
+
 def gzip_probe(session_id):
     captured = {}
     bodies = {}
@@ -196,6 +218,9 @@ def main():
         evidence.collect_prometheus(root, start, time.time())
         evidence.collect_docker_stats(root)
         created = sorted(str(path) for path in set(run_k6.RESULTS_ROOT.iterdir()) - existing)
+        for path in created:
+            if (Path(path) / "run-manifest.json").exists():
+                collect_run_resources(root, Path(path), start, time.time())
         verifier = run_k6.run_command([sys.executable, str(run_k6.VERIFIER)], check=False)
         (root / "verifier.txt").write_text(verifier.stdout + verifier.stderr, encoding="utf-8")
         evidence.write_json(root / "manifest.json", {
