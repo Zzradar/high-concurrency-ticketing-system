@@ -146,6 +146,8 @@ def prometheus_query(expression: str) -> list[dict[str, Any]]:
 def planned_iterations_base(args: argparse.Namespace) -> int:
     if args.mode == "smoke":
         return 3
+    if args.mode == "wave":
+        return args.wave_contenders
     if args.mode in {"steady", "soak"}:
         if args.workload == "synthetic-mixed-read":
             return math.ceil(
@@ -176,7 +178,7 @@ def planned_iterations_base(args: argparse.Namespace) -> int:
 
 def build_pool_plan(args: argparse.Namespace) -> PoolPlan:
     planned = planned_iterations_base(args)
-    if args.mode == "smoke":
+    if args.mode in {"smoke", "wave"}:
         headroom = 0
     else:
         # Reserve one peak-rate time unit or one possible boundary start per VU.
@@ -204,6 +206,11 @@ def validate_args(
 ) -> PoolPlan:
     if args.mode in {"steady", "discovery", "spike", "soak"} and not args.preallocated_vus:
         raise RunError("--preallocated-vus is required for arrival-rate modes")
+    wave_workloads = {"formal-hot-seat-wave", "temporary-hold-hot-wave"}
+    if args.mode == "wave" and args.workload not in wave_workloads:
+        raise RunError("wave mode is only valid for hot-seat wave workloads")
+    if args.workload in wave_workloads and args.mode != "wave":
+        raise RunError("hot-seat wave workloads require --mode wave")
     if args.mode in {"steady", "soak"}:
         if args.workload == "synthetic-mixed-read":
             selected = args.public_rate and args.auth_rate and args.seat_map_rate
@@ -233,6 +240,13 @@ def validate_args(
             for value in (args.base_duration, args.recovery_duration, args.ramp_down_duration):
                 parse_duration(value)
     plan = build_pool_plan(args)
+    if args.workload in wave_workloads:
+        if args.wave_contenders not in (100, 500, 1000):
+            raise RunError("--wave-contenders must be 100, 500 or 1000")
+        if args.wave_contenders > session_count:
+            raise RunError("hot-seat wave requires one distinct Session/user per contender")
+        if seat_count < 1:
+            raise RunError("hot-seat wave requires one available target Seat")
     if args.workload == "auth-read":
         if args.auth_pool_size <= 0 or args.auth_pool_size > session_count:
             raise RunError("auth pool size exceeds available sessions")
@@ -512,9 +526,10 @@ def build_parser() -> argparse.ArgumentParser:
         "temporary-hold-contention", "checkout", "payment-start",
         "payment-lifecycle", "login",
         "synthetic-mixed-read", "synthetic-mixed-transactional",
+        "formal-hot-seat-wave", "temporary-hold-hot-wave",
     ))
     parser.add_argument(
-        "--mode", choices=("smoke", "steady", "discovery", "spike", "soak"),
+        "--mode", choices=("smoke", "steady", "discovery", "spike", "soak", "wave"),
         default="smoke",
     )
     parser.add_argument("--rate", type=int)
@@ -531,6 +546,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--auth-mode", choices=("warm", "cold", "redis-down"), default="warm")
     parser.add_argument("--auth-pool-size", type=int, default=100)
     parser.add_argument("--contenders", type=int, default=4)
+    parser.add_argument("--wave-contenders", type=int, default=100)
+    parser.add_argument("--control-rate", type=int, default=2)
+    parser.add_argument("--control-vus", type=int, default=10)
+    parser.add_argument("--wave-control-duration", default="12s")
     parser.add_argument("--seat-hold-density", type=int, choices=(0, 50, 90), default=0)
     parser.add_argument("--public-rate", type=int)
     parser.add_argument("--auth-rate", type=int)
@@ -593,6 +612,7 @@ def main() -> int:
                 "formal-seat-contention", "temporary-hold-contention", "checkout",
                 "payment-start", "payment-lifecycle", "login",
                 "synthetic-mixed-transactional",
+                "formal-hot-seat-wave", "temporary-hold-hot-wave",
             }
             or args.workload == "auth-read" and args.auth_mode == "cold"
         )
@@ -648,6 +668,9 @@ def main() -> int:
             "authMode": args.auth_mode if args.workload == "auth-read" else None,
             "authPoolSize": args.auth_pool_size if args.workload == "auth-read" else None,
             "contendersPerSeat": args.contenders if args.workload in {"formal-seat-contention", "temporary-hold-contention"} else None,
+            "waveContenders": args.wave_contenders if args.mode == "wave" else None,
+            "controlRatePerScenario": args.control_rate if args.mode == "wave" else None,
+            "waveControlDuration": args.wave_control_duration if args.mode == "wave" else None,
             "plannedIterations": pool_plan.planned_iterations_base,
             "plannedIterationsBase": (
                 None
@@ -683,6 +706,8 @@ def main() -> int:
                 redis_stopped = True
         if args.workload == "synthetic-mixed-read":
             manifest["authPreparation"] = prepare_auth(args, sessions)
+        if args.workload in {"formal-hot-seat-wave", "temporary-hold-hot-wave"}:
+            manifest["authPreparation"] = prepare_auth(args, sessions)
         if args.workload in {"seat-map-read", "synthetic-mixed-read"}:
             required_ttl = math.ceil(parse_duration(args.duration)) + 60
             manifest["seatMapFixture"] = prepare_seat_map_fixture(
@@ -693,6 +718,7 @@ def main() -> int:
             "formal-seat-contention", "temporary-hold-contention", "checkout",
             "payment-start", "payment-lifecycle",
             "synthetic-mixed-transactional",
+            "formal-hot-seat-wave", "temporary-hold-hot-wave",
         }:
             manifest["seatHoldsDeleted"] = clear_seat_holds()
         if args.workload in {"payment-start", "payment-lifecycle", "synthetic-mixed-transactional"}:
@@ -725,6 +751,10 @@ def main() -> int:
             "AUTH_MODE": args.auth_mode,
             "AUTH_POOL_SIZE": str(args.auth_pool_size),
             "CONTENDERS_PER_SEAT": str(args.contenders),
+            "WAVE_CONTENDERS": str(args.wave_contenders),
+            "CONTROL_RATE": str(args.control_rate),
+            "CONTROL_VUS": str(args.control_vus),
+            "WAVE_CONTROL_DURATION": args.wave_control_duration,
         }
         if payment_orders_path:
             environment["PAYMENT_ORDERS_FILE"] = f"/data/{payment_orders_path.name}"
@@ -776,7 +806,9 @@ def main() -> int:
                 stdout=console, stderr=subprocess.STDOUT,
             )
             observed = {"cpu": False, "memory": False}
-            observe_resources = args.mode == "steady" and parse_duration(args.duration) >= 10
+            observe_resources = (
+                args.mode == "steady" and parse_duration(args.duration) >= 10
+            ) or args.mode == "wave"
             next_observation = time.monotonic() + 5
             while process.poll() is None:
                 if observe_resources and time.monotonic() >= next_observation:
@@ -818,6 +850,7 @@ def main() -> int:
             "formal-seat-contention", "temporary-hold-contention", "checkout",
             "payment-start", "payment-lifecycle",
             "synthetic-mixed-transactional",
+            "formal-hot-seat-wave", "temporary-hold-hot-wave",
         }:
             verifier = run_command([sys.executable, str(VERIFIER)], check=False)
             (result_dir / "verifier.txt").write_text(

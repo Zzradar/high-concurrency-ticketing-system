@@ -33,6 +33,14 @@ export function summaryHandler(metadata) {
             summary.group_rate = Number(__ENV.GROUP_RATE || 0);
             summary.contenders_per_seat = Number(__ENV.CONTENDERS_PER_SEAT || 0);
         }
+        if (metadata.workload === 'formal-hot-seat-wave' || metadata.workload === 'temporary-hold-hot-wave') {
+            summary.wave_contenders = Number(__ENV.WAVE_CONTENDERS || 0);
+            summary.wave_success = count(data, 'ticketing_wave_success_total');
+            summary.wave_conflict = count(data, 'ticketing_wave_conflict_total');
+            summary.wave_start_spread_ms = value(data, 'ticketing_wave_start_offset_ms', 'max')
+                - value(data, 'ticketing_wave_start_offset_ms', 'min');
+            summary.wave_start_p95_ms = value(data, 'ticketing_wave_start_offset_ms', 'p(95)');
+        }
         const prefix = `/results/${metadata.runId}`;
         const text = [
             `run=${metadata.runId} workload=${metadata.workload} mode=${metadata.mode}`,

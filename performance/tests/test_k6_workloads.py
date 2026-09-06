@@ -73,6 +73,34 @@ class WorkloadTests(unittest.TestCase):
         self.assertIn("reservationHeaders(session, key)", workload)
         self.assertNotIn("response.error_code", workload)
 
+    def test_hot_seat_waves_use_one_seat_unique_users_and_exact_outcomes(self):
+        for name, conflict_code in (
+            ("formal-hot-seat-wave.js", "SEAT_CONFLICT"),
+            ("temporary-hold-hot-wave.js", "SEAT_TEMPORARILY_HELD"),
+        ):
+            workload = source(f"k6/workloads/{name}")
+            self.assertIn("executor: 'shared-iterations'", workload)
+            self.assertIn("vus: contenders", workload)
+            self.assertIn("iterations: contenders", workload)
+            self.assertIn("Date.now() + 3000", workload)
+            self.assertIn("dataset.hotSessionSeatId", workload)
+            self.assertIn("sessions[index]", workload)
+            self.assertNotIn("% sessions.length", workload)
+            self.assertIn("ticketing_wave_success_total = ['count==1']", workload)
+            self.assertIn("count==${contenders - 1}", workload)
+            self.assertIn(conflict_code, workload)
+            self.assertIn("control_public:", workload)
+            self.assertIn("control_auth:", workload)
+
+    def test_wave_summary_records_alignment_and_exact_business_counts(self):
+        metrics = source("k6/lib/metrics.js")
+        summary = source("k6/lib/summary.js")
+        self.assertIn("ticketing_wave_start_offset_ms", metrics)
+        self.assertIn("wave_start_spread_ms", summary)
+        self.assertIn("wave_start_p95_ms", summary)
+        self.assertIn("wave_success", summary)
+        self.assertIn("wave_conflict", summary)
+
 
 if __name__ == "__main__":
     unittest.main()

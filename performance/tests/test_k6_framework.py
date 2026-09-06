@@ -43,8 +43,14 @@ class K6ConfigurationTests(unittest.TestCase):
         self.assertIn("ramping-arrival-rate", scenarios)
         self.assertIn("positiveInteger('PREALLOCATED_VUS')", scenarios)
         self.assertNotIn("maxVUs", scenarios)
+        sleep_allowed = {
+            "payment-lifecycle.js",
+            "synthetic-mixed-transactional.js",
+            "formal-hot-seat-wave.js",
+            "temporary-hold-hot-wave.js",
+        }
         for path in K6_ROOT.rglob("*.js"):
-            if path.name not in {"payment-lifecycle.js", "synthetic-mixed-transactional.js"}:
+            if path.name not in sleep_allowed:
                 self.assertNotIn("sleep(", path.read_text(encoding="utf-8"), path)
 
     def test_thresholds_are_correctness_only_and_discovery_is_non_blocking(self):
@@ -80,6 +86,35 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(
             parser.parse_args(["public-read", "--mode", "soak"]).mode, "soak"
         )
+
+    def test_hot_seat_wave_mode_has_exact_one_shot_pool(self):
+        parser = run_k6.build_parser()
+        for workload in ("formal-hot-seat-wave", "temporary-hold-hot-wave"):
+            args = parser.parse_args([
+                workload, "--mode", "wave", "--wave-contenders", "500",
+            ])
+            self.assertEqual(
+                run_k6.validate_args(args, session_count=500, seat_count=1),
+                run_k6.PoolPlan(500, 0, 500),
+            )
+            with self.assertRaisesRegex(run_k6.RunError, "distinct Session/user"):
+                run_k6.validate_args(args, session_count=499, seat_count=1)
+            with self.assertRaisesRegex(run_k6.RunError, "available target Seat"):
+                run_k6.validate_args(args, session_count=500, seat_count=0)
+
+    def test_hot_seat_wave_mode_rejects_invalid_combinations(self):
+        parser = run_k6.build_parser()
+        wrong_mode = parser.parse_args(["formal-hot-seat-wave"])
+        with self.assertRaisesRegex(run_k6.RunError, "require --mode wave"):
+            run_k6.validate_args(wrong_mode, session_count=1000, seat_count=1)
+        wrong_workload = parser.parse_args(["public-read", "--mode", "wave"])
+        with self.assertRaisesRegex(run_k6.RunError, "only valid"):
+            run_k6.validate_args(wrong_workload, session_count=1000, seat_count=1)
+        bad_size = parser.parse_args([
+            "formal-hot-seat-wave", "--mode", "wave", "--wave-contenders", "101",
+        ])
+        with self.assertRaisesRegex(run_k6.RunError, "100, 500 or 1000"):
+            run_k6.validate_args(bad_size, session_count=1000, seat_count=1)
 
     def test_write_workloads_fail_before_reusing_one_shot_resources(self):
         parser = run_k6.build_parser()

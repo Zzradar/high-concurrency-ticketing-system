@@ -1,4 +1,4 @@
-import { Counter, Rate } from 'k6/metrics';
+import { Counter, Rate, Trend } from 'k6/metrics';
 
 export const businessSuccess = new Counter('ticketing_business_success_total');
 export const businessConflict = new Counter('ticketing_business_conflict_total');
@@ -12,6 +12,9 @@ export const invalidContentionGroups = new Counter('ticketing_contention_group_i
 export const reservationAttempts = new Counter('ticketing_reservation_attempts_total');
 export const workloadGroups = new Counter('ticketing_workload_groups_total');
 export const invalidWorkloadGroups = new Counter('ticketing_workload_group_invalid_total');
+export const waveSuccess = new Counter('ticketing_wave_success_total');
+export const waveConflict = new Counter('ticketing_wave_conflict_total');
+export const waveStartOffset = new Trend('ticketing_wave_start_offset_ms', true);
 
 const counters = {
     success: businessSuccess,

@@ -1,4 +1,4 @@
-const MODES = new Set(['smoke', 'steady', 'discovery', 'spike', 'soak']);
+const MODES = new Set(['smoke', 'steady', 'discovery', 'spike', 'soak', 'wave']);
 
 function required(name) {
     const value = __ENV[name];
