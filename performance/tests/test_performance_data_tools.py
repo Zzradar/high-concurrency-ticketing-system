@@ -82,6 +82,16 @@ class ProfileTests(unittest.TestCase):
             generate_dataset.profile_sha256(json.loads(json.dumps(profile))),
         )
 
+    def test_millionth_user_id_is_not_truncated_by_generation_sql(self):
+        profile, _ = generate_dataset.load_profile("cardinality-1m")
+        shape = generate_dataset.validate_profile(profile)
+        sql = generate_dataset.build_generation_sql(
+            profile, shape, generate_dataset.generate_session_credentials(1), 60, 120
+        )
+        expected = "lpad(user_index::text, GREATEST(6, length(user_index::text)), '0')"
+        self.assertEqual(sql.count(expected), 2)
+        self.assertEqual(generate_dataset.performance_id("user", 1_000_000), "perf-user-1000000")
+
     def test_session_manifest_has_required_fields_and_token_shapes(self):
         credentials = generate_dataset.generate_session_credentials(2)
         manifest = generate_dataset.public_sessions(credentials)

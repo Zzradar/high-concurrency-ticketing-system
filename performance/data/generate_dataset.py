@@ -409,9 +409,9 @@ CROSS JOIN LATERAL (
 ) AS position;
 
 INSERT INTO app_users (id, display_name, username, password_hash, status)
-SELECT 'perf-user-' || lpad(user_index::text, 6, '0'),
+SELECT 'perf-user-' || lpad(user_index::text, GREATEST(6, length(user_index::text)), '0'),
        'Performance User ' || user_index,
-       'perf-user-' || lpad(user_index::text, 6, '0'),
+       'perf-user-' || lpad(user_index::text, GREATEST(6, length(user_index::text)), '0'),
        {sql_literal(PASSWORD_HASH)},
        'ACTIVE'
 FROM generate_series(1, {shape.registered_users}) AS user_index;
