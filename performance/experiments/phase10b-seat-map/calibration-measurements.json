@@ -1,0 +1,2748 @@
+{
+  "backendContainerId": "1471db478e00105186160bf96fb826daa6dd37f5dd64dbec532922d22e24bba7",
+  "runs": [
+    {
+      "runId": "20260906T110720Z-seat-calibration-60-0-identity-983628c3",
+      "arguments": {
+        "rate": 60,
+        "duration": 15,
+        "density": 0,
+        "encoding": "identity",
+        "drain_seconds": 0,
+        "prepare": true
+      },
+      "startEpoch": 1788692863.8245704,
+      "runnerFinishedEpoch": 1788692882.3743682,
+      "endEpoch": 1788692896.7576532,
+      "redisOutcomes": {
+        "success": 323,
+        "timeout": 579,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 0,
+        "seatCount": 5000,
+        "heldCount": 0,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T110720Z-seat-calibration-60-0-identity-983628c3",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 901,
+        "http_reqs": 902,
+        "dropped_iterations": 0,
+        "p50": 565.4803285,
+        "p95": 931.7400631,
+        "p99": 999.69128774,
+        "business_success": 901,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 902,
+          "p50Seconds": 0.007522371364653243,
+          "p95Seconds": 0.009792505592841165,
+          "p99Seconds": 0.009994295302013423
+        },
+        "dto_build": {
+          "samples": 902,
+          "p50Seconds": 0.0001965049928673324,
+          "p95Seconds": 0.0005510416666666665,
+          "p99Seconds": 0.0009268750000000002
+        },
+        "json_build": {
+          "samples": 902,
+          "p50Seconds": 0.010452586206896552,
+          "p95Seconds": 0.02357435344827586,
+          "p99Seconds": 0.02474073275862069
+        },
+        "overlay": {
+          "samples": 902,
+          "p50Seconds": 0.000007789291882556132,
+          "p95Seconds": 0.00016543749999999998,
+          "p99Seconds": 0.00023308750000000005
+        },
+        "owner_parse": {
+          "samples": 323,
+          "p50Seconds": 0.00006942231075697212,
+          "p95Seconds": 0.00009837649402390438,
+          "p99Seconds": 0.00018943749999999966
+        },
+        "redis_input_build": {
+          "samples": 902,
+          "p50Seconds": 0.00175,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.0024850000000000002
+        },
+        "redis_lookup": {
+          "samples": 902,
+          "p50Seconds": 0.5150537634408602,
+          "p95Seconds": 0.9515053763440859,
+          "p99Seconds": 0.9903010752688173
+        },
+        "response_callback": {
+          "samples": 902,
+          "p50Seconds": 0.007519553072625699,
+          "p95Seconds": 0.009787150837988827,
+          "p99Seconds": 0.009988715083798883
+        },
+        "response_create": {
+          "samples": 902,
+          "p50Seconds": 0.0038733252131546896,
+          "p95Seconds": 0.007564285714285713,
+          "p99Seconds": 0.012700000000000026
+        },
+        "row_build": {
+          "samples": 902,
+          "p50Seconds": 0.0017508324084350721,
+          "p95Seconds": 0.002426581576026637,
+          "p99Seconds": 0.0024866481687014427
+        },
+        "seat_ids_build": {
+          "samples": 902,
+          "p50Seconds": 0.00008365671641791044,
+          "p95Seconds": 0.00022350220264317182,
+          "p99Seconds": 0.0002473436123348018
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "max": 1026.162365,
+          "p(50)": 565.4803285,
+          "p(95)": 931.7400631,
+          "p(99)": 999.69128774,
+          "min": 47.189041
+        },
+        "http_req_waiting": {
+          "max": 1013.003251,
+          "p(50)": 546.5940055,
+          "p(95)": 931.50504995,
+          "p(99)": 999.48032291,
+          "min": 29.705466
+        },
+        "http_req_receiving": {
+          "p(99)": 33.12595312000001,
+          "min": 0.12156,
+          "max": 54.390976,
+          "p(50)": 19.0302315,
+          "p(95)": 23.339353449999997
+        },
+        "data_received": {
+          "count": 741959042,
+          "rate": 46228741.63258034
+        }
+      },
+      "display": {
+        "ticketing_display_invalid_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 1.7842558112721802,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 238796800,
+            "seriesCount": 1,
+            "excludedSeries": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 40517939.1296913,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.11243154797888195,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 21172224,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 918021.59609252,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.06028872609600843,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 292851712,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 49444.16885230209,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 48,
+      "memory": {
+        "rssBytes": {
+          "before": 63168512,
+          "peak": 249114624,
+          "after": 248983552
+        },
+        "workingSetBytes": {
+          "before": 56414208,
+          "peak": 249487360,
+          "after": 243326976
+        },
+        "redisUsedMemoryBytes": {
+          "before": 2806672,
+          "peak": 9506632,
+          "after": 3315248
+        }
+      },
+      "clientMaxOmem": 3580432,
+      "clientMaxOll": 278,
+      "largestClient": {
+        "id": "1517",
+        "addr": "172.19.0.6:35796",
+        "laddr": "172.19.0.3:6379",
+        "fd": "11",
+        "name": "",
+        "age": "44",
+        "idle": "1",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "0",
+        "qbuf-free": "0",
+        "argv-mem": "0",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "278",
+        "omem": "3580432",
+        "tot-mem": "3582360",
+        "events": "rw",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 902,
+        "meanExecMs": 7.05244593791574,
+        "connectionsMax": 6
+      },
+      "samples": 7
+    },
+    {
+      "runId": "20260906T110834Z-seat-calibration-60-0-identity-df26f59f",
+      "arguments": {
+        "rate": 60,
+        "duration": 30,
+        "density": 0,
+        "encoding": "identity",
+        "drain_seconds": 180,
+        "prepare": false
+      },
+      "startEpoch": 1788692923.748611,
+      "runnerFinishedEpoch": 1788692960.2383163,
+      "endEpoch": 1788693154.2753649,
+      "redisOutcomes": {
+        "success": 179,
+        "timeout": 1623,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 0,
+        "seatCount": 5000,
+        "heldCount": 0,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T110834Z-seat-calibration-60-0-identity-df26f59f",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 1801,
+        "http_reqs": 1802,
+        "dropped_iterations": 0,
+        "p50": 2973.8703175,
+        "p95": 4445.513191699999,
+        "p99": 4556.97924588,
+        "business_success": 1801,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 1802,
+          "p50Seconds": 0.007880434782608695,
+          "p95Seconds": 0.019360759493670877,
+          "p99Seconds": 0.023922784810126586
+        },
+        "dto_build": {
+          "samples": 1802,
+          "p50Seconds": 0.00021096059113300496,
+          "p95Seconds": 0.0007704419889502758,
+          "p99Seconds": 0.0009695580110497238
+        },
+        "json_build": {
+          "samples": 1802,
+          "p50Seconds": 0.016098562628336754,
+          "p95Seconds": 0.024424024640657085,
+          "p99Seconds": 0.03675000000000002
+        },
+        "overlay": {
+          "samples": 1802,
+          "p50Seconds": 0.000005551447935921134,
+          "p95Seconds": 0.00008342105263157889,
+          "p99Seconds": 0.00019123913043478266
+        },
+        "owner_parse": {
+          "samples": 179,
+          "p50Seconds": 0.0000783112582781457,
+          "p95Seconds": 0.00020261363636363627,
+          "p99Seconds": 0.000302500000000002
+        },
+        "redis_input_build": {
+          "samples": 1802,
+          "p50Seconds": 0.001754606365159129,
+          "p95Seconds": 0.002433752093802345,
+          "p99Seconds": 0.0024941206030150752
+        },
+        "redis_lookup": {
+          "samples": 1802,
+          "p50Seconds": 2.7062118126272914,
+          "p95Seconds": 4.770621181262729,
+          "p99Seconds": 4.954124236252546
+        },
+        "response_callback": {
+          "samples": 1802,
+          "p50Seconds": 0.007529510961214165,
+          "p95Seconds": 0.009808600337268127,
+          "p99Seconds": 0.012713636363636377
+        },
+        "response_create": {
+          "samples": 1802,
+          "p50Seconds": 0.00429054054054054,
+          "p95Seconds": 0.009575604838709676,
+          "p99Seconds": 0.019368750000000007
+        },
+        "row_build": {
+          "samples": 1802,
+          "p50Seconds": 0.0017537646402677079,
+          "p95Seconds": 0.0024321528165086445,
+          "p99Seconds": 0.0024924539877300613
+        },
+        "seat_ids_build": {
+          "samples": 1802,
+          "p50Seconds": 0.00008944833625218915,
+          "p95Seconds": 0.0002339890282131661,
+          "p99Seconds": 0.0003210714285714289
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "min": 51.617059,
+          "max": 4706.728714,
+          "p(50)": 2973.8703175,
+          "p(95)": 4445.513191699999,
+          "p(99)": 4556.97924588
+        },
+        "http_req_waiting": {
+          "p(95)": 4445.325422649999,
+          "p(99)": 4556.789927819999,
+          "min": 29.223576,
+          "max": 4706.535921,
+          "p(50)": 2967.8726884999996
+        },
+        "http_req_receiving": {
+          "min": 0.095982,
+          "max": 46.600196,
+          "p(50)": 0.29917099999999996,
+          "p(95)": 25.5252317,
+          "p(99)": 34.50339184
+        },
+        "data_received": {
+          "rate": 42624341.58842405,
+          "count": 1482272942
+        }
+      },
+      "display": {
+        "ticketing_display_invalid_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 2.8900989925170353,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 1007042560,
+            "seriesCount": 1,
+            "excludedSeries": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 53651411.39689024,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.13154368271501177,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 47562752,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 1563597.6413898044,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.11057097952929158,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 292298752,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 79955.70077403638,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 241,
+      "memory": {
+        "rssBytes": {
+          "before": 248983552,
+          "peak": 1010765824,
+          "after": 614522880
+        },
+        "workingSetBytes": {
+          "before": 242982912,
+          "peak": 1012322304,
+          "after": 609222656
+        },
+        "redisUsedMemoryBytes": {
+          "before": 3315248,
+          "peak": 7662024,
+          "after": 3315712
+        }
+      },
+      "clientMaxOmem": 2734048,
+      "clientMaxOll": 212,
+      "largestClient": {
+        "id": "1517",
+        "addr": "172.19.0.6:35796",
+        "laddr": "172.19.0.3:6379",
+        "fd": "11",
+        "name": "",
+        "age": "124",
+        "idle": "0",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "52977",
+        "qbuf-free": "340229",
+        "argv-mem": "81",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "212",
+        "omem": "2734048",
+        "tot-mem": "3129289",
+        "events": "rw",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 1802,
+        "meanExecMs": 7.789129353496114,
+        "connectionsMax": 6
+      },
+      "samples": 79,
+      "timeline": [
+        {
+          "epoch": 1788692921.5356169,
+          "inFlight": 0,
+          "rssBytes": 248983552,
+          "workingSetBytes": 242982912,
+          "redisUsedMemoryBytes": 3315248,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692923.7725112,
+          "inFlight": 0,
+          "rssBytes": 248995840,
+          "workingSetBytes": 243597312,
+          "redisUsedMemoryBytes": 3315248,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692926.6916108,
+          "inFlight": 0,
+          "rssBytes": 250363904,
+          "workingSetBytes": 242102272,
+          "redisUsedMemoryBytes": 3839184,
+          "sumClientOmem": 41056,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692929.5558205,
+          "inFlight": 32,
+          "rssBytes": 253984768,
+          "workingSetBytes": 252461056,
+          "redisUsedMemoryBytes": 3839184,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692932.4793987,
+          "inFlight": 56,
+          "rssBytes": 294809600,
+          "workingSetBytes": 293941248,
+          "redisUsedMemoryBytes": 3183672,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692935.314411,
+          "inFlight": 73,
+          "rssBytes": 357453824,
+          "workingSetBytes": 358424576,
+          "redisUsedMemoryBytes": 3577056,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692938.309832,
+          "inFlight": 73,
+          "rssBytes": 489537536,
+          "workingSetBytes": 485597184,
+          "redisUsedMemoryBytes": 4182784,
+          "sumClientOmem": 605264,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692941.2459748,
+          "inFlight": 157,
+          "rssBytes": 585142272,
+          "workingSetBytes": 585043968,
+          "redisUsedMemoryBytes": 4536712,
+          "sumClientOmem": 959192,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692944.1931438,
+          "inFlight": 188,
+          "rssBytes": 693080064,
+          "workingSetBytes": 693706752,
+          "redisUsedMemoryBytes": 5728520,
+          "sumClientOmem": 1626040,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692947.028437,
+          "inFlight": 203,
+          "rssBytes": 773926912,
+          "workingSetBytes": 774344704,
+          "redisUsedMemoryBytes": 5242072,
+          "sumClientOmem": 1959464,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692949.8490086,
+          "inFlight": 219,
+          "rssBytes": 828465152,
+          "workingSetBytes": 830038016,
+          "redisUsedMemoryBytes": 5867960,
+          "sumClientOmem": 2626312,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692952.7328298,
+          "inFlight": 241,
+          "rssBytes": 940003328,
+          "workingSetBytes": 940908544,
+          "redisUsedMemoryBytes": 6845032,
+          "sumClientOmem": 3267512,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692955.5327868,
+          "inFlight": 187,
+          "rssBytes": 1010765824,
+          "workingSetBytes": 1012322304,
+          "redisUsedMemoryBytes": 7401048,
+          "sumClientOmem": 3626584,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692958.3558083,
+          "inFlight": 25,
+          "rssBytes": 977895424,
+          "workingSetBytes": 980836352,
+          "redisUsedMemoryBytes": 7662024,
+          "sumClientOmem": 4113896,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692961.2435367,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613281792,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692963.9758136,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613249024,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692966.7618113,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 612515840,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692969.5603735,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613404672,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692972.2932906,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613199872,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692975.0820448,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613089280,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692977.8083837,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 612929536,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692980.516801,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 612495360,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692983.2536566,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 612605952,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692986.012346,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 612716544,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692988.7433562,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 608923648,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692991.4815366,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613580800,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692994.2628214,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 612945920,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692996.9967318,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613023744,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788692999.692656,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613466112,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693002.3515792,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613650432,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693005.0597725,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613437440,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693007.7812388,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 609021952,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693010.496622,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613150720,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693013.2374895,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 608448512,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693015.9657564,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 612970496,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693018.6961725,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613543936,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693021.4325893,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 612970496,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693024.1887636,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 612745216,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693026.9387531,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 612954112,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693029.6701074,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613335040,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693032.3942347,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613433344,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693035.133151,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613392384,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693037.8561263,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613474304,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693040.602627,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 612433920,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693043.3774638,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613441536,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693046.1202545,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613814272,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693048.9107301,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613212160,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693051.679488,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613318656,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693054.4484534,
+          "inFlight": 0,
+          "rssBytes": 614555648,
+          "workingSetBytes": 613015552,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693057.2187548,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 613249024,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693059.9278612,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 613142528,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693062.6537297,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 613543936,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693065.3899794,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 613732352,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693068.169163,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609464320,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693070.8801231,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 610168832,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693073.6024976,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 610185216,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693076.3411067,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 610344960,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693079.113739,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609488896,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693081.836264,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 605814784,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693084.6070726,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 605892608,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693087.3419483,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609726464,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693090.1036394,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609910784,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693092.7914717,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609419264,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693095.4867353,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609566720,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693098.2803667,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 610328576,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693101.025581,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609423360,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693103.7689843,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609607680,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693106.4875712,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 610058240,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693109.2487795,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609984512,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693111.9848566,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609763328,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693114.7188108,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 610779136,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693117.5006626,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609595392,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693120.279379,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 610365440,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693123.0431795,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609566720,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693125.7110505,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609857536,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693128.4277484,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 610078720,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693131.1223416,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609267712,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693133.8804238,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609673216,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693136.5754044,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609878016,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693139.3135147,
+          "inFlight": 0,
+          "rssBytes": 614539264,
+          "workingSetBytes": 609812480,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788693147.0560474,
+          "inFlight": 0,
+          "rssBytes": 614522880,
+          "workingSetBytes": 609222656,
+          "redisUsedMemoryBytes": 3315712,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        }
+      ],
+      "firstObservedZeroAfterLastActive": 1788692961.2435367
+    },
+    {
+      "runId": "20260906T111249Z-seat-calibration-10-90-identity-88b39af2",
+      "arguments": {
+        "rate": 10,
+        "duration": 15,
+        "density": 90,
+        "encoding": "identity",
+        "drain_seconds": 0,
+        "prepare": false
+      },
+      "startEpoch": 1788693197.936403,
+      "runnerFinishedEpoch": 1788693216.0474875,
+      "endEpoch": 1788693230.2848306,
+      "redisOutcomes": {
+        "success": 152,
+        "timeout": 0,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 90,
+        "seatCount": 5000,
+        "heldCount": 4500,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T111249Z-seat-calibration-10-90-identity-88b39af2",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 151,
+        "http_reqs": 152,
+        "dropped_iterations": 0,
+        "p50": 48.661024499999996,
+        "p95": 53.208910749999994,
+        "p99": 55.254801400000005,
+        "business_success": 151,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "799921",
+          "transferEncoding": null,
+          "receivedBodyBytes": 799921
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "42236",
+          "transferEncoding": null,
+          "receivedBodyBytes": 42236
+        },
+        "rawBodyBytes": 799921,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 152,
+          "p50Seconds": 0.007516556291390728,
+          "p95Seconds": 0.009781456953642385,
+          "p99Seconds": 0.009982781456953641
+        },
+        "dto_build": {
+          "samples": 152,
+          "p50Seconds": 0.00018085106382978726,
+          "p95Seconds": 0.0003272727272727274,
+          "p99Seconds": 0.00046545454545454527
+        },
+        "json_build": {
+          "samples": 152,
+          "p50Seconds": 0.003917910447761195,
+          "p95Seconds": 0.00788888888888889,
+          "p99Seconds": 0.009577777777777775
+        },
+        "overlay": {
+          "samples": 152,
+          "p50Seconds": 0.00008653846153846155,
+          "p95Seconds": 0.00022625000000000005,
+          "p99Seconds": 0.00024524999999999997
+        },
+        "owner_parse": {
+          "samples": 152,
+          "p50Seconds": 0.00020754716981132075,
+          "p95Seconds": 0.0004732558139534884,
+          "p99Seconds": 0.000746666666666665
+        },
+        "redis_input_build": {
+          "samples": 152,
+          "p50Seconds": 0.00175,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.002485
+        },
+        "redis_lookup": {
+          "samples": 152,
+          "p50Seconds": 0.0047093023255813955,
+          "p95Seconds": 0.009424242424242425,
+          "p99Seconds": 0.009884848484848484
+        },
+        "response_callback": {
+          "samples": 152,
+          "p50Seconds": 0.0066956521739130435,
+          "p95Seconds": 0.009669565217391304,
+          "p99Seconds": 0.009933913043478262
+        },
+        "response_create": {
+          "samples": 152,
+          "p50Seconds": 0.0037666666666666664,
+          "p95Seconds": 0.004906666666666667,
+          "p99Seconds": 0.006199999999999975
+        },
+        "row_build": {
+          "samples": 152,
+          "p50Seconds": 0.00175,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.002485
+        },
+        "seat_ids_build": {
+          "samples": 152,
+          "p50Seconds": 0.00007676056338028169,
+          "p95Seconds": 0.0001360000000000001,
+          "p99Seconds": 0.00022719999999999988
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "p(50)": 48.661024499999996,
+          "p(95)": 53.208910749999994,
+          "p(99)": 55.254801400000005,
+          "min": 42.962622,
+          "max": 55.617337
+        },
+        "http_req_waiting": {
+          "max": 35.80356,
+          "p(50)": 31.0194155,
+          "p(95)": 33.5489342,
+          "p(99)": 35.11272043,
+          "min": 28.949554
+        },
+        "http_req_receiving": {
+          "p(50)": 17.624415499999998,
+          "p(95)": 20.878393149999997,
+          "p(99)": 22.790569880000007,
+          "min": 12.1702,
+          "max": 23.285042
+        },
+        "data_received": {
+          "count": 121610792,
+          "rate": 8037999.677635812
+        }
+      },
+      "display": {
+        "ticketing_display_available_count": {
+          "p(95)": 500,
+          "p(99)": 500,
+          "min": 500,
+          "max": 500,
+          "p(50)": 500
+        },
+        "ticketing_display_degraded_total": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_display_sold_count": {
+          "p(50)": 0,
+          "p(95)": 0,
+          "p(99)": 0,
+          "min": 0,
+          "max": 0
+        },
+        "ticketing_display_held_count": {
+          "min": 4500,
+          "max": 4500,
+          "p(50)": 4500,
+          "p(95)": 4500,
+          "p(99)": 4500
+        },
+        "ticketing_display_exact_total": {
+          "count": 151,
+          "rate": 9.980511855584393
+        },
+        "ticketing_display_invalid_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 0.29893626755008756,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 515715072,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 6882246.292790661,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.045437832822333525,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 15650816,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 710016.4192351139,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.13855392369169212,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 367652864,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 7302.566666666666,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 1,
+      "memory": {
+        "rssBytes": {
+          "before": 520364032,
+          "peak": 520441856,
+          "after": 520441856
+        },
+        "workingSetBytes": {
+          "before": 515493888,
+          "peak": 516018176,
+          "after": 515629056
+        },
+        "redisUsedMemoryBytes": {
+          "before": 3694832,
+          "peak": 5252304,
+          "after": 4465888
+        }
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "largestClient": {
+        "id": "1516",
+        "addr": "172.19.0.6:35810",
+        "laddr": "172.19.0.3:6379",
+        "fd": "10",
+        "name": "",
+        "age": "361",
+        "idle": "6",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "0",
+        "qbuf-free": "0",
+        "argv-mem": "0",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "0",
+        "omem": "0",
+        "tot-mem": "1928",
+        "events": "r",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 152,
+        "meanExecMs": 7.19141895394737,
+        "connectionsMax": 6
+      },
+      "samples": 7
+    },
+    {
+      "runId": "20260906T111405Z-seat-calibration-60-90-identity-2da8d065",
+      "arguments": {
+        "rate": 60,
+        "duration": 15,
+        "density": 90,
+        "encoding": "identity",
+        "drain_seconds": 0,
+        "prepare": false
+      },
+      "startEpoch": 1788693274.2080882,
+      "runnerFinishedEpoch": 1788693293.7185092,
+      "endEpoch": 1788693308.090724,
+      "redisOutcomes": {
+        "success": 190,
+        "timeout": 712,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 90,
+        "seatCount": 5000,
+        "heldCount": 4500,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T111405Z-seat-calibration-60-90-identity-2da8d065",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 901,
+        "http_reqs": 902,
+        "dropped_iterations": 0,
+        "p50": 1328.3946409999999,
+        "p95": 2546.2777817499996,
+        "p99": 2784.8940559099997,
+        "business_success": 901,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "799921",
+          "transferEncoding": null,
+          "receivedBodyBytes": 799921
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "42236",
+          "transferEncoding": null,
+          "receivedBodyBytes": 42236
+        },
+        "rawBodyBytes": 799921,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 902,
+          "p50Seconds": 0.008068027210884354,
+          "p95Seconds": 0.021015060240963855,
+          "p99Seconds": 0.02427530120481928
+        },
+        "dto_build": {
+          "samples": 902,
+          "p50Seconds": 0.00021466101694915255,
+          "p95Seconds": 0.0004944139194139193,
+          "p99Seconds": 0.0009542424242424245
+        },
+        "json_build": {
+          "samples": 902,
+          "p50Seconds": 0.01489075630252101,
+          "p95Seconds": 0.02744999999999999,
+          "p99Seconds": 0.04549000000000001
+        },
+        "overlay": {
+          "samples": 902,
+          "p50Seconds": 0.000006334269662921348,
+          "p95Seconds": 0.00018495192307692304,
+          "p99Seconds": 0.00023699038461538465
+        },
+        "owner_parse": {
+          "samples": 190,
+          "p50Seconds": 0.0001823699421965318,
+          "p95Seconds": 0.0003602941176470588,
+          "p99Seconds": 0.0004720588235294117
+        },
+        "redis_input_build": {
+          "samples": 902,
+          "p50Seconds": 0.0017678774120317821,
+          "p95Seconds": 0.002458967082860386,
+          "p99Seconds": 0.004639285714285717
+        },
+        "redis_lookup": {
+          "samples": 902,
+          "p50Seconds": 1.2061310782241015,
+          "p95Seconds": 2.4933403805496828,
+          "p99Seconds": 4.475581395348838
+        },
+        "response_callback": {
+          "samples": 902,
+          "p50Seconds": 0.007595375722543353,
+          "p95Seconds": 0.009941618497109827,
+          "p99Seconds": 0.021134285714285724
+        },
+        "response_create": {
+          "samples": 902,
+          "p50Seconds": 0.004457465277777777,
+          "p95Seconds": 0.009962897526501768,
+          "p99Seconds": 0.021853488372093027
+        },
+        "row_build": {
+          "samples": 902,
+          "p50Seconds": 0.0017609673790776152,
+          "p95Seconds": 0.002445838020247469,
+          "p99Seconds": 0.004158333333333341
+        },
+        "seat_ids_build": {
+          "samples": 902,
+          "p50Seconds": 0.00008914930555555556,
+          "p95Seconds": 0.000231671875,
+          "p99Seconds": 0.000248584375
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "p(50)": 1328.3946409999999,
+          "p(95)": 2546.2777817499996,
+          "p(99)": 2784.8940559099997,
+          "min": 52.325737,
+          "max": 2844.542916
+        },
+        "http_req_waiting": {
+          "p(95)": 2545.617806449999,
+          "p(99)": 2784.58220884,
+          "min": 31.087944,
+          "max": 2844.024337,
+          "p(50)": 1308.0112285
+        },
+        "http_req_receiving": {
+          "p(50)": 20.332247,
+          "p(95)": 32.30402504999997,
+          "p(99)": 39.529610250000005,
+          "min": 0.235557,
+          "max": 58.707613
+        },
+        "data_received": {
+          "count": 737684042,
+          "rate": 41146292.69138979
+        }
+      },
+      "display": {
+        "ticketing_display_sold_count": {
+          "p(95)": 0,
+          "p(99)": 0,
+          "min": 0,
+          "max": 0,
+          "p(50)": 0
+        },
+        "ticketing_display_exact_total": {
+          "count": 189,
+          "rate": 10.541978511001423
+        },
+        "ticketing_display_invalid_total": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_display_held_count": {
+          "p(50)": 0,
+          "p(95)": 4500,
+          "p(99)": 4500,
+          "min": 0,
+          "max": 4500
+        },
+        "ticketing_display_available_count": {
+          "max": 5000,
+          "p(50)": 5000,
+          "p(95)": 5000,
+          "p(99)": 5000,
+          "min": 500
+        },
+        "ticketing_display_degraded_total": {
+          "count": 712,
+          "rate": 39.71369682451329
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 2.0600544316575813,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 617136128,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 42402069.37209772,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.1767815351368657,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 62185472,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 4165330.278533696,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 1.0826012177853765,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 416788480,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 47492.83961077339,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 127,
+      "memory": {
+        "rssBytes": {
+          "before": 520441856,
+          "peak": 622518272,
+          "after": 485937152
+        },
+        "workingSetBytes": {
+          "before": 511389696,
+          "peak": 623337472,
+          "after": 484552704
+        },
+        "redisUsedMemoryBytes": {
+          "before": 3694864,
+          "peak": 43046984,
+          "after": 4738776
+        }
+      },
+      "clientMaxOmem": 20027488,
+      "clientMaxOll": 1028,
+      "largestClient": {
+        "id": "1517",
+        "addr": "172.19.0.6:35796",
+        "laddr": "172.19.0.3:6379",
+        "fd": "11",
+        "name": "",
+        "age": "457",
+        "idle": "0",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "113195",
+        "qbuf-free": "280011",
+        "argv-mem": "81",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "1028",
+        "omem": "20027488",
+        "tot-mem": "20422729",
+        "events": "rw",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 902,
+        "meanExecMs": 8.300684509977824,
+        "connectionsMax": 7
+      },
+      "samples": 7
+    },
+    {
+      "runId": "20260906T111604Z-seat-calibration-30-0-identity-d46b9975",
+      "arguments": {
+        "rate": 30,
+        "duration": 15,
+        "density": 0,
+        "encoding": "identity",
+        "drain_seconds": 0,
+        "prepare": false
+      },
+      "startEpoch": 1788693373.9640443,
+      "runnerFinishedEpoch": 1788693392.3852243,
+      "endEpoch": 1788693406.734091,
+      "redisOutcomes": {
+        "success": 452,
+        "timeout": 0,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 0,
+        "seatCount": 5000,
+        "heldCount": 0,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T111604Z-seat-calibration-30-0-identity-d46b9975",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 451,
+        "http_reqs": 452,
+        "dropped_iterations": 0,
+        "p50": 49.198843499999995,
+        "p95": 56.954354450000004,
+        "p99": 65.82069199,
+        "business_success": 451,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 452,
+          "p50Seconds": 0.007516703786191537,
+          "p95Seconds": 0.00978173719376392,
+          "p99Seconds": 0.009983073496659244
+        },
+        "dto_build": {
+          "samples": 452,
+          "p50Seconds": 0.00018033175355450237,
+          "p95Seconds": 0.0003137931034482757,
+          "p99Seconds": 0.0004696551724137933
+        },
+        "json_build": {
+          "samples": 452,
+          "p50Seconds": 0.0039054726368159204,
+          "p95Seconds": 0.007739999999999999,
+          "p99Seconds": 0.009548000000000001
+        },
+        "overlay": {
+          "samples": 452,
+          "p50Seconds": 0.00007749391727493918,
+          "p95Seconds": 0.00016731707317073162,
+          "p99Seconds": 0.0002334634146341464
+        },
+        "owner_parse": {
+          "samples": 452,
+          "p50Seconds": 0.00007803970223325062,
+          "p95Seconds": 0.0001808163265306122,
+          "p99Seconds": 0.0002361632653061225
+        },
+        "redis_input_build": {
+          "samples": 452,
+          "p50Seconds": 0.00175,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.0024850000000000002
+        },
+        "redis_lookup": {
+          "samples": 452,
+          "p50Seconds": 0.00375,
+          "p95Seconds": 0.004875,
+          "p99Seconds": 0.004975
+        },
+        "response_callback": {
+          "samples": 452,
+          "p50Seconds": 0.007420091324200913,
+          "p95Seconds": 0.009742009132420092,
+          "p99Seconds": 0.00994840182648402
+        },
+        "response_create": {
+          "samples": 452,
+          "p50Seconds": 0.0037782805429864255,
+          "p95Seconds": 0.004928733031674208,
+          "p99Seconds": 0.007740000000000009
+        },
+        "row_build": {
+          "samples": 452,
+          "p50Seconds": 0.00175,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.0024850000000000002
+        },
+        "seat_ids_build": {
+          "samples": 452,
+          "p50Seconds": 0.00007919896640826874,
+          "p95Seconds": 0.00019937499999999995,
+          "p99Seconds": 0.00024175000000000005
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "p(50)": 49.198843499999995,
+          "p(95)": 56.954354450000004,
+          "p(99)": 65.82069199,
+          "min": 41.593303,
+          "max": 71.005738
+        },
+        "http_req_waiting": {
+          "min": 28.33498,
+          "max": 52.632861,
+          "p(50)": 30.1038655,
+          "p(95)": 35.738555149999975,
+          "p(99)": 46.731186650000005
+        },
+        "http_req_receiving": {
+          "max": 24.380541,
+          "p(50)": 18.650218000000002,
+          "p(95)": 22.1316619,
+          "p(99)": 23.38583259,
+          "min": 12.117539
+        },
+        "data_received": {
+          "count": 371802092,
+          "rate": 24578403.54747714
+        }
+      },
+      "display": {
+        "ticketing_display_invalid_total": {
+          "rate": 0,
+          "count": 0
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 0.9267471592066144,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 478564352,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 21524537.57178349,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.06822186979620964,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 12750848,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 454686.7020854809,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.03338281161072408,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 254767104,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 26496.218172542398,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 1,
+      "memory": {
+        "rssBytes": {
+          "before": 485937152,
+          "peak": 485937152,
+          "after": 463249408
+        },
+        "workingSetBytes": {
+          "before": 484970496,
+          "peak": 484970496,
+          "after": 461832192
+        },
+        "redisUsedMemoryBytes": {
+          "before": 3343224,
+          "peak": 4113256,
+          "after": 3064360
+        }
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "largestClient": {
+        "id": "1516",
+        "addr": "172.19.0.6:35810",
+        "laddr": "172.19.0.3:6379",
+        "fd": "10",
+        "name": "",
+        "age": "538",
+        "idle": "7",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "0",
+        "qbuf-free": "0",
+        "argv-mem": "0",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "0",
+        "omem": "0",
+        "tot-mem": "1928",
+        "events": "r",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 452,
+        "meanExecMs": 7.215148210176991,
+        "connectionsMax": 6
+      },
+      "samples": 7
+    },
+    {
+      "runId": "20260906T111647Z-seat-calibration-30-0-gzip-fe89c611",
+      "arguments": {
+        "rate": 30,
+        "duration": 15,
+        "density": 0,
+        "encoding": "gzip",
+        "drain_seconds": 0,
+        "prepare": false
+      },
+      "startEpoch": 1788693416.3822098,
+      "runnerFinishedEpoch": 1788693434.8754263,
+      "endEpoch": 1788693449.2578125,
+      "redisOutcomes": {
+        "success": 452,
+        "timeout": 0,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 0,
+        "seatCount": 5000,
+        "heldCount": 0,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T111647Z-seat-calibration-30-0-gzip-fe89c611",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 451,
+        "http_reqs": 452,
+        "dropped_iterations": 0,
+        "p50": 33.7065895,
+        "p95": 38.365719649999996,
+        "p99": 52.256740050000005,
+        "business_success": 451,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 452,
+          "p50Seconds": 0.007539325842696629,
+          "p95Seconds": 0.009824719101123595,
+          "p99Seconds": 0.015314285714285752
+        },
+        "dto_build": {
+          "samples": 452,
+          "p50Seconds": 0.0001849624060150376,
+          "p95Seconds": 0.00039615384615384605,
+          "p99Seconds": 0.00048307692307692315
+        },
+        "json_build": {
+          "samples": 452,
+          "p50Seconds": 0.004243827160493827,
+          "p95Seconds": 0.009117187499999999,
+          "p99Seconds": 0.0098234375
+        },
+        "overlay": {
+          "samples": 452,
+          "p50Seconds": 0.00007846347607052897,
+          "p95Seconds": 0.0001883636363636363,
+          "p99Seconds": 0.00023767272727272736
+        },
+        "owner_parse": {
+          "samples": 452,
+          "p50Seconds": 0.0000991304347826087,
+          "p95Seconds": 0.00023472972972972975,
+          "p99Seconds": 0.00024694594594594596
+        },
+        "redis_input_build": {
+          "samples": 452,
+          "p50Seconds": 0.0017533333333333333,
+          "p95Seconds": 0.002431333333333333,
+          "p99Seconds": 0.0024916
+        },
+        "redis_lookup": {
+          "samples": 452,
+          "p50Seconds": 0.0037696629213483145,
+          "p95Seconds": 0.004912359550561797,
+          "p99Seconds": 0.0067714285714285845
+        },
+        "response_callback": {
+          "samples": 452,
+          "p50Seconds": 0.007545045045045046,
+          "p95Seconds": 0.009835585585585584,
+          "p99Seconds": 0.016525000000000033
+        },
+        "response_create": {
+          "samples": 452,
+          "p50Seconds": 0.003823185011709602,
+          "p95Seconds": 0.005499999999999995,
+          "p99Seconds": 0.00926666666666667
+        },
+        "row_build": {
+          "samples": 452,
+          "p50Seconds": 0.0017516629711751665,
+          "p95Seconds": 0.002428159645232816,
+          "p99Seconds": 0.0024882926829268293
+        },
+        "seat_ids_build": {
+          "samples": 452,
+          "p50Seconds": 0.00008680781758957655,
+          "p95Seconds": 0.00025999999999999944,
+          "p99Seconds": 0.0008261538461538469
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "min": 30.857162,
+          "max": 55.213899,
+          "p(50)": 33.7065895,
+          "p(95)": 38.365719649999996,
+          "p(99)": 52.256740050000005
+        },
+        "http_req_waiting": {
+          "p(99)": 52.089524700000005,
+          "min": 30.684559,
+          "max": 54.986279,
+          "p(50)": 33.567914,
+          "p(95)": 38.17248435
+        },
+        "http_req_receiving": {
+          "p(50)": 0.07370299999999999,
+          "p(95)": 0.13845949999999999,
+          "p(99)": 0.1997669300000001,
+          "min": 0.045086,
+          "max": 2.12187
+        },
+        "data_received": {
+          "count": 20005068,
+          "rate": 1326182.7077608567
+        }
+      },
+      "display": {
+        "ticketing_display_invalid_total": {
+          "rate": 0,
+          "count": 0
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 0.9879655863288154,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 459317248,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 6920870.988018071,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.07154795196578372,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 13365248,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 470871.0314196414,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.04189844556224899,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 258658304,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 12282.57086184739,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 2,
+      "memory": {
+        "rssBytes": {
+          "before": 463249408,
+          "peak": 463249408,
+          "after": 463249408
+        },
+        "workingSetBytes": {
+          "before": 458334208,
+          "peak": 460165120,
+          "after": 458018816
+        },
+        "redisUsedMemoryBytes": {
+          "before": 3064360,
+          "peak": 4113256,
+          "after": 3064360
+        }
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "largestClient": {
+        "id": "1516",
+        "addr": "172.19.0.6:35810",
+        "laddr": "172.19.0.3:6379",
+        "fd": "10",
+        "name": "",
+        "age": "580",
+        "idle": "6",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "0",
+        "qbuf-free": "0",
+        "argv-mem": "0",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "0",
+        "omem": "0",
+        "tot-mem": "1928",
+        "events": "r",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 452,
+        "meanExecMs": 7.262394628318587,
+        "connectionsMax": 6
+      },
+      "samples": 7
+    },
+    {
+      "runId": "20260906T111735Z-seat-calibration-60-0-gzip-96ad0591",
+      "arguments": {
+        "rate": 60,
+        "duration": 15,
+        "density": 0,
+        "encoding": "gzip",
+        "drain_seconds": 0,
+        "prepare": false
+      },
+      "startEpoch": 1788693464.9756544,
+      "runnerFinishedEpoch": 1788693483.7358396,
+      "endEpoch": 1788693498.1063004,
+      "redisOutcomes": {
+        "success": 201,
+        "timeout": 700,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 0,
+        "seatCount": 5000,
+        "heldCount": 0,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T111735Z-seat-calibration-60-0-gzip-96ad0591",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 900,
+        "http_reqs": 901,
+        "dropped_iterations": 0,
+        "p50": 993.056849,
+        "p95": 1907.212627,
+        "p99": 2048.146209,
+        "business_success": 900,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 901,
+          "p50Seconds": 0.007574285714285714,
+          "p95Seconds": 0.009891142857142857,
+          "p99Seconds": 0.01980192307692308
+        },
+        "dto_build": {
+          "samples": 901,
+          "p50Seconds": 0.00019626068376068378,
+          "p95Seconds": 0.0004443813131313131,
+          "p99Seconds": 0.0004898863636363637
+        },
+        "json_build": {
+          "samples": 901,
+          "p50Seconds": 0.014072123176661264,
+          "p95Seconds": 0.023929092382495947,
+          "p99Seconds": 0.024805267423014588
+        },
+        "overlay": {
+          "samples": 901,
+          "p50Seconds": 0.000006435714285714286,
+          "p95Seconds": 0.00009380617977528089,
+          "p99Seconds": 0.00019123913043478266
+        },
+        "owner_parse": {
+          "samples": 201,
+          "p50Seconds": 0.0000695859872611465,
+          "p95Seconds": 0.00009839171974522293,
+          "p99Seconds": 0.00018970000000000027
+        },
+        "redis_input_build": {
+          "samples": 901,
+          "p50Seconds": 0.0017499999999999998,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.0024850000000000002
+        },
+        "redis_lookup": {
+          "samples": 901,
+          "p50Seconds": 0.9490521327014219,
+          "p95Seconds": 2.3424825174825177,
+          "p99Seconds": 2.4684965034965036
+        },
+        "response_callback": {
+          "samples": 901,
+          "p50Seconds": 0.007622235157159488,
+          "p95Seconds": 0.009982246798603028,
+          "p99Seconds": 0.02178214285714286
+        },
+        "response_create": {
+          "samples": 901,
+          "p50Seconds": 0.003931067344345616,
+          "p95Seconds": 0.00837990196078431,
+          "p99Seconds": 0.013737500000000012
+        },
+        "row_build": {
+          "samples": 901,
+          "p50Seconds": 0.0017508333333333334,
+          "p95Seconds": 0.0024265833333333335,
+          "p99Seconds": 0.00248665
+        },
+        "seat_ids_build": {
+          "samples": 901,
+          "p50Seconds": 0.00008124133148404993,
+          "p95Seconds": 0.00021907352941176467,
+          "p99Seconds": 0.0002853571428571432
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "p(50)": 993.056849,
+          "p(95)": 1907.212627,
+          "p(99)": 2048.146209,
+          "min": 31.587378,
+          "max": 2084.843028
+        },
+        "http_req_waiting": {
+          "p(50)": 992.838377,
+          "p(95)": 1907.083411,
+          "p(99)": 2047.966951,
+          "min": 31.057656,
+          "max": 2084.724112
+        },
+        "http_req_receiving": {
+          "max": 2.329326,
+          "p(50)": 0.088758,
+          "p(95)": 0.15513,
+          "p(99)": 0.211544,
+          "min": 0.032948
+        },
+        "data_received": {
+          "count": 39877359,
+          "rate": 2329702.591453617
+        }
+      },
+      "display": {
+        "ticketing_display_invalid_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 2.031003700433118,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 532799488,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 14753217.400445737,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.10912615703798301,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 21426176,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 906790.8953080114,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.10260761542451187,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 298708992,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 23081.03454497908,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 91,
+      "memory": {
+        "rssBytes": {
+          "before": 463249408,
+          "peak": 520343552,
+          "after": 462487552
+        },
+        "workingSetBytes": {
+          "before": 458186752,
+          "peak": 520962048,
+          "after": 457125888
+        },
+        "redisUsedMemoryBytes": {
+          "before": 2801880,
+          "peak": 4789816,
+          "after": 3326840
+        }
+      },
+      "clientMaxOmem": 938688,
+      "clientMaxOll": 72,
+      "largestClient": {
+        "id": "1517",
+        "addr": "172.19.0.6:35796",
+        "laddr": "172.19.0.3:6379",
+        "fd": "11",
+        "name": "",
+        "age": "648",
+        "idle": "1",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "217971",
+        "qbuf-free": "175235",
+        "argv-mem": "81",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "72",
+        "omem": "938688",
+        "tot-mem": "1333929",
+        "events": "rw",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 901,
+        "meanExecMs": 7.438113826859051,
+        "connectionsMax": 6
+      },
+      "samples": 7
+    }
+  ]
+}
