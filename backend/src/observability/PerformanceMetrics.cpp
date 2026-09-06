@@ -9,6 +9,7 @@
 #include <drogon/utils/monitoring/Histogram.h>
 
 #include <atomic>
+#include <array>
 #include <chrono>
 #include <memory>
 #include <mutex>
@@ -41,6 +42,10 @@ const std::vector<double> kPasswordHashDurationBuckets{
 
 struct MetricsState
 {
+    std::array<std::shared_ptr<drogon::monitoring::Histogram>,
+               static_cast<std::size_t>(ticketing::PerformanceMetrics::SeatMapStage::Count)> seatMapStages;
+    std::shared_ptr<drogon::monitoring::Histogram> seatMapBytes;
+    std::shared_ptr<drogon::monitoring::Gauge> seatMapInFlight;
     std::shared_ptr<CounterCollector> requests;
     std::shared_ptr<HistogramCollector> durations;
     std::shared_ptr<GaugeCollector> inFlight;
@@ -50,6 +55,9 @@ struct MetricsState
     std::shared_ptr<HistogramCollector> passwordHashQueueWait;
     std::shared_ptr<HistogramCollector> passwordHashExecution;
 };
+
+std::atomic<MetricsState *> seatMapMetrics{nullptr};
+constexpr char kSeatMapTracked[] = "ticketing.metrics.seat_map";
 
 std::mutex passwordHashObserverMutex;
 std::shared_ptr<ticketing::PasswordHashObserver> passwordHashObserverSink;
@@ -122,6 +130,29 @@ std::string normalizedRoute(const drogon::HttpRequestPtr &request)
 
 namespace ticketing
 {
+PerformanceMetrics::TimePoint PerformanceMetrics::seatMapStart()
+{
+    return seatMapMetrics.load(std::memory_order_acquire)
+               ? std::chrono::steady_clock::now() : TimePoint{};
+}
+
+void PerformanceMetrics::observeSeatMap(SeatMapStage stage, TimePoint start)
+{
+    auto *state = seatMapMetrics.load(std::memory_order_acquire);
+    if (!state || start == TimePoint{}) return;
+    const auto index = static_cast<std::size_t>(stage);
+    if (index >= state->seatMapStages.size()) return;
+    const auto seconds = std::chrono::duration<double>(
+        std::chrono::steady_clock::now() - start).count();
+    state->seatMapStages[index]->observe(seconds);
+}
+
+void PerformanceMetrics::observeSeatMapBytes(std::size_t bytes)
+{
+    if (auto *state = seatMapMetrics.load(std::memory_order_acquire))
+        state->seatMapBytes->observe(static_cast<double>(bytes));
+}
+
 void PerformanceMetrics::registerWithApplication()
 {
     const auto &config =
@@ -181,6 +212,33 @@ void PerformanceMetrics::registerWithApplication()
                 "performance metric collector types do not match their configuration");
         }
         state->inFlight->metric({})->set(0.0);
+        const std::vector<std::string> stages{
+            "db_fetch_and_materialize", "row_build", "dto_build", "seat_ids_build",
+            "redis_input_build", "redis_lookup", "owner_parse", "overlay",
+            "json_build", "response_create", "json_serialize", "response_callback"};
+        const std::vector<double> buckets{
+            0.00001, 0.000025, 0.00005, 0.0001, 0.00025, 0.0005,
+            0.001, 0.0025, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25,
+            0.5, 1, 2.5, 5, 10, 30, 60, 120};
+        auto stageCollector = exporter->getCollector<drogon::monitoring::Histogram>(
+            "ticketing_seat_map_stage_duration_seconds");
+        auto bytesCollector = exporter->getCollector<drogon::monitoring::Histogram>(
+            "ticketing_seat_map_response_bytes");
+        auto flightCollector = exporter->getCollector<drogon::monitoring::Gauge>(
+            "ticketing_seat_map_requests_in_flight");
+        if (!stageCollector || !bytesCollector || !flightCollector)
+            throw std::runtime_error("seat map diagnostic collectors are missing");
+        for (std::size_t index = 0; index < stages.size(); ++index)
+            state->seatMapStages[index] = stageCollector->metric(
+                {stages[index]}, buckets, std::chrono::duration<double>{0}, 1);
+        state->seatMapBytes = bytesCollector->metric(
+            {}, std::vector<double>{1024, 16384, 65536, 131072, 262144,
+                                   524288, 1048576, 2097152, 4194304},
+            std::chrono::duration<double>{0}, 1);
+        state->seatMapInFlight = flightCollector->metric({});
+        state->seatMapInFlight->set(0);
+        // Application advice owns state for the application's lifetime.
+        seatMapMetrics.store(state.get(), std::memory_order_release);
         state->passwordHashQueueDepth->metric({})->set(0.0);
         state->passwordHashActiveWorkers->metric({})->set(0.0);
         {
@@ -201,6 +259,16 @@ void PerformanceMetrics::registerWithApplication()
             request->attributes()->insert(
                 kCompletedAttribute, std::make_shared<std::atomic_bool>(false));
             state->inFlight->metric({})->increment();
+        });
+
+    drogon::app().registerPostRoutingAdvice(
+        [state](const drogon::HttpRequestPtr &request) {
+            if (request->method() == drogon::Get &&
+                normalizedRoute(request) == "/sessions/{sessionId}/seats")
+            {
+                request->attributes()->insert(kSeatMapTracked, true);
+                state->seatMapInFlight->increment();
+            }
         });
 
     drogon::app().registerPreSendingAdvice(
@@ -236,6 +304,8 @@ void PerformanceMetrics::registerWithApplication()
                          1)
                 ->observe(elapsed);
             state->inFlight->metric({})->decrement();
+            if (request->attributes()->get<bool>(kSeatMapTracked))
+                state->seatMapInFlight->decrement();
         });
 }
 

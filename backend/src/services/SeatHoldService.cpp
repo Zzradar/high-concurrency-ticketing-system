@@ -1,4 +1,5 @@
 #include "services/SeatHoldService.h"
+#include "observability/PerformanceMetrics.h"
 
 #include <drogon/drogon.h>
 
@@ -398,6 +399,7 @@ void SeatHoldService::readOwners(
     auto done = std::make_shared<ReadCompletion>(std::move(completion));
     try
     {
+        const auto inputStarted = PerformanceMetrics::seatMapStart();
         const auto keys = keysFor(sessionId, seatIds);
         Json::Value keyArray{Json::arrayValue};
         for (const auto &key : keys)
@@ -407,9 +409,15 @@ void SeatHoldService::readOwners(
         Json::StreamWriterBuilder writer;
         writer["indentation"] = "";
         const auto encodedKeys = Json::writeString(writer, keyArray);
-        auto success = [done](const drogon::nosql::RedisResult &result) {
+        PerformanceMetrics::observeSeatMap(
+            PerformanceMetrics::SeatMapStage::RedisInputBuild, inputStarted);
+        const auto lookupStarted = PerformanceMetrics::seatMapStart();
+        auto success = [done, lookupStarted](const drogon::nosql::RedisResult &result) {
+            PerformanceMetrics::observeSeatMap(
+                PerformanceMetrics::SeatMapStage::RedisLookup, lookupStarted);
             try
             {
+                const auto parseStarted = PerformanceMetrics::seatMapStart();
                 SeatHoldReadResult read{
                     .outcome = SeatHoldOutcome::Applied,
                     .owners = {},
@@ -425,6 +433,8 @@ void SeatHoldService::readOwners(
                         read.owners.push_back(ownerFromValue(item.asString()));
                     }
                 }
+                PerformanceMetrics::observeSeatMap(
+                    PerformanceMetrics::SeatMapStage::OwnerParse, parseStarted);
                 (*done)(std::move(read));
             }
             catch (...)
@@ -432,7 +442,9 @@ void SeatHoldService::readOwners(
                 (*done)({SeatHoldOutcome::Unavailable, {}});
             }
         };
-        auto error = [done](const std::exception &) {
+        auto error = [done, lookupStarted](const std::exception &) {
+            PerformanceMetrics::observeSeatMap(
+                PerformanceMetrics::SeatMapStage::RedisLookup, lookupStarted);
             (*done)({SeatHoldOutcome::Unavailable, {}});
         };
         drogon::app().getRedisClient("seat_holds")->execCommandAsync(

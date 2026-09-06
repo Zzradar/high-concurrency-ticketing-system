@@ -1,4 +1,5 @@
 #include "repositories/SeatRepository.h"
+#include "observability/PerformanceMetrics.h"
 
 #include <drogon/drogon.h>
 
@@ -29,9 +30,13 @@ void SeatRepository::listBySessionId(
                  inventory.id ASC
     )SQL";
 
+    const auto started = PerformanceMetrics::seatMapStart();
     drogon::app().getDbClient("default")->execSqlAsync(
         sql,
-        [onSuccess = std::move(onSuccess)](const drogon::orm::Result &result) {
+        [started, onSuccess = std::move(onSuccess)](const drogon::orm::Result &result) {
+            PerformanceMetrics::observeSeatMap(
+                PerformanceMetrics::SeatMapStage::DbFetchAndMaterialize, started);
+            const auto rowsStarted = PerformanceMetrics::seatMapStart();
             std::vector<SeatRow> seats;
             seats.reserve(result.size());
             for (const auto &row : result)
@@ -47,6 +52,8 @@ void SeatRepository::listBySessionId(
                     .price = row["price"].as<std::int64_t>(),
                 });
             }
+            PerformanceMetrics::observeSeatMap(
+                PerformanceMetrics::SeatMapStage::RowBuild, rowsStarted);
             onSuccess(std::move(seats));
         },
         [onError = std::move(onError)](

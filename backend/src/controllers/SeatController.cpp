@@ -2,6 +2,7 @@
 
 #include "common/ApiResponse.h"
 #include "security/AuthConfig.h"
+#include "observability/PerformanceMetrics.h"
 
 #include <memory>
 #include <utility>
@@ -79,12 +80,31 @@ void SeatController::listWithOwnCheckout(
                 return;
             }
 
+            using Metrics = ticketing::PerformanceMetrics;
+            const auto jsonStarted = Metrics::seatMapStart();
             Json::Value body{Json::arrayValue};
             for (const auto &seat : *seats)
             {
                 body.append(seat.toJson());
             }
-            (*callbackPtr)(drogon::HttpResponse::newHttpJsonResponse(body));
+            Metrics::observeSeatMap(Metrics::SeatMapStage::JsonBuild, jsonStarted);
+            const auto responseStarted = Metrics::seatMapStart();
+            auto response = drogon::HttpResponse::newHttpJsonResponse(body);
+            Metrics::observeSeatMap(Metrics::SeatMapStage::ResponseCreate, responseStarted);
+            if (responseStarted != Metrics::TimePoint{})
+            {
+                // Performance-only: trigger Drogon's lazy serializer once, on
+                // the same callback thread, before handing off the response.
+                const auto serializeStarted = Metrics::seatMapStart();
+                const auto bytes = response->getBody().size();
+                Metrics::observeSeatMap(Metrics::SeatMapStage::JsonSerialize, serializeStarted);
+                Metrics::observeSeatMapBytes(bytes);
+            }
+            const auto callbackStarted = Metrics::seatMapStart();
+            (*callbackPtr)(response);
+            // Includes synchronous framework work (e.g. compression), NOT a
+            // socket-flush completion measurement.
+            Metrics::observeSeatMap(Metrics::SeatMapStage::ResponseCallback, callbackStarted);
         },
         [callbackPtr] {
             (*callbackPtr)(ticketing::makeErrorResponse(

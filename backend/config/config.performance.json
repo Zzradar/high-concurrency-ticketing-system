@@ -58,6 +58,24 @@
         "path": "/metrics",
         "collectors": [
           {
+            "name": "ticketing_seat_map_stage_duration_seconds",
+            "help": "Seat map diagnostic stage elapsed wall time; callback is not socket flush",
+            "type": "histogram",
+            "labels": ["stage"]
+          },
+          {
+            "name": "ticketing_seat_map_response_bytes",
+            "help": "Seat map serialized JSON body bytes before compression",
+            "type": "histogram",
+            "labels": []
+          },
+          {
+            "name": "ticketing_seat_map_requests_in_flight",
+            "help": "Seat map requests from post routing until pre sending, not socket flush",
+            "type": "gauge",
+            "labels": []
+          },
+          {
             "name": "ticketing_http_requests_total",
             "help": "Total ticketing backend HTTP requests",
             "type": "counter",

@@ -1,4 +1,5 @@
 #include "services/SeatService.h"
+#include "observability/PerformanceMetrics.h"
 
 #include <memory>
 #include <utility>
@@ -35,18 +36,24 @@ void SeatService::listSessionSeats(
          errorPtr](std::vector<SeatRow> rows) mutable {
             if (!rows.empty())
             {
+                const auto dtoStarted = PerformanceMetrics::seatMapStart();
                 std::vector<Seat> seats;
                 seats.reserve(rows.size());
                 for (auto &row : rows)
                 {
                     seats.push_back(toDto(std::move(row)));
                 }
+                PerformanceMetrics::observeSeatMap(
+                    PerformanceMetrics::SeatMapStage::DtoBuild, dtoStarted);
+                const auto idsStarted = PerformanceMetrics::seatMapStart();
                 std::vector<std::string> seatIds;
                 seatIds.reserve(seats.size());
                 for (const auto &seat : seats)
                 {
                     seatIds.push_back(seat.id);
                 }
+                PerformanceMetrics::observeSeatMap(
+                    PerformanceMetrics::SeatMapStage::SeatIdsBuild, idsStarted);
                 seatHoldService_.readOwners(
                     sessionId,
                     seatIds,
@@ -54,6 +61,7 @@ void SeatService::listSessionSeats(
                      seats = std::move(seats),
                      onSuccess = std::move(onSuccess)](
                         SeatHoldReadResult holds) mutable {
+                        const auto overlayStarted = PerformanceMetrics::seatMapStart();
                         if (holds.outcome == SeatHoldOutcome::Applied &&
                             holds.owners.size() == seats.size())
                         {
@@ -69,6 +77,8 @@ void SeatService::listSessionSeats(
                                 }
                             }
                         }
+                        PerformanceMetrics::observeSeatMap(
+                            PerformanceMetrics::SeatMapStage::Overlay, overlayStarted);
                         onSuccess(std::move(seats));
                     });
                 return;
