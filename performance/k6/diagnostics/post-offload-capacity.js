@@ -12,7 +12,8 @@ import {summaryHandler} from '../lib/summary.js';
 const config = loadConfig('post-offload-capacity');
 const dataset = loadDataset();
 const sessions = loadSessions();
-const mixed = __ENV.CAPACITY_KIND === 'mixed';
+const kind = __ENV.CAPACITY_KIND || 'seat';
+const mixed = kind === 'mixed';
 const encoding = __ENV.SEAT_MAP_ENCODING;
 const expectedHeld = Number(__ENV.EXPECTED_HELD);
 if (!['gzip', 'identity'].includes(encoding) || ![0, 4500].includes(expectedHeld))
@@ -38,7 +39,8 @@ export const options = {discardResponseBodies: true, systemTags: SYSTEM_TAGS,
         public_read: scenario('publicRead', __ENV.PUBLIC_RATE),
         auth_warm: scenario('authWarm', __ENV.AUTH_RATE),
         seat_map: scenario('seatMap', __ENV.RATE),
-    } : {seat_map: scenario('seatMap', __ENV.RATE)},
+    } : {seat_map: scenario(kind === 'layout' ? 'seatLayout' :
+                             kind === 'page-entry' ? 'pageEntry' : 'seatMap', __ENV.RATE)},
     thresholds: {...correctnessThresholds(config.mode),
         ticketing_display_invalid_total: ['count==0'],
         ticketing_display_degraded_total: ['count==0'],
@@ -46,17 +48,21 @@ export const options = {discardResponseBodies: true, systemTags: SYSTEM_TAGS,
 };
 http.setResponseCallback(http.expectedStatuses(200));
 function seatRequest(preflight = false) {
-    return http.get(`${config.baseUrl}/sessions/${dataset.seatMapSessionId}/seats`, {
+    const endpoint = kind === 'seat' ? 'seats' : 'seat-availability';
+    return http.get(`${config.baseUrl}/sessions/${dataset.seatMapSessionId}/${endpoint}`, {
         headers: {'Accept-Encoding': encoding}, responseType: 'text',
-        tags: {name: preflight ? 'seat-map preflight' : 'GET /sessions/{sessionId}/seats'},
+        tags: {name: preflight ? 'seat-map preflight' : `GET /sessions/{sessionId}/${endpoint}`},
     });
 }
 function display(response) {
-    const seats = response.json();
+    const payload = response.json();
+    const seats = kind === 'seat' ? payload : payload.seats;
     if (!Array.isArray(seats) || seats.length !== 5000) return 'invalid';
+    if (kind !== 'seat' && payload.sessionId !== dataset.seatMapSessionId) return 'invalid';
     const counts = {HELD: 0, AVAILABLE: 0, SOLD: 0};
     for (const seat of seats) {
-        if (!seat.id || seat.sessionId !== dataset.seatMapSessionId || !(seat.status in counts)) return 'invalid';
+        if (!seat.id || (kind === 'seat' && seat.sessionId !== dataset.seatMapSessionId) ||
+            !(seat.status in counts)) return 'invalid';
         counts[seat.status]++;
     }
     if (counts.HELD === expectedHeld && counts.AVAILABLE === 5000 - expectedHeld && counts.SOLD === 0) return 'exact';
@@ -65,6 +71,20 @@ function display(response) {
 }
 export function setup() {
     if (mixed && sessions.length < 100) throw new Error('warm pool requires 100 sessions');
+    if (kind === 'layout') {
+        const layout = layoutRequest(true);
+        if (layout.status !== 200 || layoutState(layout) !== 'exact')
+            throw new Error('layout fixture/encoding preflight failed');
+        return;
+    }
+    if (kind === 'page-entry') {
+        const layout = layoutRequest(true);
+        const availability = seatRequest(true);
+        if (layout.status !== 200 || layoutState(layout) !== 'exact' ||
+            availability.status !== 200 || display(availability) !== 'exact')
+            throw new Error('page-entry fixture/encoding preflight failed');
+        return;
+    }
     const response = seatRequest(true);
     if (response.status !== 200 || display(response) !== 'exact' ||
         (response.headers['Content-Encoding'] === 'gzip') !== (encoding === 'gzip'))
@@ -89,6 +109,65 @@ export function seatMap() {
     invalid.add(state === 'invalid' ? 1 : 0); busy.add(response.status === 503 ? 1 : 0);
     // A 503 remains a system error as well as a separately counted rejection.
     record('seat', response, result);
+}
+function layoutRequest(preflight = false) {
+    return http.get(`${config.baseUrl}/sessions/${dataset.seatMapSessionId}/seat-layout`, {
+        headers: {'Accept-Encoding': encoding}, responseType: 'text',
+        tags: {name: preflight ? 'layout preflight' : 'GET /sessions/{sessionId}/seat-layout'},
+    });
+}
+function layoutState(response) {
+    const payload = response.json();
+    if (payload.sessionId !== dataset.seatMapSessionId || !Array.isArray(payload.seats) ||
+        payload.seats.length !== 5000) return 'invalid';
+    const ids = new Set();
+    for (const seat of payload.seats) {
+        if (Object.keys(seat).sort().join(',') !== 'id,label,number,price,row,zone' || ids.has(seat.id))
+            return 'invalid';
+        ids.add(seat.id);
+    }
+    return 'exact';
+}
+export function seatLayout() {
+    const response = layoutRequest();
+    let state = 'not_200';
+    if (response.status === 200) {
+        try { state = layoutState(response); } catch (_) { state = 'invalid'; }
+    }
+    exact.add(state === 'exact' ? 1 : 0); degraded.add(0);
+    invalid.add(state === 'invalid' ? 1 : 0); busy.add(response.status === 503 ? 1 : 0);
+    record('seat', response, state === 'exact' ? 'success' :
+        response.status === 503 ? 'system_error' : 'unexpected');
+}
+export function pageEntry() {
+    const started = Date.now();
+    const [layout, availability] = http.batch([
+        ['GET', `${config.baseUrl}/sessions/${dataset.seatMapSessionId}/seat-layout`, null,
+            {headers: {'Accept-Encoding': encoding}, responseType: 'text', tags: {name: 'GET /sessions/{sessionId}/seat-layout'}}],
+        ['GET', `${config.baseUrl}/sessions/${dataset.seatMapSessionId}/seat-availability`, null,
+            {headers: {'Accept-Encoding': encoding}, responseType: 'text', tags: {name: 'GET /sessions/{sessionId}/seat-availability'}}],
+    ]);
+    let state = 'not_200';
+    if (layout.status === 200 && availability.status === 200) {
+        try {
+            const layoutPayload = layout.json();
+            const availabilityPayload = availability.json();
+            const layoutIds = new Set(layoutPayload.seats.map(seat => seat.id));
+            const availabilityIds = new Set(availabilityPayload.seats.map(seat => seat.id));
+            state = layoutState(layout) === 'exact' && display(availability) === 'exact' &&
+                availabilityIds.size === layoutIds.size &&
+                availabilityPayload.seats.every(seat => layoutIds.has(seat.id)) ? 'exact' : 'invalid';
+        } catch (_) { state = 'invalid'; }
+    }
+    const response = {status: layout.status === 200 ? availability.status : layout.status,
+        timings: {duration: Date.now() - started,
+            waiting: Math.max(layout.timings.waiting, availability.timings.waiting),
+            receiving: Math.max(layout.timings.receiving, availability.timings.receiving)}};
+    exact.add(state === 'exact' ? 1 : 0); degraded.add(0);
+    invalid.add(state === 'invalid' ? 1 : 0);
+    busy.add(layout.status === 503 ? 1 : 0); busy.add(availability.status === 503 ? 1 : 0);
+    record('seat', response, state === 'exact' ? 'success' :
+        response.status === 503 ? 'system_error' : 'unexpected');
 }
 export function publicRead() {
     const response = http.get(`${config.baseUrl}/events`, {tags: {name: 'GET /events'}});

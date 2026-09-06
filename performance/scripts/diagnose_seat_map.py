@@ -93,11 +93,11 @@ def collect_run_resources(root, run_root, start, end):
     evidence.write_json(root / "scoped-resources.json", captured)
 
 
-def gzip_probe(session_id):
+def gzip_probe(session_id, endpoint="seats"):
     captured = {}
     bodies = {}
     for encoding in ("identity", "gzip"):
-        request = Request(run_k6.BACKEND_URL + f"/sessions/{session_id}/seats",
+        request = Request(run_k6.BACKEND_URL + f"/sessions/{session_id}/{endpoint}",
                           headers={"Accept-Encoding": encoding})
         with build_opener(ProxyHandler({})).open(request, timeout=15) as response:
             body = response.read()  # urllib does not auto-decompress Content-Encoding.
@@ -113,10 +113,12 @@ def gzip_probe(session_id):
     if bodies["identity"] != bodies["gzip"]:
         raise RuntimeError("identity/gzip response bodies differ")
     payload = json.loads(bodies["identity"])
-    if not isinstance(payload, list) or not payload:
+    seats = payload if endpoint == "seats" else payload.get("seats")
+    if not isinstance(seats, list) or not seats:
         raise RuntimeError("invalid Seat Map contract")
     captured["rawBodyBytes"] = len(bodies["identity"])
-    captured["seatCount"] = len(payload)
+    captured["seatCount"] = len(seats)
+    captured["endpoint"] = endpoint
     captured["bodyEquality"] = True
     return captured
 

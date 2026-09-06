@@ -81,20 +81,21 @@ def failures(manifest, metrics):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--rate', type=int, choices=(10, 60, 100, 150, 200, 300, 400, 500, 600), required=True)
+    parser.add_argument('--rate', type=int, choices=(10, 30, 60, 100, 150, 200, 300, 400, 500, 600), required=True)
     parser.add_argument('--duration', type=int, choices=(15, 300), default=15)
     parser.add_argument('--density', type=int, choices=(0, 90), default=0)
     parser.add_argument('--encoding', choices=('gzip', 'identity'), default='gzip')
     parser.add_argument('--mixed', type=int, choices=(2, 4, 8))
+    parser.add_argument('--kind', choices=('seat', 'availability', 'layout', 'page-entry'), default='seat')
     parser.add_argument('--drain-seconds', type=int, choices=(0, 180), default=0)
     parser.add_argument('--prepare', action='store_true')
     args = parser.parse_args()
-    if args.mixed and (args.rate != 75 * args.mixed or args.encoding != 'gzip'):
+    if args.mixed and (args.kind != 'availability' or args.rate != 75 * args.mixed or args.encoding != 'gzip'):
         parser.error('mixed requires seat rate=75*multiplier and gzip')
     if args.duration == 300 and args.drain_seconds != 180:
         parser.error('long observation requires 180s drain')
     token = uuid.uuid4().hex[:8]
-    name = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ') + f'-capacity-{args.rate}-{args.density}-{token}'
+    name = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ') + f'-split-{args.kind}-{args.rate}-{args.density}-{token}'
     root = run_k6.RESULTS_ROOT / name
     root.mkdir(parents=True, exist_ok=False)
     container = f'ticketing-phase10a-k6-{token}'
@@ -122,7 +123,9 @@ def main():
             manifest['rates'].update(public=100 * args.mixed, auth=100 * args.mixed)
             manifest['auth'] = run_k6.prepare_auth(argparse.Namespace(auth_mode='warm', auth_pool_size=100),
                                                   run_k6.read_json(run_k6.GENERATED_ROOT / 'sessions.json'))
-        evidence.write_json(root / 'gzip.json', diagnosis.gzip_probe(session))
+        endpoint = {'seat': 'seats', 'availability': 'seat-availability',
+                    'layout': 'seat-layout', 'page-entry': 'seat-availability'}[args.kind]
+        evidence.write_json(root / 'gzip.json', diagnosis.gzip_probe(session, endpoint))
         time.sleep(6)
         baseline = sample()
         calibration.check_safety(baseline)
@@ -135,7 +138,7 @@ def main():
         environment = {'RUN_ID': name, 'SHORT_RUN_TOKEN': token, 'BASE_URL': 'http://backend:8080',
                        'MODE': 'steady', 'RATE': str(args.rate), 'DURATION': f'{args.duration}s',
                        'SEAT_MAP_ENCODING': args.encoding, 'EXPECTED_HELD': str(manifest['fixture']['heldCount']),
-                       'CAPACITY_KIND': 'mixed' if args.mixed else 'seat',
+                       'CAPACITY_KIND': 'mixed' if args.mixed else args.kind,
                        'PUBLIC_RATE': str(manifest['rates'].get('public', 1)),
                        'AUTH_RATE': str(manifest['rates'].get('auth', 1))}
         command = run_k6.compose_command('--profile', 'load', 'run', '--rm', '--no-deps', '--name', container)

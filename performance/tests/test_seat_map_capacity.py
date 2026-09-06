@@ -62,11 +62,16 @@ class CapacityTests(unittest.TestCase):
                          'counts.AVAILABLE === 5000 - expectedHeld', "response.status === 503",
                          "ticketing_display_degraded_total: ['count==0']"):
             self.assertIn(fragment, source)
+        for fragment in ("kind === 'layout'", "kind === 'page-entry'",
+                         "/seat-availability", "/seat-layout", "http.batch",
+                         "availabilityIds.size === layoutIds.size"):
+            self.assertIn(fragment, source)
         driver = Path(capacity.__file__).read_text()
         self.assertNotIn('force-recreate', driver)
         self.assertNotIn('volume rm', driver)
         self.assertIn("args.duration + 90", driver)
         self.assertIn("args.drain_seconds != 180", driver)
+        self.assertIn("'availability', 'layout', 'page-entry'", driver)
 
     def test_incomplete_evidence_is_never_relabelled_success(self):
         with mock.patch.object(summary, 'read', return_value={'error': 'sampling unavailable', 'runnerExit': 1}):
