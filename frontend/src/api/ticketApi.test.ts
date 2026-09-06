@@ -5,9 +5,12 @@ import {
   checkoutSessionPaths,
   buildReservationRequest,
   normalizeApiError,
+  normalizeSeatAvailabilityResponse,
+  normalizeSeatLayoutResponse,
   resetMockData,
   setMockLatency,
   setMockPaymentSimulation,
+  seatMapPaths,
   TicketApiError,
   ticketApi,
 } from './ticketApi'
@@ -48,6 +51,37 @@ describe('ticketApi contract and mock transaction flow', () => {
     expect(buildSeatMapRequestConfig('CHK-1')).toEqual({
       params: { checkoutSessionId: 'CHK-1' },
     })
+  })
+
+  it('uses the split seat map paths and normalizes mock transport responsibilities', async () => {
+    expect(seatMapPaths.layout('S1')).toBe('/sessions/S1/seat-layout')
+    expect(seatMapPaths.availability('S1')).toBe('/sessions/S1/seat-availability')
+    expect(seatMapPaths.legacy('S1')).toBe('/sessions/S1/seats')
+
+    const layout = await ticketApi.getSeatLayout('ses-concert-1001')
+    const availability = await ticketApi.getSeatAvailability(
+      'ses-concert-1001',
+      'CHK-owned',
+    )
+
+    expect(layout[0]).toMatchObject({
+      id: 'ses-concert-1001-A01',
+      sessionId: 'ses-concert-1001',
+      label: 'A01',
+    })
+    expect(layout.every((seat) => !('status' in seat))).toBe(true)
+    expect(availability[0]).toEqual({
+      id: 'ses-concert-1001-A01',
+      status: 'AVAILABLE',
+    })
+    expect(availability.every((seat) => Object.keys(seat).length === 2)).toBe(true)
+  })
+
+  it('rejects split seat map responses for a different session', () => {
+    expect(() => normalizeSeatLayoutResponse('S1', { sessionId: 'S2', seats: [] }))
+      .toThrow('座位图场次与当前页面不一致。')
+    expect(() => normalizeSeatAvailabilityResponse('S1', { sessionId: 'S2', seats: [] }))
+      .toThrow('座位图场次与当前页面不一致。')
   })
 
   it('creates, reads, lists and revises a recoverable checkout session', async () => {

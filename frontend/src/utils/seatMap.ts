@@ -15,7 +15,19 @@ export function mergeSeatSnapshot(
   layout: SeatStatic[],
   availability: SeatAvailability[],
 ): Seat[] {
-  const statusById = new Map(availability.map((seat) => [seat.id, seat.status]))
+  const layoutIds = new Set<string>()
+  layout.forEach((seat) => {
+    if (layoutIds.has(seat.id)) throw new Error('Duplicate layout seat ' + seat.id)
+    layoutIds.add(seat.id)
+  })
+
+  const statusById = new Map<string, SeatStatus>()
+  availability.forEach((seat) => {
+    if (statusById.has(seat.id)) throw new Error('Duplicate availability seat ' + seat.id)
+    if (!layoutIds.has(seat.id)) throw new Error('Unknown availability seat ' + seat.id)
+    statusById.set(seat.id, seat.status)
+  })
+
   return layout.map((seat) => {
     const status = statusById.get(seat.id)
     if (!status) throw new Error('Missing availability for seat ' + seat.id)

@@ -9,6 +9,10 @@ import type {
   Reservation,
   ReservationResult,
   Seat,
+  SeatAvailability,
+  SeatAvailabilityResponse,
+  SeatLayoutResponse,
+  SeatStatic,
   TicketEvent,
   TicketOrder,
   TicketSession,
@@ -338,6 +342,25 @@ async function mockGetSessions(eventId: string) {
 async function mockGetSeats(sessionId: string) {
   await wait()
   return clone(ensureSeats(sessionId))
+}
+
+async function mockGetSeatLayout(sessionId: string): Promise<SeatLayoutResponse> {
+  const seats = await mockGetSeats(sessionId)
+  return {
+    sessionId,
+    seats: seats.map(({ sessionId: _sessionId, status: _status, ...seat }) => seat),
+  }
+}
+
+async function mockGetSeatAvailability(
+  sessionId: string,
+  _checkoutSessionId?: string,
+): Promise<SeatAvailabilityResponse> {
+  const seats = await mockGetSeats(sessionId)
+  return {
+    sessionId,
+    seats: seats.map(({ id, status }) => ({ id, status })),
+  }
 }
 
 async function mockCreateReservation(sessionId: string, seatIds: string[]): Promise<ReservationResult> {
@@ -698,6 +721,34 @@ export function buildSeatMapRequestConfig(checkoutSessionId?: string) {
   return checkoutSessionId ? { params: { checkoutSessionId } } : undefined
 }
 
+export const seatMapPaths = {
+  legacy: (sessionId: string) => '/sessions/' + sessionId + '/seats',
+  layout: (sessionId: string) => '/sessions/' + sessionId + '/seat-layout',
+  availability: (sessionId: string) => '/sessions/' + sessionId + '/seat-availability',
+} as const
+
+function assertSeatSnapshotSession(requestedSessionId: string, responseSessionId: string) {
+  if (responseSessionId !== requestedSessionId) {
+    throw new TicketApiError('座位图场次与当前页面不一致。', 'SEAT_SNAPSHOT_SESSION_MISMATCH')
+  }
+}
+
+export function normalizeSeatLayoutResponse(
+  requestedSessionId: string,
+  response: SeatLayoutResponse,
+): SeatStatic[] {
+  assertSeatSnapshotSession(requestedSessionId, response.sessionId)
+  return response.seats.map((seat) => ({ ...seat, sessionId: response.sessionId }))
+}
+
+export function normalizeSeatAvailabilityResponse(
+  requestedSessionId: string,
+  response: SeatAvailabilityResponse,
+): SeatAvailability[] {
+  assertSeatSnapshotSession(requestedSessionId, response.sessionId)
+  return response.seats
+}
+
 export const ticketApi = {
   async login(username: string, password: string): Promise<CurrentUser> {
     if (isMockMode) return mockLogin(username, password)
@@ -750,11 +801,31 @@ export const ticketApi = {
       ? await mockGetSeats(sessionId)
       : (
       await http.get<Seat[]>(
-        '/sessions/' + sessionId + '/seats',
+        seatMapPaths.legacy(sessionId),
         buildSeatMapRequestConfig(checkoutSessionId),
       )
     ).data
     return normalizeLegacySeatSnapshot(seats)
+  },
+  async getSeatLayout(sessionId: string): Promise<SeatStatic[]> {
+    const response = isMockMode
+      ? await mockGetSeatLayout(sessionId)
+      : (await http.get<SeatLayoutResponse>(seatMapPaths.layout(sessionId))).data
+    return normalizeSeatLayoutResponse(sessionId, response)
+  },
+  async getSeatAvailability(
+    sessionId: string,
+    checkoutSessionId?: string,
+  ): Promise<SeatAvailability[]> {
+    const response = isMockMode
+      ? await mockGetSeatAvailability(sessionId, checkoutSessionId)
+      : (
+          await http.get<SeatAvailabilityResponse>(
+            seatMapPaths.availability(sessionId),
+            buildSeatMapRequestConfig(checkoutSessionId),
+          )
+        ).data
+    return normalizeSeatAvailabilityResponse(sessionId, response)
   },
   async createReservation(sessionId: string, seatIds: string[]): Promise<ReservationResult> {
     if (isMockMode) return mockCreateReservation(sessionId, seatIds)

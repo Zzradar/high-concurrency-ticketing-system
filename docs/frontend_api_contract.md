@@ -23,8 +23,8 @@
 | getSessions | GET /events/{eventId}/sessions |
 | getSession | GET /sessions/{sessionId} |
 | getSeats | GET /sessions/{sessionId}/seats?checkoutSessionId={optionalCheckoutSessionId} |
-| getSeatLayout（后续前端接入） | GET /sessions/{sessionId}/seat-layout |
-| getSeatAvailability（后续前端接入） | GET /sessions/{sessionId}/seat-availability?checkoutSessionId={optionalCheckoutSessionId} |
+| getSeatLayout | GET /sessions/{sessionId}/seat-layout |
+| getSeatAvailability | GET /sessions/{sessionId}/seat-availability?checkoutSessionId={optionalCheckoutSessionId} |
 | createReservation | POST /reservations |
 | createCheckoutSession | POST /checkout-sessions |
 | getCheckoutSession | GET /checkout-sessions/{id} |
@@ -54,7 +54,7 @@ expireOrderForDemo 仅用于 mock 演示；真实 API 模式会直接报 MOCK_ON
 | --- | --- | --- | --- | --- |
 | 活动列表 `/events` | EventCard | events、loading | EventListPage 调用 getEvents | TicketEvent[] 必须由 GET /events 提供 |
 | 场次选择 `/events/:eventId/sessions` | SessionCard | event、sessions、loading | SessionListPage 按 URL 调用 getEvent/getSessions | Event 与 TicketSession[] 详情接口 |
-| 座位选择 `/sessions/:sessionId/seats` | SeatGrid、SeatItem、SelectedSeats、RecoverableCheckoutPanel | event、session、seats、selectedSeatIds、checkout、恢复候选与确认状态 | 页面按 route 加载详情；CheckoutSession 是服务端 checkpoint | Seat[] 与 CheckoutSession API；提交时后端最终确认是否锁座成功 |
+| 座位选择 `/sessions/:sessionId/seats` | SeatGrid、SeatItem、SelectedSeats、RecoverableCheckoutPanel | event、session、内存中的 SeatStatic layout、最新 availability 合并出的 seats、selectedSeatIds、checkout、恢复候选与确认状态 | 页面按 route 加载详情；CheckoutSession 是服务端 checkpoint | 首次读取 Layout + Availability，后续只刷新 Availability；提交时后端最终确认是否锁座成功 |
 | 订单 `/orders/:orderId` | OrderSummary | order、paymentAttempt、event、session、seats、操作状态、倒计时 | OrderPage 按 URL 获取 Order，再按 eventId/sessionId 补齐详情 | 支付返回后轮询 Attempt；订单终态变化后重新获取 order 和通知 |
 | 我的订单 `/orders` | OrderListPage | orders、status、loading | GET /orders，默认 limit=20 | 当前认证用户的订单列表 |
 
@@ -186,15 +186,15 @@ POST、PUT、PATCH、DELETE 请求上发送 `X-CSRF-Token`。Cookie 由浏览器
 | --- | --- | --- |
 | App 首次挂载 | 恢复认证并启动通知同步 | GET /auth/me；已登录时 GET /notifications |
 | 点击“查看场次” | 路由到 eventId 并加载活动与场次 | GET event + GET /events/{event.id}/sessions |
-| 点击“进入选座” | 路由到 sessionId，加载场次、活动和座位 | GET session + GET event + GET seats |
+| 点击“进入选座” | 路由到 sessionId，加载场次；随后并行加载活动、静态 Layout 和初始 Availability，并按 Seat ID 合并 | GET session + GET event + GET seat-layout + GET seat-availability |
 | 进入选座 | 先按 locator GET；无有效 locator 时查询全部可恢复会话且不自动选最新一条 | GET CheckoutSession / list recoverable |
 | 第一次点击 AVAILABLE 座位 | 立即更新 selectedSeatIds，并异步创建唯一 C1；后端同时尝试取得首批 Redis 临时 Hold | POST /checkout-sessions |
 | 后续 add/remove | UI 立即更新；同一 C1 以 single-flight PUT 同步最新完整集合 | PUT seats，携带 seatIds、expectedRevision |
-| 点击刷新座位 | 重新获取 Seat[]；已有 C1 时携带其 ID，不删除恢复出的 HELD/SOLD 意图座位 | GET /sessions/{session.id}/seats?checkoutSessionId={C1} |
+| 点击刷新座位 | 只重新获取 Availability，与页面内存中的 Layout 按 Seat ID 合并；已有 C1 时携带其 ID，不删除恢复出的 HELD/SOLD 意图座位 | GET /sessions/{session.id}/seat-availability?checkoutSessionId={C1} |
 | 点击“提交预订” | 禁止继续编辑，等待 create/PUT 并把最终集合 flush 到服务端 checkpoint，再正式确认 | POST /checkout-sessions/{id}/confirm |
-| 确认成功 | 使用 CheckoutSession 响应中的 order，刷新座位图并进入订单页 | confirm 响应 RESERVED CheckoutSession；随后 GET seats |
-| SEAT_CONFLICT | GET 当前 C1 回到 SELECTING，保留服务端意图并刷新 Seat Map | GET CheckoutSession + GET seats |
-| SEAT_TEMPORARILY_HELD | 视为明确业务冲突，保留合理的本地意图并刷新 Seat Map，不进入结果未知轮询 | GET seats；Final PUT 冲突时不调用 confirm |
+| 确认成功 | 使用 CheckoutSession 响应中的 order 并进入订单页 | confirm 响应 RESERVED CheckoutSession |
+| SEAT_CONFLICT | GET 当前 C1 回到 SELECTING，保留服务端意图并刷新动态 Seat Availability | GET CheckoutSession + GET seat-availability |
+| SEAT_TEMPORARILY_HELD | 视为明确业务冲突，保留合理的本地意图并刷新动态 Seat Availability，不进入结果未知轮询 | GET seat-availability；Final PUT 冲突时不调用 confirm |
 | 点击订单“刷新状态” | 更新页面 order | GET /orders/{order.id} |
 | 打开“我的订单” | 按状态筛选当前用户最近订单 | GET /orders?status=...&limit=20 |
 | 直接打开订单 URL | 按 orderId 恢复 Order，再恢复 Event、Session 与 Seat[] | GET /orders/{id}、GET /events/{id}、GET /sessions/{id}、GET seats |
@@ -285,7 +285,7 @@ PostgreSQL `user_sessions.revoked_at` 是撤销的正式事实。Redis Session C
 
 ### 5.3 GET /sessions/{sessionId}/seats
 
-对应进入选座、手动刷新座位，以及订单状态变更后的座位同步。
+这是保留的 legacy 完整座位接口。OrderPage 和较低层兼容测试仍可使用；选座页不再使用它完成首次加载或后续状态刷新。
 
 - Path：sessionId，string，例如 ses-concert-1001。
 - Query：`checkoutSessionId` 可选。已有当前 C1 时传其 ID；没有 C1 时可省略。
@@ -327,7 +327,7 @@ Phase 7 的叠加规则为：
 
 #### 静态 Layout 与动态 Availability
 
-后端 Phase10B-3.3 新增两个可由前端后续接入的读取接口；当前 legacy `/seats` 继续保留且响应不变。
+选座页已经接入后端 Phase10B-3.3 的两个拆分读取接口；当前 legacy `/seats` 继续保留且响应不变。
 
 `GET /sessions/{sessionId}/seat-layout` 匿名可读，不接受或使用 `checkoutSessionId`，response 为：
 
@@ -366,6 +366,10 @@ Availability Seat 每项只包含 `id/status`。可选 `checkoutSessionId` 的�
 两个接口在 Session 不存在时返回 `404 SESSION_NOT_FOUND`；Session 存在但无 Seat 时返回
 `{ "sessionId": "...", "seats": [] }`。Layout 与 Availability 数组顺序不保证按索引对应，前端必须按
 Seat ID merge。Availability status 只用于展示，Confirm/正式 Reservation 才是最终交易裁决。
+
+进入选座页时，前端读取一次 Layout 和一次不带 CheckoutSession 上下文的 Availability，在 API 边界使用顶层 `sessionId` 为内部 `SeatStatic` 补齐 `sessionId`，再按 Seat ID 合并为组件继续使用的 `Seat[]`。页面生命周期内 Layout 只保存在内存中；手动刷新、CheckoutSession 创建/更新/恢复/放弃以及焦点同步只重新读取 Availability。拥有当前场次 C1 时，仅 Availability 请求携带 `checkoutSessionId`。
+
+前端会拒绝场次不一致、重复 ID、缺失状态或 Layout 外未知状态的快照。首次合并失败显示座位图加载错误；后续 Availability 请求或合并失败保留最后成功的 `Seat[]`、已选意图和非阻断警告。当前没有 ETag、localStorage/sessionStorage Layout 缓存、增量 Availability、Snapshot Version、WebSocket 或 SSE。
 
 ### 5.4 POST /reservations
 
@@ -570,8 +574,9 @@ Confirm 成功响应为 `{ "disposition", "checkoutSession" }`。`disposition` �
       -> /events/{eventId}/sessions
       -> GET /events/{eventId}/sessions
       -> /sessions/{sessionId}/seats
-      -> GET /sessions/{sessionId}/seats
-      -> seats
+      -> GET /sessions/{sessionId}/seat-layout
+      + GET /sessions/{sessionId}/seat-availability
+      -> 按 Seat ID merge 为 seats
       -> 本地点选 selectedSeatIds / selectedSeats
       -> create / full-set PUT CheckoutSession
       -> final sync barrier
@@ -586,7 +591,8 @@ Confirm 成功响应为 `{ "disposition", "checkoutSession" }`。`disposition` �
 | currentUser | `/auth/me` 的前端副本 | 启动恢复，401 时清空；一个 Cookie Jar 对应一个 Session |
 | events / event | 后端权威数据的页面副本 | 列表和详情接口获取 |
 | sessions / session | 后端权威数据的页面副本 | 列表和详情接口获取 |
-| seats | 后端权威数据的前端副本 | 进入选座、刷新、订单变更后重新获取 |
+| seatLayout | 后端静态 Layout 的页面内存副本 | 选座页首次加载一次，不持久化；页面后续刷新不重新获取 |
+| seats | Layout 与最新 Availability 合并出的前端副本 | 选座页后续只刷新 Availability；OrderPage 可继续读取 legacy 完整 Seat[] |
 | selectedSeatIds | 完全属于前端 | 是本地用户意向；服务端可能已为对应 CheckoutSession 建立 Redis 临时 Hold，但它不是正式锁座结果 |
 | selectedSeats | 完全属于前端的计算值 | 从 seats 和 selectedSeatIds 派生 |
 | currentCheckoutSession | 后端权威 checkpoint 的前端副本 | 包含 seatIds、revision、status；成功 PUT 后整体替换 |
@@ -639,8 +645,8 @@ Confirm 成功响应为 `{ "disposition", "checkoutSession" }`。`disposition` �
 
 ### 7.3 Phase 7 Redis 临时占座契约
 
-已有 C1 时，前端调用 `getSeats(sessionId, checkoutSessionId)`；恢复 C1 后也会以该
-C1 上下文重新刷新座位图。`SEAT_TEMPORARILY_HELD` 是明确业务冲突：前端刷新座位图、
+已有 C1 时，选座页调用 `getSeatAvailability(sessionId, checkoutSessionId)`；恢复 C1 后也会以该
+C1 上下文重新刷新动态状态。`SEAT_TEMPORARILY_HELD` 是明确业务冲突：前端刷新 Availability、
 保留合理的本地购买意图、不自动 merge，也不进入“确认结果未知”的 SUBMITTING
 polling。Confirm barrier 的最终 PUT 遇到该冲突时不会调用 confirm endpoint。
 Redis 不可用的降级由后端处理，前端不感知 Redis 故障细节。
@@ -662,8 +668,8 @@ Redis 不可用的降级由后端处理，前端不感知 Redis 故障细节。
 - 支持 `ticketing_csrf` + `X-CSRF-Token` + Origin 校验，并返回真实 401/403/503 认证错误。
 - 成功响应直接返回本文所列 JSON，不增加 data 外层包装。
 - 业务失败响应返回字符串类型的 code 和 message。
-- GET seats 接受可选 checkoutSessionId，并按当前 C1 上下文叠加 Redis 临时 Hold。
-- 后端提供静态 seat-layout 与动态 seat-availability；前者无 status，后者每项只有 id/status，legacy GET seats 保持兼容。
+- 选座页首次读取静态 seat-layout 与动态 seat-availability，后续只刷新 seat-availability；仅后者接受可选 checkoutSessionId 并按当前 C1 上下文叠加 Redis 临时 Hold。
+- seat-layout 的座位项无 status，seat-availability 的座位项只有 id/status；OrderPage 和兼容测试所用的 legacy GET seats 继续保留。
 - 临时占座冲突返回 HTTP 409 和 SEAT_TEMPORARILY_HELD。
 - price、priceFrom、totalAmount 使用整数分。
 - 使用本文列出的精确状态字符串。

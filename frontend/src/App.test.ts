@@ -1,5 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App.vue'
 import { authState } from './auth/authState'
 import { resetMockData, setMockLatency, ticketApi, TicketApiError } from './api/ticketApi'
@@ -13,6 +13,10 @@ describe('Phase 9 application shell and routes', () => {
     authState.clearAuth()
     await router.push('/events')
     await router.isReady()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('registers real deep-link routes with protected order pages', () => {
@@ -77,15 +81,46 @@ describe('Phase 9 application shell and routes', () => {
     wrapper.unmount()
   })
 
-  it('keeps the current seat snapshot when a manual availability refresh fails', async () => {
+  it('loads the seat page from layout and availability without the legacy seat map', async () => {
     await authState.login('demo', 'Ticketing123!')
     await router.push({ name: routeNames.sessionSeats, params: { sessionId: 'ses-concert-1001' } })
+    const getSeatLayout = vi.spyOn(ticketApi, 'getSeatLayout')
+    const getSeatAvailability = vi.spyOn(ticketApi, 'getSeatAvailability')
+    const getSeats = vi.spyOn(ticketApi, 'getSeats')
     const wrapper = mount(App, { global: { plugins: [router] } })
     await vi.waitFor(() => {
       expect(wrapper.find('button[aria-label="刷新座位状态"]').exists()).toBe(true)
     })
+
+    expect(getSeatLayout).toHaveBeenCalledOnce()
+    expect(getSeatLayout).toHaveBeenCalledWith('ses-concert-1001')
+    expect(getSeatAvailability).toHaveBeenCalledOnce()
+    expect(getSeatAvailability).toHaveBeenCalledWith('ses-concert-1001')
+    expect(getSeats).not.toHaveBeenCalled()
+    wrapper.unmount()
+  })
+
+  it('keeps the current seat snapshot and selection when availability refresh fails', async () => {
+    await authState.login('demo', 'Ticketing123!')
+    await router.push({ name: routeNames.sessionSeats, params: { sessionId: 'ses-concert-1001' } })
+    const getSeatLayout = vi.spyOn(ticketApi, 'getSeatLayout')
+    const getSeatAvailability = vi.spyOn(ticketApi, 'getSeatAvailability')
+    const getSeats = vi.spyOn(ticketApi, 'getSeats')
+    const wrapper = mount(App, { global: { plugins: [router] } })
+    await vi.waitFor(() => {
+      expect(wrapper.find('button[aria-label="A01，可选，¥1,280"]').exists()).toBe(true)
+    })
+    await wrapper.get('button[aria-label="A01，可选，¥1,280"]').trigger('click')
+    await vi.waitFor(() => {
+      expect(wrapper.find('button[aria-label="移除座位 A01"]').exists()).toBe(true)
+    })
+
     const countBeforeRefresh = wrapper.findAll('.seat-item').length
-    const getSeats = vi.spyOn(ticketApi, 'getSeats').mockRejectedValueOnce(
+    const checkoutAvailabilityCall = getSeatAvailability.mock.calls.find(
+      ([, checkoutSessionId]) => typeof checkoutSessionId === 'string',
+    )
+    expect(checkoutAvailabilityCall).toBeDefined()
+    getSeatAvailability.mockRejectedValueOnce(
       new TicketApiError('availability unavailable', 'SERVICE_UNAVAILABLE'),
     )
 
@@ -93,8 +128,45 @@ describe('Phase 9 application shell and routes', () => {
     await flushPromises()
 
     expect(wrapper.findAll('.seat-item')).toHaveLength(countBeforeRefresh)
+    expect(wrapper.find('button[aria-label="移除座位 A01"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('已保留当前座位图')
-    getSeats.mockRestore()
+    expect(getSeatLayout).toHaveBeenCalledOnce()
+    expect(getSeats).not.toHaveBeenCalled()
+    expect(getSeatAvailability).toHaveBeenLastCalledWith(
+      'ses-concert-1001',
+      checkoutAvailabilityCall![1],
+    )
+    wrapper.unmount()
+  })
+
+  it.each([
+    ['layout', 'getSeatLayout'],
+    ['initial availability', 'getSeatAvailability'],
+  ] as const)('shows a page error when %s loading fails', async (_label, method) => {
+    await router.push({ name: routeNames.sessionSeats, params: { sessionId: 'ses-concert-1001' } })
+    vi.spyOn(ticketApi, method).mockRejectedValueOnce(
+      new TicketApiError('seat map unavailable', 'SERVICE_UNAVAILABLE'),
+    )
+    const wrapper = mount(App, { global: { plugins: [router] } })
+
+    await vi.waitFor(() => {
+      expect(wrapper.text()).toContain('无法打开选座页')
+    })
+    expect(wrapper.text()).toContain('座位图加载失败，请稍后重试。')
+    expect(wrapper.text()).not.toContain('当前场次暂无座位信息')
+    wrapper.unmount()
+  })
+
+  it('distinguishes a successful empty layout from a seat map loading error', async () => {
+    await router.push({ name: routeNames.sessionSeats, params: { sessionId: 'ses-concert-1001' } })
+    vi.spyOn(ticketApi, 'getSeatLayout').mockResolvedValueOnce([])
+    vi.spyOn(ticketApi, 'getSeatAvailability').mockResolvedValueOnce([])
+    const wrapper = mount(App, { global: { plugins: [router] } })
+
+    await vi.waitFor(() => {
+      expect(wrapper.text()).toContain('当前场次暂无座位信息')
+    })
+    expect(wrapper.text()).not.toContain('无法打开选座页')
     wrapper.unmount()
   })
 })

@@ -50,9 +50,21 @@ export interface SeatStatic {
   price: number // 整数“分”
 }
 
+export type SeatLayoutItem = Omit<SeatStatic, 'sessionId'>
+
+export interface SeatLayoutResponse {
+  sessionId: string
+  seats: SeatLayoutItem[]
+}
+
 export interface SeatAvailability {
   id: string
   status: SeatStatus
+}
+
+export interface SeatAvailabilityResponse {
+  sessionId: string
+  seats: SeatAvailability[]
 }
 
 export interface Seat extends SeatStatic {

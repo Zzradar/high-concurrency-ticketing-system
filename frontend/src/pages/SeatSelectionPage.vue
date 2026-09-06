@@ -7,14 +7,17 @@ import PageBreadcrumbs from '../components/PageBreadcrumbs.vue'
 import PageState from '../components/PageState.vue'
 import { routeNames, setPageTitle } from '../navigation'
 import { requestNotificationRefresh, showNotice } from '../uiSignals'
+import { mergeSeatSnapshot } from '../utils/seatMap'
 import SeatSelectionView from '../views/SeatSelectionView.vue'
-import type { CheckoutSession, Seat, TicketEvent, TicketOrder, TicketSession } from '../types'
+import type { CheckoutSession, Seat, SeatStatic, TicketEvent, TicketOrder, TicketSession } from '../types'
 
 const route = useRoute()
 const router = useRouter()
 const event = ref<TicketEvent | null>(null)
 const session = ref<TicketSession | null>(null)
 const seats = ref<Seat[]>([])
+const seatLayout = ref<SeatStatic[]>([])
+const seatMapLoaded = ref(false)
 const selectedSeatIds = ref<string[]>([])
 const checkout = ref<CheckoutSession | null>(null)
 const recoverable = ref<CheckoutSession[]>([])
@@ -44,11 +47,14 @@ function locatorClear() {
 }
 
 async function refreshSeats() {
-  if (!session.value) return false
+  if (!session.value || !seatMapLoaded.value) return false
   refreshing.value = true
   try {
-    const latestSeats = await ticketApi.getSeats(session.value.id, checkout.value?.id)
-    seats.value = latestSeats
+    const availability = await ticketApi.getSeatAvailability(
+      session.value.id,
+      checkout.value?.id,
+    )
+    seats.value = mergeSeatSnapshot(seatLayout.value, availability)
     availabilityWarning.value = ''
     return true
   } catch {
@@ -104,17 +110,29 @@ async function recoverCheckout() {
 async function load() {
   loading.value = true
   error.value = ''
+  availabilityWarning.value = ''
+  seatMapLoaded.value = false
+  seatLayout.value = []
+  seats.value = []
   try {
     const sessionId = String(route.params.sessionId)
     session.value = await ticketApi.getSession(sessionId)
-    ;[event.value, seats.value] = await Promise.all([
+    const [loadedEvent, layout, availability] = await Promise.all([
       ticketApi.getEvent(session.value.eventId),
-      ticketApi.getSeats(sessionId),
+      ticketApi.getSeatLayout(sessionId),
+      ticketApi.getSeatAvailability(sessionId),
     ])
+    const loadedSeats = mergeSeatSnapshot(layout, availability)
+    event.value = loadedEvent
+    seatLayout.value = layout
+    seats.value = loadedSeats
+    seatMapLoaded.value = true
     setPageTitle(event.value.name + ' · 选座')
     await Promise.all([recoverCheckout(), refreshSessionOrders()])
   } catch (cause) {
-    error.value = cause instanceof TicketApiError ? cause.message : '座位图加载失败。'
+    const resourceMissing = cause instanceof TicketApiError &&
+      ['SESSION_NOT_FOUND', 'EVENT_NOT_FOUND'].includes(cause.code)
+    error.value = resourceMissing ? cause.message : '座位图加载失败，请稍后重试。'
   } finally {
     loading.value = false
   }
@@ -264,7 +282,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main v-if="!loading && error && (!event || !session)" class="page-shell">
+  <main v-if="!loading && error && (!event || !session || !seatMapLoaded)" class="page-shell">
     <PageBreadcrumbs
       :items="[
         { label: '活动', to: { name: routeNames.events } },
@@ -279,7 +297,7 @@ onBeforeUnmount(() => {
     <button type="button" @click="router.push({ name: routeNames.orderDetail, params: { orderId: existingOrder.id } })">查看订单</button><span>也可继续购票</span>
   </section>
   <SeatSelectionView
-    v-if="event && session"
+    v-if="event && session && seatMapLoaded"
     :event="event" :session="session" :seats="seats" :selected-seats="selectedSeats"
     :selected-seat-ids="selectedSeatIds" :checkout-session="checkout"
     :recoverable-checkout-sessions="recoverable" :loading="loading"

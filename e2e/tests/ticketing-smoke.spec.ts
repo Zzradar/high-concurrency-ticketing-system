@@ -9,6 +9,14 @@ const sessionSeat = (sessionIndex: number, seatIndex: number) =>
   `perf-ss-001-${sessionIndex.toString().padStart(3, '0')}-${seatIndex.toString().padStart(6, '0')}`
 
 test('checkout-smoke uses UI login and reaches a pending order', async ({ page }) => {
+  const seatReadUrls: URL[] = []
+  page.on('request', (request) => {
+    const url = new URL(request.url())
+    if (url.pathname.startsWith(`/api/sessions/${SESSION_IDS[0]}/seat`)) {
+      seatReadUrls.push(url)
+    }
+  })
+
   await page.goto('/login')
   await page.getByLabel('用户名').fill('demo')
   await page.getByLabel('密码').fill('Ticketing123!')
@@ -18,9 +26,39 @@ test('checkout-smoke uses UI login and reaches a pending order', async ({ page }
   await page.getByRole('button', { name: `查看场次 ${EVENT_NAME}` }).click()
   await expect(page.getByRole('heading', { name: EVENT_NAME })).toBeVisible()
   await page.getByRole('button', { name: /^进入选座 / }).first().click()
-  await expect(page.getByRole('heading', { name: '选择你的座位' })).toBeVisible()
+  await expect(page).toHaveURL(new RegExp(`/sessions/${SESSION_IDS[0]}/seats$`))
+  await expect(page.getByRole('heading', { name: EVENT_NAME })).toBeVisible()
+  await expect(page.getByRole('region', { name: '场次座位状态与区域筛选' })).toBeVisible()
+  await expect(page.getByRole('button', { name: /^R001-004，可选，/ })).toBeVisible()
+
+  await expect.poll(() =>
+    seatReadUrls.filter((url) => url.pathname.endsWith('/seat-layout')).length,
+  ).toBe(1)
+  await expect.poll(() =>
+    seatReadUrls.filter((url) => url.pathname.endsWith('/seat-availability')).length,
+  ).toBe(1)
+  expect(seatReadUrls.filter((url) => url.pathname.endsWith('/seats'))).toHaveLength(0)
+
   await page.getByRole('button', { name: /^R001-004，可选，/ }).click()
   await expect(page.getByRole('button', { name: '移除座位 R001-004' })).toBeVisible()
+  await expect.poll(() =>
+    seatReadUrls.filter((url) => url.pathname.endsWith('/seat-availability')).length,
+  ).toBeGreaterThanOrEqual(2)
+  const checkoutLocator = await page.evaluate(() =>
+    JSON.parse(sessionStorage.getItem('ticketing.checkout.U-1001') ?? '{}') as {
+      checkoutSessionId?: string
+    },
+  )
+  const checkoutAvailability = seatReadUrls.find(
+    (url) => url.pathname.endsWith('/seat-availability') &&
+      url.searchParams.has('checkoutSessionId'),
+  )
+  expect(checkoutAvailability?.searchParams.get('checkoutSessionId')).toBe(
+    checkoutLocator.checkoutSessionId,
+  )
+  expect(seatReadUrls.filter((url) => url.pathname.endsWith('/seat-layout'))).toHaveLength(1)
+  expect(seatReadUrls.filter((url) => url.pathname.endsWith('/seats'))).toHaveLength(0)
+
   await page.getByRole('button', { name: '提交预订' }).click()
 
   await expect(page.getByRole('heading', { name: '请确认并完成支付' })).toBeVisible()
