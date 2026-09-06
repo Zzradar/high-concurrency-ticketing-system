@@ -17,6 +17,8 @@ class SeatService
   public:
     using ErrorCallback = std::function<void()>;
     using SeatsResult = std::optional<std::vector<Seat>>;
+    using LayoutResult = std::optional<std::vector<SeatLayout>>;
+    using AvailabilityResult = std::optional<std::vector<SeatAvailability>>;
 
     // Configure once before app.run(); main owns shutdown, callbacks share ownership.
     static void configureComputeExecutor(std::shared_ptr<SeatMapComputeExecutor> executor);
@@ -28,8 +30,22 @@ class SeatService
         ErrorCallback onError,
         ErrorCallback onBusy) const;
 
+    void listSeatLayout(
+        const std::string &sessionId,
+        std::function<void(LayoutResult)> onSuccess,
+        ErrorCallback onError,
+        ErrorCallback onBusy) const;
+
+    void listSeatAvailability(
+        const std::string &sessionId,
+        const std::string &checkoutSessionId,
+        std::function<void(AvailabilityResult)> onSuccess,
+        ErrorCallback onError,
+        ErrorCallback onBusy) const;
+
   private:
     static Seat toDto(SeatRow row);
+    static SeatLayout toLayoutDto(SeatLayoutRow row);
 
     SeatRepository repository_;
     SeatHoldService seatHoldService_;

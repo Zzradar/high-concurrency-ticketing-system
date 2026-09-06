@@ -254,7 +254,10 @@ void PerformanceMetrics::registerWithApplication()
         const std::vector<std::string> stages{
             "db_fetch_and_materialize", "row_build", "dto_build", "seat_ids_build",
             "redis_input_build", "redis_lookup", "owner_parse", "overlay",
-            "json_build", "response_create", "response_callback"};
+            "json_build", "response_create", "response_callback",
+            "layout_db_fetch_and_materialize", "layout_json_build",
+            "availability_db_fetch_and_materialize", "availability_redis_lookup",
+            "availability_overlay", "availability_json_build"};
         const std::vector<double> buckets{
             0.00001, 0.000025, 0.00005, 0.0001, 0.00025, 0.0005,
             0.001, 0.0025, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25,
@@ -322,8 +325,11 @@ void PerformanceMetrics::registerWithApplication()
 
     drogon::app().registerPostRoutingAdvice(
         [state](const drogon::HttpRequestPtr &request) {
+            const auto route = normalizedRoute(request);
             if (request->method() == drogon::Get &&
-                normalizedRoute(request) == "/sessions/{sessionId}/seats")
+                (route == "/sessions/{sessionId}/seats" ||
+                 route == "/sessions/{sessionId}/seat-layout" ||
+                 route == "/sessions/{sessionId}/seat-availability"))
             {
                 request->attributes()->insert(kSeatMapTracked, true);
                 state->seatMapInFlight->increment();

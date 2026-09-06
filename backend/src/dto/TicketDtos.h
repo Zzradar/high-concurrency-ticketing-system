@@ -95,6 +95,42 @@ struct Seat
     }
 };
 
+struct SeatLayout
+{
+    std::string id;
+    std::string label;
+    std::string row;
+    std::int32_t number{};
+    std::string zone;
+    std::int64_t price{};
+
+    Json::Value toJson() const
+    {
+        Json::Value value;
+        value["id"] = id;
+        value["label"] = label;
+        value["row"] = row;
+        value["number"] = number;
+        value["zone"] = zone;
+        value["price"] = Json::Int64(price);
+        return value;
+    }
+};
+
+struct SeatAvailability
+{
+    std::string id;
+    std::string status;
+
+    Json::Value toJson() const
+    {
+        Json::Value value;
+        value["id"] = id;
+        value["status"] = status;
+        return value;
+    }
+};
+
 struct Reservation
 {
     std::string id;

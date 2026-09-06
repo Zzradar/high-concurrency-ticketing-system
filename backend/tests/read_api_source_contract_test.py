@@ -26,9 +26,11 @@ class ReadApiSourceContractTest(unittest.TestCase):
             '"/events/{eventId}/sessions"',
             '"/sessions/{sessionId}"',
             '"/sessions/{sessionId}/seats"',
+            '"/sessions/{sessionId}/seat-layout"',
+            '"/sessions/{sessionId}/seat-availability"',
         ):
             self.assertIn(route, controllers)
-        self.assertEqual(controllers.count("drogon::Get"), 5)
+        self.assertEqual(controllers.count("drogon::Get"), 7)
         self.assertNotRegex(controllers, r"drogon::Post|drogon::Put|drogon::Delete")
 
     def test_path_ids_are_handler_arguments(self) -> None:

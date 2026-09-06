@@ -118,6 +118,99 @@ class SeatHoldIntegrationTest(unittest.TestCase):
         time.sleep(1.2)
         self.assertEqual(status_for(path), "AVAILABLE")
 
+    def test_split_seat_reads_have_exact_schemas_and_session_semantics(self) -> None:
+        status, layout = request_json(
+            f"/sessions/{SESSION_ID}/seat-layout", user_id=None
+        )
+        self.assertEqual(status, 200, layout)
+        self.assertEqual(layout["sessionId"], SESSION_ID)
+        self.assertTrue(layout["seats"])
+        self.assertEqual(
+            set(layout["seats"][0]), {"id", "label", "row", "number", "zone", "price"}
+        )
+        self.assertEqual(
+            [(seat["row"], seat["number"], seat["id"]) for seat in layout["seats"]],
+            sorted((seat["row"], seat["number"], seat["id"]) for seat in layout["seats"]),
+        )
+
+        status, availability = request_json(
+            f"/sessions/{SESSION_ID}/seat-availability", user_id=None
+        )
+        self.assertEqual(status, 200, availability)
+        self.assertEqual(availability["sessionId"], SESSION_ID)
+        self.assertTrue(availability["seats"])
+        self.assertTrue(all(set(seat) == {"id", "status"} for seat in availability["seats"]))
+        self.assertEqual(
+            [seat["id"] for seat in availability["seats"]],
+            sorted(seat["id"] for seat in availability["seats"]),
+        )
+
+        for endpoint in ("seat-layout", "seat-availability"):
+            status, missing = request_json(
+                f"/sessions/does-not-exist/{endpoint}", user_id=None
+            )
+            self.assertEqual(status, 404, missing)
+            self.assertEqual(missing["code"], "SESSION_NOT_FOUND")
+
+        empty_id = "ses-phase10b-empty"
+        psql(
+            f"INSERT INTO sessions (id, event_id, venue_id, hall_name, start_time, gate_time, status) "
+            f"SELECT '{empty_id}', event_id, venue_id, hall_name, start_time, gate_time, status "
+            f"FROM sessions WHERE id = '{SESSION_ID}';"
+        )
+        try:
+            for endpoint in ("seat-layout", "seat-availability"):
+                status, empty = request_json(
+                    f"/sessions/{empty_id}/{endpoint}", user_id=None
+                )
+                self.assertEqual(status, 200, empty)
+                self.assertEqual(empty, {"sessionId": empty_id, "seats": []})
+            status, legacy = request_json(
+                f"/sessions/{empty_id}/seats", user_id=None
+            )
+            self.assertEqual((status, legacy), (200, []))
+        finally:
+            psql(f"DELETE FROM sessions WHERE id = '{empty_id}';")
+
+    def test_availability_reuses_authenticated_own_checkout_context(self) -> None:
+        _, checkout = create_checkout(TEST_USERS[0], [TEST_SEATS[0]])
+        path = f"/sessions/{SESSION_ID}/seat-availability"
+
+        def display_status(request_path, user_id):
+            status, body = request_json(request_path, user_id=user_id)
+            self.assertEqual(status, 200, body)
+            return next(
+                seat["status"] for seat in body["seats"]
+                if seat["id"] == TEST_SEATS[0]
+            )
+
+        own_path = f"{path}?checkoutSessionId={checkout['id']}"
+        self.assertEqual(display_status(path, None), "HELD")
+        self.assertEqual(display_status(own_path, None), "HELD")
+        self.assertEqual(display_status(own_path, TEST_USERS[1]), "HELD")
+        self.assertEqual(display_status(own_path, TEST_USERS[0]), "AVAILABLE")
+
+        other_session = "ses-concert-1002"
+        other_seat = psql(
+            f"SELECT id FROM session_seats WHERE session_id = '{other_session}' "
+            "AND status = 'AVAILABLE' ORDER BY id LIMIT 1;"
+        )
+        other_key = f"ticketing:seat-hold:{{{other_session}}}:{other_seat}"
+        redis_cli("SET", other_key, f"{checkout['id']}|0", "EX", "300")
+        try:
+            status, body = request_json(
+                f"/sessions/{other_session}/seat-availability?"
+                f"checkoutSessionId={checkout['id']}",
+                user_id=TEST_USERS[0],
+            )
+            self.assertEqual(status, 200, body)
+            self.assertEqual(
+                next(seat["status"] for seat in body["seats"] if seat["id"] == other_seat),
+                "HELD",
+            )
+        finally:
+            redis_cli("DEL", other_key)
+
     def test_replace_conflict_is_atomic_and_success_uses_revision_fence(self) -> None:
         _, first = create_checkout(TEST_USERS[0], [TEST_SEATS[0]])
         _, second = create_checkout(TEST_USERS[1], [TEST_SEATS[1]])
@@ -255,6 +348,20 @@ class SeatHoldIntegrationTest(unittest.TestCase):
             self.assertEqual(status, 200, updated)
             status, seats = request_json(f"/sessions/{SESSION_ID}/seats")
             self.assertEqual(status, 200, seats)
+            status, availability = request_json(
+                f"/sessions/{SESSION_ID}/seat-availability"
+            )
+            self.assertEqual(status, 200, availability)
+            formal = psql(
+                f"SELECT status FROM session_seats WHERE id = '{TEST_SEATS[1]}';"
+            )
+            self.assertEqual(
+                next(seat["status"] for seat in availability["seats"]
+                     if seat["id"] == TEST_SEATS[1]),
+                formal,
+            )
+            status, layout = request_json(f"/sessions/{SESSION_ID}/seat-layout")
+            self.assertEqual(status, 200, layout)
             self.assertEqual(confirm_checkout(checkout["id"], TEST_USERS[0])[0], 200)
         finally:
             start_redis()

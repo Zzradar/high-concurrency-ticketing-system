@@ -55,6 +55,7 @@ add_executable(ticketing_backend
     src/controllers/SeatController.cpp
     src/repositories/SeatRepository.cpp
     src/services/SeatService.cpp
+    src/services/SeatDisplayStatus.cpp
     src/services/SeatMapComputeExecutor.cpp
     src/controllers/ReservationController.cpp
     src/repositories/ReservationRepository.cpp
@@ -139,6 +140,10 @@ if(BUILD_TESTING)
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/seat_hold_source_contract_test.py"
     )
     add_test(
+        NAME seat_split_source_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/seat_split_source_contract_test.py"
+    )
+    add_test(
         NAME phase8_schema_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase8_schema_contract_test.py"
     )
@@ -195,4 +200,10 @@ if(BUILD_TESTING)
     target_link_libraries(seat_map_compute_executor_unit PRIVATE Threads::Threads)
     add_test(NAME seat_map_compute_executor_unit COMMAND seat_map_compute_executor_unit)
     set_tests_properties(seat_map_compute_executor_unit PROPERTIES TIMEOUT 15)
+    add_executable(seat_display_status_unit
+        tests/seat_display_status_unit.cpp
+        src/services/SeatDisplayStatus.cpp
+    )
+    target_include_directories(seat_display_status_unit PRIVATE src)
+    add_test(NAME seat_display_status_unit COMMAND seat_display_status_unit)
 endif()

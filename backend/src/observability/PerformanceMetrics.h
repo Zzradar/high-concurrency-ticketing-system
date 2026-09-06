@@ -16,7 +16,11 @@ class PerformanceMetrics final
     {
         DbFetchAndMaterialize, RowBuild, DtoBuild, SeatIdsBuild,
         RedisInputBuild, RedisLookup, OwnerParse, Overlay, JsonBuild,
-        ResponseCreate, ResponseCallback, Count
+        ResponseCreate, ResponseCallback,
+        LayoutDbFetchAndMaterialize, LayoutJsonBuild,
+        AvailabilityDbFetchAndMaterialize, AvailabilityRedisLookup,
+        AvailabilityOverlay, AvailabilityJsonBuild,
+        Count
     };
     enum class SeatMapRedisOutcome { Success, Timeout, Error, ParseError, Count };
     using TimePoint = std::chrono::steady_clock::time_point;

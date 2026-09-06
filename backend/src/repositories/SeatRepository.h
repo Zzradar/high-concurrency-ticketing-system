@@ -19,6 +19,22 @@ struct SeatRow
     std::int64_t price{};
 };
 
+struct SeatLayoutRow
+{
+    std::string id;
+    std::string label;
+    std::string row;
+    std::int32_t number{};
+    std::string zone;
+    std::int64_t price{};
+};
+
+struct SeatAvailabilityRow
+{
+    std::string id;
+    std::string status;
+};
+
 class SeatRepository
 {
   public:
@@ -27,6 +43,16 @@ class SeatRepository
     void listBySessionId(
         const std::string &sessionId,
         std::function<void(std::vector<SeatRow>)> onSuccess,
+        ErrorCallback onError) const;
+
+    void listLayoutBySessionId(
+        const std::string &sessionId,
+        std::function<void(std::vector<SeatLayoutRow>)> onSuccess,
+        ErrorCallback onError) const;
+
+    void listAvailabilityBySessionId(
+        const std::string &sessionId,
+        std::function<void(std::vector<SeatAvailabilityRow>)> onSuccess,
         ErrorCallback onError) const;
 
     void sessionExists(

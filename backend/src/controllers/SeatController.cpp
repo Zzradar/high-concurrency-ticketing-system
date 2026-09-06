@@ -18,47 +18,121 @@ void SeatController::listSessionSeats(
     std::string sessionId) const
 {
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
+    resolveOwnCheckout(
+        request, sessionId,
+        [this, sessionId, callbackPtr](
+            std::string ownCheckoutSessionId) {
+            listWithOwnCheckout(sessionId, ownCheckoutSessionId, callbackPtr);
+        },
+        [callbackPtr] {
+            (*callbackPtr)(ticketing::makeErrorResponse(
+                drogon::k500InternalServerError, "INTERNAL_ERROR",
+                "Internal server error"));
+        });
+}
+
+void SeatController::listSeatLayout(
+    const drogon::HttpRequestPtr &request,
+    std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+    std::string sessionId) const
+{
+    (void)request;
+    auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
+    service_.listSeatLayout(
+        sessionId,
+        [sessionId, callbackPtr](
+            ticketing::SeatService::LayoutResult seats) {
+            if (!seats)
+            {
+                (*callbackPtr)(ticketing::makeErrorResponse(
+                    drogon::k404NotFound, "SESSION_NOT_FOUND",
+                    "Session not found"));
+                return;
+            }
+            using Metrics = ticketing::PerformanceMetrics;
+            const auto started = Metrics::seatMapStart();
+            Json::Value body;
+            body["sessionId"] = sessionId;
+            body["seats"] = Json::Value{Json::arrayValue};
+            for (const auto &seat : *seats) body["seats"].append(seat.toJson());
+            Metrics::observeSeatMap(Metrics::SeatMapStage::LayoutJsonBuild,
+                                    started);
+            (*callbackPtr)(drogon::HttpResponse::newHttpJsonResponse(body));
+        },
+        [callbackPtr] {
+            (*callbackPtr)(ticketing::makeErrorResponse(
+                drogon::k500InternalServerError, "INTERNAL_ERROR",
+                "Internal server error"));
+        },
+        [callbackPtr] {
+            (*callbackPtr)(ticketing::makeErrorResponse(
+                drogon::k503ServiceUnavailable, "SEAT_MAP_BUSY",
+                "Seat map compute capacity exhausted"));
+        });
+}
+
+void SeatController::listSeatAvailability(
+    const drogon::HttpRequestPtr &request,
+    std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+    std::string sessionId) const
+{
+    auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
+    resolveOwnCheckout(
+        request, sessionId,
+        [this, sessionId, callbackPtr](
+            std::string ownCheckoutSessionId) {
+            listAvailabilityWithOwnCheckout(
+                sessionId, ownCheckoutSessionId, callbackPtr);
+        },
+        [callbackPtr] {
+            (*callbackPtr)(ticketing::makeErrorResponse(
+                drogon::k500InternalServerError, "INTERNAL_ERROR",
+                "Internal server error"));
+        });
+}
+
+void SeatController::resolveOwnCheckout(
+    const drogon::HttpRequestPtr &request,
+    std::string sessionId,
+    std::function<void(std::string)> onResolved,
+    std::function<void()> onError) const
+{
     const auto checkoutSessionId = request->getParameter("checkoutSessionId");
     if (checkoutSessionId.empty())
     {
-        listWithOwnCheckout(sessionId, {}, callbackPtr);
+        onResolved({});
         return;
     }
     const auto rawToken = request->getCookie(
         ticketing::AuthConfig::load().cookieName);
     if (rawToken.empty())
     {
-        listWithOwnCheckout(sessionId, {}, callbackPtr);
+        onResolved({});
         return;
     }
     authService_.authenticate(
         rawToken,
         [this, sessionId = std::move(sessionId), checkoutSessionId,
-         callbackPtr](ticketing::AuthenticateResult auth) {
+         onResolved = std::move(onResolved),
+         onError = std::move(onError)](ticketing::AuthenticateResult auth) mutable {
             if (auth.outcome != ticketing::AuthenticateOutcome::Authenticated ||
                 !auth.session)
             {
-                listWithOwnCheckout(sessionId, {}, callbackPtr);
+                onResolved({});
                 return;
             }
             checkoutRepository_.findByIdForUser(
                 drogon::app().getDbClient(), checkoutSessionId,
                 auth.session->userId,
-                [this, sessionId, checkoutSessionId, callbackPtr](
-                    std::optional<ticketing::CheckoutSessionRecord> checkout) {
+                [sessionId, checkoutSessionId,
+                 onResolved = std::move(onResolved)](
+                    std::optional<ticketing::CheckoutSessionRecord> checkout) mutable {
                     const bool ownsRequestedSession =
                         checkout && checkout->value.sessionId == sessionId;
-                    listWithOwnCheckout(sessionId,
-                                        ownsRequestedSession
-                                            ? checkoutSessionId
-                                            : std::string{},
-                                        callbackPtr);
+                    onResolved(ownsRequestedSession ? checkoutSessionId
+                                                    : std::string{});
                 },
-                [callbackPtr] {
-                    (*callbackPtr)(ticketing::makeErrorResponse(
-                        drogon::k500InternalServerError, "INTERNAL_ERROR",
-                        "Internal server error"));
-                });
+                std::move(onError));
         });
 }
 
@@ -109,6 +183,45 @@ void SeatController::listWithOwnCheckout(
             (*callbackPtr)(ticketing::makeErrorResponse(
                 drogon::k503ServiceUnavailable,
                 "SEAT_MAP_BUSY",
+                "Seat map compute capacity exhausted"));
+        });
+}
+
+void SeatController::listAvailabilityWithOwnCheckout(
+    const std::string &sessionId,
+    const std::string &checkoutSessionId,
+    const std::shared_ptr<HttpCallback> &callbackPtr) const
+{
+    service_.listSeatAvailability(
+        sessionId,
+        checkoutSessionId,
+        [sessionId, callbackPtr](
+            ticketing::SeatService::AvailabilityResult seats) {
+            if (!seats)
+            {
+                (*callbackPtr)(ticketing::makeErrorResponse(
+                    drogon::k404NotFound, "SESSION_NOT_FOUND",
+                    "Session not found"));
+                return;
+            }
+            using Metrics = ticketing::PerformanceMetrics;
+            const auto started = Metrics::seatMapStart();
+            Json::Value body;
+            body["sessionId"] = sessionId;
+            body["seats"] = Json::Value{Json::arrayValue};
+            for (const auto &seat : *seats) body["seats"].append(seat.toJson());
+            Metrics::observeSeatMap(
+                Metrics::SeatMapStage::AvailabilityJsonBuild, started);
+            (*callbackPtr)(drogon::HttpResponse::newHttpJsonResponse(body));
+        },
+        [callbackPtr] {
+            (*callbackPtr)(ticketing::makeErrorResponse(
+                drogon::k500InternalServerError, "INTERNAL_ERROR",
+                "Internal server error"));
+        },
+        [callbackPtr] {
+            (*callbackPtr)(ticketing::makeErrorResponse(
+                drogon::k503ServiceUnavailable, "SEAT_MAP_BUSY",
                 "Seat map compute capacity exhausted"));
         });
 }
