@@ -58,6 +58,36 @@
         "path": "/metrics",
         "collectors": [
           {
+            "name": "ticketing_seat_map_compute_queue_depth",
+            "help": "Seat map tasks waiting in the bounded compute queue",
+            "type": "gauge",
+            "labels": []
+          },
+          {
+            "name": "ticketing_seat_map_compute_active_workers",
+            "help": "Seat map workers executing post-processing tasks",
+            "type": "gauge",
+            "labels": []
+          },
+          {
+            "name": "ticketing_seat_map_compute_submissions_total",
+            "help": "Seat map compute submissions by bounded queue outcome",
+            "type": "counter",
+            "labels": ["outcome"]
+          },
+          {
+            "name": "ticketing_seat_map_compute_queue_wait_seconds",
+            "help": "Seat map accepted task time waiting for a compute worker",
+            "type": "histogram",
+            "labels": []
+          },
+          {
+            "name": "ticketing_seat_map_compute_execution_seconds",
+            "help": "Seat map post-processing through HTTP callback return and task destruction, not socket flush",
+            "type": "histogram",
+            "labels": []
+          },
+          {
             "name": "ticketing_seat_map_stage_duration_seconds",
             "help": "Seat map diagnostic stage elapsed wall time; callback is not socket flush",
             "type": "histogram",
@@ -128,6 +158,8 @@
     }
   ],
   "custom_config": {
+    "seat_map_compute_workers": 4,
+    "seat_map_compute_queue_capacity": 16,
     "order_expiry_worker": {
       "batch_size": 100,
       "interval_seconds": 5.0

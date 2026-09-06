@@ -48,6 +48,8 @@
     "client_max_memory_body_size": "64K"
   },
   "custom_config": {
+    "seat_map_compute_workers": 4,
+    "seat_map_compute_queue_capacity": 16,
     "order_expiry_worker": {
       "batch_size": 100,
       "interval_seconds": 5.0

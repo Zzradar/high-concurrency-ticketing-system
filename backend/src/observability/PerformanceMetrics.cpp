@@ -1,6 +1,7 @@
 #include "observability/PerformanceMetrics.h"
 
 #include "security/PasswordHashExecutor.h"
+#include "services/SeatMapComputeExecutor.h"
 
 #include <drogon/drogon.h>
 #include <drogon/plugins/PromExporter.h>
@@ -47,6 +48,9 @@ struct MetricsState
     std::array<std::shared_ptr<drogon::monitoring::Counter>,
                static_cast<std::size_t>(ticketing::PerformanceMetrics::SeatMapRedisOutcome::Count)> seatMapRedisOutcomes;
     std::shared_ptr<drogon::monitoring::Gauge> seatMapInFlight;
+    std::shared_ptr<drogon::monitoring::Gauge> computeDepth, computeActive;
+    std::array<std::shared_ptr<drogon::monitoring::Counter>, 2> computeSubmissions;
+    std::shared_ptr<drogon::monitoring::Histogram> computeWait, computeExecution;
     std::shared_ptr<CounterCollector> requests;
     std::shared_ptr<HistogramCollector> durations;
     std::shared_ptr<GaugeCollector> inFlight;
@@ -59,6 +63,36 @@ struct MetricsState
 
 std::atomic<MetricsState *> seatMapMetrics{nullptr};
 constexpr char kSeatMapTracked[] = "ticketing.metrics.seat_map";
+
+class SeatMapMetricsObserver final : public ticketing::SeatMapComputeObserver
+{
+  public:
+    void submitted(bool accepted, std::size_t depth) noexcept override
+    {
+        if (auto *state = seatMapMetrics.load(std::memory_order_acquire))
+        {
+            state->computeSubmissions[accepted ? 0 : 1]->increment();
+            state->computeDepth->set(depth);
+        }
+    }
+    void started(std::size_t depth, std::size_t active, double wait) noexcept override
+    {
+        if (auto *state = seatMapMetrics.load(std::memory_order_acquire))
+        {
+            state->computeDepth->set(depth);
+            state->computeActive->set(active);
+            state->computeWait->observe(wait);
+        }
+    }
+    void finished(std::size_t active, double elapsed) noexcept override
+    {
+        if (auto *state = seatMapMetrics.load(std::memory_order_acquire))
+        {
+            state->computeActive->set(active);
+            state->computeExecution->observe(elapsed);
+        }
+    }
+};
 
 std::mutex passwordHashObserverMutex;
 std::shared_ptr<ticketing::PasswordHashObserver> passwordHashObserverSink;
@@ -242,6 +276,26 @@ void PerformanceMetrics::registerWithApplication()
             state->seatMapRedisOutcomes[index] = outcomeCollector->metric({outcomes[index]});
         state->seatMapInFlight = flightCollector->metric({});
         state->seatMapInFlight->set(0);
+        auto computeDepth = exporter->getCollector<drogon::monitoring::Gauge>(
+            "ticketing_seat_map_compute_queue_depth");
+        auto computeActive = exporter->getCollector<drogon::monitoring::Gauge>(
+            "ticketing_seat_map_compute_active_workers");
+        auto computeSubmissions = exporter->getCollector<drogon::monitoring::Counter>(
+            "ticketing_seat_map_compute_submissions_total");
+        auto computeWait = exporter->getCollector<drogon::monitoring::Histogram>(
+            "ticketing_seat_map_compute_queue_wait_seconds");
+        auto computeExecution = exporter->getCollector<drogon::monitoring::Histogram>(
+            "ticketing_seat_map_compute_execution_seconds");
+        if (!computeDepth || !computeActive || !computeSubmissions || !computeWait || !computeExecution)
+            throw std::runtime_error("seat map compute collectors are missing");
+        state->computeDepth = computeDepth->metric({});
+        state->computeActive = computeActive->metric({});
+        state->computeDepth->set(0);
+        state->computeActive->set(0);
+        state->computeSubmissions[0] = computeSubmissions->metric({"accepted"});
+        state->computeSubmissions[1] = computeSubmissions->metric({"rejected"});
+        state->computeWait = computeWait->metric({}, buckets, std::chrono::duration<double>{0}, 1);
+        state->computeExecution = computeExecution->metric({}, buckets, std::chrono::duration<double>{0}, 1);
         // Application advice owns state for the application's lifetime.
         seatMapMetrics.store(state.get(), std::memory_order_release);
         state->passwordHashQueueDepth->metric({})->set(0.0);
@@ -319,5 +373,12 @@ PerformanceMetrics::passwordHashObserver()
 {
     std::lock_guard lock{passwordHashObserverMutex};
     return passwordHashObserverSink;
+}
+
+std::shared_ptr<SeatMapComputeObserver> PerformanceMetrics::seatMapComputeObserver()
+{
+    // Safe to create before beginning advice publishes metrics; ordinary
+    // configuration stays no-op. No collector registration from workers.
+    return std::make_shared<SeatMapMetricsObserver>();
 }
 }  // namespace ticketing

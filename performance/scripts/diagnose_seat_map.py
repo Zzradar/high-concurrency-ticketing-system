@@ -132,6 +132,8 @@ def sample():
         "exec", "-T", "backend", "sh", "-c",
         "cat /proc/1/status; cat /sys/fs/cgroup/memory.current; cat /sys/fs/cgroup/memory.stat"))
     return {"epoch": started, "sampleEndEpoch": time.time(),
+            "seatMapCompute": {key: value for key, value in values.items()
+                               if key.startswith("ticketing_seat_map_compute_")},
             "seatMapInFlight": values.get("ticketing_seat_map_requests_in_flight"),
             "httpInFlight": values.get("ticketing_http_requests_in_flight"),
             "seatResponses": sum(value for key, value in values.items()

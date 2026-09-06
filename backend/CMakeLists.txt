@@ -55,6 +55,7 @@ add_executable(ticketing_backend
     src/controllers/SeatController.cpp
     src/repositories/SeatRepository.cpp
     src/services/SeatService.cpp
+    src/services/SeatMapComputeExecutor.cpp
     src/controllers/ReservationController.cpp
     src/repositories/ReservationRepository.cpp
     src/services/ReservationService.cpp
@@ -186,4 +187,12 @@ if(BUILD_TESTING)
     target_link_libraries(password_hash_executor_unit PRIVATE
         "${ARGON2_LIBRARY}" OpenSSL::Crypto Threads::Threads)
     add_test(NAME password_hash_executor_unit COMMAND password_hash_executor_unit)
+    add_executable(seat_map_compute_executor_unit
+        tests/seat_map_compute_executor_unit.cpp
+        src/services/SeatMapComputeExecutor.cpp
+    )
+    target_include_directories(seat_map_compute_executor_unit PRIVATE src)
+    target_link_libraries(seat_map_compute_executor_unit PRIVATE Threads::Threads)
+    add_test(NAME seat_map_compute_executor_unit COMMAND seat_map_compute_executor_unit)
+    set_tests_properties(seat_map_compute_executor_unit PROPERTIES TIMEOUT 15)
 endif()

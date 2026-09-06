@@ -1,0 +1,5 @@
+services:
+  backend:
+    command: ["./ticketing_backend", "config/seat-map-experiment.json"]
+    volumes:
+      - ./generated/seat-map-experiment-config.json:/app/config/seat-map-experiment.json:ro

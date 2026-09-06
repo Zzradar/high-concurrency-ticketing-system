@@ -1,6 +1,7 @@
 #include "workers/OrderExpiryWorker.h"
 #include "services/CheckoutSessionService.h"
 #include "services/SeatHoldService.h"
+#include "services/SeatService.h"
 #include "services/PaymentSimulation.h"
 #include "security/AuthConfig.h"
 #include "observability/PerformanceMetrics.h"
@@ -20,6 +21,12 @@ namespace
 constexpr std::size_t kDefaultOrderExpiryBatchSize = 100;
 constexpr double kDefaultOrderExpiryIntervalSeconds = 5.0;
 constexpr std::size_t kDefaultCheckoutReconciliationBatchSize = 100;
+
+struct ComputeShutdown
+{
+    std::shared_ptr<ticketing::SeatMapComputeExecutor> executor;
+    ~ComputeShutdown() { executor->shutdown(); }
+};
 
 std::pair<std::size_t, double> loadOrderExpiryWorkerConfig()
 {
@@ -105,6 +112,18 @@ int main(int argc, char *argv[])
         ticketing::PaymentSimulation::validateConfiguration();
         ticketing::AuthConfig::validate();
         ticketing::PerformanceMetrics::registerWithApplication();
+        const auto &computeConfig = drogon::app().getCustomConfig();
+        const auto &computeWorkers = computeConfig["seat_map_compute_workers"];
+        const auto &computeCapacity = computeConfig["seat_map_compute_queue_capacity"];
+        if ((!computeWorkers.isNull() && !computeWorkers.isUInt()) ||
+            (!computeCapacity.isNull() && !computeCapacity.isUInt()))
+            throw std::invalid_argument("seat map compute settings must be unsigned integers");
+        auto seatMapCompute = std::make_shared<ticketing::SeatMapComputeExecutor>(
+            computeWorkers.isNull() ? 4 : computeWorkers.asUInt(),
+            computeCapacity.isNull() ? 16 : computeCapacity.asUInt(),
+            ticketing::PerformanceMetrics::seatMapComputeObserver());
+        ticketing::SeatService::configureComputeExecutor(seatMapCompute);
+        ComputeShutdown computeShutdown{seatMapCompute};
         const auto [batchSize, intervalSeconds] =
             loadOrderExpiryWorkerConfig();
         const auto checkoutReconciliationBatchSize =
@@ -137,6 +156,9 @@ int main(int argc, char *argv[])
             });
         LOG_INFO << "Starting ticketing backend with config: " << configPath;
         drogon::app().run();
+        // Join before application/static teardown. Accepted tasks drain;
+        // late Redis callbacks retain the stopped executor and receive busy.
+        seatMapCompute->shutdown();
     }
     catch (const std::exception &error)
     {

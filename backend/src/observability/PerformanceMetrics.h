@@ -7,6 +7,7 @@
 namespace ticketing
 {
 class PasswordHashObserver;
+class SeatMapComputeObserver;
 
 class PerformanceMetrics final
 {
@@ -24,5 +25,6 @@ class PerformanceMetrics final
     static void observeSeatMapRedisOutcome(SeatMapRedisOutcome outcome);
     static void registerWithApplication();
     static std::shared_ptr<PasswordHashObserver> passwordHashObserver();
+    static std::shared_ptr<SeatMapComputeObserver> seatMapComputeObserver();
 };
 }  // namespace ticketing

@@ -2,10 +2,27 @@
 #include "observability/PerformanceMetrics.h"
 
 #include <memory>
+#include <atomic>
+#include <mutex>
+#include <stdexcept>
 #include <utility>
+
+namespace
+{
+std::mutex executorMutex;
+std::shared_ptr<ticketing::SeatMapComputeExecutor> computeExecutor;
+}
 
 namespace ticketing
 {
+void SeatService::configureComputeExecutor(std::shared_ptr<SeatMapComputeExecutor> executor)
+{
+    std::lock_guard lock{executorMutex};
+    if (!executor || computeExecutor)
+        throw std::logic_error("seat map executor must be configured exactly once");
+    computeExecutor = std::move(executor);
+}
+
 Seat SeatService::toDto(SeatRow row)
 {
     return Seat{
@@ -24,16 +41,23 @@ void SeatService::listSessionSeats(
     const std::string &sessionId,
     const std::string &checkoutSessionId,
     std::function<void(SeatsResult)> onSuccess,
-    ErrorCallback onError) const
+    ErrorCallback onError,
+    ErrorCallback onBusy) const
 {
     auto errorPtr = std::make_shared<ErrorCallback>(std::move(onError));
+    std::shared_ptr<SeatMapComputeExecutor> executor;
+    {
+        std::lock_guard lock{executorMutex};
+        executor = computeExecutor;
+    }
+    if (!executor) { (*errorPtr)(); return; }
     repository_.listBySessionId(
         sessionId,
         [this,
          sessionId,
          checkoutSessionId,
          onSuccess = std::move(onSuccess),
-         errorPtr](std::vector<SeatRow> rows) mutable {
+         errorPtr, executor, onBusy = std::move(onBusy)](std::vector<SeatRow> rows) mutable {
             if (!rows.empty())
             {
                 const auto dtoStarted = PerformanceMetrics::seatMapStart();
@@ -59,27 +83,46 @@ void SeatService::listSessionSeats(
                     seatIds,
                     [checkoutSessionId,
                      seats = std::move(seats),
-                     onSuccess = std::move(onSuccess)](
+                     onSuccess = std::move(onSuccess), executor, errorPtr,
+                     onBusy = std::move(onBusy),
+                     claimed = std::make_shared<std::atomic_bool>(false)](
                         SeatHoldReadResult holds) mutable {
-                        const auto overlayStarted = PerformanceMetrics::seatMapStart();
-                        if (holds.outcome == SeatHoldOutcome::Applied &&
-                            holds.owners.size() == seats.size())
+                        // readOwners has a legacy catch/fallback boundary. Do
+                        // not allow a thrown submission/completion to resubmit
+                        // an already moved request or invoke it twice.
+                        if (claimed->exchange(true)) return;
+                        try
                         {
-                            for (std::size_t index = 0; index < seats.size();
-                                 ++index)
-                            {
-                                if (seats[index].status == "AVAILABLE" &&
-                                    holds.owners[index] &&
-                                    (checkoutSessionId.empty() ||
-                                     *holds.owners[index] != checkoutSessionId))
-                                {
-                                    seats[index].status = "HELD";
-                                }
-                            }
+                            const bool accepted = executor->trySubmit(
+                                [checkoutSessionId, seats = std::move(seats),
+                                 holds = std::move(holds),
+                                 onSuccess = std::move(onSuccess)]() mutable {
+                                    const auto overlayStarted = PerformanceMetrics::seatMapStart();
+                                    if (holds.outcome == SeatHoldOutcome::Applied &&
+                                        holds.owners.size() == seats.size())
+                                    {
+                                        for (std::size_t index = 0; index < seats.size(); ++index)
+                                        {
+                                            if (seats[index].status == "AVAILABLE" &&
+                                                holds.owners[index] &&
+                                                (checkoutSessionId.empty() ||
+                                                 *holds.owners[index] != checkoutSessionId))
+                                            {
+                                                seats[index].status = "HELD";
+                                            }
+                                        }
+                                    }
+                                    PerformanceMetrics::observeSeatMap(
+                                        PerformanceMetrics::SeatMapStage::Overlay, overlayStarted);
+                                    onSuccess(std::move(seats));
+                                },
+                                [errorPtr] { (*errorPtr)(); });
+                            if (!accepted) onBusy();
                         }
-                        PerformanceMetrics::observeSeatMap(
-                            PerformanceMetrics::SeatMapStage::Overlay, overlayStarted);
-                        onSuccess(std::move(seats));
+                        catch (...)
+                        {
+                            (*errorPtr)();
+                        }
                     });
                 return;
             }

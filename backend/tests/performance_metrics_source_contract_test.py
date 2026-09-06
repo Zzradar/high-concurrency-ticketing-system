@@ -40,6 +40,11 @@ class PerformanceMetricsSourceContractTest(unittest.TestCase):
         self.assertEqual(
             set(by_name),
             {
+                "ticketing_seat_map_compute_queue_depth",
+                "ticketing_seat_map_compute_active_workers",
+                "ticketing_seat_map_compute_submissions_total",
+                "ticketing_seat_map_compute_queue_wait_seconds",
+                "ticketing_seat_map_compute_execution_seconds",
                 "ticketing_seat_map_stage_duration_seconds",
                 "ticketing_seat_map_redis_lookup_total",
                 "ticketing_seat_map_requests_in_flight",

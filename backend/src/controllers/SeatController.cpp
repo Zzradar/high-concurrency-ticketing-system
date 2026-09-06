@@ -104,5 +104,11 @@ void SeatController::listWithOwnCheckout(
                 drogon::k500InternalServerError,
                 "INTERNAL_ERROR",
                 "Internal server error"));
+        },
+        [callbackPtr] {
+            (*callbackPtr)(ticketing::makeErrorResponse(
+                drogon::k503ServiceUnavailable,
+                "SEAT_MAP_BUSY",
+                "Seat map compute capacity exhausted"));
         });
 }

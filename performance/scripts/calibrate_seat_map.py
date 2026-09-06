@@ -58,6 +58,7 @@ def main():
     parser.add_argument('--encoding', choices=('identity', 'gzip'), default='identity')
     parser.add_argument('--drain-seconds', type=int, choices=(0, 180), default=0)
     parser.add_argument('--prepare', action='store_true')
+    parser.add_argument('--compute-workers', type=int, choices=(2, 4))
     args = parser.parse_args()
     token = uuid.uuid4().hex[:8]
     name = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ') + f'-seat-calibration-{args.rate}-{args.density}-{args.encoding}-{token}'
@@ -72,6 +73,14 @@ def main():
                 'gitHead': run_k6.run_command(['git', 'rev-parse', 'HEAD']).stdout.strip()}
     evidence.write_json(root / 'run-manifest.json', manifest)
     try:
+        if args.compute_workers is not None:
+            live = json.loads(evidence.command(run_k6.compose_command(
+                'exec', '-T', 'backend', 'cat', '/app/config/seat-map-experiment.json')))
+            settings = live['custom_config']
+            if (settings['seat_map_compute_workers'], settings['seat_map_compute_queue_capacity']) != (args.compute_workers, 16):
+                raise RuntimeError('live compute configuration mismatch')
+            manifest['compute'] = {'workers': args.compute_workers, 'queueCapacity': 16}
+            manifest['backendContainerId'] = evidence.command(run_k6.compose_command('ps', '-q', 'backend')).strip()
         if args.prepare:
             diagnosis.prepare_profile(5000, root)
         dataset = run_k6.read_json(run_k6.GENERATED_ROOT / 'dataset.json')
@@ -130,6 +139,14 @@ def main():
         evidence.write_json(root / 'stages.json', diagnosis.stage_summary(before, after))
         manifest['redisOutcomes'] = outcome_delta(before, after)
         manifest['finalInFlight'] = after.get('ticketing_seat_map_requests_in_flight')
+        if args.compute_workers is not None:
+            prefix = 'ticketing_seat_map_compute_'
+            manifest['compute']['submissions'] = {
+                outcome: after[prefix + f'submissions_total{{outcome="{outcome}"}}'] - before[prefix + f'submissions_total{{outcome="{outcome}"}}']
+                for outcome in ('accepted', 'rejected')}
+            manifest['compute']['passed'] = (
+                after[prefix + 'queue_depth'] == 0 and after[prefix + 'active_workers'] == 0
+                and manifest['compute']['submissions']['rejected'] == 0)
         evidence.write_json(root / 'final.json', diagnosis.sample())
         manifest['formalInventoryAfter'] = evidence.psql(f"SELECT status,count(*) FROM session_seats WHERE session_id='{session}' GROUP BY status ORDER BY status;").strip()
         evidence.collect_postgres(root)
@@ -141,6 +158,16 @@ def main():
         manifest['verifierExit'] = verifier.returncode
         summary = run_k6.read_json(root / 'business-summary.json')
         manifest['business'] = summary
+        if args.compute_workers is not None and args.density:
+            display = run_k6.read_json(root / 'k6-summary.json')['metrics']
+            manifest['compute']['displayPassed'] = (
+                display['ticketing_display_exact_total']['values']['count'] == summary['iterations']
+                and display['ticketing_display_degraded_total']['values']['count'] == 0
+                and display['ticketing_display_invalid_total']['values']['count'] == 0)
+            if not manifest['compute']['displayPassed']:
+                raise RuntimeError('candidate temporary-hold display degraded; stop and inspect')
+        if args.compute_workers is not None and not manifest['compute']['passed']:
+            raise RuntimeError('compute rejection or incomplete drain; inspect evidence before any next run')
         if process.returncode or verifier.returncode or any(summary[k] for k in ('dropped_iterations', 'system_error', 'unexpected')):
             raise RuntimeError('stop condition: k6 / correctness / generator failure')
         if manifest['finalInFlight'] != 0 or manifest['formalInventoryAfter'] != formal:
