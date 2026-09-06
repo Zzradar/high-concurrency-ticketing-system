@@ -1,0 +1,4367 @@
+{
+  "runs": [
+    {
+      "runId": "20260906T114631Z-seat-calibration-60-0-identity-d83a69c9",
+      "arguments": {
+        "rate": 60,
+        "duration": 15,
+        "density": 0,
+        "encoding": "identity",
+        "drain_seconds": 0,
+        "prepare": true
+      },
+      "startEpoch": 1788695214.97774,
+      "runnerFinishedEpoch": 1788695233.8426566,
+      "endEpoch": 1788695247.6200542,
+      "redisOutcomes": {
+        "success": 498,
+        "timeout": 404,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 0,
+        "seatCount": 5000,
+        "heldCount": 0,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T114631Z-seat-calibration-60-0-identity-d83a69c9",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 901,
+        "http_reqs": 902,
+        "dropped_iterations": 0,
+        "p50": 382.4470305,
+        "p95": 612.4576693,
+        "p99": 637.69132748,
+        "business_success": 901,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 902,
+          "p50Seconds": 0.007550904977375566,
+          "p95Seconds": 0.009846719457013575,
+          "p99Seconds": 0.01748333333333335
+        },
+        "dto_build": {
+          "samples": 902,
+          "p50Seconds": 0.000191049798115747,
+          "p95Seconds": 0.00046409774436090225,
+          "p99Seconds": 0.0008396000000000005
+        },
+        "json_build": {
+          "samples": 902,
+          "p50Seconds": 0.004502664298401421,
+          "p95Seconds": 0.022367704280155644,
+          "p99Seconds": 0.02447354085603113
+        },
+        "overlay": {
+          "samples": 902,
+          "p50Seconds": 0.000055032119914346896,
+          "p95Seconds": 0.00009849036402569594,
+          "p99Seconds": 0.0002063548387096775
+        },
+        "owner_parse": {
+          "samples": 498,
+          "p50Seconds": 0.00006618075801749271,
+          "p95Seconds": 0.00009884839650145772,
+          "p99Seconds": 0.00021268749999999985
+        },
+        "redis_input_build": {
+          "samples": 902,
+          "p50Seconds": 0.0017533407572383074,
+          "p95Seconds": 0.002431347438752784,
+          "p99Seconds": 0.002491614699331849
+        },
+        "redis_lookup": {
+          "samples": 902,
+          "p50Seconds": 0.3107769423558897,
+          "p95Seconds": 0.8486577181208053,
+          "p99Seconds": 0.9697315436241611
+        },
+        "response_callback": {
+          "samples": 902,
+          "p50Seconds": 0.00750278706800446,
+          "p95Seconds": 0.009765328874024527,
+          "p99Seconds": 0.009966443701226312
+        },
+        "response_create": {
+          "samples": 902,
+          "p50Seconds": 0.003840665873959572,
+          "p95Seconds": 0.00647222222222222,
+          "p99Seconds": 0.009812962962962964
+        },
+        "row_build": {
+          "samples": 902,
+          "p50Seconds": 0.0017516666666666666,
+          "p95Seconds": 0.0024281666666666666,
+          "p99Seconds": 0.0024883
+        },
+        "seat_ids_build": {
+          "samples": 902,
+          "p50Seconds": 0.00008093278463648834,
+          "p95Seconds": 0.0002135207100591716,
+          "p99Seconds": 0.0002455443786982249
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "p(95)": 612.4576693,
+          "p(99)": 637.69132748,
+          "min": 44.293128,
+          "max": 649.526187,
+          "p(50)": 382.4470305
+        },
+        "http_req_waiting": {
+          "p(50)": 363.955892,
+          "p(95)": 612.03235635,
+          "p(99)": 637.52220577,
+          "min": 29.458076,
+          "max": 649.204809
+        },
+        "http_req_receiving": {
+          "p(50)": 18.549060500000003,
+          "p(95)": 23.182783399999984,
+          "p(99)": 29.13452059,
+          "min": 0.117802,
+          "max": 37.202768
+        },
+        "data_received": {
+          "count": 741959042,
+          "rate": 47468449.00869891
+        }
+      },
+      "display": {
+        "ticketing_display_invalid_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 1.8574362674163802,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 204554240,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 42835953.727389365,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.11195302823131985,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 17100800,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 916303.4665808736,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.11258657455612267,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 298827776,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 63857.61513327225,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 33,
+      "memory": {
+        "rssBytes": {
+          "before": 63700992,
+          "peak": 214581248,
+          "after": 214581248
+        },
+        "workingSetBytes": {
+          "before": 58408960,
+          "peak": 209481728,
+          "after": 209481728
+        },
+        "redisUsedMemoryBytes": {
+          "before": 2806608,
+          "peak": 6291896,
+          "after": 3315184
+        }
+      },
+      "clientMaxOmem": 1225960,
+      "clientMaxOll": 95,
+      "largestClient": {
+        "id": "177",
+        "addr": "172.19.0.6:58848",
+        "laddr": "172.19.0.3:6379",
+        "fd": "10",
+        "name": "",
+        "age": "1393",
+        "idle": "0",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "0",
+        "qbuf-free": "393206",
+        "argv-mem": "0",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "95",
+        "omem": "1225960",
+        "tot-mem": "1621096",
+        "events": "rw",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 902,
+        "meanExecMs": 7.302359725055431,
+        "connectionsMax": 6
+      },
+      "samples": 7,
+      "phase": "before",
+      "backendContainerId": "946a97f2b1b8a38fb1f08ebc3a2e1b024a4d42bb070b459f0d3885efa472db1f"
+    },
+    {
+      "runId": "20260906T114743Z-seat-calibration-60-90-identity-6fddd824",
+      "arguments": {
+        "rate": 60,
+        "duration": 15,
+        "density": 90,
+        "encoding": "identity",
+        "drain_seconds": 0,
+        "prepare": false
+      },
+      "startEpoch": 1788695292.929159,
+      "runnerFinishedEpoch": 1788695312.4572961,
+      "endEpoch": 1788695326.6521585,
+      "redisOutcomes": {
+        "success": 158,
+        "timeout": 744,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 90,
+        "seatCount": 5000,
+        "heldCount": 4500,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T114743Z-seat-calibration-60-90-identity-6fddd824",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 901,
+        "http_reqs": 902,
+        "dropped_iterations": 0,
+        "p50": 987.7079145,
+        "p95": 1799.88675185,
+        "p99": 1845.03328453,
+        "business_success": 901,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "799921",
+          "transferEncoding": null,
+          "receivedBodyBytes": 799921
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "42236",
+          "transferEncoding": null,
+          "receivedBodyBytes": 42236
+        },
+        "rawBodyBytes": 799921,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 902,
+          "p50Seconds": 0.007936197916666667,
+          "p95Seconds": 0.020417968749999998,
+          "p99Seconds": 0.024646093750000004
+        },
+        "dto_build": {
+          "samples": 902,
+          "p50Seconds": 0.00019919354838709676,
+          "p95Seconds": 0.0007743749999999999,
+          "p99Seconds": 0.0009998750000000001
+        },
+        "json_build": {
+          "samples": 902,
+          "p50Seconds": 0.014984101748807632,
+          "p95Seconds": 0.0246637519872814,
+          "p99Seconds": 0.04272580645161292
+        },
+        "overlay": {
+          "samples": 902,
+          "p50Seconds": 0.0000060618279569892476,
+          "p95Seconds": 0.00013131578947368417,
+          "p99Seconds": 0.00022626315789473693
+        },
+        "owner_parse": {
+          "samples": 158,
+          "p50Seconds": 0.00018229166666666667,
+          "p95Seconds": 0.0003886363636363635,
+          "p99Seconds": 0.0007366666666666646
+        },
+        "redis_input_build": {
+          "samples": 902,
+          "p50Seconds": 0.0017609673790776152,
+          "p95Seconds": 0.002445838020247469,
+          "p99Seconds": 0.003921428571428578
+        },
+        "redis_lookup": {
+          "samples": 902,
+          "p50Seconds": 0.9276315789473684,
+          "p95Seconds": 2.3337837837837836,
+          "p99Seconds": 2.466756756756757
+        },
+        "response_callback": {
+          "samples": 902,
+          "p50Seconds": 0.007589182968929804,
+          "p95Seconds": 0.009924626006904488,
+          "p99Seconds": 0.021119354838709685
+        },
+        "response_create": {
+          "samples": 902,
+          "p50Seconds": 0.004165435745937962,
+          "p95Seconds": 0.009589285714285713,
+          "p99Seconds": 0.020334482758620702
+        },
+        "row_build": {
+          "samples": 902,
+          "p50Seconds": 0.001754180602006689,
+          "p95Seconds": 0.002432943143812709,
+          "p99Seconds": 0.002493277591973244
+        },
+        "seat_ids_build": {
+          "samples": 902,
+          "p50Seconds": 0.00008708881578947368,
+          "p95Seconds": 0.00023333928571428572,
+          "p99Seconds": 0.0003745000000000005
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "p(95)": 1799.88675185,
+          "p(99)": 1845.03328453,
+          "min": 49.999883,
+          "max": 1860.059381,
+          "p(50)": 987.7079145
+        },
+        "http_req_waiting": {
+          "min": 30.309084,
+          "max": 1859.76692,
+          "p(50)": 969.481792,
+          "p(95)": 1799.3545797,
+          "p(99)": 1844.65740969
+        },
+        "http_req_receiving": {
+          "min": 0.207735,
+          "max": 57.723465,
+          "p(50)": 19.562307500000003,
+          "p(95)": 29.807929049999995,
+          "p(99)": 38.66454353
+        },
+        "data_received": {
+          "count": 738404042,
+          "rate": 43595454.03523262
+        }
+      },
+      "display": {
+        "ticketing_display_available_count": {
+          "p(50)": 5000,
+          "p(95)": 5000,
+          "p(99)": 5000,
+          "min": 500,
+          "max": 5000
+        },
+        "ticketing_display_held_count": {
+          "p(50)": 0,
+          "p(95)": 4500,
+          "p(99)": 4500,
+          "min": 0,
+          "max": 4500
+        },
+        "ticketing_display_exact_total": {
+          "count": 157,
+          "rate": 9.269296881139663
+        },
+        "ticketing_display_degraded_total": {
+          "count": 744,
+          "rate": 43.925839997247834
+        },
+        "ticketing_display_invalid_total": {
+          "rate": 0,
+          "count": 0
+        },
+        "ticketing_display_sold_count": {
+          "max": 0,
+          "p(50)": 0,
+          "p(95)": 0,
+          "p(99)": 0,
+          "min": 0
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 1.9493125755256588,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 443125760,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 42323523.604285836,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.1602704838270212,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 74752000,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 4051619.0883967145,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.7803116273082941,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 421851136,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 37578.241666666676,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 101,
+      "memory": {
+        "rssBytes": {
+          "before": 214605824,
+          "peak": 468348928,
+          "after": 373411840
+        },
+        "workingSetBytes": {
+          "before": 209129472,
+          "peak": 469446656,
+          "after": 372477952
+        },
+        "redisUsedMemoryBytes": {
+          "before": 3694304,
+          "peak": 64810384,
+          "after": 4203808
+        }
+      },
+      "clientMaxOmem": 31364848,
+      "clientMaxOll": 1610,
+      "largestClient": {
+        "id": "177",
+        "addr": "172.19.0.6:58848",
+        "laddr": "172.19.0.3:6379",
+        "fd": "10",
+        "name": "",
+        "age": "1474",
+        "idle": "0",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "0",
+        "qbuf-free": "393206",
+        "argv-mem": "0",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "1610",
+        "omem": "31364848",
+        "tot-mem": "31759984",
+        "events": "rw",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 902,
+        "meanExecMs": 8.092851535476717,
+        "connectionsMax": 6
+      },
+      "samples": 7,
+      "phase": "before",
+      "backendContainerId": "946a97f2b1b8a38fb1f08ebc3a2e1b024a4d42bb070b459f0d3885efa472db1f"
+    },
+    {
+      "runId": "20260906T120016Z-seat-calibration-60-0-identity-bf4f2d0b",
+      "incompleteOrFailed": true,
+      "error": "compute rejection or incomplete drain; inspect evidence before any next run",
+      "phase": "workers2",
+      "backendContainerId": "d62bb3ce0a36c4d54ee0ea1f4678bf67f09517939588796b6c8964218d848d4a",
+      "arguments": {
+        "rate": 60,
+        "duration": 15,
+        "density": 0,
+        "encoding": "identity",
+        "drain_seconds": 0,
+        "prepare": false,
+        "compute_workers": 2
+      },
+      "redisOutcomes": {
+        "success": 902,
+        "timeout": 0,
+        "error": 0,
+        "parse_error": 0
+      },
+      "runnerExit": 99,
+      "finalInFlight": 0,
+      "business": {
+        "runId": "20260906T120016Z-seat-calibration-60-0-identity-bf4f2d0b",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 901,
+        "http_reqs": 902,
+        "dropped_iterations": 0,
+        "p50": 345.67857949999996,
+        "p95": 384.0722188,
+        "p99": 396.81279337,
+        "business_success": 804,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 97,
+        "unexpected": 0
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 902,
+          "p50Seconds": 0.007643610785463072,
+          "p95Seconds": 0.0111938775510204,
+          "p99Seconds": 0.02223877551020409
+        },
+        "dto_build": {
+          "samples": 902,
+          "p50Seconds": 0.00019678111587982834,
+          "p95Seconds": 0.00045997340425531913,
+          "p99Seconds": 0.0006993333333333339
+        },
+        "json_build": {
+          "samples": 805,
+          "p50Seconds": 0.017384169884169885,
+          "p95Seconds": 0.02437741312741313,
+          "p99Seconds": 0.02499903474903475
+        },
+        "overlay": {
+          "samples": 805,
+          "p50Seconds": 0.0000806316590563166,
+          "p95Seconds": 0.00021462765957446807,
+          "p99Seconds": 0.0002488829787234043
+        },
+        "owner_parse": {
+          "samples": 902,
+          "p50Seconds": 0.00007687723480333731,
+          "p95Seconds": 0.0001433064516129032,
+          "p99Seconds": 0.00023059677419354848
+        },
+        "redis_input_build": {
+          "samples": 902,
+          "p50Seconds": 0.001756711409395973,
+          "p95Seconds": 0.002437751677852349,
+          "p99Seconds": 0.002498288590604027
+        },
+        "redis_lookup": {
+          "samples": 902,
+          "p50Seconds": 0.0037885714285714285,
+          "p95Seconds": 0.004948285714285714,
+          "p99Seconds": 0.008329629629629633
+        },
+        "response_callback": {
+          "samples": 805,
+          "p50Seconds": 0.0075442477876106195,
+          "p95Seconds": 0.009834070796460176,
+          "p99Seconds": 0.01637500000000005
+        },
+        "response_create": {
+          "samples": 805,
+          "p50Seconds": 0.004057662538699691,
+          "p95Seconds": 0.009181338028169013,
+          "p99Seconds": 0.017897058823529453
+        },
+        "row_build": {
+          "samples": 902,
+          "p50Seconds": 0.0017525027808676307,
+          "p95Seconds": 0.0024297552836484984,
+          "p99Seconds": 0.002489955506117909
+        },
+        "seat_ids_build": {
+          "samples": 902,
+          "p50Seconds": 0.00008739635157545606,
+          "p95Seconds": 0.0002308762886597938,
+          "p99Seconds": 0.00024947422680412373
+        }
+      },
+      "finalSampleScope": "later read-only post-failure check; not original runner boundary",
+      "compute": {
+        "workers": 2,
+        "queueCapacity": 16,
+        "submissions": {
+          "accepted": 805,
+          "rejected": 97
+        },
+        "queueWait": {
+          "samples": 805,
+          "p50Seconds": 0.34958893871449925,
+          "p95Seconds": 0.4849588938714499,
+          "p99Seconds": 0.49699177877429
+        },
+        "execution": {
+          "samples": 805,
+          "p50Seconds": 0.037657629255989915,
+          "p95Seconds": 0.04907786885245902,
+          "p99Seconds": 0.06340909090909112
+        },
+        "timeline": [
+          {
+            "epoch": 1788696024.556134,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696026.9122257,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696029.8316243,
+            "depth": 13,
+            "active": 2
+          },
+          {
+            "epoch": 1788696032.7382183,
+            "depth": 15,
+            "active": 2
+          },
+          {
+            "epoch": 1788696035.6614184,
+            "depth": 16,
+            "active": 2
+          },
+          {
+            "epoch": 1788696038.6202478,
+            "depth": 16,
+            "active": 2
+          },
+          {
+            "epoch": 1788696041.5563672,
+            "depth": 16,
+            "active": 2
+          },
+          {
+            "epoch": 1788696044.4359152,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696140.486757,
+            "depth": 0,
+            "active": 0
+          }
+        ]
+      }
+    },
+    {
+      "runId": "20260906T120229Z-seat-calibration-60-0-identity-58d3efef",
+      "arguments": {
+        "rate": 60,
+        "duration": 15,
+        "density": 0,
+        "encoding": "identity",
+        "drain_seconds": 0,
+        "prepare": false,
+        "compute_workers": 4
+      },
+      "startEpoch": 1788696159.6631422,
+      "runnerFinishedEpoch": 1788696178.899451,
+      "endEpoch": 1788696193.5041564,
+      "redisOutcomes": {
+        "success": 902,
+        "timeout": 0,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 0,
+        "seatCount": 5000,
+        "heldCount": 0,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T120229Z-seat-calibration-60-0-identity-58d3efef",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 901,
+        "http_reqs": 902,
+        "dropped_iterations": 0,
+        "p50": 53.101209499999996,
+        "p95": 71.89498114999996,
+        "p99": 82.84356482999999,
+        "business_success": 901,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 902,
+          "p50Seconds": 0.00759493670886076,
+          "p95Seconds": 0.009930379746835444,
+          "p99Seconds": 0.021603225806451624
+        },
+        "dto_build": {
+          "samples": 902,
+          "p50Seconds": 0.0001884313725490196,
+          "p95Seconds": 0.0004352822580645161,
+          "p99Seconds": 0.0006530769230769238
+        },
+        "json_build": {
+          "samples": 902,
+          "p50Seconds": 0.00634584013050571,
+          "p95Seconds": 0.009656606851549756,
+          "p99Seconds": 0.009950897226753672
+        },
+        "overlay": {
+          "samples": 902,
+          "p50Seconds": 0.00008316176470588236,
+          "p95Seconds": 0.00022006787330316742,
+          "p99Seconds": 0.00024455656108597287
+        },
+        "owner_parse": {
+          "samples": 902,
+          "p50Seconds": 0.00007707082833133254,
+          "p95Seconds": 0.0001527205882352941,
+          "p99Seconds": 0.0002323088235294118
+        },
+        "redis_input_build": {
+          "samples": 902,
+          "p50Seconds": 0.0017533407572383074,
+          "p95Seconds": 0.002431347438752784,
+          "p99Seconds": 0.002491614699331849
+        },
+        "redis_lookup": {
+          "samples": 902,
+          "p50Seconds": 0.00378125,
+          "p95Seconds": 0.004934375,
+          "p99Seconds": 0.007950000000000004
+        },
+        "response_callback": {
+          "samples": 902,
+          "p50Seconds": 0.007519553072625699,
+          "p95Seconds": 0.009787150837988827,
+          "p99Seconds": 0.009988715083798883
+        },
+        "response_create": {
+          "samples": 902,
+          "p50Seconds": 0.0038971499380421313,
+          "p95Seconds": 0.007741758241758241,
+          "p99Seconds": 0.009724175824175826
+        },
+        "row_build": {
+          "samples": 902,
+          "p50Seconds": 0.0017516666666666666,
+          "p95Seconds": 0.0024281666666666666,
+          "p99Seconds": 0.0024883
+        },
+        "seat_ids_build": {
+          "samples": 902,
+          "p50Seconds": 0.00008427051671732524,
+          "p95Seconds": 0.0002407311320754717,
+          "p99Seconds": 0.0006778571428571435
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "max": 111.118682,
+          "p(50)": 53.101209499999996,
+          "p(95)": 71.89498114999996,
+          "p(99)": 82.84356482999999,
+          "min": 30.570449
+        },
+        "http_req_waiting": {
+          "min": 29.272745,
+          "max": 73.905195,
+          "p(50)": 32.989547,
+          "p(95)": 48.77248639999999,
+          "p(99)": 56.5680268
+        },
+        "http_req_receiving": {
+          "p(50)": 20.383737,
+          "p(95)": 31.57878119999987,
+          "p(99)": 37.589869300000004,
+          "min": 0.132877,
+          "max": 50.853571
+        },
+        "data_received": {
+          "count": 741959042,
+          "rate": 49100735.30682186
+        }
+      },
+      "display": {
+        "ticketing_display_invalid_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 1.9050267215694079,
+            "seriesCount": 1,
+            "excludedSeries": 1
+          },
+          "workingSetBytes": {
+            "max": 134139904,
+            "seriesCount": 1,
+            "excludedSeries": 2
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 41077020.976466835,
+            "seriesCount": 1,
+            "excludedSeries": 1
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.12256071555502909,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 12943360,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 903180.6584525177,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.11247127222222221,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 293720064,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 56508.588888888895,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 2,
+      "memory": {
+        "rssBytes": {
+          "before": 79052800,
+          "peak": 141922304,
+          "after": 136937472
+        },
+        "workingSetBytes": {
+          "before": 69804032,
+          "peak": 140025856,
+          "after": 132182016
+        },
+        "redisUsedMemoryBytes": {
+          "before": 2791880,
+          "peak": 4103256,
+          "after": 2791880
+        }
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "largestClient": {
+        "id": "1549",
+        "addr": "172.19.0.6:55518",
+        "laddr": "172.19.0.3:6379",
+        "fd": "10",
+        "name": "",
+        "age": "14",
+        "idle": "6",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "0",
+        "qbuf-free": "0",
+        "argv-mem": "0",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "0",
+        "omem": "0",
+        "tot-mem": "1928",
+        "events": "r",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 902,
+        "meanExecMs": 7.871791426829269,
+        "connectionsMax": 6
+      },
+      "samples": 7,
+      "phase": "workers4",
+      "backendContainerId": "0d0cee3787151d6d114534d9b3a31515fadbc4f267b1f0f755c8e62e4036f0e4",
+      "compute": {
+        "workers": 4,
+        "queueCapacity": 16,
+        "submissions": {
+          "accepted": 902,
+          "rejected": 0
+        },
+        "passed": true,
+        "queueWait": {
+          "samples": 902,
+          "p50Seconds": 0.00006558265582655827,
+          "p95Seconds": 0.00021684615384615384,
+          "p99Seconds": 0.00024460000000000004
+        },
+        "execution": {
+          "samples": 902,
+          "p50Seconds": 0.03588861076345432,
+          "p95Seconds": 0.048588861076345434,
+          "p99Seconds": 0.04971777221526909
+        },
+        "timeline": [
+          {
+            "epoch": 1788696157.3863297,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696159.6779628,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696162.5818253,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696165.4692667,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696168.4272416,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696171.3218517,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696174.2124798,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696177.1017776,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696184.9368558,
+            "depth": 0,
+            "active": 0
+          }
+        ]
+      }
+    },
+    {
+      "runId": "20260906T120537Z-seat-calibration-60-90-identity-e7f9ace4",
+      "arguments": {
+        "rate": 60,
+        "duration": 15,
+        "density": 90,
+        "encoding": "identity",
+        "drain_seconds": 0,
+        "prepare": false,
+        "compute_workers": 4
+      },
+      "startEpoch": 1788696367.715467,
+      "runnerFinishedEpoch": 1788696387.57879,
+      "endEpoch": 1788696402.2480063,
+      "redisOutcomes": {
+        "success": 902,
+        "timeout": 0,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 90,
+        "seatCount": 5000,
+        "heldCount": 4500,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T120537Z-seat-calibration-60-90-identity-e7f9ace4",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 901,
+        "http_reqs": 902,
+        "dropped_iterations": 0,
+        "p50": 58.259716499999996,
+        "p95": 83.16921595,
+        "p99": 97.95618681,
+        "business_success": 901,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "799921",
+          "transferEncoding": null,
+          "receivedBodyBytes": 799921
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "42236",
+          "transferEncoding": null,
+          "receivedBodyBytes": 42236
+        },
+        "rawBodyBytes": 799921,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 902,
+          "p50Seconds": 0.008239942528735632,
+          "p95Seconds": 0.021948019801980197,
+          "p99Seconds": 0.02462722772277228
+        },
+        "dto_build": {
+          "samples": 902,
+          "p50Seconds": 0.00022692307692307693,
+          "p95Seconds": 0.0007462025316455694,
+          "p99Seconds": 0.0009745569620253165
+        },
+        "json_build": {
+          "samples": 902,
+          "p50Seconds": 0.00727395411605938,
+          "p95Seconds": 0.010647727272727265,
+          "p99Seconds": 0.02294772727272728
+        },
+        "overlay": {
+          "samples": 902,
+          "p50Seconds": 0.00015813793103448278,
+          "p95Seconds": 0.00024211724137931034,
+          "p99Seconds": 0.00024958206896551725
+        },
+        "owner_parse": {
+          "samples": 902,
+          "p50Seconds": 0.0001829044117647059,
+          "p95Seconds": 0.00038108974358974353,
+          "p99Seconds": 0.0004967307692307693
+        },
+        "redis_input_build": {
+          "samples": 902,
+          "p50Seconds": 0.0017618243243243243,
+          "p95Seconds": 0.0024474662162162165,
+          "p99Seconds": 0.0037450000000000044
+        },
+        "redis_lookup": {
+          "samples": 902,
+          "p50Seconds": 0.004773185483870968,
+          "p95Seconds": 0.009786472148541114,
+          "p99Seconds": 0.020334482758620702
+        },
+        "response_callback": {
+          "samples": 902,
+          "p50Seconds": 0.00770059880239521,
+          "p95Seconds": 0.01490298507462686,
+          "p99Seconds": 0.02298059701492538
+        },
+        "response_create": {
+          "samples": 902,
+          "p50Seconds": 0.004829545454545454,
+          "p95Seconds": 0.009744274809160305,
+          "p99Seconds": 0.01958800000000001
+        },
+        "row_build": {
+          "samples": 902,
+          "p50Seconds": 0.0017652714932126696,
+          "p95Seconds": 0.002454015837104072,
+          "p99Seconds": 0.003903125000000003
+        },
+        "seat_ids_build": {
+          "samples": 902,
+          "p50Seconds": 0.00010141843971631206,
+          "p95Seconds": 0.00024535460992907804,
+          "p99Seconds": 0.0007135714285714293
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "p(95)": 83.16921595,
+          "p(99)": 97.95618681,
+          "min": 33.435224,
+          "max": 109.885035,
+          "p(50)": 58.259716499999996
+        },
+        "http_req_waiting": {
+          "p(95)": 56.51711099999998,
+          "p(99)": 71.20089208000002,
+          "min": 31.561013,
+          "max": 84.152731,
+          "p(50)": 37.666993000000005
+        },
+        "http_req_receiving": {
+          "p(99)": 45.204357120000004,
+          "min": 0.224487,
+          "max": 64.084222,
+          "p(50)": 21.3575425,
+          "p(95)": 36.342968899999995
+        },
+        "data_received": {
+          "count": 721664042,
+          "rate": 47712174.45306915
+        }
+      },
+      "display": {
+        "ticketing_display_available_count": {
+          "p(50)": 500,
+          "p(95)": 500,
+          "p(99)": 500,
+          "min": 500,
+          "max": 500
+        },
+        "ticketing_display_sold_count": {
+          "p(95)": 0,
+          "p(99)": 0,
+          "min": 0,
+          "max": 0,
+          "p(50)": 0
+        },
+        "ticketing_display_held_count": {
+          "p(50)": 4500,
+          "p(95)": 4500,
+          "p(99)": 4500,
+          "min": 4500,
+          "max": 4500
+        },
+        "ticketing_display_degraded_total": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_display_invalid_total": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_display_exact_total": {
+          "count": 901,
+          "rate": 59.56881135864506
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 2.136395228676381,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 134254592,
+            "seriesCount": 1,
+            "excludedSeries": 1
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 41722537.964719646,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.17568801718650548,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 19357696,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 4141424.3316359012,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 1.0352314916666667,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 412737536,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 43436.20833333333,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 3,
+      "memory": {
+        "rssBytes": {
+          "before": 137719808,
+          "peak": 144052224,
+          "after": 137297920
+        },
+        "workingSetBytes": {
+          "before": 131567616,
+          "peak": 145166336,
+          "after": 132653056
+        },
+        "redisUsedMemoryBytes": {
+          "before": 3695240,
+          "peak": 5255496,
+          "after": 3681640
+        }
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "largestClient": {
+        "id": "1549",
+        "addr": "172.19.0.6:55518",
+        "laddr": "172.19.0.3:6379",
+        "fd": "10",
+        "name": "",
+        "age": "222",
+        "idle": "6",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "0",
+        "qbuf-free": "0",
+        "argv-mem": "0",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "0",
+        "omem": "0",
+        "tot-mem": "1928",
+        "events": "r",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 902,
+        "meanExecMs": 8.66416159977828,
+        "connectionsMax": 6
+      },
+      "samples": 7,
+      "phase": "workers4",
+      "backendContainerId": "0d0cee3787151d6d114534d9b3a31515fadbc4f267b1f0f755c8e62e4036f0e4",
+      "compute": {
+        "workers": 4,
+        "queueCapacity": 16,
+        "submissions": {
+          "accepted": 902,
+          "rejected": 0
+        },
+        "passed": true,
+        "queueWait": {
+          "samples": 902,
+          "p50Seconds": 0.00004988738738738739,
+          "p95Seconds": 0.0002974999999999994,
+          "p99Seconds": 0.003842307692307696
+        },
+        "execution": {
+          "samples": 902,
+          "p50Seconds": 0.03703271028037383,
+          "p95Seconds": 0.048887266355140194,
+          "p99Seconds": 0.0499410046728972
+        },
+        "timeline": [
+          {
+            "epoch": 1788696365.4253242,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696367.729274,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696370.7966778,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696373.8348086,
+            "depth": 0,
+            "active": 1
+          },
+          {
+            "epoch": 1788696376.8508208,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696379.840417,
+            "depth": 0,
+            "active": 1
+          },
+          {
+            "epoch": 1788696382.9043589,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696385.750172,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696393.606666,
+            "depth": 0,
+            "active": 0
+          }
+        ]
+      }
+    },
+    {
+      "runId": "20260906T120729Z-seat-calibration-30-0-identity-b60e5021",
+      "arguments": {
+        "rate": 30,
+        "duration": 15,
+        "density": 0,
+        "encoding": "identity",
+        "drain_seconds": 0,
+        "prepare": false,
+        "compute_workers": 4
+      },
+      "startEpoch": 1788696459.691775,
+      "runnerFinishedEpoch": 1788696478.669261,
+      "endEpoch": 1788696493.2851074,
+      "redisOutcomes": {
+        "success": 451,
+        "timeout": 0,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 0,
+        "seatCount": 5000,
+        "heldCount": 0,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T120729Z-seat-calibration-30-0-identity-b60e5021",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 450,
+        "http_reqs": 451,
+        "dropped_iterations": 0,
+        "p50": 51.035159,
+        "p95": 64.63143099999999,
+        "p99": 71.90922499999999,
+        "business_success": 450,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 451,
+          "p50Seconds": 0.007516741071428572,
+          "p95Seconds": 0.009781808035714285,
+          "p99Seconds": 0.009983147321428573
+        },
+        "dto_build": {
+          "samples": 451,
+          "p50Seconds": 0.0001822992700729927,
+          "p95Seconds": 0.00035906249999999995,
+          "p99Seconds": 0.00047181250000000006
+        },
+        "json_build": {
+          "samples": 451,
+          "p50Seconds": 0.004595724907063197,
+          "p95Seconds": 0.009380494505494505,
+          "p99Seconds": 0.009876098901098902
+        },
+        "overlay": {
+          "samples": 451,
+          "p50Seconds": 0.00007723429951690821,
+          "p95Seconds": 0.0001602083333333333,
+          "p99Seconds": 0.00023537500000000007
+        },
+        "owner_parse": {
+          "samples": 451,
+          "p50Seconds": 0.0000754088785046729,
+          "p95Seconds": 0.00009911799065420561,
+          "p99Seconds": 0.00022103846153846164
+        },
+        "redis_input_build": {
+          "samples": 451,
+          "p50Seconds": 0.0017516666666666666,
+          "p95Seconds": 0.0024281666666666666,
+          "p99Seconds": 0.0024883
+        },
+        "redis_lookup": {
+          "samples": 451,
+          "p50Seconds": 0.00375,
+          "p95Seconds": 0.004875000000000001,
+          "p99Seconds": 0.004975
+        },
+        "response_callback": {
+          "samples": 451,
+          "p50Seconds": 0.0075111358574610244,
+          "p95Seconds": 0.009771158129175946,
+          "p99Seconds": 0.009972048997772829
+        },
+        "response_create": {
+          "samples": 451,
+          "p50Seconds": 0.00378125,
+          "p95Seconds": 0.004934375,
+          "p99Seconds": 0.007950000000000004
+        },
+        "row_build": {
+          "samples": 451,
+          "p50Seconds": 0.00175,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.0024850000000000002
+        },
+        "seat_ids_build": {
+          "samples": 451,
+          "p50Seconds": 0.00008970070422535212,
+          "p95Seconds": 0.00023375000000000002,
+          "p99Seconds": 0.00031125000000000114
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "p(99)": 71.90922499999999,
+          "min": 31.887894,
+          "max": 80.863081,
+          "p(50)": 51.035159,
+          "p(95)": 64.63143099999999
+        },
+        "http_req_waiting": {
+          "p(99)": 49.992102,
+          "min": 29.002206,
+          "max": 55.533038,
+          "p(50)": 30.792384,
+          "p(95)": 45.169464500000004
+        },
+        "http_req_receiving": {
+          "p(95)": 23.063926000000002,
+          "p(99)": 27.451690499999998,
+          "min": 0.455929,
+          "max": 33.615685,
+          "p(50)": 19.979816
+        },
+        "data_received": {
+          "count": 370979521,
+          "rate": 24595297.48656454
+        }
+      },
+      "display": {
+        "ticketing_display_invalid_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 0.9715829528795814,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 135401472,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 21767231.287958115,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.07392037124574173,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 13295616,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 509519.58495464775,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.09312303016888435,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 274370560,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 34565.59057062436,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 1,
+      "memory": {
+        "rssBytes": {
+          "before": 137302016,
+          "peak": 144056320,
+          "after": 140673024
+        },
+        "workingSetBytes": {
+          "before": 132317184,
+          "peak": 141230080,
+          "after": 136347648
+        },
+        "redisUsedMemoryBytes": {
+          "before": 3657216,
+          "peak": 4106064,
+          "after": 2794688
+        }
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "largestClient": {
+        "id": "1549",
+        "addr": "172.19.0.6:55518",
+        "laddr": "172.19.0.3:6379",
+        "fd": "10",
+        "name": "",
+        "age": "314",
+        "idle": "6",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "0",
+        "qbuf-free": "0",
+        "argv-mem": "0",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "0",
+        "omem": "0",
+        "tot-mem": "1928",
+        "events": "r",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 451,
+        "meanExecMs": 7.309747292682926,
+        "connectionsMax": 6
+      },
+      "samples": 7,
+      "phase": "workers4",
+      "backendContainerId": "0d0cee3787151d6d114534d9b3a31515fadbc4f267b1f0f755c8e62e4036f0e4",
+      "compute": {
+        "workers": 4,
+        "queueCapacity": 16,
+        "submissions": {
+          "accepted": 451,
+          "rejected": 0
+        },
+        "passed": true,
+        "queueWait": {
+          "samples": 451,
+          "p50Seconds": 0.0000691025641025641,
+          "p95Seconds": 0.0002177857142857143,
+          "p99Seconds": 0.00024355714285714288
+        },
+        "execution": {
+          "samples": 451,
+          "p50Seconds": 0.03317164179104478,
+          "p95Seconds": 0.04831716417910448,
+          "p99Seconds": 0.04966343283582089
+        },
+        "timeline": [
+          {
+            "epoch": 1788696457.3837018,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696459.7060764,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696462.5832636,
+            "depth": 0,
+            "active": 1
+          },
+          {
+            "epoch": 1788696465.4306045,
+            "depth": 0,
+            "active": 1
+          },
+          {
+            "epoch": 1788696468.2612605,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696471.1605964,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696474.0222123,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696476.850346,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696484.6991282,
+            "depth": 0,
+            "active": 0
+          }
+        ]
+      }
+    },
+    {
+      "runId": "20260906T120813Z-seat-calibration-10-90-identity-0a6667d1",
+      "arguments": {
+        "rate": 10,
+        "duration": 15,
+        "density": 90,
+        "encoding": "identity",
+        "drain_seconds": 0,
+        "prepare": false,
+        "compute_workers": 4
+      },
+      "startEpoch": 1788696524.4941945,
+      "runnerFinishedEpoch": 1788696543.4132466,
+      "endEpoch": 1788696557.7336326,
+      "redisOutcomes": {
+        "success": 152,
+        "timeout": 0,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 90,
+        "seatCount": 5000,
+        "heldCount": 4500,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T120813Z-seat-calibration-10-90-identity-0a6667d1",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 151,
+        "http_reqs": 152,
+        "dropped_iterations": 0,
+        "p50": 51.397814999999994,
+        "p95": 55.7513771,
+        "p99": 59.15397882000001,
+        "business_success": 151,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "799921",
+          "transferEncoding": null,
+          "receivedBodyBytes": 799921
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "42236",
+          "transferEncoding": null,
+          "receivedBodyBytes": 42236
+        },
+        "rawBodyBytes": 799921,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 152,
+          "p50Seconds": 0.007516556291390728,
+          "p95Seconds": 0.009781456953642385,
+          "p99Seconds": 0.009982781456953641
+        },
+        "dto_build": {
+          "samples": 152,
+          "p50Seconds": 0.00018571428571428572,
+          "p95Seconds": 0.0004000000000000001,
+          "p99Seconds": 0.00047999999999999985
+        },
+        "json_build": {
+          "samples": 152,
+          "p50Seconds": 0.004275700934579439,
+          "p95Seconds": 0.009155555555555556,
+          "p99Seconds": 0.00983111111111111
+        },
+        "overlay": {
+          "samples": 152,
+          "p50Seconds": 0.00016857142857142857,
+          "p95Seconds": 0.0002418571428571429,
+          "p99Seconds": 0.00024837142857142856
+        },
+        "owner_parse": {
+          "samples": 152,
+          "p50Seconds": 0.00017972027972027973,
+          "p95Seconds": 0.00028888888888888904,
+          "p99Seconds": 0.00045777777777777754
+        },
+        "redis_input_build": {
+          "samples": 152,
+          "p50Seconds": 0.00175,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.002485
+        },
+        "redis_lookup": {
+          "samples": 152,
+          "p50Seconds": 0.004275700934579439,
+          "p95Seconds": 0.009250000000000001,
+          "p99Seconds": 0.00994090909090909
+        },
+        "response_callback": {
+          "samples": 152,
+          "p50Seconds": 0.007550335570469798,
+          "p95Seconds": 0.009845637583892619,
+          "p99Seconds": 0.01739999999999995
+        },
+        "response_create": {
+          "samples": 152,
+          "p50Seconds": 0.0037666666666666664,
+          "p95Seconds": 0.004906666666666667,
+          "p99Seconds": 0.006199999999999975
+        },
+        "row_build": {
+          "samples": 152,
+          "p50Seconds": 0.00175,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.002485
+        },
+        "seat_ids_build": {
+          "samples": 152,
+          "p50Seconds": 0.0000836283185840708,
+          "p95Seconds": 0.00022076923076923082,
+          "p99Seconds": 0.00024415384615384615
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "p(99)": 59.15397882000001,
+          "min": 46.145683,
+          "max": 101.044432,
+          "p(50)": 51.397814999999994,
+          "p(95)": 55.7513771
+        },
+        "http_req_waiting": {
+          "min": 30.306019,
+          "max": 77.376635,
+          "p(50)": 32.2347735,
+          "p(95)": 35.09594914999999,
+          "p(99)": 37.07754138000001
+        },
+        "http_req_receiving": {
+          "p(95)": 22.348774149999997,
+          "p(99)": 23.243986350000004,
+          "min": 15.087868,
+          "max": 23.721552,
+          "p(50)": 19.1783055
+        },
+        "data_received": {
+          "count": 121610792,
+          "rate": 8039590.973071525
+        }
+      },
+      "display": {
+        "ticketing_display_held_count": {
+          "p(50)": 4500,
+          "p(95)": 4500,
+          "p(99)": 4500,
+          "min": 4500,
+          "max": 4500
+        },
+        "ticketing_display_invalid_total": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_display_exact_total": {
+          "count": 151,
+          "rate": 9.98248771321052
+        },
+        "ticketing_display_degraded_total": {
+          "count": 0,
+          "rate": 0
+        },
+        "ticketing_display_available_count": {
+          "p(50)": 500,
+          "p(95)": 500,
+          "p(99)": 500,
+          "min": 500,
+          "max": 500
+        },
+        "ticketing_display_sold_count": {
+          "p(50)": 0,
+          "p(95)": 0,
+          "p(99)": 0,
+          "min": 0,
+          "max": 0
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 0.3302508912655975,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 133472256,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 7100069.23513207,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.046546865857939775,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 13930496,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 700788.1577407653,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.14289193514976278,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 366223360,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 7029.11165480427,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 1,
+      "memory": {
+        "rssBytes": {
+          "before": 139042816,
+          "peak": 143933440,
+          "after": 141918208
+        },
+        "workingSetBytes": {
+          "before": 129511424,
+          "peak": 140025856,
+          "after": 136232960
+        },
+        "redisUsedMemoryBytes": {
+          "before": 3698048,
+          "peak": 5518000,
+          "after": 3944144
+        }
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "largestClient": {
+        "id": "1549",
+        "addr": "172.19.0.6:55518",
+        "laddr": "172.19.0.3:6379",
+        "fd": "10",
+        "name": "",
+        "age": "379",
+        "idle": "6",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "0",
+        "qbuf-free": "0",
+        "argv-mem": "0",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "0",
+        "omem": "0",
+        "tot-mem": "1928",
+        "events": "r",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 152,
+        "meanExecMs": 7.250616559210527,
+        "connectionsMax": 6
+      },
+      "samples": 7,
+      "phase": "workers4",
+      "backendContainerId": "0d0cee3787151d6d114534d9b3a31515fadbc4f267b1f0f755c8e62e4036f0e4",
+      "compute": {
+        "workers": 4,
+        "queueCapacity": 16,
+        "submissions": {
+          "accepted": 152,
+          "rejected": 0
+        },
+        "passed": true,
+        "displayPassed": true,
+        "queueWait": {
+          "samples": 152,
+          "p50Seconds": 0.00008375,
+          "p95Seconds": 0.000229795918367347,
+          "p99Seconds": 0.0002484081632653061
+        },
+        "execution": {
+          "samples": 152,
+          "p50Seconds": 0.03538461538461539,
+          "p95Seconds": 0.048538461538461544,
+          "p99Seconds": 0.04970769230769231
+        },
+        "timeline": [
+          {
+            "epoch": 1788696522.1932297,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696524.5074415,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696527.4069364,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696530.194706,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696533.119748,
+            "depth": 0,
+            "active": 1
+          },
+          {
+            "epoch": 1788696535.951164,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696538.782354,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696541.5992694,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696549.4393272,
+            "depth": 0,
+            "active": 0
+          }
+        ]
+      }
+    },
+    {
+      "runId": "20260906T120954Z-seat-calibration-30-0-gzip-c0b1d396",
+      "arguments": {
+        "rate": 30,
+        "duration": 15,
+        "density": 0,
+        "encoding": "gzip",
+        "drain_seconds": 0,
+        "prepare": false,
+        "compute_workers": 4
+      },
+      "startEpoch": 1788696605.065635,
+      "runnerFinishedEpoch": 1788696624.0806894,
+      "endEpoch": 1788696637.7794118,
+      "redisOutcomes": {
+        "success": 451,
+        "timeout": 0,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 0,
+        "seatCount": 5000,
+        "heldCount": 0,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T120954Z-seat-calibration-30-0-gzip-c0b1d396",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 450,
+        "http_reqs": 451,
+        "dropped_iterations": 0,
+        "p50": 33.72674,
+        "p95": 36.783491999999995,
+        "p99": 53.150746999999996,
+        "business_success": 450,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 451,
+          "p50Seconds": 0.007516741071428572,
+          "p95Seconds": 0.009781808035714285,
+          "p99Seconds": 0.009983147321428573
+        },
+        "dto_build": {
+          "samples": 451,
+          "p50Seconds": 0.00017811778290993072,
+          "p95Seconds": 0.0002484237875288684,
+          "p99Seconds": 0.00043736111111111124
+        },
+        "json_build": {
+          "samples": 451,
+          "p50Seconds": 0.0047021484374999995,
+          "p95Seconds": 0.009421794871794871,
+          "p99Seconds": 0.009884358974358975
+        },
+        "overlay": {
+          "samples": 451,
+          "p50Seconds": 0.00007825814536340852,
+          "p95Seconds": 0.00018495192307692304,
+          "p99Seconds": 0.00023699038461538465
+        },
+        "owner_parse": {
+          "samples": 451,
+          "p50Seconds": 0.00007641176470588235,
+          "p95Seconds": 0.00011469999999999994,
+          "p99Seconds": 0.00022294000000000008
+        },
+        "redis_input_build": {
+          "samples": 451,
+          "p50Seconds": 0.00175,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.0024850000000000002
+        },
+        "redis_lookup": {
+          "samples": 451,
+          "p50Seconds": 0.0037555679287305122,
+          "p95Seconds": 0.004885579064587973,
+          "p99Seconds": 0.004986024498886414
+        },
+        "response_callback": {
+          "samples": 451,
+          "p50Seconds": 0.0076591981132075465,
+          "p95Seconds": 0.012472222222222216,
+          "p99Seconds": 0.02249444444444445
+        },
+        "response_create": {
+          "samples": 451,
+          "p50Seconds": 0.0037841685649202734,
+          "p95Seconds": 0.00493992027334852,
+          "p99Seconds": 0.008120833333333338
+        },
+        "row_build": {
+          "samples": 451,
+          "p50Seconds": 0.0017516666666666666,
+          "p95Seconds": 0.0024281666666666666,
+          "p99Seconds": 0.0024883
+        },
+        "seat_ids_build": {
+          "samples": 451,
+          "p50Seconds": 0.00008268115942028985,
+          "p95Seconds": 0.0002438793103448276,
+          "p99Seconds": 0.0008120833333333337
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "p(95)": 36.783491999999995,
+          "p(99)": 53.150746999999996,
+          "min": 31.573324,
+          "max": 54.333343,
+          "p(50)": 33.72674
+        },
+        "http_req_waiting": {
+          "p(50)": 33.604885,
+          "p(95)": 36.545863999999995,
+          "p(99)": 52.976499000000004,
+          "min": 31.414349,
+          "max": 54.172592
+        },
+        "http_req_receiving": {
+          "p(50)": 0.069254,
+          "p(95)": 0.134023,
+          "p(99)": 0.2414625,
+          "min": 0.046711,
+          "max": 2.346538
+        },
+        "data_received": {
+          "rate": 1324759.4875306976,
+          "count": 19960809
+        }
+      },
+      "display": {
+        "ticketing_display_invalid_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 1.2775381587691037,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 132943872,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 8975070.899146348,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.07063840238354074,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 13086720,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 457796.7951040786,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.0940085211495166,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 257650688,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 12876.866320889922,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 1,
+      "memory": {
+        "rssBytes": {
+          "before": 140230656,
+          "peak": 144011264,
+          "after": 141774848
+        },
+        "workingSetBytes": {
+          "before": 136065024,
+          "peak": 140410880,
+          "after": 137342976
+        },
+        "redisUsedMemoryBytes": {
+          "before": 3919696,
+          "peak": 4106064,
+          "after": 3319648
+        }
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "largestClient": {
+        "id": "1549",
+        "addr": "172.19.0.6:55518",
+        "laddr": "172.19.0.3:6379",
+        "fd": "10",
+        "name": "",
+        "age": "459",
+        "idle": "6",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "0",
+        "qbuf-free": "0",
+        "argv-mem": "0",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "0",
+        "omem": "0",
+        "tot-mem": "1928",
+        "events": "r",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 451,
+        "meanExecMs": 7.402561046563195,
+        "connectionsMax": 6
+      },
+      "samples": 7,
+      "phase": "workers4",
+      "backendContainerId": "0d0cee3787151d6d114534d9b3a31515fadbc4f267b1f0f755c8e62e4036f0e4",
+      "compute": {
+        "workers": 4,
+        "queueCapacity": 16,
+        "submissions": {
+          "accepted": 451,
+          "rejected": 0
+        },
+        "passed": true,
+        "queueWait": {
+          "samples": 451,
+          "p50Seconds": 0.00007278037383177571,
+          "p95Seconds": 0.00022006944444444445,
+          "p99Seconds": 0.00024512500000000006
+        },
+        "execution": {
+          "samples": 451,
+          "p50Seconds": 0.037500000000000006,
+          "p95Seconds": 0.04875,
+          "p99Seconds": 0.04975
+        },
+        "timeline": [
+          {
+            "epoch": 1788696602.7350078,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696605.0826273,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696607.9634776,
+            "depth": 0,
+            "active": 1
+          },
+          {
+            "epoch": 1788696610.8155196,
+            "depth": 0,
+            "active": 1
+          },
+          {
+            "epoch": 1788696613.683307,
+            "depth": 0,
+            "active": 1
+          },
+          {
+            "epoch": 1788696616.5228715,
+            "depth": 0,
+            "active": 1
+          },
+          {
+            "epoch": 1788696619.3516948,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696622.2385151,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696630.1051075,
+            "depth": 0,
+            "active": 0
+          }
+        ]
+      }
+    },
+    {
+      "runId": "20260906T121038Z-seat-calibration-60-0-gzip-a563ed1a",
+      "arguments": {
+        "rate": 60,
+        "duration": 15,
+        "density": 0,
+        "encoding": "gzip",
+        "drain_seconds": 0,
+        "prepare": false,
+        "compute_workers": 4
+      },
+      "startEpoch": 1788696648.4915314,
+      "runnerFinishedEpoch": 1788696667.8074174,
+      "endEpoch": 1788696681.8595917,
+      "redisOutcomes": {
+        "success": 902,
+        "timeout": 0,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 0,
+        "seatCount": 5000,
+        "heldCount": 0,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T121038Z-seat-calibration-60-0-gzip-a563ed1a",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 901,
+        "http_reqs": 902,
+        "dropped_iterations": 0,
+        "p50": 36.00093,
+        "p95": 43.7457188,
+        "p99": 53.65842869,
+        "business_success": 901,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 902,
+          "p50Seconds": 0.0076251455180442376,
+          "p95Seconds": 0.00998777648428405,
+          "p99Seconds": 0.022135714285714293
+        },
+        "dto_build": {
+          "samples": 902,
+          "p50Seconds": 0.00021466101694915255,
+          "p95Seconds": 0.0004989738805970149,
+          "p99Seconds": 0.0008975000000000003
+        },
+        "json_build": {
+          "samples": 902,
+          "p50Seconds": 0.007037533512064343,
+          "p95Seconds": 0.00975804289544236,
+          "p99Seconds": 0.009999865951742628
+        },
+        "overlay": {
+          "samples": 902,
+          "p50Seconds": 0.00008022788203753352,
+          "p95Seconds": 0.00020663461538461536,
+          "p99Seconds": 0.0002413269230769231
+        },
+        "owner_parse": {
+          "samples": 902,
+          "p50Seconds": 0.00007559449311639549,
+          "p95Seconds": 0.00013909836065573766,
+          "p99Seconds": 0.0002278196721311476
+        },
+        "redis_input_build": {
+          "samples": 902,
+          "p50Seconds": 0.00175,
+          "p95Seconds": 0.002425,
+          "p99Seconds": 0.0024850000000000002
+        },
+        "redis_lookup": {
+          "samples": 902,
+          "p50Seconds": 0.003765432098765432,
+          "p95Seconds": 0.004904320987654321,
+          "p99Seconds": 0.0059000000000000085
+        },
+        "response_callback": {
+          "samples": 902,
+          "p50Seconds": 0.008072207084468664,
+          "p95Seconds": 0.020973214285714283,
+          "p99Seconds": 0.02419464285714286
+        },
+        "response_create": {
+          "samples": 902,
+          "p50Seconds": 0.0043127009646302256,
+          "p95Seconds": 0.009240072202166064,
+          "p99Seconds": 0.009891335740072203
+        },
+        "row_build": {
+          "samples": 902,
+          "p50Seconds": 0.0017516666666666666,
+          "p95Seconds": 0.0024281666666666666,
+          "p99Seconds": 0.0024883
+        },
+        "seat_ids_build": {
+          "samples": 902,
+          "p50Seconds": 0.00009033989266547405,
+          "p95Seconds": 0.00023749230769230773,
+          "p99Seconds": 0.0005900000000000009
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "p(99)": 53.65842869,
+          "min": 32.251934,
+          "max": 81.473467,
+          "p(50)": 36.00093,
+          "p(95)": 43.7457188
+        },
+        "http_req_waiting": {
+          "p(50)": 35.8357295,
+          "p(95)": 43.575456599999995,
+          "p(99)": 53.48364267,
+          "min": 32.058098,
+          "max": 81.222973
+        },
+        "http_req_receiving": {
+          "p(95)": 0.1530297,
+          "p(99)": 0.20461157,
+          "min": 0.044143,
+          "max": 2.245106,
+          "p(50)": 0.088713
+        },
+        "data_received": {
+          "count": 39921618,
+          "rate": 2645460.1593016856
+        }
+      },
+      "display": {
+        "ticketing_display_invalid_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 2.0740282620073267,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 137121792,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 14138034.663231209,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.12614329738058533,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 13279232,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 948393.4119018863,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.0637538,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 265760768,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 19380.266666666666,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 2,
+      "memory": {
+        "rssBytes": {
+          "before": 141774848,
+          "peak": 146604032,
+          "after": 142495744
+        },
+        "workingSetBytes": {
+          "before": 136826880,
+          "peak": 145076224,
+          "after": 137232384
+        },
+        "redisUsedMemoryBytes": {
+          "before": 3319648,
+          "peak": 4368544,
+          "after": 1945680
+        }
+      },
+      "clientMaxOmem": 0,
+      "clientMaxOll": 0,
+      "largestClient": {
+        "id": "1549",
+        "addr": "172.19.0.6:55518",
+        "laddr": "172.19.0.3:6379",
+        "fd": "10",
+        "name": "",
+        "age": "503",
+        "idle": "6",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "0",
+        "qbuf-free": "0",
+        "argv-mem": "0",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "0",
+        "omem": "0",
+        "tot-mem": "1928",
+        "events": "r",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 902,
+        "meanExecMs": 7.8327677694013325,
+        "connectionsMax": 6
+      },
+      "samples": 7,
+      "phase": "workers4",
+      "backendContainerId": "0d0cee3787151d6d114534d9b3a31515fadbc4f267b1f0f755c8e62e4036f0e4",
+      "compute": {
+        "workers": 4,
+        "queueCapacity": 16,
+        "submissions": {
+          "accepted": 902,
+          "rejected": 0
+        },
+        "passed": true,
+        "queueWait": {
+          "samples": 902,
+          "p50Seconds": 0.00005127478753541077,
+          "p95Seconds": 0.00019102941176470589,
+          "p99Seconds": 0.00024408823529411768
+        },
+        "execution": {
+          "samples": 902,
+          "p50Seconds": 0.03701036866359447,
+          "p95Seconds": 0.048701036866359446,
+          "p99Seconds": 0.049740207373271894
+        },
+        "timeline": [
+          {
+            "epoch": 1788696646.2111306,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696648.5060194,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696651.4074779,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696654.3406167,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696657.2973285,
+            "depth": 0,
+            "active": 1
+          },
+          {
+            "epoch": 1788696660.183478,
+            "depth": 0,
+            "active": 1
+          },
+          {
+            "epoch": 1788696663.089917,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696665.9841812,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696673.833832,
+            "depth": 0,
+            "active": 0
+          }
+        ]
+      }
+    },
+    {
+      "runId": "20260906T121513Z-seat-calibration-60-0-identity-39768aed",
+      "arguments": {
+        "rate": 60,
+        "duration": 30,
+        "density": 0,
+        "encoding": "identity",
+        "drain_seconds": 180,
+        "prepare": false,
+        "compute_workers": 4
+      },
+      "startEpoch": 1788696923.6325347,
+      "runnerFinishedEpoch": 1788696960.3181531,
+      "endEpoch": 1788697154.998187,
+      "redisOutcomes": {
+        "success": 1802,
+        "timeout": 0,
+        "error": 0,
+        "parse_error": 0
+      },
+      "verifierExit": 0,
+      "runnerExit": 0,
+      "finalInFlight": 0,
+      "formalInventoryBefore": "AVAILABLE\t5000",
+      "formalInventoryAfter": "AVAILABLE\t5000",
+      "fixture": {
+        "densityPercent": 0,
+        "seatCount": 5000,
+        "heldCount": 0,
+        "ttlSeconds": 600
+      },
+      "business": {
+        "runId": "20260906T121513Z-seat-calibration-60-0-identity-39768aed",
+        "workload": "seat-map-calibration",
+        "mode": "steady",
+        "iterations": 1801,
+        "http_reqs": 1802,
+        "dropped_iterations": 0,
+        "p50": 37.255133,
+        "p95": 65.61581919999999,
+        "p99": 75.07326549,
+        "business_success": 1801,
+        "business_conflict": 0,
+        "capacity_rejection": 0,
+        "system_error": 0,
+        "unexpected": 0
+      },
+      "gzip": {
+        "identity": {
+          "status": 200,
+          "contentEncoding": null,
+          "contentLength": "822421",
+          "transferEncoding": null,
+          "receivedBodyBytes": 822421
+        },
+        "gzip": {
+          "status": 200,
+          "contentEncoding": "gzip",
+          "contentLength": "44086",
+          "transferEncoding": null,
+          "receivedBodyBytes": 44086
+        },
+        "rawBodyBytes": 822421,
+        "seatCount": 5000,
+        "bodyEquality": true
+      },
+      "stages": {
+        "db_fetch_and_materialize": {
+          "samples": 1802,
+          "p50Seconds": 0.0076115942028985506,
+          "p95Seconds": 0.009962028985507246,
+          "p99Seconds": 0.021489610389610395
+        },
+        "dto_build": {
+          "samples": 1802,
+          "p50Seconds": 0.0001918138586956522,
+          "p95Seconds": 0.0004472861842105262,
+          "p99Seconds": 0.0006596000000000004
+        },
+        "json_build": {
+          "samples": 1802,
+          "p50Seconds": 0.006845070422535212,
+          "p95Seconds": 0.009700352112676055,
+          "p99Seconds": 0.009954154929577465
+        },
+        "overlay": {
+          "samples": 1802,
+          "p50Seconds": 0.00008473400154202006,
+          "p95Seconds": 0.00022422155688622754,
+          "p99Seconds": 0.00024580239520958087
+        },
+        "owner_parse": {
+          "samples": 1802,
+          "p50Seconds": 0.00007687013764213047,
+          "p95Seconds": 0.00014476377952755889,
+          "p99Seconds": 0.00022989763779527564
+        },
+        "redis_input_build": {
+          "samples": 1802,
+          "p50Seconds": 0.0017550279329608938,
+          "p95Seconds": 0.0024345530726256983,
+          "p99Seconds": 0.0024949553072625696
+        },
+        "redis_lookup": {
+          "samples": 1802,
+          "p50Seconds": 0.003787142857142857,
+          "p95Seconds": 0.0049455714285714285,
+          "p99Seconds": 0.008267307692307695
+        },
+        "response_callback": {
+          "samples": 1802,
+          "p50Seconds": 0.007525224215246637,
+          "p95Seconds": 0.009797926008968609,
+          "p99Seconds": 0.00999994394618834
+        },
+        "response_create": {
+          "samples": 1802,
+          "p50Seconds": 0.004033356024506467,
+          "p95Seconds": 0.008691489361702125,
+          "p99Seconds": 0.009786930091185411
+        },
+        "row_build": {
+          "samples": 1802,
+          "p50Seconds": 0.0017516685205784205,
+          "p95Seconds": 0.002428170189098999,
+          "p99Seconds": 0.0024883036707452726
+        },
+        "seat_ids_build": {
+          "samples": 1802,
+          "p50Seconds": 0.00008441558441558442,
+          "p95Seconds": 0.00024186619718309855,
+          "p99Seconds": 0.0007421212121212124
+        }
+      },
+      "http": {
+        "http_req_duration": {
+          "p(50)": 37.255133,
+          "p(95)": 65.61581919999999,
+          "p(99)": 75.07326549,
+          "min": 30.175467,
+          "max": 89.472681
+        },
+        "http_req_waiting": {
+          "min": 28.132094,
+          "max": 72.096328,
+          "p(50)": 33.0378055,
+          "p(95)": 45.67452319999999,
+          "p(99)": 52.50658767
+        },
+        "http_req_receiving": {
+          "p(50)": 0.341089,
+          "p(95)": 24.484957049999995,
+          "p(99)": 36.24663126,
+          "min": 0.120407,
+          "max": 55.723055
+        },
+        "data_received": {
+          "count": 1482272942,
+          "rate": 49222074.06110796
+        }
+      },
+      "display": {
+        "ticketing_display_invalid_total": {
+          "count": 0,
+          "rate": 0
+        }
+      },
+      "resources": {
+        "backend": {
+          "cpuCores30s": {
+            "max": 3.204245136186769,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 139931648,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 70124337.62970167,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "redis": {
+          "cpuCores30s": {
+            "max": 0.19323312000000015,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 15597568,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 1514960,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        },
+        "k6": {
+          "cpuCores30s": {
+            "max": 0.0923140393100682,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "workingSetBytes": {
+            "max": 316571648,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          },
+          "networkTransmitBytesPerSecond30s": {
+            "max": 90087.53976885005,
+            "seriesCount": 1,
+            "excludedSeries": 0
+          }
+        }
+      },
+      "peakInFlight": 2,
+      "memory": {
+        "rssBytes": {
+          "before": 141225984,
+          "peak": 146567168,
+          "after": 140709888
+        },
+        "workingSetBytes": {
+          "before": 135667712,
+          "peak": 144445440,
+          "after": 136572928
+        },
+        "redisUsedMemoryBytes": {
+          "before": 3319648,
+          "peak": 4106064,
+          "after": 3319648
+        }
+      },
+      "clientMaxOmem": 41056,
+      "clientMaxOll": 3,
+      "largestClient": {
+        "id": "1549",
+        "addr": "172.19.0.6:55518",
+        "laddr": "172.19.0.3:6379",
+        "fd": "10",
+        "name": "",
+        "age": "807",
+        "idle": "0",
+        "flags": "N",
+        "db": "0",
+        "sub": "0",
+        "psub": "0",
+        "ssub": "0",
+        "multi": "-1",
+        "watch": "0",
+        "qbuf": "0",
+        "qbuf-free": "393206",
+        "argv-mem": "0",
+        "multi-mem": "0",
+        "rbs": "1024",
+        "rbp": "0",
+        "obl": "0",
+        "oll": "3",
+        "omem": "41056",
+        "tot-mem": "436192",
+        "events": "r",
+        "cmd": "eval",
+        "user": "default",
+        "redir": "-1",
+        "resp": "2",
+        "lib-name": "",
+        "lib-ver": ""
+      },
+      "postgres": {
+        "calls": 1802,
+        "meanExecMs": 7.794606017203107,
+        "connectionsMax": 6
+      },
+      "samples": 77,
+      "timeline": [
+        {
+          "epoch": 1788696921.332742,
+          "inFlight": 0,
+          "rssBytes": 141225984,
+          "workingSetBytes": 135667712,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696923.6469855,
+          "inFlight": 0,
+          "rssBytes": 139571200,
+          "workingSetBytes": 134639616,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696926.5850945,
+          "inFlight": 1,
+          "rssBytes": 144261120,
+          "workingSetBytes": 140398592,
+          "redisUsedMemoryBytes": 3581104,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696929.4520442,
+          "inFlight": 2,
+          "rssBytes": 145969152,
+          "workingSetBytes": 143413248,
+          "redisUsedMemoryBytes": 3581104,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696932.4094307,
+          "inFlight": 2,
+          "rssBytes": 142585856,
+          "workingSetBytes": 140337152,
+          "redisUsedMemoryBytes": 3581104,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696935.3124027,
+          "inFlight": 2,
+          "rssBytes": 142544896,
+          "workingSetBytes": 140627968,
+          "redisUsedMemoryBytes": 3581104,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696938.2527716,
+          "inFlight": 1,
+          "rssBytes": 145563648,
+          "workingSetBytes": 143921152,
+          "redisUsedMemoryBytes": 3843584,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696941.1694574,
+          "inFlight": 2,
+          "rssBytes": 143704064,
+          "workingSetBytes": 141873152,
+          "redisUsedMemoryBytes": 4106064,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696944.094885,
+          "inFlight": 2,
+          "rssBytes": 146567168,
+          "workingSetBytes": 144445440,
+          "redisUsedMemoryBytes": 4106064,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696946.9749734,
+          "inFlight": 1,
+          "rssBytes": 145596416,
+          "workingSetBytes": 143081472,
+          "redisUsedMemoryBytes": 3581104,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696949.8663557,
+          "inFlight": 2,
+          "rssBytes": 144101376,
+          "workingSetBytes": 142036992,
+          "redisUsedMemoryBytes": 3843584,
+          "sumClientOmem": 41056,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696952.8083417,
+          "inFlight": 1,
+          "rssBytes": 143876096,
+          "workingSetBytes": 142258176,
+          "redisUsedMemoryBytes": 3843584,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696955.7346094,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 138567680,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696958.4953198,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135331840,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696961.3308818,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135626752,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696964.1337624,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 136007680,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696966.9090002,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135335936,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696969.6970506,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135237632,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696972.5355904,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 140820480,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696975.3633335,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 136126464,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696978.17833,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 136392704,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696981.0069895,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 131149824,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696983.8661046,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 136232960,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696986.7299662,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135720960,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696989.52806,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 131424256,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696992.2760892,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135938048,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696995.032696,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 136253440,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788696997.809531,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135819264,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697000.5971377,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 131821568,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697003.4852512,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135696384,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697006.3380396,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135614464,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697009.125558,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135311360,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697011.9303813,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135266304,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697014.7840276,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135770112,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697017.626912,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 136450048,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697020.4596,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135532544,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697023.2892013,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 136265728,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697026.114385,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 136384512,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697028.9780617,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135917568,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697031.7766085,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135929856,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697034.5900564,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135282688,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697037.4013786,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135438336,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697040.216118,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135823360,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697043.0284133,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135802880,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697045.8624792,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135876608,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697048.6955805,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135929856,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697051.499107,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135933952,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697054.3282468,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 136126464,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697057.0942261,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135921664,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697059.8958004,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135839744,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697062.7208285,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135311360,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697065.5607076,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 136024064,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697068.3757262,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135094272,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697071.1641078,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 136060928,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697073.9609075,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135454720,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697076.743312,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135421952,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697079.5684116,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135569408,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697082.3513064,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135802880,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697085.168364,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135634944,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697087.9667547,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 136069120,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697090.7739553,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135536640,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697093.630715,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 134914048,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697096.4003146,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135831552,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697099.2361774,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135581696,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697102.062064,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135548928,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697104.8593245,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135786496,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697107.6429396,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135561216,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697110.4712791,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135520256,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697113.2636995,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135675904,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697116.0584385,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135385088,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697118.9025557,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 136011776,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697121.7545743,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135733248,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697124.5505102,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 134991872,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697127.3474097,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 134709248,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697130.140184,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135507968,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697132.9580345,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135634944,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697135.7663896,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135241728,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697138.5815358,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 135282688,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        },
+        {
+          "epoch": 1788697146.421298,
+          "inFlight": 0,
+          "rssBytes": 140709888,
+          "workingSetBytes": 136572928,
+          "redisUsedMemoryBytes": 3319648,
+          "sumClientOmem": 0,
+          "postgresConnections": 6
+        }
+      ],
+      "firstObservedZeroAfterLastActive": 1788696955.7346094,
+      "phase": "workers4",
+      "backendContainerId": "0d0cee3787151d6d114534d9b3a31515fadbc4f267b1f0f755c8e62e4036f0e4",
+      "compute": {
+        "workers": 4,
+        "queueCapacity": 16,
+        "submissions": {
+          "accepted": 1802,
+          "rejected": 0
+        },
+        "passed": true,
+        "queueWait": {
+          "samples": 1802,
+          "p50Seconds": 0.00006561784897025172,
+          "p95Seconds": 0.00020636824324324322,
+          "p99Seconds": 0.00024289527027027033
+        },
+        "execution": {
+          "samples": 1802,
+          "p50Seconds": 0.03603533787972722,
+          "p95Seconds": 0.04860353378797272,
+          "p99Seconds": 0.049720706757594546
+        },
+        "timeline": [
+          {
+            "epoch": 1788696921.332742,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696923.6469855,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696926.5850945,
+            "depth": 0,
+            "active": 1
+          },
+          {
+            "epoch": 1788696929.4520442,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696932.4094307,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696935.3124027,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696938.2527716,
+            "depth": 0,
+            "active": 1
+          },
+          {
+            "epoch": 1788696941.1694574,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696944.094885,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696946.9749734,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696949.8663557,
+            "depth": 0,
+            "active": 2
+          },
+          {
+            "epoch": 1788696952.8083417,
+            "depth": 0,
+            "active": 1
+          },
+          {
+            "epoch": 1788696955.7346094,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696958.4953198,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696961.3308818,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696964.1337624,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696966.9090002,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696969.6970506,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696972.5355904,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696975.3633335,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696978.17833,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696981.0069895,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696983.8661046,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696986.7299662,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696989.52806,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696992.2760892,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696995.032696,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788696997.809531,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697000.5971377,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697003.4852512,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697006.3380396,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697009.125558,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697011.9303813,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697014.7840276,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697017.626912,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697020.4596,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697023.2892013,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697026.114385,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697028.9780617,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697031.7766085,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697034.5900564,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697037.4013786,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697040.216118,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697043.0284133,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697045.8624792,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697048.6955805,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697051.499107,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697054.3282468,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697057.0942261,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697059.8958004,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697062.7208285,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697065.5607076,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697068.3757262,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697071.1641078,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697073.9609075,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697076.743312,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697079.5684116,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697082.3513064,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697085.168364,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697087.9667547,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697090.7739553,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697093.630715,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697096.4003146,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697099.2361774,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697102.062064,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697104.8593245,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697107.6429396,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697110.4712791,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697113.2636995,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697116.0584385,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697118.9025557,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697121.7545743,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697124.5505102,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697127.3474097,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697130.140184,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697132.9580345,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697135.7663896,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697138.5815358,
+            "depth": 0,
+            "active": 0
+          },
+          {
+            "epoch": 1788697146.421298,
+            "depth": 0,
+            "active": 0
+          }
+        ]
+      }
+    }
+  ],
+  "scope": {
+    "implementationCommit": "94e6dbb0387434e3dcc62a9fa8ddd63403037241",
+    "baselineHead": "049dc593e4d7562b64251c0ce35fb9ecc75d076e",
+    "afterSource": "uncommitted offload implementation, then committed separately; same binary for both worker settings",
+    "matrixQueueCapacity": 16,
+    "selectedWorkers": 4,
+    "metricSampling": "PromExporter 5s cache; discrete peaks; histograms use delta",
+    "failure": "workers2 run failed with 97 rejections; supplemental verifier 14/14 was later, not original runner verification",
+    "cpuProfile": "not executed: perf/gdb absent; perf_event_paranoid=2",
+    "browser": {
+      "version": "153.0.8010.12",
+      "status": 200,
+      "acceptEncoding": "gzip, deflate, br, zstd",
+      "contentEncoding": "gzip",
+      "contentLength": 44086,
+      "seatCount": 5000
+    },
+    "candidateProcess": {
+      "startedAt": "2026-09-06T12:02:23.084390684Z",
+      "restartCount": 0,
+      "image": "sha256:0194629a0d4467809fa53cfef32988b81dd02cd020eb4e961bf79867d9294ed5"
+    }
+  }
+}
