@@ -1,0 +1,5 @@
+services:
+  backend:
+    command: ["./ticketing_backend", "config/auth-experiment-config.json"]
+    volumes:
+      - ./generated/auth-experiment-config.json:/app/config/auth-experiment-config.json:ro
