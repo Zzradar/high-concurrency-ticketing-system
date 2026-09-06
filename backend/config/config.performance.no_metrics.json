@@ -139,7 +139,7 @@
         "http://127.0.0.1:5173",
         "http://performance.local"
       ],
-      "password_hash_workers": 2,
+      "password_hash_workers": 4,
       "password_hash_queue_capacity": 64,
       "argon2_time_cost": 2,
       "argon2_memory_cost_kib": 65536,
