@@ -998,3 +998,7 @@ MVP 完成时必须能够完整演示：
 购票会话、恢复、Redis 临时占座、异步支付、取消、超时竞争、自动退款和通知均已落地，
 并通过当前阶段的事务、并发与故障路径验证。真实第三方支付渠道及正常 PAID 订单的
 主动退票/退款仍属于后续能力。
+
+### Phase 11：真实支付渠道与可靠恢复
+
+支付主线现采用小型 `PaymentProvider` 边界，默认 `simulation`，Stripe Sandbox 通过 Drogon 异步 HttpClient 直接调用 REST（Stripe 无官方 C++ 服务端 SDK）。PaymentAttempt/Refund 的 provider identity、同步时间、终态与退避均持久化；Stripe Webhook 只做原始 body 验签和 Inbox 入库，主动对账 worker retrieve 最新对象后再进入既有 Order-first 生命周期。`PaymentAttempt.id` 和 `Refund.id` 分别是渠道 create 的固定幂等键。迟到成功先形成 PROCESSING Refund，真正成功/失败后分别通知，不再把 INSERT 等同于退款完成。完整设计见 `payment_provider_phase11_design.md`。Phase 12 买家退款与 grace 产品规则调整尚未实施。

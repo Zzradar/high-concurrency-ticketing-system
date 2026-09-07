@@ -140,6 +140,15 @@ class PaymentIntegrationTest(unittest.TestCase):
         self.assertEqual(psql(f"SELECT status FROM payment_attempts WHERE id='{attempt_id}';"), "PROCESSING")
         attempt = wait_attempt(attempt_id)
         self.assertNotIn("acceptedAt", attempt)
+        deadline = time.monotonic() + 8
+        while time.monotonic() < deadline:
+            refund_state = psql(
+                f"SELECT status FROM refunds WHERE payment_attempt_id='{attempt_id}';"
+            )
+            if refund_state == "SUCCEEDED":
+                break
+            time.sleep(0.2)
+        self.assertEqual(refund_state, "SUCCEEDED")
         state = psql(
             f"""
             SELECT o.status, r.status, s.status,

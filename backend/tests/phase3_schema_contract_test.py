@@ -36,8 +36,9 @@ class Phase3SchemaContractTest(unittest.TestCase):
             "/docker-entrypoint-initdb.d/004_add_checkout_session_revision.sql",
             "/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql",
             "/docker-entrypoint-initdb.d/006_add_user_authentication.sql",
-            "/docker-entrypoint-initdb.d/007_demo_seed.sql",
-            "/docker-entrypoint-initdb.d/008_verify_seed.sql",
+            "/docker-entrypoint-initdb.d/007_add_payment_provider_recovery.sql",
+            "/docker-entrypoint-initdb.d/008_demo_seed.sql",
+            "/docker-entrypoint-initdb.d/009_verify_seed.sql",
         )
         positions = [COMPOSE.index(path) for path in expected]
         self.assertEqual(positions, sorted(positions))

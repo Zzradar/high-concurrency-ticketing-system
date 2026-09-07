@@ -178,8 +178,10 @@ MVP 的模拟支付在发起后约 2～6 秒完成，约有 1% 概率失败。�
 
 ### 6.2 后续阶段
 
-- 接入可靠的真实第三方支付渠道及 callback / 主动查单恢复；
+- 完成 Stripe Sandbox Provider、签名 Webhook Inbox、主动查单、跨 Backend 重启恢复和异步系统退款；
 - 设计正常 PAID 订单的主动退票与退款能力。
+
+Phase 11 保持默认 simulation 开箱即用和原 10 秒 processing grace；Stripe client secret 只在订单 owner 发起或恢复支付时临时返回。BUYER 主动退款仍属于 Phase 12，真实 Stripe Sandbox 凭据验证属于发布 Gate。
 
 ### 6.3 按压测决定
 

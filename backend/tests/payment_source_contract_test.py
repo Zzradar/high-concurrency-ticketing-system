@@ -21,20 +21,21 @@ class PaymentSourceContractTest(unittest.TestCase):
         repository = read("src/repositories/PaymentRepository.cpp")
         self.assertIn("ticket_order.user_id = $2", repository)
 
-    def test_payment_delay_is_non_blocking_and_callback_is_order_first(self) -> None:
+    def test_provider_is_non_blocking_and_callback_is_order_first(self) -> None:
         payment = read("src/services/PaymentService.cpp")
         lifecycle = read("src/services/OrderLifecycleService.cpp")
-        self.assertIn("getLoop()->runAfter", payment)
+        provider = read("src/payments/SimulationPaymentProvider.cpp")
+        self.assertIn("getLoop()->runAfter", provider)
         self.assertNotIn("sleep_for", payment)
         self.assertNotIn("sleep(", payment)
-        timer = payment[payment.index("void PaymentService::scheduleCompletion"):]
-        self.assertNotIn("[this", timer)
-        self.assertIn("std::make_shared<OrderLifecycleService>()", timer)
+        self.assertIn("PaymentProviderFactory::create", payment)
+        self.assertNotIn("PaymentSimulation::decide", payment)
         self.assertLess(lifecycle.index("lockOrder(state)"), lifecycle.index("lockCallbackAttempt(state)"))
 
-    def test_attempt_is_committed_before_timer_and_redis_is_not_used(self) -> None:
+    def test_attempt_is_committed_before_provider_and_redis_is_not_used(self) -> None:
         payment = read("src/services/PaymentService.cpp")
-        self.assertLess(payment.index("setCommitCallback"), payment.index("scheduleCompletion(state)"))
+        committed = payment[payment.index("void PaymentService::commitAttempt"):]
+        self.assertLess(committed.index("setCommitCallback"), committed.index("startProvider(state"))
         combined = payment + read("src/services/OrderLifecycleService.cpp")
         self.assertNotIn("SeatHoldService", combined)
         self.assertNotIn("getRedisClient", combined)
@@ -43,7 +44,7 @@ class PaymentSourceContractTest(unittest.TestCase):
         lifecycle = read("src/services/OrderLifecycleService.cpp")
         for token in (
             "markSucceeded", "markFailed", "markTimedOut", "insertRefund",
-            "sellReservationSeats", "AUTO_REFUND_COMPLETED",
+            "sellReservationSeats",
             "DUPLICATE_LATE_PAYMENT",
         ):
             self.assertIn(token, lifecycle)
@@ -57,7 +58,7 @@ class PaymentSourceContractTest(unittest.TestCase):
         self.assertIn('"max_delay_seconds": 6.0', config)
         self.assertIn('"failure_rate": 0.01', config)
         self.assertIn('"processing_grace_seconds": 10.0', config)
-        self.assertIn("PaymentSimulation::validateConfiguration", main)
+        self.assertIn("PaymentProviderFactory::validateConfiguration", main)
         self.assertIn("TICKETING_PAYMENT_FORCE_OUTCOME", simulation)
         self.assertNotIn("force", read("src/controllers/OrderController.cpp").lower())
 

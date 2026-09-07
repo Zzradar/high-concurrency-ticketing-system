@@ -1,0 +1,63 @@
+services:
+  redis:
+    image: redis:7.4-alpine
+    ports: ["16380:6379"]
+    volumes:
+      - type: tmpfs
+        target: /data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ticketing
+      POSTGRES_USER: ticketing
+      POSTGRES_PASSWORD: ticketing_dev
+      TZ: Asia/Shanghai
+    ports: ["15433:5432"]
+    volumes:
+      - phase11_postgres_data:/var/lib/postgresql/data
+      - ../db/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql:ro
+      - ../db/migrations/002_add_reservation_idempotency.sql:/docker-entrypoint-initdb.d/002_add_reservation_idempotency.sql:ro
+      - ../db/migrations/003_add_checkout_sessions.sql:/docker-entrypoint-initdb.d/003_add_checkout_sessions.sql:ro
+      - ../db/migrations/004_add_checkout_session_revision.sql:/docker-entrypoint-initdb.d/004_add_checkout_session_revision.sql:ro
+      - ../db/migrations/005_add_payment_lifecycle.sql:/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql:ro
+      - ../db/migrations/006_add_user_authentication.sql:/docker-entrypoint-initdb.d/006_add_user_authentication.sql:ro
+      - ../db/migrations/007_add_payment_provider_recovery.sql:/docker-entrypoint-initdb.d/007_add_payment_provider_recovery.sql:ro
+      - ../db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/008_demo_seed.sql:ro
+      - ../db/tests/001_verify_seed.sql:/docker-entrypoint-initdb.d/009_verify_seed.sql:ro
+      - ../db/tests/002_verify_checkout_schema.sql:/docker-entrypoint-initdb.d/010_verify_checkout_schema.sql:ro
+      - ../db/tests/003_verify_payment_schema.sql:/docker-entrypoint-initdb.d/011_verify_payment_schema.sql:ro
+      - ../db/tests/004_verify_auth_schema.sql:/docker-entrypoint-initdb.d/012_verify_auth_schema.sql:ro
+      - ../db/tests/005_verify_payment_provider_recovery.sql:/docker-entrypoint-initdb.d/013_verify_payment_provider_recovery.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ticketing -d ticketing"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  backend:
+    image: phase11_build-backend:latest
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    ports: ["18082:8080"]
+    environment:
+      TICKETING_PAYMENT_PROVIDER: ${TICKETING_PAYMENT_PROVIDER:-simulation}
+      TICKETING_PAYMENT_FORCE_OUTCOME: ${TICKETING_PAYMENT_FORCE_OUTCOME:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_CURRENCY: ${STRIPE_CURRENCY:-cny}
+      STRIPE_API_BASE_URL: ${STRIPE_API_BASE_URL:-https://api.stripe.com}
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://127.0.0.1:8080/health >/dev/null"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+volumes:
+  phase11_postgres_data:

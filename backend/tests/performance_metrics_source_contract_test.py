@@ -56,6 +56,11 @@ class PerformanceMetricsSourceContractTest(unittest.TestCase):
                 "ticketing_password_hash_submissions_total",
                 "ticketing_password_hash_queue_wait_seconds",
                 "ticketing_password_hash_execution_seconds",
+                "ticketing_payment_provider_requests_total",
+                "ticketing_payment_webhooks_total",
+                "ticketing_payment_reconciliation_total",
+                "ticketing_payment_reconciliation_pending",
+                "ticketing_refunds_by_status",
             },
         )
         self.assertEqual(
@@ -76,6 +81,12 @@ class PerformanceMetricsSourceContractTest(unittest.TestCase):
             by_name["ticketing_password_hash_submissions_total"]["labels"],
             ["outcome"],
         )
+        self.assertEqual(by_name["ticketing_payment_provider_requests_total"]["labels"],
+                         ["provider", "operation", "outcome"])
+        self.assertEqual(by_name["ticketing_payment_webhooks_total"]["labels"],
+                         ["provider", "outcome"])
+        self.assertEqual(by_name["ticketing_payment_reconciliation_total"]["labels"],
+                         ["object_kind", "outcome"])
         for name in (
             "ticketing_password_hash_queue_depth",
             "ticketing_password_hash_active_workers",
@@ -122,7 +133,6 @@ class PerformanceMetricsSourceContractTest(unittest.TestCase):
         self.assertIn("src/observability/PerformanceMetrics.cpp", cmake)
         self.assertIn("performance_metrics_source_contract", cmake)
         self.assertIn("password_hash_executor_unit", cmake)
-
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

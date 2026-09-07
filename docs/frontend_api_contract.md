@@ -682,3 +682,7 @@ Redis 不可用的降级由后端处理，前端不感知 Redis 故障细节。
 
 其中异步支付、取消、PaymentAttempt polling、自动退款与用户通知已在 Phase 8 实现。
 
+### 8.1 Phase 11 支付启动增量契约
+
+`POST /orders/{orderId}/pay` 保持 `disposition`、`order`、`paymentAttempt`，新增 `paymentAction`。Stripe 返回 `{ "provider": "stripe", "type": "CLIENT_CONFIRM", "clientSecret": "..." }`，simulation 返回 null。clientSecret 只由已认证 owner route 返回；`GET /payment-attempts/{id}` 不返回 providerPaymentId 或 clientSecret。`scheduledCompleteAt` 只在 simulation 存在，Stripe 响应可缺省。前端仍以 PaymentAttempt.status 和 Order.status 为业务真相，不用 providerStatus 直接判定订单成功。POST /pay 响应丢失时再次调用同一 order 的 pay，会以 `REUSED_PROCESSING` 返回同一 Attempt 和可恢复的 clientSecret。后续前端 Phase 11 使用 Stripe.js/Payment Element；本轮未修改 frontend。
+
