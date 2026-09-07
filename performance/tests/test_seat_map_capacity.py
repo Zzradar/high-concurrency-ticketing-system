@@ -58,13 +58,15 @@ class CapacityTests(unittest.TestCase):
     def test_independent_mixed_and_full_display_checks(self):
         source = (ROOT / 'performance/k6/diagnostics/post-offload-capacity.js').read_text()
         for fragment in ("public_read: scenario('publicRead'", "auth_warm: scenario('authWarm'",
-                         "seat_map: scenario('seatMap'", 'iterationInTest % 100', "responseType: 'text'",
+                         "page_entry: scenario('pageEntry'", "availability_refresh: scenario('seatMap'",
+                         'iterationInTest % 100', "responseType: 'text'",
                          'counts.AVAILABLE === 5000 - expectedHeld', "response.status === 503",
                          "ticketing_display_degraded_total: ['count==0']"):
             self.assertIn(fragment, source)
         for fragment in ("kind === 'layout'", "kind === 'page-entry'",
                          "/seat-availability", "/seat-layout", "http.batch",
-                         "availabilityIds.size === layoutIds.size"):
+                         "availabilityIds.size === layoutIds.size", "/events/${eventId}",
+                         "GET /sessions/{sessionId}"):
             self.assertIn(fragment, source)
         driver = Path(capacity.__file__).read_text()
         self.assertNotIn('force-recreate', driver)
@@ -72,6 +74,7 @@ class CapacityTests(unittest.TestCase):
         self.assertIn("args.duration + 90", driver)
         self.assertIn("args.drain_seconds != 180", driver)
         self.assertIn("'availability', 'layout', 'page-entry'", driver)
+        self.assertIn("choices=(1, 2, 4, 8)", driver)
 
     def test_incomplete_evidence_is_never_relabelled_success(self):
         with mock.patch.object(summary, 'read', return_value={'error': 'sampling unavailable', 'runnerExit': 1}):

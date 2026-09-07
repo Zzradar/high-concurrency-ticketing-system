@@ -23,7 +23,7 @@ const degraded = new Counter('ticketing_display_degraded_total');
 const invalid = new Counter('ticketing_display_invalid_total');
 const busy = new Counter('ticketing_seat_map_503_total');
 const measurements = {};
-for (const kind of ['public', 'auth', 'seat']) measurements[kind] = {
+for (const kind of ['public', 'auth', 'seat', 'page', 'session', 'event', 'layout', 'availability']) measurements[kind] = {
     completed: new Counter(`ticketing_capacity_${kind}_completed_total`),
     success: new Counter(`ticketing_capacity_${kind}_success_total`),
     duration: new Trend(`ticketing_capacity_${kind}_duration_ms`, true),
@@ -38,7 +38,8 @@ export const options = {discardResponseBodies: true, systemTags: SYSTEM_TAGS,
     scenarios: mixed ? {
         public_read: scenario('publicRead', __ENV.PUBLIC_RATE),
         auth_warm: scenario('authWarm', __ENV.AUTH_RATE),
-        seat_map: scenario('seatMap', __ENV.RATE),
+        page_entry: scenario('pageEntry', __ENV.PAGE_ENTRY_RATE),
+        availability_refresh: scenario('seatMap', __ENV.REFRESH_RATE),
     } : {seat_map: scenario(kind === 'layout' ? 'seatLayout' :
                              kind === 'page-entry' ? 'pageEntry' : 'seatMap', __ENV.RATE)},
     thresholds: {...correctnessThresholds(config.mode),
@@ -71,6 +72,13 @@ function display(response) {
 }
 export function setup() {
     if (mixed && sessions.length < 100) throw new Error('warm pool requires 100 sessions');
+    if (mixed) {
+        const page = requestPageEntry(true);
+        const availability = seatRequest(true);
+        if (page.state !== 'exact' || availability.status !== 200 || display(availability) !== 'exact')
+            throw new Error('mixed page/availability fixture preflight failed');
+        return;
+    }
     if (kind === 'layout') {
         const layout = layoutRequest(true);
         if (layout.status !== 200 || layoutState(layout) !== 'exact')
@@ -78,10 +86,8 @@ export function setup() {
         return;
     }
     if (kind === 'page-entry') {
-        const layout = layoutRequest(true);
-        const availability = seatRequest(true);
-        if (layout.status !== 200 || layoutState(layout) !== 'exact' ||
-            availability.status !== 200 || display(availability) !== 'exact')
+        const state = requestPageEntry(true);
+        if (state.state !== 'exact')
             throw new Error('page-entry fixture/encoding preflight failed');
         return;
     }
@@ -96,6 +102,12 @@ function record(kind, response, result) {
     metric.duration.add(response.timings.duration);
     metric.waiting.add(response.timings.waiting); metric.receiving.add(response.timings.receiving);
     recordResult(result, `capacity_${kind}`);
+}
+function recordEndpoint(kind, response, success) {
+    const metric = measurements[kind];
+    metric.completed.add(1); metric.success.add(success ? 1 : 0);
+    metric.duration.add(response.timings.duration);
+    metric.waiting.add(response.timings.waiting); metric.receiving.add(response.timings.receiving);
 }
 export function seatMap() {
     const response = seatRequest();
@@ -139,34 +151,58 @@ export function seatLayout() {
     record('seat', response, state === 'exact' ? 'success' :
         response.status === 503 ? 'system_error' : 'unexpected');
 }
-export function pageEntry() {
+function requestPageEntry(preflight = false) {
     const started = Date.now();
-    const [layout, availability] = http.batch([
+    const session = http.get(`${config.baseUrl}/sessions/${dataset.seatMapSessionId}`, {
+        responseType: 'text', tags: {name: preflight ? 'session preflight' : 'GET /sessions/{sessionId}'},
+    });
+    let sessionPayload = null;
+    try { sessionPayload = session.json(); } catch (_) { /* invalid below */ }
+    const eventId = sessionPayload && sessionPayload.eventId;
+    if (session.status !== 200 || !eventId) {
+        return {state: 'invalid', started, session, event: null, layout: null, availability: null};
+    }
+    const [event, layout, availability] = http.batch([
+        ['GET', `${config.baseUrl}/events/${eventId}`, null,
+            {responseType: 'text', tags: {name: preflight ? 'event preflight' : 'GET /events/{eventId}'}}],
         ['GET', `${config.baseUrl}/sessions/${dataset.seatMapSessionId}/seat-layout`, null,
-            {headers: {'Accept-Encoding': encoding}, responseType: 'text', tags: {name: 'GET /sessions/{sessionId}/seat-layout'}}],
+            {headers: {'Accept-Encoding': encoding}, responseType: 'text', tags: {name: preflight ? 'layout preflight' : 'GET /sessions/{sessionId}/seat-layout'}}],
         ['GET', `${config.baseUrl}/sessions/${dataset.seatMapSessionId}/seat-availability`, null,
-            {headers: {'Accept-Encoding': encoding}, responseType: 'text', tags: {name: 'GET /sessions/{sessionId}/seat-availability'}}],
+            {headers: {'Accept-Encoding': encoding}, responseType: 'text', tags: {name: preflight ? 'availability preflight' : 'GET /sessions/{sessionId}/seat-availability'}}],
     ]);
     let state = 'not_200';
-    if (layout.status === 200 && availability.status === 200) {
+    if (event.status === 200 && layout.status === 200 && availability.status === 200) {
         try {
+            const eventPayload = event.json();
             const layoutPayload = layout.json();
             const availabilityPayload = availability.json();
             const layoutIds = new Set(layoutPayload.seats.map(seat => seat.id));
             const availabilityIds = new Set(availabilityPayload.seats.map(seat => seat.id));
-            state = layoutState(layout) === 'exact' && display(availability) === 'exact' &&
+            state = eventPayload.id === eventId && sessionPayload.id === dataset.seatMapSessionId &&
+                sessionPayload.eventId === eventId && layoutPayload.sessionId === dataset.seatMapSessionId &&
+                availabilityPayload.sessionId === dataset.seatMapSessionId &&
+                layoutState(layout) === 'exact' && display(availability) === 'exact' &&
                 availabilityIds.size === layoutIds.size &&
                 availabilityPayload.seats.every(seat => layoutIds.has(seat.id)) ? 'exact' : 'invalid';
         } catch (_) { state = 'invalid'; }
     }
-    const response = {status: layout.status === 200 ? availability.status : layout.status,
-        timings: {duration: Date.now() - started,
-            waiting: Math.max(layout.timings.waiting, availability.timings.waiting),
-            receiving: Math.max(layout.timings.receiving, availability.timings.receiving)}};
-    exact.add(state === 'exact' ? 1 : 0); degraded.add(0);
-    invalid.add(state === 'invalid' ? 1 : 0);
-    busy.add(layout.status === 503 ? 1 : 0); busy.add(availability.status === 503 ? 1 : 0);
-    record('seat', response, state === 'exact' ? 'success' :
+    return {state, started, session, event, layout, availability};
+}
+export function pageEntry() {
+    const result = requestPageEntry(false);
+    const responses = [result.session, result.event, result.layout, result.availability];
+    const response = {status: responses.find(item => !item || item.status !== 200)?.status || 200,
+        timings: {duration: Date.now() - result.started,
+            waiting: Math.max(...responses.filter(Boolean).map(item => item.timings.waiting)),
+            receiving: Math.max(...responses.filter(Boolean).map(item => item.timings.receiving))}};
+    recordEndpoint('session', result.session, result.session?.status === 200);
+    recordEndpoint('event', result.event || response, result.event?.status === 200);
+    recordEndpoint('layout', result.layout || response, result.layout?.status === 200);
+    recordEndpoint('availability', result.availability || response, result.availability?.status === 200);
+    exact.add(result.state === 'exact' ? 1 : 0); degraded.add(0);
+    invalid.add(result.state === 'invalid' ? 1 : 0);
+    for (const item of responses) busy.add(item?.status === 503 ? 1 : 0);
+    record('page', response, result.state === 'exact' ? 'success' :
         response.status === 503 ? 'system_error' : 'unexpected');
 }
 export function publicRead() {

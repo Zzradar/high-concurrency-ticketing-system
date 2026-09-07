@@ -352,6 +352,15 @@ Redis Hold overlay。两条路径的 owned row 进入既有 4-worker / queue16 �
 DTO/JSON/Response 构造；queue full 与 legacy 一样返回 `503 SEAT_MAP_BUSY`。Layout 与 Availability
 以 Seat ID 合并，数组顺序不构成对应关系。展示 status 不替代 Confirm 事务的最终库存裁决。
 
+Phase10B-3.5 的真实浏览器记录确认：首次进入先取 Session，再并行取 Event、Layout 和 Availability；
+创建及更新 CheckoutSession 后只刷新 Availability，Layout 不重复读取。完整 Page Entry 单项在已测试的
+10/30/60 次页面进入每秒均稳定，但包含 Public、Auth、完整 Page Entry 和后续 Availability refresh 的
+新版 Mixed Read 2× 在固定 4-worker / queue16 下出现 69 次 compute rejection / HTTP 503。因此
+最终 5,000 座真实后端 Playwright 复验也因前排座位落在可点击视口外而仅通过 2/4。
+Phase10B-3 当前尚未封板，不能把 Availability 单项 200/s 描述为系统容量；本阶段也没有据此引入缓存、
+Delta、WebSocket 或扩池。证据与边界见
+`performance/experiments/phase10b-seat-map/real-page-flow-validation.md`。
+
 ### 5.3 提交座位预订
 
 Phase 3 的 `POST /reservations` 现在由 `AuthFilter` 提供认证用户，接口接收

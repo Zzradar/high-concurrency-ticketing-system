@@ -74,18 +74,20 @@ def failures(manifest, metrics):
             reasons.append(kind + ' target not delivered')
         if completed != count(metrics, f'ticketing_capacity_{kind}_success_total'):
             reasons.append(kind + ' unsuccessful responses')
-    if count(metrics, 'ticketing_display_exact_total') != count(metrics, 'ticketing_capacity_seat_completed_total'):
+    expected_exact = sum(count(metrics, f'ticketing_capacity_{kind}_completed_total')
+                         for kind in ('seat', 'page'))
+    if count(metrics, 'ticketing_display_exact_total') != expected_exact:
         reasons.append('not every seat response exact')
     return reasons
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--rate', type=int, choices=(10, 30, 60, 100, 150, 200, 300, 400, 500, 600), required=True)
+    parser.add_argument('--rate', type=int, choices=(10, 30, 60, 75, 100, 150, 200, 300, 400, 500, 600), required=True)
     parser.add_argument('--duration', type=int, choices=(15, 300), default=15)
     parser.add_argument('--density', type=int, choices=(0, 90), default=0)
     parser.add_argument('--encoding', choices=('gzip', 'identity'), default='gzip')
-    parser.add_argument('--mixed', type=int, choices=(2, 4, 8))
+    parser.add_argument('--mixed', type=int, choices=(1, 2, 4, 8))
     parser.add_argument('--kind', choices=('seat', 'availability', 'layout', 'page-entry'), default='seat')
     parser.add_argument('--drain-seconds', type=int, choices=(0, 180), default=0)
     parser.add_argument('--prepare', action='store_true')
@@ -99,8 +101,9 @@ def main():
     root = run_k6.RESULTS_ROOT / name
     root.mkdir(parents=True, exist_ok=False)
     container = f'ticketing-phase10a-k6-{token}'
+    primary_rate_kind = 'page' if args.kind == 'page-entry' else 'seat'
     manifest = {'runId': name, 'shortRunToken': token, 'arguments': vars(args),
-                'rates': {'seat': args.rate}, 'displayValidation': 'every pressure response, including 0%',
+                'rates': {primary_rate_kind: args.rate}, 'displayValidation': 'every pressure response, including 0%',
                 'sampling': 'sequential samples; PromExporter 5s cache; resource CPU is 30s rate',
                 'preallocatedVUsPerScenario': 700, 'fixtureTtlSeconds': 900,
                 'gitHead': evidence.command(['git', 'rev-parse', 'HEAD']).strip()}
@@ -120,7 +123,10 @@ def main():
         manifest['formalInventoryBefore'] = formal
         manifest['fixture'] = run_k6.prepare_seat_map_fixture(seats, session, args.density, 900, f'fixture-{token}')
         if args.mixed:
-            manifest['rates'].update(public=100 * args.mixed, auth=100 * args.mixed)
+            page_rate = 15 * args.mixed
+            refresh_rate = 60 * args.mixed
+            manifest['rates'] = {'public': 100 * args.mixed, 'auth': 100 * args.mixed,
+                                 'page': page_rate, 'seat': refresh_rate}
             manifest['auth'] = run_k6.prepare_auth(argparse.Namespace(auth_mode='warm', auth_pool_size=100),
                                                   run_k6.read_json(run_k6.GENERATED_ROOT / 'sessions.json'))
         endpoint = {'seat': 'seats', 'availability': 'seat-availability',
@@ -140,7 +146,9 @@ def main():
                        'SEAT_MAP_ENCODING': args.encoding, 'EXPECTED_HELD': str(manifest['fixture']['heldCount']),
                        'CAPACITY_KIND': 'mixed' if args.mixed else args.kind,
                        'PUBLIC_RATE': str(manifest['rates'].get('public', 1)),
-                       'AUTH_RATE': str(manifest['rates'].get('auth', 1))}
+                       'AUTH_RATE': str(manifest['rates'].get('auth', 1)),
+                       'PAGE_ENTRY_RATE': str(manifest['rates'].get('page', 1)),
+                       'REFRESH_RATE': str(manifest['rates'].get('seat', 1))}
         command = run_k6.compose_command('--profile', 'load', 'run', '--rm', '--no-deps', '--name', container)
         for key, value in environment.items(): command += ['-e', f'{key}={value}']
         command += ['k6', 'run', '-o', 'experimental-prometheus-rw', '--tag', f'testid={name}',

@@ -1,0 +1,328 @@
+{
+  "recordedAt": "2026-09-07T00:48:18.103Z",
+  "sessionId": "perf-session-001-001",
+  "anonymousInitial": {
+    "requestCount": 6,
+    "sessionReads": 1,
+    "eventReads": 1,
+    "layoutReads": 1,
+    "availabilityReads": 1,
+    "legacySeatReads": 0,
+    "checkoutCreates": 0,
+    "checkoutSeatUpdates": 0,
+    "requests": [
+      {
+        "sequence": 1,
+        "method": "GET",
+        "path": "/auth/me",
+        "query": {}
+      },
+      {
+        "sequence": 2,
+        "method": "GET",
+        "path": "/auth/me",
+        "query": {}
+      },
+      {
+        "sequence": 3,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001",
+        "query": {}
+      },
+      {
+        "sequence": 4,
+        "method": "GET",
+        "path": "/events/perf-event-001",
+        "query": {}
+      },
+      {
+        "sequence": 5,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001/seat-layout",
+        "query": {}
+      },
+      {
+        "sequence": 6,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001/seat-availability",
+        "query": {}
+      }
+    ]
+  },
+  "authenticatedInitial": {
+    "requestCount": 10,
+    "sessionReads": 1,
+    "eventReads": 1,
+    "layoutReads": 1,
+    "availabilityReads": 1,
+    "legacySeatReads": 0,
+    "checkoutCreates": 0,
+    "checkoutSeatUpdates": 0,
+    "requests": [
+      {
+        "sequence": 1,
+        "method": "GET",
+        "path": "/auth/me",
+        "query": {}
+      },
+      {
+        "sequence": 2,
+        "method": "GET",
+        "path": "/auth/me",
+        "query": {}
+      },
+      {
+        "sequence": 3,
+        "method": "GET",
+        "path": "/notifications",
+        "query": {}
+      },
+      {
+        "sequence": 4,
+        "method": "GET",
+        "path": "/notifications",
+        "query": {}
+      },
+      {
+        "sequence": 5,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001",
+        "query": {}
+      },
+      {
+        "sequence": 6,
+        "method": "GET",
+        "path": "/events/perf-event-001",
+        "query": {}
+      },
+      {
+        "sequence": 7,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001/seat-layout",
+        "query": {}
+      },
+      {
+        "sequence": 8,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001/seat-availability",
+        "query": {}
+      },
+      {
+        "sequence": 9,
+        "method": "GET",
+        "path": "/checkout-sessions",
+        "query": {
+          "sessionId": "perf-session-001-001",
+          "recoverable": "true"
+        }
+      },
+      {
+        "sequence": 10,
+        "method": "GET",
+        "path": "/orders",
+        "query": {
+          "sessionId": "perf-session-001-001",
+          "limit": "20"
+        }
+      }
+    ]
+  },
+  "afterFirstSelection": {
+    "requestCount": 12,
+    "sessionReads": 1,
+    "eventReads": 1,
+    "layoutReads": 1,
+    "availabilityReads": 2,
+    "legacySeatReads": 0,
+    "checkoutCreates": 1,
+    "checkoutSeatUpdates": 0,
+    "requests": [
+      {
+        "sequence": 1,
+        "method": "GET",
+        "path": "/auth/me",
+        "query": {}
+      },
+      {
+        "sequence": 2,
+        "method": "GET",
+        "path": "/auth/me",
+        "query": {}
+      },
+      {
+        "sequence": 3,
+        "method": "GET",
+        "path": "/notifications",
+        "query": {}
+      },
+      {
+        "sequence": 4,
+        "method": "GET",
+        "path": "/notifications",
+        "query": {}
+      },
+      {
+        "sequence": 5,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001",
+        "query": {}
+      },
+      {
+        "sequence": 6,
+        "method": "GET",
+        "path": "/events/perf-event-001",
+        "query": {}
+      },
+      {
+        "sequence": 7,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001/seat-layout",
+        "query": {}
+      },
+      {
+        "sequence": 8,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001/seat-availability",
+        "query": {}
+      },
+      {
+        "sequence": 9,
+        "method": "GET",
+        "path": "/checkout-sessions",
+        "query": {
+          "sessionId": "perf-session-001-001",
+          "recoverable": "true"
+        }
+      },
+      {
+        "sequence": 10,
+        "method": "GET",
+        "path": "/orders",
+        "query": {
+          "sessionId": "perf-session-001-001",
+          "limit": "20"
+        }
+      },
+      {
+        "sequence": 11,
+        "method": "POST",
+        "path": "/checkout-sessions",
+        "query": {}
+      },
+      {
+        "sequence": 12,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001/seat-availability",
+        "query": {
+          "checkoutSessionId": "CHK-6dce3899-cdc6-41fc-ab08-c4c4b099afa2"
+        }
+      }
+    ]
+  },
+  "afterSecondSelection": {
+    "requestCount": 14,
+    "sessionReads": 1,
+    "eventReads": 1,
+    "layoutReads": 1,
+    "availabilityReads": 3,
+    "legacySeatReads": 0,
+    "checkoutCreates": 1,
+    "checkoutSeatUpdates": 1,
+    "requests": [
+      {
+        "sequence": 1,
+        "method": "GET",
+        "path": "/auth/me",
+        "query": {}
+      },
+      {
+        "sequence": 2,
+        "method": "GET",
+        "path": "/auth/me",
+        "query": {}
+      },
+      {
+        "sequence": 3,
+        "method": "GET",
+        "path": "/notifications",
+        "query": {}
+      },
+      {
+        "sequence": 4,
+        "method": "GET",
+        "path": "/notifications",
+        "query": {}
+      },
+      {
+        "sequence": 5,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001",
+        "query": {}
+      },
+      {
+        "sequence": 6,
+        "method": "GET",
+        "path": "/events/perf-event-001",
+        "query": {}
+      },
+      {
+        "sequence": 7,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001/seat-layout",
+        "query": {}
+      },
+      {
+        "sequence": 8,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001/seat-availability",
+        "query": {}
+      },
+      {
+        "sequence": 9,
+        "method": "GET",
+        "path": "/checkout-sessions",
+        "query": {
+          "sessionId": "perf-session-001-001",
+          "recoverable": "true"
+        }
+      },
+      {
+        "sequence": 10,
+        "method": "GET",
+        "path": "/orders",
+        "query": {
+          "sessionId": "perf-session-001-001",
+          "limit": "20"
+        }
+      },
+      {
+        "sequence": 11,
+        "method": "POST",
+        "path": "/checkout-sessions",
+        "query": {}
+      },
+      {
+        "sequence": 12,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001/seat-availability",
+        "query": {
+          "checkoutSessionId": "CHK-6dce3899-cdc6-41fc-ab08-c4c4b099afa2"
+        }
+      },
+      {
+        "sequence": 13,
+        "method": "PUT",
+        "path": "/checkout-sessions/CHK-6dce3899-cdc6-41fc-ab08-c4c4b099afa2/seats",
+        "query": {}
+      },
+      {
+        "sequence": 14,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001/seat-availability",
+        "query": {
+          "checkoutSessionId": "CHK-6dce3899-cdc6-41fc-ab08-c4c4b099afa2"
+        }
+      }
+    ]
+  }
+}
