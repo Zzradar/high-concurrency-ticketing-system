@@ -55,6 +55,16 @@ export class AuthenticatedApi {
     return response.json()
   }
 
+  async abandonCheckoutSession(checkoutSessionId: string) {
+    const response = await this.context.post(`/checkout-sessions/${checkoutSessionId}/abandon`, {
+      headers: this.writeHeaders(),
+    })
+    if (!response.ok()) {
+      throw new Error(`checkout abandon failed: ${response.status()} ${await response.text()}`)
+    }
+    return response.json()
+  }
+
   async dispose() {
     await this.context.dispose()
   }

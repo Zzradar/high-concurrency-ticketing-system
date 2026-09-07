@@ -63,9 +63,12 @@ describe('SeatSelectionView zone browsing', () => {
 
   it('renders only the active zone while preserving cross-zone selection', async () => {
     const wrapper = mountView()
+    const seatGrid = wrapper.get<HTMLElement>('.seat-grid')
+    seatGrid.element.scrollLeft = 280
     const standZone = wrapper.findAll('.zone-browser button').find((button) => button.text().includes('看台 A 区'))!
     await standZone.trigger('click')
 
+    expect(seatGrid.element.scrollLeft).toBe(0)
     expect(wrapper.findAll('.seat-item')).toHaveLength(2)
     expect(wrapper.find('.seat-map-panel__heading').text()).toContain('看台 A 区')
     expect(wrapper.findAll('.selected-seat').map((seat) => seat.text()).join(' ')).toContain('A01')

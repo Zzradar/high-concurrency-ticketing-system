@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { Armchair } from '@lucide/vue'
 import SeatItem from './SeatItem.vue'
 import type { Seat } from '../types'
@@ -14,6 +14,8 @@ const props = defineProps<{
 
 defineEmits<{ toggle: [seat: Seat] }>()
 
+const seatGrid = ref<HTMLElement | null>(null)
+
 const groupedRows = computed(() => {
   const rows = new Map<string, Seat[]>()
   props.seats.forEach((seat) => {
@@ -22,6 +24,14 @@ const groupedRows = computed(() => {
   })
   return Array.from(rows.entries())
 })
+
+watch(
+  () => props.zoneName,
+  () => {
+    if (seatGrid.value) seatGrid.value.scrollLeft = 0
+  },
+  { flush: 'post' },
+)
 </script>
 
 <template>
@@ -39,7 +49,7 @@ const groupedRows = computed(() => {
       <strong>舞台</strong>
     </div>
 
-    <div class="seat-grid" role="group" aria-label="场馆座位图">
+    <div ref="seatGrid" class="seat-grid" role="group" aria-label="场馆座位图">
       <div v-for="[row, rowSeats] in groupedRows" :key="row" class="seat-row">
         <span class="seat-row__label">{{ row }}</span>
         <div class="seat-row__items">

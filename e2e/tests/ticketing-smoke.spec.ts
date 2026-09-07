@@ -82,6 +82,116 @@ test('checkout-smoke uses UI login and reaches a pending order', async ({ page }
   ).toEqual(['RESERVED', 'ACTIVE', 'PENDING_PAYMENT', 'HELD', 't'])
 })
 
+test('large seat rows keep both ends reachable and reset the viewport across zones', async ({ browser }) => {
+  test.setTimeout(90_000)
+  const { api, context } = await authenticatedContext(browser, 'perf-user-000004')
+  let checkoutSessionId = ''
+  try {
+    const page = await context.newPage()
+    await page.goto(`/sessions/${SESSION_IDS[0]}/seats`)
+    await expect(page.getByRole('region', { name: '场次座位状态与区域筛选' })).toBeVisible()
+
+    const grid = page.getByRole('group', { name: '场馆座位图' })
+    const firstRow = grid.locator('.seat-row').first()
+    const rowSeats = firstRow.getByRole('button')
+    await expect(rowSeats).toHaveCount(500)
+    const firstSeat = rowSeats.first()
+    const lastSeat = rowSeats.last()
+    await expect(firstSeat).toHaveAttribute('aria-label', /^R001-001，可选，/)
+    await expect(lastSeat).toHaveAttribute('aria-label', /^R001-500，可选，/)
+
+    const initialGeometry = await grid.evaluate((viewport) => {
+      const first = viewport.querySelector<HTMLElement>('.seat-row .seat-item')!
+      const viewportRect = viewport.getBoundingClientRect()
+      const firstRect = first.getBoundingClientRect()
+      return {
+        scrollLeft: viewport.scrollLeft,
+        clientWidth: viewport.clientWidth,
+        scrollWidth: viewport.scrollWidth,
+        viewportLeft: viewportRect.left,
+        firstLeft: firstRect.left,
+        firstRight: firstRect.right,
+      }
+    })
+    expect(initialGeometry.scrollLeft).toBe(0)
+    expect(initialGeometry.scrollWidth).toBeGreaterThan(initialGeometry.clientWidth)
+    expect(initialGeometry.firstLeft).toBeGreaterThanOrEqual(initialGeometry.viewportLeft - 1)
+    expect(initialGeometry.firstRight).toBeGreaterThan(initialGeometry.viewportLeft)
+
+    await firstSeat.click()
+    await expect(page.getByRole('button', { name: '移除座位 R001-001' })).toBeVisible()
+    checkoutSessionId = await page.evaluate(() =>
+      JSON.parse(sessionStorage.getItem('ticketing.checkout.perf-user-000004') ?? '{}')
+        .checkoutSessionId ?? '',
+    )
+    expect(checkoutSessionId).toBeTruthy()
+
+    const gridBox = await grid.boundingBox()
+    expect(gridBox).not.toBeNull()
+    await page.mouse.move(gridBox!.x + gridBox!.width / 2, gridBox!.y + gridBox!.height / 2)
+    await page.mouse.wheel(initialGeometry.scrollWidth, 0)
+    await expect.poll(() => grid.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
+
+    const endGeometry = await grid.evaluate((viewport) => {
+      const last = viewport.querySelector<HTMLElement>('.seat-row .seat-item:last-child')!
+      const viewportRect = viewport.getBoundingClientRect()
+      const lastRect = last.getBoundingClientRect()
+      return {
+        scrollLeft: viewport.scrollLeft,
+        maxScrollLeft: viewport.scrollWidth - viewport.clientWidth,
+        viewportRight: viewportRect.right,
+        lastLeft: lastRect.left,
+        lastRight: lastRect.right,
+      }
+    })
+    expect(endGeometry.scrollLeft).toBe(endGeometry.maxScrollLeft)
+    expect(endGeometry.lastLeft).toBeLessThan(endGeometry.viewportRight)
+    expect(endGeometry.lastRight).toBeLessThanOrEqual(endGeometry.viewportRight + 1)
+    await lastSeat.click()
+    await expect(page.getByRole('button', { name: '移除座位 R001-500' })).toBeVisible()
+
+    await page.getByRole('button', { name: /^STANDARD 可选/ }).click()
+    await expect.poll(() => grid.evaluate((element) => element.scrollLeft)).toBe(0)
+    await expect(page.getByRole('button', { name: '移除座位 R001-001' })).toBeVisible()
+    await expect(page.getByRole('button', { name: '移除座位 R001-500' })).toBeVisible()
+    const standardFirst = grid.getByRole('button').first()
+    await expect(standardFirst).toHaveAttribute('aria-label', /^R003-001，可选，/)
+    await standardFirst.click()
+    await expect(page.getByRole('button', { name: '移除座位 R003-001' })).toBeVisible()
+
+    await page.setViewportSize({ width: 520, height: 800 })
+    await page.getByRole('button', { name: /^全部 可选/ }).click()
+    await expect.poll(() => grid.evaluate((element) => element.scrollLeft)).toBe(0)
+    const narrowGeometry = await grid.evaluate((viewport) => {
+      const first = viewport.querySelector<HTMLElement>('.seat-row .seat-item')!
+      const viewportRect = viewport.getBoundingClientRect()
+      const firstRect = first.getBoundingClientRect()
+      return {
+        firstLeft: firstRect.left,
+        firstRight: firstRect.right,
+        viewportLeft: viewportRect.left,
+        bodyOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      }
+    })
+    expect(narrowGeometry.firstLeft).toBeGreaterThanOrEqual(narrowGeometry.viewportLeft - 1)
+    expect(narrowGeometry.firstRight).toBeGreaterThan(narrowGeometry.viewportLeft)
+    expect(narrowGeometry.bodyOverflow).toBeLessThanOrEqual(1)
+
+    await firstSeat.focus()
+    await expect(firstSeat).toBeFocused()
+    await page.keyboard.press('Enter')
+    await expect(page.getByRole('button', { name: '移除座位 R001-001' })).toHaveCount(0)
+    await firstSeat.focus()
+    await expect(firstSeat).toBeFocused()
+    await page.keyboard.press('Space')
+    await expect(page.getByRole('button', { name: '移除座位 R001-001' })).toBeVisible()
+  } finally {
+    if (checkoutSessionId) await api.abandonCheckoutSession(checkoutSessionId)
+    await context.close()
+    await api.dispose()
+  }
+})
+
 test('payment-smoke shows processing then the paid terminal state', async ({ browser }) => {
   const { api, context } = await authenticatedContext(browser, 'perf-user-000001')
   try {

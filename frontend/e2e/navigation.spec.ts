@@ -34,6 +34,17 @@ test('选座深链可直接打开并刷新', async ({ page }) => {
   await expect(page.getByRole('heading', { name: '全部区域' })).toBeVisible()
   await expect(page).toHaveTitle('星海回响 · 2026 巡演 · 选座 | 票迹')
 
+  const smallRowCenterOffset = await page.locator('.seat-row__items').first().evaluate((row) => {
+    const seats = row.querySelectorAll<HTMLElement>('.seat-item')
+    const rowRect = row.getBoundingClientRect()
+    const firstRect = seats[0]!.getBoundingClientRect()
+    const lastRect = seats[seats.length - 1]!.getBoundingClientRect()
+    return Math.abs(
+      (firstRect.left + lastRect.right) / 2 - (rowRect.left + rowRect.right) / 2,
+    )
+  })
+  expect(smallRowCenterOffset).toBeLessThanOrEqual(1)
+
   await page.reload()
   await expect(page).toHaveURL(/\/sessions\/ses-concert-1001\/seats$/)
   await expect(page.getByRole('heading', { name: '星海回响 · 2026 巡演' })).toBeVisible()

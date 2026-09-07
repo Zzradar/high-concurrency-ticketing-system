@@ -859,6 +859,10 @@ h2 {
   align-items: start;
 }
 
+.seat-layout > * {
+  min-width: 0;
+}
+
 .seat-overview {
   display: grid;
   gap: 16px;
@@ -1039,7 +1043,8 @@ h2 {
 .seat-row__items {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  justify-content: safe center;
   gap: clamp(8px, 1.3vw, 15px);
 }
 
@@ -2076,6 +2081,7 @@ h2 {
   .seat-row__items {
     gap: 8px;
     justify-content: flex-start;
+    justify-content: safe center;
   }
 
   .seat-item {
