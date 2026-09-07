@@ -145,11 +145,17 @@ ProviderResult<ProviderPayment> StripePaymentProvider::mapPayment(
     return {ProviderTransportOutcome::Success, std::move(payment), {}};
 }
 
-ProviderResult<ProviderRefund> StripePaymentProvider::mapRefund(const Json::Value &json)
+ProviderResult<ProviderRefund> StripePaymentProvider::mapRefund(
+    const Json::Value &json, const CreateRefundRequest &expected)
 {
     if (!json.isObject() || json["object"].asString() != "refund" ||
         !json["id"].isString() || !json["status"].isString())
         return {ProviderTransportOutcome::RetryableError, std::nullopt, "STRIPE_INVALID_REFUND"};
+    if (json["amount"].asInt64() != expected.amount ||
+        json["payment_intent"].asString() != expected.providerPaymentId ||
+        json["metadata"]["local_refund_id"].asString() != expected.refundId ||
+        json["metadata"]["order_id"].asString() != expected.orderId)
+        return {ProviderTransportOutcome::RetryableError, std::nullopt, "STRIPE_REFUND_MISMATCH"};
     ProviderRefund refund{.provider = "stripe",
                           .providerRefundId = json["id"].asString(),
                           .providerStatus = json["status"].asString()};
@@ -192,6 +198,8 @@ void StripePaymentProvider::retrievePayment(
                 ProviderTransportOutcome outcome, const Json::Value *json, std::string error) {
                 if (outcome != ProviderTransportOutcome::Success)
                     return completion({outcome, std::nullopt, std::move(error)});
+                if ((*json)["id"].asString() != input.providerPaymentId)
+                    return completion({ProviderTransportOutcome::RetryableError, std::nullopt, "STRIPE_PAYMENT_ID_MISMATCH"});
                 completion(mapPayment(*json, input));
             });
 }
@@ -205,24 +213,27 @@ void StripePaymentProvider::createOrRecoverRefund(
                             {"metadata[order_id]", input.orderId}});
     const auto idempotencyKey = input.refundId;
     request(drogon::Post, "/v1/refunds", body, idempotencyKey,
-            [completion = std::move(completion)](ProviderTransportOutcome outcome,
+            [input = std::move(input), completion = std::move(completion)](ProviderTransportOutcome outcome,
                                                   const Json::Value *json, std::string error) {
                 if (outcome != ProviderTransportOutcome::Success)
                     return completion({outcome, std::nullopt, std::move(error)});
-                completion(mapRefund(*json));
+                completion(mapRefund(*json, input));
             });
 }
 
 void StripePaymentProvider::retrieveRefund(
-    std::string providerRefundId, RefundCompletion completion)
+    RetrieveRefundRequest input, RefundCompletion completion)
 {
-    request(drogon::Get, "/v1/refunds/" + drogon::utils::urlEncode(providerRefundId),
+    const auto path = "/v1/refunds/" + drogon::utils::urlEncode(input.providerRefundId);
+    request(drogon::Get, path,
             {}, std::nullopt,
-            [completion = std::move(completion)](ProviderTransportOutcome outcome,
+            [input = std::move(input), completion = std::move(completion)](ProviderTransportOutcome outcome,
                                                   const Json::Value *json, std::string error) {
                 if (outcome != ProviderTransportOutcome::Success)
                     return completion({outcome, std::nullopt, std::move(error)});
-                completion(mapRefund(*json));
+                if ((*json)["id"].asString() != input.providerRefundId)
+                    return completion({ProviderTransportOutcome::RetryableError, std::nullopt, "STRIPE_REFUND_ID_MISMATCH"});
+                completion(mapRefund(*json, input));
             });
 }
 

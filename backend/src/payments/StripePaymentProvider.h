@@ -19,7 +19,7 @@ class StripePaymentProvider final : public PaymentProvider
                          PaymentCompletion completion) override;
     void createOrRecoverRefund(CreateRefundRequest request,
                                RefundCompletion completion) override;
-    void retrieveRefund(std::string providerRefundId,
+    void retrieveRefund(RetrieveRefundRequest request,
                         RefundCompletion completion) override;
 
   private:
@@ -31,7 +31,8 @@ class StripePaymentProvider final : public PaymentProvider
                  JsonCompletion completion) const;
     static ProviderResult<ProviderPayment> mapPayment(
         const Json::Value &json, const CreatePaymentRequest &expected);
-    static ProviderResult<ProviderRefund> mapRefund(const Json::Value &json);
+    static ProviderResult<ProviderRefund> mapRefund(const Json::Value &json,
+                                                   const CreateRefundRequest &expected);
 
     StripeConfig config_;
     drogon::HttpClientPtr client_;

@@ -191,6 +191,8 @@ Stripe 处理必要的 3DS/redirect，使用 `redirect: if_required` 和当前�
 
 后端宽限已按 Provider 区分：Simulation 10 秒，Stripe card 默认 600 秒；历史 Attempt deadline 不变。超过 deadline 的 TIMED_OUT/EXPIRED 和迟到成功退款语义保持。真实 Stripe Sandbox/3DS = NOT RUN，发布前必须按正常人工速度完成 3DS，记录 started_at、认证完成时间、provider/Order 终态、processingDeadline、accepted_at 和是否发生错误迟到退款；前端不得自行绕过服务端时限。Phase 12 未实施。
 
+Phase11 对账可靠性要求：渠道支付终态与本地业务终态原子提交；进程退出或事务失败后仍可恢复。`status` 表示本地完成事实，调度时间不代表完成，Worker lease 仅为临时领取权。旧版支付终态证据与本地状态不一致时，必须重新向渠道查证再幂等恢复，不得复活已终止订单或重复退款/通知。实现保留数据库 CHECK，不增加 Job 表或 MQ，详见 [崩溃一致性设计](payment_reconciliation_crash_consistency_phase11_design.md)。
+
 ### 6.3 按压测决定
 
 Phase 10 只有在真实压测证明同步确认出现连接等待、请求积压或数据库过载时，才评估限流、排队、异步受理和 Polling（轮询查询）后台操作结果。

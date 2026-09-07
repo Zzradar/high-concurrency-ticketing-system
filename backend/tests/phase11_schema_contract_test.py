@@ -6,6 +6,14 @@ MIGRATION = (ROOT / "db/migrations/007_add_payment_provider_recovery.sql").read_
 
 
 class Phase11SchemaContractTest(unittest.TestCase):
+    def test_lease_migration_preserves_business_checks(self):
+        migration = (ROOT / "db/migrations/008_add_reconciliation_leases.sql").read_text(encoding="utf-8")
+        self.assertNotIn("DROP CONSTRAINT", migration)
+        self.assertNotIn("CREATE TABLE", migration)
+        self.assertNotIn("payment_provider_events", migration)
+        for field in ("reconciliation_lease_until", "reconciliation_lease_token"):
+            self.assertEqual(migration.count("ADD COLUMN " + field), 2)
+
     def test_attempt_provider_recovery_shape(self):
         for field in ("provider_payment_id", "provider_status", "provider_last_sync_at",
                       "provider_terminal_at", "provider_retry_count", "next_reconcile_at"):

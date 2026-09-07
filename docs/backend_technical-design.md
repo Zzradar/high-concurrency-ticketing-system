@@ -1001,4 +1001,6 @@ MVP 完成时必须能够完整演示：
 
 ### Phase 11：真实支付渠道与可靠恢复
 
+对账 P1 收口采用正常路径终态单事务 + 旧版异常自愈扫描。`status` 是本地完成事实，`next_reconcile_at` 仅为调度时间，008 新增 lease/token 仅为临时 Worker ownership。Payment 的 Provider snapshot 与业务终态共用 Order-first 事务；Refund 保留既有原子 SQL，所有 CHECK 保留。详见 [支付对账终态原子提交与异常半状态自愈](payment_reconciliation_crash_consistency_phase11_design.md)。下述“不新增 migration”仅指既有 grace 调整；本轮新增 008 lease migration。
+
 支付主线现采用小型 `PaymentProvider` 边界，默认 `simulation`，Stripe Sandbox 通过 Drogon 异步 HttpClient 直接调用 REST（Stripe 无官方 C++ 服务端 SDK）。PaymentAttempt/Refund 的 provider identity、同步时间、终态与退避均持久化；Stripe Webhook 只做原始 body 验签和 Inbox 入库，主动对账 worker retrieve 最新对象后再进入既有 Order-first 生命周期。`PaymentAttempt.id` 和 `Refund.id` 分别是渠道 create 的固定幂等键。迟到成功先形成 PROCESSING Refund，真正成功/失败后分别通知，不再把 INSERT 等同于退款完成。完整设计见 `payment_provider_phase11_design.md`。Phase 12 买家退款尚未实施。Stripe v1 = card-only，不支持长时间异步 Payment Method。Provider::processingGraceSeconds() 给出 Simulation 原配置 10 秒、Stripe 默认 600 秒；STRIPE_PROCESSING_GRACE_SECONDS 启动时校验为正有限数。600 秒支持真人 3DS，是业务默认值，不是容量/SLO。未来增加 Provider/Payment Method 必须重新设计支付时限与 Seat 回收语义。沿用 processing_deadline，不新增 migration 或修改历史 Attempt。

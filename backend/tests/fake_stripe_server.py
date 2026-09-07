@@ -18,6 +18,7 @@ class Store:
         self.create_payment_calls = []
         self.payment_requests = []
         self.create_refund_calls = []
+        self.retrievals = []
         self.payment_mode = "processing"
         self.refund_mode = "succeeded"
         self.fail_once = set()
@@ -69,17 +70,22 @@ class Handler(BaseHTTPRequestHandler):
                     "createPaymentCalls": list(STORE.create_payment_calls),
                     "paymentRequests": list(STORE.payment_requests),
                     "createRefundCalls": list(STORE.create_refund_calls),
+                    "retrievals": list(STORE.retrievals),
                 })
             return
         if self.path.startswith("/v1/payment_intents/"):
             object_id = unquote(self.path.rsplit("/", 1)[-1])
             with STORE.lock:
                 value = STORE.payments.get(object_id)
+                STORE.retrievals.append({"kind": "payment", "id": object_id,
+                                         "status": value.get("status") if value else None})
             return self.json_response(200 if value else 404, value or {"error": {"type": "invalid_request_error"}})
         if self.path.startswith("/v1/refunds/"):
             object_id = unquote(self.path.rsplit("/", 1)[-1])
             with STORE.lock:
                 value = STORE.refunds.get(object_id)
+                STORE.retrievals.append({"kind": "refund", "id": object_id,
+                                         "status": value.get("status") if value else None})
             return self.json_response(200 if value else 404, value or {"error": {"type": "invalid_request_error"}})
         self.json_response(404, {"error": {"type": "not_found"}})
 
@@ -91,6 +97,7 @@ class Handler(BaseHTTPRequestHandler):
                 STORE.payment_keys.clear(); STORE.refund_keys.clear()
                 STORE.create_payment_calls.clear(); STORE.create_refund_calls.clear()
                 STORE.payment_requests.clear()
+                STORE.retrievals.clear()
                 STORE.payment_mode = "processing"; STORE.refund_mode = "succeeded"
                 STORE.fail_once.clear()
             return self.json_response(200, {"ok": True})
@@ -99,6 +106,10 @@ class Handler(BaseHTTPRequestHandler):
             with STORE.lock:
                 if "paymentMode" in config: STORE.payment_mode = config["paymentMode"]
                 if "refundMode" in config: STORE.refund_mode = config["refundMode"]
+                if "paymentPatch" in config:
+                    STORE.payments[config["paymentId"]].update(config["paymentPatch"])
+                if "refundPatch" in config:
+                    STORE.refunds[config["refundId"]].update(config["refundPatch"])
                 if "paymentId" in config and "paymentStatus" in config:
                     STORE.payments[config["paymentId"]]["status"] = config["paymentStatus"]
                     if config["paymentStatus"] == "requires_payment_method":

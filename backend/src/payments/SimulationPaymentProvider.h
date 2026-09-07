@@ -18,7 +18,7 @@ class SimulationPaymentProvider final : public PaymentProvider
                          PaymentCompletion completion) override;
     void createOrRecoverRefund(CreateRefundRequest request,
                                RefundCompletion completion) override;
-    void retrieveRefund(std::string providerRefundId,
+    void retrieveRefund(RetrieveRefundRequest request,
                         RefundCompletion completion) override;
 
   private:

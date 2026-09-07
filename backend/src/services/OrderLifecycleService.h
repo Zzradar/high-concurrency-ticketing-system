@@ -36,6 +36,10 @@ class OrderLifecycleService
                          std::string paymentAttemptId,
                          bool succeeded,
                          Completion completion) const;
+    void completeProviderPayment(std::string orderId,
+                                 std::string paymentAttemptId,
+                                 PaymentTerminalSnapshot snapshot,
+                                 Completion completion) const;
 
   private:
     enum class Mode { Cancel, Expire, PaymentCallback };

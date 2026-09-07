@@ -17,6 +17,19 @@ struct LockedPaymentAttempt
     PaymentAttempt value;
     bool deadlinePassed{};
     bool startedBeforeOrderExpiry{};
+    std::optional<std::string> leaseToken;
+};
+
+// Validated provider observation only: never contains client secrets or raw JSON.
+struct PaymentTerminalSnapshot
+{
+    std::string provider;
+    std::string providerPaymentId;
+    std::string providerStatus;
+    std::int64_t amount{};
+    bool succeeded{};
+    std::string failureReason;
+    std::string leaseToken;
 };
 
 class PaymentRepository
@@ -62,9 +75,14 @@ class PaymentRepository
                                const std::string &attemptId,
                                const std::string &providerPaymentId,
                                const std::string &providerStatus,
-                               bool terminal,
+                               const std::string &leaseToken,
                                std::function<void(std::size_t)> onSuccess,
                                ErrorCallback onError) const;
+    void recordTerminalSnapshot(const TransactionPtr &transaction,
+                                const std::string &attemptId,
+                                const PaymentTerminalSnapshot &snapshot,
+                                std::function<void(std::size_t)> onSuccess,
+                                ErrorCallback onError) const;
     void schedulePaymentRetry(const drogon::orm::DbClientPtr &client,
                               const std::string &attemptId,
                               std::function<void()> onSuccess,

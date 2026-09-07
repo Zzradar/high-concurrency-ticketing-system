@@ -36,6 +36,8 @@ class PaymentReconciliationService
     void processRefund(const std::shared_ptr<RunState> &state,
                        const drogon::orm::Row &row) const;
     static void finishOne(const std::shared_ptr<RunState> &state);
+    static void releaseLease(const std::shared_ptr<RunState> &state,
+                             bool payment, const std::string &id);
 
     PaymentRepository paymentRepository_;
     OrderLifecycleService lifecycleService_;

@@ -292,7 +292,7 @@ void PaymentService::handleProviderResult(
     ProviderResult<ProviderPayment> result) const
 {
     auto client = drogon::app().getDbClient("default");
-    if (result.outcome == ProviderTransportOutcome::RetryableError)
+    if (result.outcome != ProviderTransportOutcome::Success || !result.value)
     {
         paymentRepository_.schedulePaymentRetry(
             client, state->attempt->id,
@@ -300,20 +300,39 @@ void PaymentService::handleProviderResult(
             [state] { finish(state, {StartPaymentOutcome::InternalError, std::nullopt}, false); });
         return;
     }
-    if (result.outcome == ProviderTransportOutcome::PermanentError || !result.value)
+    const auto payment = std::move(*result.value);
+    if (payment.terminal)
     {
-        lifecycleService_.completePayment(
-            state->orderId, state->attempt->id, false,
-            [state](OrderLifecycleOutcome) {
-                finish(state, {StartPaymentOutcome::InternalError, std::nullopt}, false);
+        PaymentTerminalSnapshot snapshot{
+            .provider = payment.provider, .providerPaymentId = payment.providerPaymentId,
+            .providerStatus = payment.providerStatus, .amount = state->order.totalAmount,
+            .succeeded = payment.mappedState == ProviderPaymentState::Succeeded,
+            .failureReason = payment.failureCode.value_or("PROVIDER_PAYMENT_FAILED").substr(0, 200)};
+        lifecycleService_.completeProviderPayment(
+            state->orderId, state->attempt->id, std::move(snapshot),
+            [this, state, outcome](OrderLifecycleOutcome lifecycleOutcome) {
+                if (lifecycleOutcome == OrderLifecycleOutcome::Failed)
+                {
+                    LOG_ERROR << "Provider payment lifecycle transaction failed";
+                    if (!state->finished)
+                        finish(state, {StartPaymentOutcome::InternalError, std::nullopt}, false);
+                    return;
+                }
+                if (!state->finished)
+                    paymentRepository_.findByIdForUser(
+                        drogon::app().getDbClient("default"), state->attempt->id, state->userId,
+                        [this, state, outcome](std::optional<PaymentAttempt> attempt) {
+                            state->attempt = std::move(attempt);
+                            state->clientSecret.reset();
+                            loadResponse(state, outcome);
+                        }, [state] { finish(state, {StartPaymentOutcome::InternalError, std::nullopt}, false); });
             });
         return;
     }
-    const auto payment = std::move(*result.value);
     if (payment.clientSecret) state->clientSecret = payment.clientSecret;
     paymentRepository_.recordProviderPayment(
         client, state->attempt->id, payment.providerPaymentId,
-        payment.providerStatus, payment.terminal,
+        payment.providerStatus, "",
         [this, state, outcome, payment](std::size_t updated) {
             if (updated != 1)
             {
@@ -324,25 +343,7 @@ void PaymentService::handleProviderResult(
             }
             state->attempt->providerPaymentId = payment.providerPaymentId;
             state->attempt->providerStatus = payment.providerStatus;
-            if (payment.terminal)
-            {
-                lifecycleService_.completePayment(
-                    state->orderId, state->attempt->id,
-                    payment.mappedState == ProviderPaymentState::Succeeded,
-                    [this, state, outcome, payment](OrderLifecycleOutcome lifecycleOutcome) {
-                        if (lifecycleOutcome == OrderLifecycleOutcome::Failed)
-                            LOG_ERROR << "Provider payment lifecycle failed for attempt "
-                                      << state->attempt->id;
-                        if (!state->finished)
-                        {
-                            state->attempt->status =
-                                payment.mappedState == ProviderPaymentState::Succeeded
-                                    ? "SUCCEEDED" : "FAILED";
-                            loadResponse(state, outcome);
-                        }
-                    });
-            }
-            else loadResponse(state, outcome);
+            loadResponse(state, outcome);
         },
         [state] {
             if (!state->finished)

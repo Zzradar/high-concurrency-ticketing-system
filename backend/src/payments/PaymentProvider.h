@@ -63,6 +63,11 @@ struct CreateRefundRequest
     std::int64_t amount{};
 };
 
+struct RetrieveRefundRequest : CreateRefundRequest
+{
+    std::string providerRefundId;
+};
+
 class PaymentProvider
 {
   public:
@@ -78,7 +83,7 @@ class PaymentProvider
                                  PaymentCompletion completion) = 0;
     virtual void createOrRecoverRefund(CreateRefundRequest request,
                                        RefundCompletion completion) = 0;
-    virtual void retrieveRefund(std::string providerRefundId,
+    virtual void retrieveRefund(RetrieveRefundRequest request,
                                 RefundCompletion completion) = 0;
 };
 

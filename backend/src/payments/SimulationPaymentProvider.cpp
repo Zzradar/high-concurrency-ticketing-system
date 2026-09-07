@@ -59,10 +59,10 @@ void SimulationPaymentProvider::createOrRecoverRefund(
 }
 
 void SimulationPaymentProvider::retrieveRefund(
-    std::string providerRefundId, RefundCompletion completion)
+    RetrieveRefundRequest request, RefundCompletion completion)
 {
     ProviderRefund refund{.provider = name(),
-                          .providerRefundId = std::move(providerRefundId),
+                          .providerRefundId = std::move(request.providerRefundId),
                           .providerStatus = "succeeded",
                           .mappedState = ProviderRefundState::Succeeded,
                           .terminal = true};

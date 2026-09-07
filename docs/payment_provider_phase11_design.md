@@ -39,6 +39,8 @@ Stripe v1 不支持 ACH/SEPA/Klarna/Alipay/WeChat Pay 等长时间异步 Payment
 
 ## 安全与验证状态
 
+支付终态采用 Provider snapshot 与 Order-first 本地生命周期单事务提交；旧版 `provider_status` 已终态而本地未终态的记录由独立于调度时间的兜底扫描重新查渠道。008 将 PaymentAttempt/Refund 的 30 秒 lease 与 next_reconcile_at 分离，保留所有 CHECK。Refund 继续使用既有原子终态 SQL；Inbox 继续原子 durable handoff。字段语义、迁移、故障注入与恢复设计见 [支付对账崩溃一致性设计](payment_reconciliation_crash_consistency_phase11_design.md)。
+
 `clientSecret` 只通过已认证、订单 owner 的 pay response 临时返回，不出现在 PaymentAttempt GET、订单、通知、日志、metrics 或数据库。secret key、webhook secret、Authorization header、完整 Stripe body 同样不记录。metrics 只使用 provider/operation/outcome、object_kind/status 等低基数标签。
 
 测试以 Python 标准库 Fake Stripe 为确定性主 Gate，覆盖幂等 create、response lost、429/5xx、重复/乱序/丢失 Webhook、Backend restart、异步退款和退款失败。真实 Stripe Sandbox 需要外部测试 secret、webhook secret 和可用 endpoint；没有凭据时只报告为待验证，不伪造通过结论。

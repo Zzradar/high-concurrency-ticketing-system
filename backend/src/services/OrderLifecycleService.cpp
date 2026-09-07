@@ -21,6 +21,7 @@ struct OrderLifecycleService::FlowState
     bool paymentSucceeded{};
     bool refundRequired{};
     bool paymentResultRecorded{};
+    std::optional<PaymentTerminalSnapshot> terminalSnapshot;
     OrderRepository::TransactionPtr transaction;
     Completion completion;
     bool finished{false};
@@ -79,6 +80,21 @@ void OrderLifecycleService::start(const std::shared_ptr<FlowState> &state) const
             state->transaction = transaction;
             lockOrder(state);
         });
+}
+
+void OrderLifecycleService::completeProviderPayment(
+    std::string orderId, std::string paymentAttemptId,
+    PaymentTerminalSnapshot snapshot, Completion completion) const
+{
+    auto state = std::make_shared<FlowState>();
+    state->mode = Mode::PaymentCallback;
+    state->orderId = std::move(orderId);
+    state->paymentAttemptId = std::move(paymentAttemptId);
+    state->paymentSucceeded = snapshot.succeeded;
+    state->terminalSnapshot = std::move(snapshot);
+    state->successOutcome = OrderLifecycleOutcome::PaymentCompleted;
+    state->completion = std::move(completion);
+    start(state);
 }
 
 void OrderLifecycleService::lockOrder(
@@ -178,6 +194,25 @@ void OrderLifecycleService::inspectCallbackAttempt(
         return;
     }
     state->attempt = std::move(attempt);
+    if (state->terminalSnapshot)
+    {
+        const auto &snapshot = *state->terminalSnapshot;
+        const auto &value = state->attempt->value;
+        if (snapshot.provider != value.provider || snapshot.amount != state->order.totalAmount ||
+            snapshot.providerPaymentId.empty() ||
+            (value.providerPaymentId && *value.providerPaymentId != snapshot.providerPaymentId))
+        {
+            failInvariant(state, "provider terminal identity mismatch");
+            return;
+        }
+        if (!snapshot.leaseToken.empty() &&
+            state->attempt->leaseToken != snapshot.leaseToken &&
+            value.status != "SUCCEEDED" && value.status != "FAILED")
+        {
+            finish(state, OrderLifecycleOutcome::Skipped);
+            return;
+        }
+    }
     const auto &status = state->attempt->value.status;
     if (status == "SUCCEEDED" || status == "FAILED")
     {
@@ -346,7 +381,16 @@ void OrderLifecycleService::mutatePaymentResult(
             return;
         }
         state->paymentResultRecorded = true;
-        afterPaymentResult(state);
+        if (state->terminalSnapshot)
+        {
+            paymentRepository_.recordTerminalSnapshot(
+                state->transaction, state->paymentAttemptId, *state->terminalSnapshot,
+                [this, state](std::size_t recorded) {
+                    if (recorded != 1) { failInvariant(state, "terminal snapshot count mismatch"); return; }
+                    afterPaymentResult(state);
+                }, [state] { finish(state, OrderLifecycleOutcome::Failed); });
+        }
+        else afterPaymentResult(state);
     };
     auto onError = [state] { finish(state, OrderLifecycleOutcome::Failed); };
     if (state->paymentSucceeded)
@@ -361,7 +405,9 @@ void OrderLifecycleService::mutatePaymentResult(
     {
         paymentRepository_.markFailed(state->transaction,
                                       state->paymentAttemptId,
-                                      "SIMULATED_PAYMENT_FAILURE",
+                                      state->terminalSnapshot
+                                          ? state->terminalSnapshot->failureReason
+                                          : "SIMULATED_PAYMENT_FAILURE",
                                       std::move(onSuccess),
                                       std::move(onError));
     }

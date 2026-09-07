@@ -113,7 +113,8 @@ void PaymentRepository::lockProcessingForOrder(
 {
     const std::string sql = "SELECT " + std::string{kAttemptColumns} + R"SQL(,
         clock_timestamp() >= attempt.processing_deadline AS deadline_passed,
-        attempt.started_at < ticket_order.expires_at AS started_before_order_expiry
+        attempt.started_at < ticket_order.expires_at AS started_before_order_expiry,
+        attempt.reconciliation_lease_token
         FROM payment_attempts AS attempt
         JOIN orders AS ticket_order ON ticket_order.id = attempt.order_id
         WHERE attempt.order_id = $1 AND attempt.status = 'PROCESSING'
@@ -125,7 +126,8 @@ void PaymentRepository::lockProcessingForOrder(
             if (rows.empty()) { onSuccess(std::nullopt); return; }
             onSuccess(LockedPaymentAttempt{.value = mapAttempt(rows.front()),
                                            .deadlinePassed = rows.front()["deadline_passed"].as<bool>(),
-                                           .startedBeforeOrderExpiry = rows.front()["started_before_order_expiry"].as<bool>()});
+                                           .startedBeforeOrderExpiry = rows.front()["started_before_order_expiry"].as<bool>(),
+                                           .leaseToken = optionalText(rows.front(), "reconciliation_lease_token")});
         },
         [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
             logDatabaseError("Failed to lock processing payment attempt", error);
@@ -142,7 +144,8 @@ void PaymentRepository::lockByIdForOrder(
 {
     const std::string sql = "SELECT " + std::string{kAttemptColumns} + R"SQL(,
         clock_timestamp() >= attempt.processing_deadline AS deadline_passed,
-        attempt.started_at < ticket_order.expires_at AS started_before_order_expiry
+        attempt.started_at < ticket_order.expires_at AS started_before_order_expiry,
+        attempt.reconciliation_lease_token
         FROM payment_attempts AS attempt
         JOIN orders AS ticket_order ON ticket_order.id = attempt.order_id
         WHERE attempt.id = $1 AND attempt.order_id = $2
@@ -154,7 +157,8 @@ void PaymentRepository::lockByIdForOrder(
             if (rows.empty()) { onSuccess(std::nullopt); return; }
             onSuccess(LockedPaymentAttempt{.value = mapAttempt(rows.front()),
                                            .deadlinePassed = rows.front()["deadline_passed"].as<bool>(),
-                                           .startedBeforeOrderExpiry = rows.front()["started_before_order_expiry"].as<bool>()});
+                                           .startedBeforeOrderExpiry = rows.front()["started_before_order_expiry"].as<bool>(),
+                                           .leaseToken = optionalText(rows.front(), "reconciliation_lease_token")});
         },
         [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
             logDatabaseError("Failed to lock payment attempt", error);
@@ -193,18 +197,40 @@ void PaymentRepository::createAttempt(
 void PaymentRepository::recordProviderPayment(
     const drogon::orm::DbClientPtr &client, const std::string &attemptId,
     const std::string &providerPaymentId, const std::string &providerStatus,
-    bool terminal, std::function<void(std::size_t)> onSuccess,
+    const std::string &leaseToken, std::function<void(std::size_t)> onSuccess,
     ErrorCallback onError) const
 {
     client->execSqlAsync(
         "UPDATE payment_attempts SET provider_payment_id = COALESCE(provider_payment_id, $2), "
         "provider_status = $3, provider_last_sync_at = clock_timestamp(), "
-        "next_reconcile_at = CASE WHEN $4 THEN NULL ELSE clock_timestamp() + INTERVAL '2 seconds' END "
-        "WHERE id = $1 AND (provider_payment_id IS NULL OR provider_payment_id = $2) RETURNING id",
+        "next_reconcile_at = CASE WHEN provider = 'simulation' THEN NULL ELSE clock_timestamp() + INTERVAL '2 seconds' END, "
+        "reconciliation_lease_until = CASE WHEN $4 = '' THEN reconciliation_lease_until ELSE NULL END, "
+        "reconciliation_lease_token = CASE WHEN $4 = '' THEN reconciliation_lease_token ELSE NULL END "
+        "WHERE id = $1 AND status IN ('PROCESSING','TIMED_OUT') "
+        "AND ($4 = '' OR reconciliation_lease_token = $4) "
+        "AND (provider_payment_id IS NULL OR provider_payment_id = $2) RETURNING id",
         [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) { onSuccess(rows.size()); },
         [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
             logDatabaseError("Failed to record provider payment", error); onError();
-        }, attemptId, providerPaymentId, providerStatus, terminal);
+        }, attemptId, providerPaymentId, providerStatus, leaseToken);
+}
+
+void PaymentRepository::recordTerminalSnapshot(
+    const TransactionPtr &transaction, const std::string &attemptId,
+    const PaymentTerminalSnapshot &snapshot,
+    std::function<void(std::size_t)> onSuccess, ErrorCallback onError) const
+{
+    transaction->execSqlAsync(
+        "UPDATE payment_attempts SET provider_payment_id = COALESCE(provider_payment_id, $2), "
+        "provider_status = $3, provider_last_sync_at = clock_timestamp(), "
+        "provider_terminal_at = COALESCE(provider_terminal_at, clock_timestamp()), "
+        "next_reconcile_at = NULL, reconciliation_lease_until = NULL, reconciliation_lease_token = NULL "
+        "WHERE id = $1 AND provider = $4 AND status IN ('SUCCEEDED','FAILED') "
+        "AND (provider_payment_id IS NULL OR provider_payment_id = $2) RETURNING id",
+        [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) { onSuccess(rows.size()); },
+        [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
+            logDatabaseError("Failed to record terminal provider snapshot", error); onError();
+        }, attemptId, snapshot.providerPaymentId, snapshot.providerStatus, snapshot.provider);
 }
 
 void PaymentRepository::schedulePaymentRetry(
@@ -214,7 +240,7 @@ void PaymentRepository::schedulePaymentRetry(
     client->execSqlAsync(
         "UPDATE payment_attempts SET provider_retry_count = provider_retry_count + 1, "
         "next_reconcile_at = clock_timestamp() + LEAST(60, power(2, LEAST(provider_retry_count, 5))) * INTERVAL '1 second' "
-        "WHERE id = $1",
+        "WHERE id = $1 AND status IN ('PROCESSING','TIMED_OUT')",
         [onSuccess = std::move(onSuccess)](const drogon::orm::Result &) { onSuccess(); },
         [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
             logDatabaseError("Failed to schedule provider payment retry", error); onError();
@@ -243,7 +269,8 @@ void PaymentRepository::markFailed(const TransactionPtr &transaction,
 {
     transaction->execSqlAsync(
         "UPDATE payment_attempts SET status = 'FAILED', completed_at = clock_timestamp(), "
-        "accepted_at = NULL, failure_reason = $2, provider_terminal_at = COALESCE(provider_terminal_at, clock_timestamp()) "
+        "accepted_at = NULL, failure_reason = $2, provider_terminal_at = COALESCE(provider_terminal_at, clock_timestamp()), "
+        "next_reconcile_at = NULL, reconciliation_lease_until = NULL, reconciliation_lease_token = NULL "
         "WHERE id = $1 AND status IN ('PROCESSING', 'TIMED_OUT') RETURNING id",
         [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) { onSuccess(rows.size()); },
         [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
@@ -260,7 +287,8 @@ void PaymentRepository::markSucceeded(const TransactionPtr &transaction,
     transaction->execSqlAsync(
         "UPDATE payment_attempts SET status = 'SUCCEEDED', completed_at = clock_timestamp(), "
         "accepted_at = CASE WHEN $2 THEN clock_timestamp() ELSE NULL END, failure_reason = NULL, "
-        "provider_terminal_at = COALESCE(provider_terminal_at, clock_timestamp()) "
+        "provider_terminal_at = COALESCE(provider_terminal_at, clock_timestamp()), "
+        "next_reconcile_at = NULL, reconciliation_lease_until = NULL, reconciliation_lease_token = NULL "
         "WHERE id = $1 AND status IN ('PROCESSING', 'TIMED_OUT') RETURNING id",
         [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) { onSuccess(rows.size()); },
         [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {

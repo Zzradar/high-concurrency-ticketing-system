@@ -9,6 +9,24 @@ def read(path):
 
 
 class Phase11ProviderSourceContractTest(unittest.TestCase):
+    def test_terminal_snapshot_is_transactional_and_secret_free(self):
+        header = read("src/repositories/PaymentRepository.h")
+        snapshot = header.split("struct PaymentTerminalSnapshot")[1].split("};")[0]
+        self.assertNotIn("clientSecret", snapshot)
+        lifecycle = read("src/services/OrderLifecycleService.cpp")
+        self.assertIn("recordTerminalSnapshot(\n                state->transaction", lifecycle)
+        self.assertIn("snapshot.provider != value.provider", lifecycle)
+        self.assertIn("snapshot.amount != state->order.totalAmount", lifecycle)
+        service = read("src/services/PaymentReconciliationService.cpp")
+        self.assertIn("reconciliation_lease_token = $3", service)
+        self.assertIn("attempt.provider_status IN ('succeeded','canceled')", service)
+        self.assertIn("OR attempt.next_reconcile_at IS NULL", service)
+        self.assertIn("completeProviderPayment", service)
+        repository = read("src/repositories/PaymentRepository.cpp")
+        nonterminal = repository.split("void PaymentRepository::recordProviderPayment")[1].split("void PaymentRepository::recordTerminalSnapshot")[0]
+        self.assertNotIn("bool terminal", nonterminal)
+        self.assertNotIn("provider_terminal_at =", nonterminal)
+
     def test_provider_boundary_and_direct_async_rest(self):
         interface = read("src/payments/PaymentProvider.h")
         stripe = read("src/payments/StripePaymentProvider.cpp")

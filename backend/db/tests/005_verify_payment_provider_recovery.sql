@@ -32,6 +32,11 @@ BEGIN
                          WHERE status IN ('SUCCEEDED','FAILED') AND provider_terminal_at IS NULL
         UNION ALL SELECT COUNT(*) FROM refunds
                          WHERE status IN ('SUCCEEDED','FAILED') AND provider_terminal_at IS NULL
+        UNION ALL SELECT COUNT(*) FROM payment_attempts
+                         WHERE status IN ('PROCESSING','TIMED_OUT')
+                           AND (provider_terminal_at IS NOT NULL OR provider_status IN ('succeeded','canceled'))
+        UNION ALL SELECT COUNT(*) FROM refunds
+                         WHERE status = 'PROCESSING' AND provider_terminal_at IS NOT NULL
     ) checks;
     IF violation_count <> 0 THEN
         RAISE EXCEPTION 'Phase11 payment provider invariant violation_count=%', violation_count;
