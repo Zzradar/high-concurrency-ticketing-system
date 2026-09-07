@@ -935,13 +935,13 @@ MVP 第一阶段的目标是形成一个清晰、稳定、方便后端联调和�
 - `payments/stripeClient.ts` 仅读取 `VITE_STRIPE_PUBLISHABLE_KEY`，动态导入官方包并缓存一个 Stripe Promise。simulation 不调用 helper；缺 key 不加载脚本。加载失败只输出固定安全提示，刷新页面可重新初始化。
 - `StripePaymentPanel.vue` 管理 `stripeElementLoading`、ready/change complete、`stripeConfirming` 和局部错误。为每个 clientSecret 创建独立 Elements/Payment Element；secret、订单或 Attempt 变化以及 unmount 均 destroy，并使旧异步回调失效。默认字段和支付方式由 Stripe/Backend 决定。
 - `OrderPage.vue` 管理 `paymentStarting`、`paymentPolling`、当前 Attempt/action 及取消状态。开始按钮与组件确认按钮分离；缺 key/不支持 action 不重复 pay。取消按钮独立可用。正式 Order 终态均只来自 Backend，终态刷新销毁组件并停止 polling。
-- `confirmPayment` 使用 Elements、同源订单 `return_url` 和 `redirect: 'if_required'`；由 Stripe 处理 3DS/redirect。非跳转返回后销毁准备表单，立即 refreshOrder 并查询同一本地 Attempt。validation/card error 仅显示经过防御性 secret 脱敏的 message；transport error/throw/无明确结果均进入 Backend 恢复，不自动第二次 POST。
+- `confirmPayment` 使用 Elements、同源订单 `return_url` 和 `redirect: 'if_required'`；由 Stripe 处理 3DS/redirect。非跳转返回后保留准备表单并禁止重复确认，立即同步同一本地 Attempt/Order，等 Backend 终态后清理。validation error 保留可编辑表单；card error 显示脱敏 message 并同步 Backend；transport error/throw/无明确结果保留 action 进入恢复，不自动第二次 POST。
 - `payments/paymentReturn.ts` 生成编码后的本地 Order/Attempt URL，并按 query 键排除 provider 参数，绝不访问 Stripe 自动追加的 secret 值。Router 在登录守卫复制 fullPath 前就移除 provider 参数，OrderPage 在恢复结束 replace 清理本地 hint。认证后先验证 Order 可访问，再读取 owner 隔离的 Attempt，比较 orderId；非法 hint/404/跨订单提示安全错误。无关 query 保留。
 - page/payment/read generation 阻止路由切换、取消和较新读取之后的旧响应覆盖当前状态。已提交的 Stripe confirm Promise 没有本地撤回能力；取消后前端销毁 Element、忽略返回，迟到成功交给后端退款。
 - clientSecret 不持久化，仅用作页面/Elements 内存输入。重新打开页面需用户显式 pay，由后端按 PROCESSING/deadline 条件复用；ALREADY_PAID 直接展示后端 Order。不同客户端不生成支付身份。
-- 默认 simulation/null action 继续每约 1 秒观察 Attempt，最长约 15 秒，超时显示结果未定；不将 Stripe provider status 或浏览器超时当作正式 Order 终态。10 秒 processing grace 完全未修改。
+- 默认 simulation/null action 继续每约 1 秒观察 Attempt，最长约 15 秒，超时显示结果未定；不将 Stripe provider status 或浏览器超时当作正式 Order 终态。前端不修改后端 grace；当前 Simulation 为 10 秒，Stripe 默认 600 秒。
 
-### Phase 11 验证边界
+### Phase 11 初版验证边界（2026-09-07 历史记录）
 
 Vitest 使用官方包 mock，覆盖 loadStripe、elements/create/mount/destroy、ready/change/loaderror、确认成功/输入错误/transport/未完成 redirect 抽象、取消、重开、多客户端已有结果、15 秒超时及回跳校验。Mock Playwright 的测试代码仅在开发模块中覆写 API 返回，不添加 production window 后门，不请求 Stripe 网络。真实 Playwright 继续使用现有 Backend/PostgreSQL/Redis 与 simulation；只恢复专用 E2E 订单数据，不改 Schema/Seed/配置。
 
@@ -961,3 +961,19 @@ Real Stripe Sandbox = NOT RUN；reason = missing external credentials/tooling。
 | Real Stripe Sandbox / Stripe CLI / 真实 3DS grace | NOT RUN；缺少外部凭据和 CLI |
 
 Mock 浏览器首次新增测试直接调用 API login，未同步页面 authState，导致 3 项被登录守卫拦截；测试改用项目 authState.login 后全量通过。生产认证逻辑未为测试添加旁路。上述 Sandbox 缺项仍是正式发布核验前置条件，本地前端实现不代表真实渠道已验收。
+
+### Phase 11 拒付后恢复修复（2026-09-08）
+
+修复前，card_error 与 validation_error 共用只显示错误的路径，页面不会同步当前 Attempt；“刷新状态”只读取 Order。拒付后 Order 正确保持 PENDING_PAYMENT，旧 action 却一直存在，导致“支付已准备”按钮无法解禁。任务提供的独立 Sandbox 证据为 Attempt FAILED/card_declined、Order PENDING_PAYMENT、Reservation ACTIVE、Seat HELD，且无成功通知和退款；这些证据属于独立核验，本轮未执行真实 Stripe。
+
+现在分别处理三类错误：输入 validation_error 保留可编辑的 Element，用户可修正后再次确认；card_error 立即显示安全文案，同时查询同一本地 Attempt；unknown/network error 保留 action 并同步服务器，不把网络未知视为失败。后两者同步期间都禁止重复确认和创建新 Attempt。Backend 仍 PROCESSING 时保留原 Element/action，按约 1 秒间隔观察，最长约 15 秒；超时仍保持结果未知和支付保护，用户可刷新。
+
+支付动作属于某次 Attempt，而不是整个 Order。只有 Backend 明确 FAILED/SUCCEEDED 后，才统一清理旧 Element/action、轮询 timer 和旧临时状态，并重新读取 Order；读取失败时仍阻止新支付，直到刷新成功。FAILED 与 Order=PENDING_PAYMENT 可以同时成立。此时重新开放开始支付，由用户显式 POST pay 获取新的 Attempt B、新 action 和新 clientSecret，不复活 A，不复用旧 iframe。Stripe TIMED_OUT 仍按结果未定恢复，不能凭浏览器时间推断渠道最终结果。
+
+“刷新状态”和窗口 focus 会同时同步 Order 与当前 Attempt。取消/过期/已支付、页面卸载或离开、开始下一笔 Attempt 也使用同一清理路径；generation 校验阻止旧请求覆盖新 Attempt，重复清理不会重复销毁 Element，旧 timer 不会继续运行。
+
+Backend retry contract 核对：当前查询只锁定 status=PROCESSING 的 Attempt；不存在可复用 PROCESSING 且订单仍有效时创建新 Attempt。现有 Mock API 的失败后重试测试确认 STARTED_NEW、B.id != A.id、A 仍 FAILED。本轮不改变 Provider contract、支付状态机、reconciliation、lease、migration、退款或 grace（Stripe 600 秒、Simulation 10 秒）。
+
+回到独立 Sandbox Gate 后必须补验同一订单的完整路径：拒付卡令 A FAILED → 页面自动或手动刷新恢复 → 旧 Element 消失 → 开始支付重新可用 → B.id != A.id → 成功卡令 B SUCCEEDED、Order PAID、Reservation CONFIRMED、Seat SOLD → 成功通知恰好一次、Refund 为 0。本轮未读取本机 Stripe 凭据文件，未运行真实 Stripe，未执行发布或 Phase12。
+
+本轮验证：Frontend Vitest full 95/95 PASS（新增 8 项恢复用例，并加强 validation、unknown 与 Mock retry 断言）；vue-tsc/production build PASS；Mock Playwright full 8/8 PASS；隔离 simulation Real Playwright full 5/5 PASS（32.3 秒）。确定性测试覆盖 PROCESSING → PROCESSING → FAILED、A → B → PAID、手动刷新、未知结果超时后保护、卡错误最终成功、查询故障以及过时 A 响应不能覆盖 B。Backend diff 为 0；真实 Sandbox 未执行，留给独立 Gate。

@@ -5,10 +5,11 @@ import { getStripe, missingStripeKey, unavailableStripe } from '../payments/stri
 import { paymentReturnUrl } from '../payments/paymentReturn'
 
 const props = defineProps<{ clientSecret: string; paymentAttemptId: string; orderId: string; disabled?: boolean }>()
-const emit = defineEmits<{ submitted: [attemptId: string, uncertain: boolean] }>()
+const emit = defineEmits<{ submitted: [attemptId: string, outcome: 'submitted' | 'card_error' | 'unknown'] }>()
 const container = ref<HTMLElement | null>(null)
 const stripeElementLoading = ref(true)
 const stripeConfirming = ref(false)
+const awaitingServer = ref(false)
 const complete = ref(false)
 const message = ref('')
 let stripe: Stripe | undefined
@@ -29,6 +30,7 @@ watch(() => [props.clientSecret, props.paymentAttemptId, props.orderId, containe
   const current = generation
   stripeElementLoading.value = true
   stripeConfirming.value = false
+  awaitingServer.value = false
   complete.value = false
   message.value = ''
   if (!container.value) return
@@ -55,7 +57,7 @@ watch(() => [props.clientSecret, props.paymentAttemptId, props.orderId, containe
 }, { flush: 'post', immediate: true })
 
 async function confirm() {
-  if (!stripe || !elements || !complete.value || stripeElementLoading.value || stripeConfirming.value || props.disabled) return
+  if (!stripe || !elements || !complete.value || stripeElementLoading.value || stripeConfirming.value || awaitingServer.value || props.disabled) return
   const current = generation
   const attemptId = props.paymentAttemptId
   stripeConfirming.value = true
@@ -73,11 +75,21 @@ async function confirm() {
         .split(props.clientSecret).join('[已隐藏]')
         .replace(/\b(?:pi|seti)_\S*_secret_\S+/g, '[已隐藏]')
       stripeConfirming.value = false
+      if (result.error.type === 'card_error') {
+        awaitingServer.value = true
+        emit('submitted', attemptId, 'card_error')
+      }
       return
     }
-    emit('submitted', attemptId, Boolean(result.error) || !result.paymentIntent)
+    stripeConfirming.value = false
+    awaitingServer.value = true
+    emit('submitted', attemptId, result.error || !result.paymentIntent ? 'unknown' : 'submitted')
   } catch {
-    if (current === generation) emit('submitted', attemptId, true)
+    if (current === generation) {
+      stripeConfirming.value = false
+      awaitingServer.value = true
+      emit('submitted', attemptId, 'unknown')
+    }
   }
 }
 
@@ -91,8 +103,8 @@ onBeforeUnmount(destroy)
     <p v-if="stripeElementLoading" role="status">正在加载支付组件…</p>
     <div ref="container"></div>
     <p v-if="message" role="alert">{{ message }}</p>
-    <button class="primary-button" type="button" :disabled="disabled || stripeElementLoading || stripeConfirming || !complete" @click="confirm">
-      {{ stripeConfirming ? '正在与支付渠道确认…' : '确认支付' }}
+    <button class="primary-button" type="button" :disabled="disabled || stripeElementLoading || stripeConfirming || awaitingServer || !complete" @click="confirm">
+      {{ stripeConfirming ? '正在与支付渠道确认…' : awaitingServer ? '正在同步服务器状态…' : '确认支付' }}
     </button>
   </section>
 </template>

@@ -29,14 +29,17 @@ const error = ref('')
 let paymentGeneration = 0
 let pageGeneration = 0
 let readGeneration = 0
+let attemptReadGeneration = 0
 let paymentTimer: number | undefined
 
 function stopPayment() {
   paymentGeneration++
+  attemptReadGeneration++
   window.clearTimeout(paymentTimer)
   paymentPolling.value = false
   paymentAction.value = null
   paymentBlocked.value = false
+  error.value = ''
 }
 
 function adoptOrder(value: TicketOrder) {
@@ -68,29 +71,56 @@ async function refreshOrder(silent = false) {
   }
 }
 
+async function syncAttempt(attemptId: string, generation: number) {
+  const read = ++attemptReadGeneration
+  const attempt = await ticketApi.getPaymentAttempt(attemptId)
+  if (generation !== paymentGeneration || read !== attemptReadGeneration) return
+  if (attempt.id !== attemptId || attempt.orderId !== order.value?.id) {
+    error.value = '支付恢复信息与当前订单不匹配，已忽略。'
+    return
+  }
+  paymentAttempt.value = attempt
+  if (attempt.status === 'FAILED' || attempt.status === 'SUCCEEDED' || (attempt.status === 'TIMED_OUT' && !paymentAction.value)) {
+    stopPayment()
+    // Do not reopen payment until the authoritative Order has also been refreshed.
+    paymentBlocked.value = true
+    const settledGeneration = paymentGeneration
+    const refreshed = await refreshOrder(true)
+    if (settledGeneration === paymentGeneration && refreshed) paymentBlocked.value = false
+    requestNotificationRefresh()
+    showNotice(attempt.status === 'SUCCEEDED' ? '支付结果已处理，订单状态已同步。' : '支付未完成，请查看最新订单状态。')
+  }
+  return attempt.status
+}
+
+async function refreshStatus(silent = false) {
+  const generation = paymentGeneration
+  const attemptId = paymentAttempt.value?.id
+  const refreshed = await refreshOrder(silent)
+  if (!refreshed || generation !== paymentGeneration || !attemptId) return
+  if (!paymentAction.value && paymentAttempt.value?.status !== 'PROCESSING') {
+    paymentBlocked.value = false
+    return
+  }
+  try {
+    await syncAttempt(attemptId, generation)
+  } catch {
+    if (generation === paymentGeneration) error.value = '支付结果暂未确认，请稍后刷新订单状态。'
+  }
+}
+
 function pollPayment(attemptId: string) {
+  window.clearTimeout(paymentTimer)
   const generation = ++paymentGeneration
   paymentPolling.value = true
   const started = Date.now()
   const poll = async () => {
     if (generation !== paymentGeneration) return
     try {
-      const attempt = await ticketApi.getPaymentAttempt(attemptId)
+      await syncAttempt(attemptId, generation)
       if (generation !== paymentGeneration) return
-      if (attempt.orderId !== order.value?.id) {
-        paymentPolling.value = false
-        error.value = '支付恢复信息与当前订单不匹配，已忽略。'
-        return
-      }
-      paymentAttempt.value = attempt
       await refreshOrder(true)
       if (generation !== paymentGeneration) { requestNotificationRefresh(); return }
-      if (attempt.status !== 'PROCESSING') {
-        paymentPolling.value = false
-        requestNotificationRefresh()
-        showNotice(attempt.status === 'SUCCEEDED' ? '支付结果已处理，订单状态已同步。' : '支付未完成，请查看最新订单状态。')
-        return
-      }
     } catch { /* retry transient reads */ }
     if (generation !== paymentGeneration) return
     if (Date.now() - started >= 15000) {
@@ -106,7 +136,8 @@ function pollPayment(attemptId: string) {
 async function pay() {
   if (!order.value || order.value.status !== 'PENDING_PAYMENT' || paymentStarting.value || paymentPolling.value || cancelling.value || paymentBlocked.value || paymentAction.value) return
   const page = pageGeneration
-  const generation = ++paymentGeneration
+  stopPayment()
+  const generation = paymentGeneration
   paymentStarting.value = true
   error.value = ''
   try {
@@ -146,10 +177,9 @@ async function pay() {
   }
 }
 
-function submitted(attemptId: string, uncertain: boolean) {
+function submitted(attemptId: string, outcome: 'submitted' | 'card_error' | 'unknown') {
   if (order.value?.status !== 'PENDING_PAYMENT' || paymentAttempt.value?.id !== attemptId) return
-  paymentAction.value = null
-  error.value = uncertain ? '支付结果暂未确认，正在同步服务器状态。' : ''
+  error.value = outcome === 'unknown' ? '支付结果暂未确认，正在同步服务器状态。' : ''
   pollPayment(attemptId)
   void refreshOrder(true)
 }
@@ -187,7 +217,7 @@ async function expire() {
 }
 
 function focusSync() {
-  void refreshOrder(true)
+  void refreshStatus(true)
   requestNotificationRefresh()
 }
 
@@ -254,11 +284,11 @@ onBeforeUnmount(() => {
         { label: String(route.params.orderId) },
       ]"
     />
-    <PageState eyebrow="ORDER" title="订单不存在或不可访问" :description="error" action-label="重新加载" @action="refreshOrder" />
+    <PageState eyebrow="ORDER" title="订单不存在或不可访问" :description="error" action-label="重新加载" @action="refreshStatus" />
   </main>
   <p v-else-if="error" class="message-banner message-banner--error" role="alert">{{ error }}</p>
   <p v-if="loading && !order" class="page-shell">正在加载订单…</p>
-  <OrderView v-else-if="order && event && session" :order="order" :event="event" :session="session" :seats="seats" :refreshing="loading" :payment-starting="paymentStarting" :payment-polling="paymentPolling" :cancelling="cancelling" :payment-attempt="paymentAttempt" :stripe-mode="stripeMode" :payment-prepared="Boolean(paymentAction) || paymentBlocked" @pay="pay" @cancel="cancel" @expire="expire" @refresh="refreshOrder" @start-over="router.push({ name: routeNames.events })">
+  <OrderView v-else-if="order && event && session" :order="order" :event="event" :session="session" :seats="seats" :refreshing="loading" :payment-starting="paymentStarting" :payment-polling="paymentPolling" :cancelling="cancelling" :payment-attempt="paymentAttempt" :stripe-mode="stripeMode" :payment-prepared="Boolean(paymentAction) || paymentBlocked" @pay="pay" @cancel="cancel" @expire="expire" @refresh="refreshStatus" @start-over="router.push({ name: routeNames.events })">
     <StripePaymentPanel v-if="order.status === 'PENDING_PAYMENT' && paymentAction && paymentAttempt" :client-secret="paymentAction.clientSecret" :payment-attempt-id="paymentAttempt.id" :order-id="order.id" :disabled="cancelling" @submitted="submitted" />
   </OrderView>
 </template>

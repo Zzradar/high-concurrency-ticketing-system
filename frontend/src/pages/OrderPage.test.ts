@@ -137,10 +137,11 @@ describe('Phase11 payment page', () => {
     expect(fake.confirmPayment).toHaveBeenCalledWith(expect.objectContaining({ redirect: 'if_required', confirmParams: { return_url: `${window.location.origin}/orders/O1?paymentReturn=1&paymentAttemptId=P1` } }))
     expect(ticketApi.getPaymentAttempt).toHaveBeenCalledWith('P1')
     expect(wrapper!.text()).toContain('待支付')
-    expect(wrapper!.findComponent(StripePaymentPanel).exists()).toBe(false)
+    expect(wrapper!.findComponent(StripePaymentPanel).exists()).toBe(true)
     currentOrder.status = 'PAID'; attempt.status = 'SUCCEEDED'
     await vi.advanceTimersByTimeAsync(1000)
     expect(wrapper!.text()).toContain('支付成功')
+    expect(wrapper!.findComponent(StripePaymentPanel).exists()).toBe(false)
   })
 
   it('missing publishable key retains the attempt without another pay request', async () => {
@@ -171,6 +172,12 @@ describe('Phase11 payment page', () => {
     expect(ticketApi.getPaymentAttempt).not.toHaveBeenCalled()
     expect(wrapper!.text()).toContain('待支付')
     expect(wrapper!.text()).toContain('支付渠道处理中')
+    expect(fake.instances[0]!.destroy).not.toHaveBeenCalled()
+    fake.confirmPayment.mockResolvedValue({ paymentIntent: { status: 'succeeded' } })
+    await wrapper!.get('.stripe-payment-panel button').trigger('click')
+    await flushPromises()
+    expect(fake.confirmPayment).toHaveBeenCalledTimes(2)
+    expect(ticketApi.payOrder).toHaveBeenCalledOnce()
   })
 
   it.each(['throw', 'api_error', 'empty'])('recovers uncertain %s without another POST', async (kind) => {
@@ -181,6 +188,10 @@ describe('Phase11 payment page', () => {
     expect(ticketApi.getPaymentAttempt).toHaveBeenCalledWith('P1')
     expect(ticketApi.payOrder).toHaveBeenCalledOnce()
     expect(wrapper!.text()).not.toContain(secret)
+    expect(wrapper!.findComponent(StripePaymentPanel).exists()).toBe(true)
+    expect(fake.instances[0]!.destroy).not.toHaveBeenCalled()
+    expect(wrapper!.get('.stripe-payment-panel button').attributes('disabled')).toBeDefined()
+    expect(wrapper!.get('.order-pay-button').attributes('disabled')).toBeDefined()
   })
 
   it('cancel destroys the Element and ignores an unresolved redirect/3DS confirmation', async () => {
@@ -259,6 +270,140 @@ describe('Phase11 payment page', () => {
       expect(JSON.stringify(vi.mocked(ticketApi.payOrder).mock.calls)).not.toContain(secret)
       expect(JSON.stringify(vi.mocked(ticketApi.getPaymentAttempt).mock.calls)).not.toContain(secret)
     } finally { window.removeEventListener('ticketing:notice', listener) }
+  })
+})
+
+describe('declined payment recovery', () => {
+  async function refresh() {
+    await wrapper!.findAll('button').find((button) => button.text() === '刷新状态')!.trigger('click')
+    await flushPromises()
+  }
+
+  it('card_error waits through PROCESSING twice, cleans FAILED A, then creates B and reaches PAID', async () => {
+    fake.confirmPayment.mockResolvedValue({ error: { type: 'card_error', code: 'card_declined', message: '您的卡被拒绝。' } })
+    await open(); await start(); await confirm()
+    expect(wrapper!.text()).toContain('您的卡被拒绝')
+    expect(ticketApi.getPaymentAttempt).toHaveBeenCalledTimes(1)
+    await start()
+    expect(ticketApi.payOrder).toHaveBeenCalledOnce()
+    expect(fake.instances[0]!.destroy).not.toHaveBeenCalled()
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(ticketApi.getPaymentAttempt).toHaveBeenCalledTimes(2)
+    expect(wrapper!.get('.order-pay-button').attributes('disabled')).toBeDefined()
+    expect(wrapper!.get('.stripe-payment-panel button').attributes('disabled')).toBeDefined()
+
+    attempt = { ...attempt, status: 'FAILED', failureReason: 'card_declined' }
+    const orderReads = vi.mocked(ticketApi.getOrder).mock.calls.length
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(fake.instances[0]!.destroy).toHaveBeenCalledOnce()
+    expect(wrapper!.findComponent(StripePaymentPanel).exists()).toBe(false)
+    expect(wrapper!.get('.order-pay-button').attributes('disabled')).toBeUndefined()
+    expect(wrapper!.text()).toContain('待支付')
+    expect(wrapper!.text()).not.toContain('您的卡被拒绝')
+    expect(vi.mocked(ticketApi.getOrder).mock.calls.length).toBeGreaterThan(orderReads)
+    const readsAfterFailure = vi.mocked(ticketApi.getPaymentAttempt).mock.calls.length
+    await vi.advanceTimersByTimeAsync(2000)
+    expect(ticketApi.getPaymentAttempt).toHaveBeenCalledTimes(readsAfterFailure)
+
+    const secondSecret = 'pi_second_secret_fake'
+    attempt = { ...attempt, id: 'P2', status: 'PROCESSING', failureReason: undefined }
+    vi.mocked(ticketApi.payOrder).mockResolvedValue({ disposition: 'STARTED_NEW', order: currentOrder, paymentAttempt: attempt, paymentAction: { ...action, clientSecret: secondSecret } })
+    await start()
+    expect(ticketApi.payOrder).toHaveBeenCalledTimes(2)
+    expect(ticketApi.payOrder).toHaveBeenLastCalledWith('O1')
+    expect(wrapper!.findComponent(StripePaymentPanel).props('paymentAttemptId')).toBe('P2')
+    expect(fake.elements).toHaveBeenLastCalledWith({ clientSecret: secondSecret })
+    expect(fake.instances).toHaveLength(2)
+    fake.confirmPayment.mockResolvedValue({ paymentIntent: { status: 'succeeded' } })
+    await confirm()
+    expect(ticketApi.getPaymentAttempt).toHaveBeenLastCalledWith('P2')
+    attempt.status = 'SUCCEEDED'; currentOrder.status = 'PAID'
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(wrapper!.text()).toContain('支付成功')
+    expect(fake.instances[1]!.destroy).toHaveBeenCalledOnce()
+    expect(ticketApi.payOrder).toHaveBeenCalledTimes(2)
+  })
+
+  it.each(['FAILED', 'SUCCEEDED'] as const)('unknown result retains action until Backend %s', async (status) => {
+    fake.confirmPayment.mockRejectedValue(new Error('network unavailable'))
+    await open(); await start(); await confirm()
+    await vi.advanceTimersByTimeAsync(15000)
+    expect(wrapper!.findComponent(StripePaymentPanel).exists()).toBe(true)
+    expect(fake.instances[0]!.destroy).not.toHaveBeenCalled()
+    expect(wrapper!.get('.order-pay-button').attributes('disabled')).toBeDefined()
+    expect(wrapper!.get('.stripe-payment-panel button').attributes('disabled')).toBeDefined()
+    await start()
+    expect(ticketApi.payOrder).toHaveBeenCalledOnce()
+    attempt.status = status
+    if (status === 'SUCCEEDED') currentOrder.status = 'PAID'
+    await refresh()
+    expect(fake.instances[0]!.destroy).toHaveBeenCalledOnce()
+    expect(wrapper!.findComponent(StripePaymentPanel).exists()).toBe(false)
+    if (status === 'FAILED') expect(wrapper!.get('.order-pay-button').attributes('disabled')).toBeUndefined()
+    else expect(wrapper!.text()).toContain('支付成功')
+    expect(wrapper!.text()).not.toContain('支付结果仍在处理中')
+    expect(ticketApi.payOrder).toHaveBeenCalledOnce()
+  })
+
+  it('refresh status reads the current failed Attempt even while Order stays pending', async () => {
+    await open(); await start()
+    attempt.status = 'FAILED'
+    await refresh()
+    expect(ticketApi.getPaymentAttempt).toHaveBeenCalledExactlyOnceWith('P1')
+    expect(fake.instances[0]!.destroy).toHaveBeenCalledOnce()
+    expect(wrapper!.findComponent(StripePaymentPanel).exists()).toBe(false)
+    expect(wrapper!.get('.order-pay-button').attributes('disabled')).toBeUndefined()
+    await refresh()
+    expect(fake.instances[0]!.destroy).toHaveBeenCalledOnce()
+  })
+
+  it('card_error can converge to Backend success instead of being forced to failure', async () => {
+    fake.confirmPayment.mockResolvedValue({ error: { type: 'card_error', message: '卡片错误' } })
+    await open(); await start(); await confirm()
+    attempt.status = 'SUCCEEDED'; currentOrder.status = 'PAID'
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(wrapper!.text()).toContain('支付成功')
+    expect(fake.instances[0]!.destroy).toHaveBeenCalledOnce()
+    expect(ticketApi.payOrder).toHaveBeenCalledOnce()
+  })
+
+  it('unavailable Attempt reads preserve action and do not unlock another pay', async () => {
+    fake.confirmPayment.mockResolvedValue({ error: { type: 'card_error', message: '卡被拒绝' } })
+    vi.mocked(ticketApi.getPaymentAttempt).mockRejectedValue(new Error('unavailable'))
+    await open(); await start(); await confirm()
+    await vi.advanceTimersByTimeAsync(15000)
+    await refresh()
+    expect(wrapper!.findComponent(StripePaymentPanel).exists()).toBe(true)
+    expect(wrapper!.get('.order-pay-button').attributes('disabled')).toBeDefined()
+    expect(ticketApi.payOrder).toHaveBeenCalledOnce()
+  })
+
+  it('late old Attempt reads cannot replace B or destroy its Element', async () => {
+    fake.confirmPayment.mockResolvedValue({ error: { type: 'card_error', message: '拒付' } })
+    let resolveOld!: (value: PaymentAttempt) => void
+    vi.mocked(ticketApi.getPaymentAttempt).mockImplementationOnce(() => new Promise((resolve) => { resolveOld = resolve }))
+    await open(); await start(); await confirm()
+    const failed = { ...attempt, status: 'FAILED' as const }
+    attempt = failed
+    await refresh()
+    attempt = { ...attempt, id: 'P2', status: 'PROCESSING' }
+    vi.mocked(ticketApi.payOrder).mockResolvedValue({ disposition: 'STARTED_NEW', order: currentOrder, paymentAttempt: attempt, paymentAction: { ...action, clientSecret: 'pi_B_secret_fake' } })
+    await start()
+    resolveOld(failed); await flushPromises()
+    expect(wrapper!.findComponent(StripePaymentPanel).props('paymentAttemptId')).toBe('P2')
+    expect(fake.instances[1]!.destroy).not.toHaveBeenCalled()
+    expect(fake.instances[0]!.destroy).toHaveBeenCalledOnce()
+  })
+
+  it('FAILED cleanup keeps payment blocked if the final Order refresh fails', async () => {
+    await open(); await start()
+    attempt.status = 'FAILED'
+    vi.mocked(ticketApi.getOrder).mockResolvedValueOnce(currentOrder).mockRejectedValueOnce(new Error('offline'))
+    await refresh()
+    expect(fake.instances[0]!.destroy).toHaveBeenCalledOnce()
+    expect(wrapper!.get('.order-pay-button').attributes('disabled')).toBeDefined()
+    await refresh()
+    expect(wrapper!.get('.order-pay-button').attributes('disabled')).toBeUndefined()
   })
 })
 

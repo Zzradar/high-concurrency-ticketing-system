@@ -690,6 +690,10 @@ Phase 11 前端已接入官方 `@stripe/stripe-js`。仅严格匹配 `provider=s
 
 两阶段流程：开始/恢复支付 → POST pay → Payment Element 收集支付信息 → 用户确认 → `confirmPayment({ elements, confirmParams: { return_url }, redirect: 'if_required' })`。非跳转返回和 transport 结果未知均查询 Backend Attempt/Order；provider status 不直接决定 PAID。simulation/null action 保留直接 polling 行为，不要求 key、不加载 Stripe.js。
 
+拒付恢复：`validation_error` 仅显示输入错误，保留 Element/action 并允许修改后再次确认；`card_error` 不等于本地 FAILED，需查询当前本地 Attempt，并在 PROCESSING 时继续短轮询。unknown/network error 同样保留 Element/action，禁止重复确认和新 pay，直到 Backend 明确结果；15 秒观察超时不解除该保护。页面“刷新状态”及 focus 同步 Order 和当前 Attempt，不能只根据 Order 是否仍 PENDING_PAYMENT 决定 action 生命周期。
+
+Backend Attempt FAILED/SUCCEEDED 后统一销毁旧 Element、清 action 和旧临时状态、停止轮询，并重新读取 Order；读取失败时仍阻止新支付，可再次刷新恢复。FAILED 与 Order=PENDING_PAYMENT 可以同时成立，此时最新 Order 确认仍可支付后，用户显式 POST pay，由后端创建新 Attempt B 或返回最新权威结果，不能复活 A 或沿用 A 的 clientSecret。Stripe action 对应 Attempt 为 TIMED_OUT 时仍保留未知结果保护，等待 Backend 最终收敛。Order 终态、离开页面和新 Attempt 开始均使旧回调失效。
+
 前端配置只使用 `VITE_STRIPE_PUBLISHABLE_KEY`，需在 Vite 启动/构建时提供。clientSecret 只在页面和 Elements 内存中使用，不写浏览器存储、通知、日志、分析事件或自建 URL。刷新/关闭页面会丢失该值；用户显式重新开始支付时由后端恢复身份。
 
 `return_url` 为同源 `/orders/{encodedOrderId}?paymentReturn=1&paymentAttemptId={encodedLocalAttemptId}`。本地 hint 不可信：先加载可访问 Order，再 GET Attempt 并验证 orderId；匹配 PROCESSING 才轮询，terminal 刷新 Order 和通知。路由守卫在认证跳转前移除 `payment_intent`、`payment_intent_client_secret`、`redirect_status`，不读取其值；恢复结束使用 Router replace 清理本地 hint，保留无关 query。非法/不存在/其他订单的 hint 不触发错误订单轮询。

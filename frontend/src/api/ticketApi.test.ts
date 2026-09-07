@@ -289,8 +289,10 @@ describe('ticketApi contract and mock transaction flow', () => {
     expect((await ticketApi.getOrder(order.id)).status).toBe('PENDING_PAYMENT')
 
     const retry = await ticketApi.payOrder(order.id)
+    expect(retry.disposition).toBe('STARTED_NEW')
     expect(retry.paymentAttempt?.id).not.toBe(first.paymentAttempt?.id)
     expect(retry.paymentAttempt?.status).toBe('PROCESSING')
+    expect((await ticketApi.getPaymentAttempt(first.paymentAttempt!.id)).status).toBe('FAILED')
   })
 
   it('expires an order in demo mode and releases every held seat', async () => {
