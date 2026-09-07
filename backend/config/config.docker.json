@@ -66,6 +66,11 @@
       "failure_rate": 0.01,
       "processing_grace_seconds": 10.0
     },
+    "payment_reconciliation": {
+      "batch_size": 100,
+      "interval_seconds": 2.0,
+      "max_backoff_seconds": 60.0
+    },
     "authentication": {
       "idle_timeout_seconds": 86400,
       "absolute_timeout_seconds": 604800,

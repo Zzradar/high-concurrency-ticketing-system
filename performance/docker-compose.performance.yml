@@ -27,7 +27,8 @@ services:
       - ../backend/db/migrations/004_add_checkout_session_revision.sql:/docker-entrypoint-initdb.d/004_add_checkout_session_revision.sql:ro
       - ../backend/db/migrations/005_add_payment_lifecycle.sql:/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql:ro
       - ../backend/db/migrations/006_add_user_authentication.sql:/docker-entrypoint-initdb.d/006_add_user_authentication.sql:ro
-      - ../backend/db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/007_demo_seed.sql:ro
+      - ../backend/db/migrations/007_add_payment_provider_recovery.sql:/docker-entrypoint-initdb.d/007_add_payment_provider_recovery.sql:ro
+      - ../backend/db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/008_demo_seed.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ticketing -d ticketing"]
       interval: 5s

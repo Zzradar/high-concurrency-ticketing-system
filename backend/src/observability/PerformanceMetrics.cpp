@@ -59,6 +59,11 @@ struct MetricsState
     std::shared_ptr<CounterCollector> passwordHashSubmissions;
     std::shared_ptr<HistogramCollector> passwordHashQueueWait;
     std::shared_ptr<HistogramCollector> passwordHashExecution;
+    std::shared_ptr<CounterCollector> paymentProviderRequests;
+    std::shared_ptr<CounterCollector> paymentWebhooks;
+    std::shared_ptr<CounterCollector> paymentReconciliation;
+    std::shared_ptr<GaugeCollector> paymentReconciliationPending;
+    std::shared_ptr<GaugeCollector> refundsByStatus;
 };
 
 std::atomic<MetricsState *> seatMapMetrics{nullptr};
@@ -241,11 +246,23 @@ void PerformanceMetrics::registerWithApplication()
         state->passwordHashExecution =
             exporter->getCollector<drogon::monitoring::Histogram>(
                 "ticketing_password_hash_execution_seconds");
+        state->paymentProviderRequests = exporter->getCollector<drogon::monitoring::Counter>(
+            "ticketing_payment_provider_requests_total");
+        state->paymentWebhooks = exporter->getCollector<drogon::monitoring::Counter>(
+            "ticketing_payment_webhooks_total");
+        state->paymentReconciliation = exporter->getCollector<drogon::monitoring::Counter>(
+            "ticketing_payment_reconciliation_total");
+        state->paymentReconciliationPending = exporter->getCollector<drogon::monitoring::Gauge>(
+            "ticketing_payment_reconciliation_pending");
+        state->refundsByStatus = exporter->getCollector<drogon::monitoring::Gauge>(
+            "ticketing_refunds_by_status");
         if (!state->requests || !state->durations || !state->inFlight ||
             !state->passwordHashQueueDepth ||
             !state->passwordHashActiveWorkers ||
             !state->passwordHashSubmissions || !state->passwordHashQueueWait ||
-            !state->passwordHashExecution)
+            !state->passwordHashExecution || !state->paymentProviderRequests ||
+            !state->paymentWebhooks || !state->paymentReconciliation ||
+            !state->paymentReconciliationPending || !state->refundsByStatus)
         {
             throw std::runtime_error(
                 "performance metric collector types do not match their configuration");
@@ -303,6 +320,9 @@ void PerformanceMetrics::registerWithApplication()
         seatMapMetrics.store(state.get(), std::memory_order_release);
         state->passwordHashQueueDepth->metric({})->set(0.0);
         state->passwordHashActiveWorkers->metric({})->set(0.0);
+        state->paymentReconciliationPending->metric({})->set(0.0);
+        for (const auto *status : {"PROCESSING", "SUCCEEDED", "FAILED"})
+            state->refundsByStatus->metric({status})->set(0.0);
         {
             std::lock_guard lock{passwordHashObserverMutex};
             passwordHashObserverSink =
@@ -379,6 +399,41 @@ PerformanceMetrics::passwordHashObserver()
 {
     std::lock_guard lock{passwordHashObserverMutex};
     return passwordHashObserverSink;
+}
+
+void PerformanceMetrics::observePaymentProviderRequest(
+    std::string_view provider, std::string_view operation, std::string_view outcome)
+{
+    if (auto *state = seatMapMetrics.load(std::memory_order_acquire))
+        state->paymentProviderRequests->metric(
+            {std::string{provider}, std::string{operation}, std::string{outcome}})->increment();
+}
+
+void PerformanceMetrics::observePaymentWebhook(
+    std::string_view provider, std::string_view outcome)
+{
+    if (auto *state = seatMapMetrics.load(std::memory_order_acquire))
+        state->paymentWebhooks->metric({std::string{provider}, std::string{outcome}})->increment();
+}
+
+void PerformanceMetrics::observePaymentReconciliation(
+    std::string_view objectKind, std::string_view outcome)
+{
+    if (auto *state = seatMapMetrics.load(std::memory_order_acquire))
+        state->paymentReconciliation->metric(
+            {std::string{objectKind}, std::string{outcome}})->increment();
+}
+
+void PerformanceMetrics::setPaymentReconciliationPending(double value)
+{
+    if (auto *state = seatMapMetrics.load(std::memory_order_acquire))
+        state->paymentReconciliationPending->metric({})->set(value);
+}
+
+void PerformanceMetrics::setRefundStatusCount(std::string_view status, double value)
+{
+    if (auto *state = seatMapMetrics.load(std::memory_order_acquire))
+        state->refundsByStatus->metric({std::string{status}})->set(value);
 }
 
 std::shared_ptr<SeatMapComputeObserver> PerformanceMetrics::seatMapComputeObserver()

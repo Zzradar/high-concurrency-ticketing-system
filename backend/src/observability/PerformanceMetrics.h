@@ -3,6 +3,7 @@
 #include <memory>
 #include <chrono>
 #include <cstddef>
+#include <string_view>
 
 namespace ticketing
 {
@@ -30,5 +31,14 @@ class PerformanceMetrics final
     static void registerWithApplication();
     static std::shared_ptr<PasswordHashObserver> passwordHashObserver();
     static std::shared_ptr<SeatMapComputeObserver> seatMapComputeObserver();
+    static void observePaymentProviderRequest(std::string_view provider,
+                                              std::string_view operation,
+                                              std::string_view outcome);
+    static void observePaymentWebhook(std::string_view provider,
+                                      std::string_view outcome);
+    static void observePaymentReconciliation(std::string_view objectKind,
+                                             std::string_view outcome);
+    static void setPaymentReconciliationPending(double value);
+    static void setRefundStatusCount(std::string_view status, double value);
 };
 }  // namespace ticketing

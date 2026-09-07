@@ -141,6 +141,45 @@
       "targets": [{"expr": "container_memory_working_set_bytes{container_label_com_docker_compose_project=\"ticketing-phase10a\",image!=\"\"}", "legendFormat": "{{name}}", "refId": "A"}],
       "title": "Phase 10A container memory",
       "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "ticketing-prometheus"},
+      "fieldConfig": {"defaults": {"unit": "reqps"}, "overrides": []},
+      "gridPos": {"h": 7, "w": 6, "x": 0, "y": 29},
+      "id": 15,
+      "targets": [{"expr": "sum by (provider, operation, outcome) (rate(ticketing_payment_provider_requests_total[5m]))", "legendFormat": "{{provider}} {{operation}} {{outcome}}", "refId": "A"}],
+      "title": "Payment provider requests",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "ticketing-prometheus"},
+      "fieldConfig": {"defaults": {"unit": "reqps"}, "overrides": []},
+      "gridPos": {"h": 7, "w": 6, "x": 6, "y": 29},
+      "id": 16,
+      "targets": [{"expr": "sum by (provider, outcome) (rate(ticketing_payment_webhooks_total[5m]))", "legendFormat": "{{provider}} {{outcome}}", "refId": "A"}],
+      "title": "Payment webhooks",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "ticketing-prometheus"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 7, "w": 6, "x": 12, "y": 29},
+      "id": 17,
+      "targets": [
+        {"expr": "sum by (object_kind, outcome) (rate(ticketing_payment_reconciliation_total[5m]))", "legendFormat": "{{object_kind}} {{outcome}}", "refId": "A"},
+        {"expr": "ticketing_payment_reconciliation_pending", "legendFormat": "pending", "refId": "B"}
+      ],
+      "title": "Payment reconciliation",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "ticketing-prometheus"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 7, "w": 6, "x": 18, "y": 29},
+      "id": 18,
+      "targets": [{"expr": "sum by (status) (ticketing_refunds_by_status)", "legendFormat": "{{status}}", "refId": "A"}],
+      "title": "Provider refunds by state",
+      "type": "timeseries"
     }
   ],
   "refresh": "5s",

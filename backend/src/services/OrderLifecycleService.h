@@ -61,7 +61,6 @@ class OrderLifecycleService
     void mutatePaymentResult(const std::shared_ptr<FlowState> &state) const;
     void afterPaymentResult(const std::shared_ptr<FlowState> &state) const;
     void insertRefund(const std::shared_ptr<FlowState> &state) const;
-    void insertRefundNotification(const std::shared_ptr<FlowState> &state) const;
     void checkOtherProcessingBeforeExpiry(const std::shared_ptr<FlowState> &state) const;
     void inspectOtherProcessingBeforeExpiry(
         const std::shared_ptr<FlowState> &state,

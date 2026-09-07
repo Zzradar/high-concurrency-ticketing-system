@@ -403,22 +403,7 @@ void OrderLifecycleService::insertRefund(
         state->orderId,
         state->order.totalAmount,
         reason,
-        [this, state](std::size_t) { insertRefundNotification(state); },
-        [state] { finish(state, OrderLifecycleOutcome::Failed); });
-}
-
-void OrderLifecycleService::insertRefundNotification(
-    const std::shared_ptr<FlowState> &state) const
-{
-    notificationRepository_.insert(
-        state->transaction,
-        "NTF-" + drogon::utils::getUuid(true),
-        state->order.userId,
-        state->orderId,
-        "AUTO_REFUND_COMPLETED",
-        "自动退款已完成",
-        "支付结果晚于订单终态到达，款项已原路全额退回。",
-        "auto-refund:" + state->paymentAttemptId,
+        state->attempt->value.provider,
         [this, state](std::size_t) {
             if (!state->targetStatus.empty())
                 checkOtherProcessingBeforeExpiry(state);

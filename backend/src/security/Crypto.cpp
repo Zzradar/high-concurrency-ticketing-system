@@ -2,6 +2,7 @@
 
 #include <openssl/crypto.h>
 #include <openssl/evp.h>
+#include <openssl/hmac.h>
 #include <openssl/rand.h>
 
 #include <array>
@@ -48,6 +49,17 @@ std::string sha256Hex(std::string_view value)
         throw std::runtime_error("SHA-256 failed");
     }
     EVP_MD_CTX_free(context);
+    return toHex(digest.data(), size);
+}
+
+std::string hmacSha256Hex(std::string_view key, std::string_view value)
+{
+    std::array<unsigned char, EVP_MAX_MD_SIZE> digest{};
+    unsigned int size = 0;
+    if (!HMAC(EVP_sha256(), key.data(), static_cast<int>(key.size()),
+              reinterpret_cast<const unsigned char *>(value.data()), value.size(),
+              digest.data(), &size))
+        throw std::runtime_error("HMAC-SHA256 failed");
     return toHex(digest.data(), size);
 }
 

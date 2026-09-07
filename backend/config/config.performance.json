@@ -152,6 +152,36 @@
             "help": "Time spent executing Argon2 password verification",
             "type": "histogram",
             "labels": []
+          },
+          {
+            "name": "ticketing_payment_provider_requests_total",
+            "help": "Payment provider calls by bounded operation and outcome",
+            "type": "counter",
+            "labels": ["provider", "operation", "outcome"]
+          },
+          {
+            "name": "ticketing_payment_webhooks_total",
+            "help": "Payment webhooks by provider and bounded outcome",
+            "type": "counter",
+            "labels": ["provider", "outcome"]
+          },
+          {
+            "name": "ticketing_payment_reconciliation_total",
+            "help": "Payment reconciliation results by object kind and outcome",
+            "type": "counter",
+            "labels": ["object_kind", "outcome"]
+          },
+          {
+            "name": "ticketing_payment_reconciliation_pending",
+            "help": "Objects claimed by the most recent reconciliation round",
+            "type": "gauge",
+            "labels": []
+          },
+          {
+            "name": "ticketing_refunds_by_status",
+            "help": "Refund rows by bounded local status",
+            "type": "gauge",
+            "labels": ["status"]
           }
         ]
       }

@@ -1,5 +1,7 @@
 #include "services/PaymentService.h"
 
+#include "services/PaymentSimulation.h"
+
 #include <drogon/drogon.h>
 #include <drogon/utils/Utilities.h>
 
@@ -12,12 +14,14 @@ struct PaymentService::StartState
     std::string orderId;
     std::string userId;
     ExpirableOrderRow order;
-    PaymentSimulationConfig config;
-    PaymentSimulationDecision decision;
+    double processingGraceSeconds{10.0};
+    std::shared_ptr<PaymentProvider> provider;
     std::optional<PaymentAttempt> attempt;
     OrderRepository::TransactionPtr transaction;
     std::function<void(StartPaymentResult)> completion;
     bool createdAttempt{};
+    bool responseLoading{};
+    std::optional<std::string> clientSecret;
     bool finished{};
 };
 
@@ -37,12 +41,13 @@ void PaymentService::startPayment(
     state->completion = std::move(completion);
     try
     {
-        state->config = PaymentSimulation::loadConfiguration();
-        state->decision = PaymentSimulation::decide(state->config);
+        state->processingGraceSeconds =
+            PaymentSimulation::loadConfiguration().processingGraceSeconds;
+        state->provider = PaymentProviderFactory::create();
     }
     catch (const std::exception &error)
     {
-        LOG_ERROR << "Payment simulation configuration failed: " << error.what();
+        LOG_ERROR << "Payment provider configuration failed: " << error.what();
         finish(state, {StartPaymentOutcome::InternalError, std::nullopt}, false);
         return;
     }
@@ -125,7 +130,7 @@ void PaymentService::inspectProcessingAttempt(
         state->attempt = std::move(attempt->value);
         state->transaction->rollback();
         state->transaction.reset();
-        loadResponse(state, StartPaymentOutcome::ReusedProcessing);
+        startProvider(state, StartPaymentOutcome::ReusedProcessing);
         return;
     }
     if (attempt)
@@ -179,9 +184,10 @@ void PaymentService::timeOutAttempt(
 void PaymentService::createAttempt(const std::shared_ptr<StartState> &state) const
 {
     const auto attemptId = "PAY-" + drogon::utils::getUuid(true);
+    const auto delay = state->provider->scheduledDelaySeconds().value_or(0.0);
     paymentRepository_.createAttempt(
         state->transaction, attemptId, state->orderId,
-        state->decision.delaySeconds, state->config.processingGraceSeconds,
+        delay, state->processingGraceSeconds, state->provider->name(),
         [this, state](PaymentAttempt attempt) {
             state->attempt = std::move(attempt);
             state->createdAttempt = true;
@@ -199,8 +205,7 @@ void PaymentService::commitAttempt(const std::shared_ptr<StartState> &state) con
             finish(state, {StartPaymentOutcome::InternalError, std::nullopt}, false);
             return;
         }
-        scheduleCompletion(state);
-        loadResponse(state, StartPaymentOutcome::StartedNew);
+        startProvider(state, StartPaymentOutcome::StartedNew);
     });
     state->transaction.reset();
     transaction.reset();
@@ -223,6 +228,8 @@ void PaymentService::expireOnline(const std::shared_ptr<StartState> &state) cons
 void PaymentService::loadResponse(const std::shared_ptr<StartState> &state,
                                   StartPaymentOutcome outcome) const
 {
+    if (state->responseLoading || state->finished) return;
+    state->responseLoading = true;
     auto client = drogon::app().getDbClient("default");
     orderRepository_.findByIdForUser(
         client, state->orderId, state->userId,
@@ -242,7 +249,11 @@ void PaymentService::loadResponse(const std::shared_ptr<StartState> &state,
                                                      ? "REUSED_PROCESSING"
                                                      : "ALREADY_PAID",
                                        .order = std::move(*order),
-                                       .paymentAttempt = state->attempt}},
+                                       .paymentAttempt = state->attempt,
+                                       .paymentActionProvider = state->clientSecret
+                                                                    ? std::optional<std::string>{state->provider->name()}
+                                                                    : std::nullopt,
+                                       .paymentActionClientSecret = state->clientSecret}},
                    false);
         },
         [state] { finish(state, {StartPaymentOutcome::InternalError, std::nullopt}, false); });
@@ -261,23 +272,86 @@ void PaymentService::loadAcceptedAttempt(
         [state] { finish(state, {StartPaymentOutcome::InternalError, std::nullopt}, false); });
 }
 
-void PaymentService::scheduleCompletion(
-    const std::shared_ptr<StartState> &state)
+void PaymentService::startProvider(const std::shared_ptr<StartState> &state,
+                                   StartPaymentOutcome outcome) const
 {
-    const auto orderId = state->orderId;
-    const auto attemptId = state->attempt->id;
-    const auto succeeded = state->decision.succeeded;
-    drogon::app().getLoop()->runAfter(
-        state->decision.delaySeconds,
-        [orderId, attemptId, succeeded] {
-            auto service = std::make_shared<OrderLifecycleService>();
-            service->completePayment(
-                orderId, attemptId, succeeded,
-                [service, orderId, attemptId](OrderLifecycleOutcome outcome) {
-                    if (outcome == OrderLifecycleOutcome::Failed)
-                        LOG_ERROR << "Payment callback failed for " << orderId
-                                  << " attempt " << attemptId;
-                });
+    const CreatePaymentRequest request{.attemptId = state->attempt->id,
+                                       .orderId = state->orderId,
+                                       .amount = state->order.totalAmount,
+                                       .currency = PaymentProviderFactory::configuredCurrency()};
+    auto completion = [this, state, outcome](ProviderResult<ProviderPayment> result) {
+        handleProviderResult(state, outcome, std::move(result));
+    };
+    if (state->attempt->providerPaymentId)
+    {
+        RetrievePaymentRequest retrieve;
+        static_cast<CreatePaymentRequest &>(retrieve) = request;
+        retrieve.providerPaymentId = *state->attempt->providerPaymentId;
+        state->provider->retrievePayment(std::move(retrieve), std::move(completion));
+    }
+    else state->provider->createOrRecoverPayment(request, std::move(completion));
+}
+
+void PaymentService::handleProviderResult(
+    const std::shared_ptr<StartState> &state, StartPaymentOutcome outcome,
+    ProviderResult<ProviderPayment> result) const
+{
+    auto client = drogon::app().getDbClient("default");
+    if (result.outcome == ProviderTransportOutcome::RetryableError)
+    {
+        paymentRepository_.schedulePaymentRetry(
+            client, state->attempt->id,
+            [this, state, outcome] { loadResponse(state, outcome); },
+            [state] { finish(state, {StartPaymentOutcome::InternalError, std::nullopt}, false); });
+        return;
+    }
+    if (result.outcome == ProviderTransportOutcome::PermanentError || !result.value)
+    {
+        lifecycleService_.completePayment(
+            state->orderId, state->attempt->id, false,
+            [state](OrderLifecycleOutcome) {
+                finish(state, {StartPaymentOutcome::InternalError, std::nullopt}, false);
+            });
+        return;
+    }
+    const auto payment = std::move(*result.value);
+    if (payment.clientSecret) state->clientSecret = payment.clientSecret;
+    paymentRepository_.recordProviderPayment(
+        client, state->attempt->id, payment.providerPaymentId,
+        payment.providerStatus, payment.terminal,
+        [this, state, outcome, payment](std::size_t updated) {
+            if (updated != 1)
+            {
+                LOG_ERROR << "Provider payment collision for attempt " << state->attempt->id;
+                if (!state->finished)
+                    finish(state, {StartPaymentOutcome::InternalError, std::nullopt}, false);
+                return;
+            }
+            state->attempt->providerPaymentId = payment.providerPaymentId;
+            state->attempt->providerStatus = payment.providerStatus;
+            if (payment.terminal)
+            {
+                lifecycleService_.completePayment(
+                    state->orderId, state->attempt->id,
+                    payment.mappedState == ProviderPaymentState::Succeeded,
+                    [this, state, outcome, payment](OrderLifecycleOutcome lifecycleOutcome) {
+                        if (lifecycleOutcome == OrderLifecycleOutcome::Failed)
+                            LOG_ERROR << "Provider payment lifecycle failed for attempt "
+                                      << state->attempt->id;
+                        if (!state->finished)
+                        {
+                            state->attempt->status =
+                                payment.mappedState == ProviderPaymentState::Succeeded
+                                    ? "SUCCEEDED" : "FAILED";
+                            loadResponse(state, outcome);
+                        }
+                    });
+            }
+            else loadResponse(state, outcome);
+        },
+        [state] {
+            if (!state->finished)
+                finish(state, {StartPaymentOutcome::InternalError, std::nullopt}, false);
         });
 }
 

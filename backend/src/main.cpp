@@ -1,8 +1,9 @@
 #include "workers/OrderExpiryWorker.h"
+#include "workers/PaymentReconciliationWorker.h"
 #include "services/CheckoutSessionService.h"
 #include "services/SeatHoldService.h"
 #include "services/SeatService.h"
-#include "services/PaymentSimulation.h"
+#include "payments/PaymentProvider.h"
 #include "security/AuthConfig.h"
 #include "observability/PerformanceMetrics.h"
 
@@ -14,6 +15,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <utility>
 
 namespace
@@ -21,6 +23,9 @@ namespace
 constexpr std::size_t kDefaultOrderExpiryBatchSize = 100;
 constexpr double kDefaultOrderExpiryIntervalSeconds = 5.0;
 constexpr std::size_t kDefaultCheckoutReconciliationBatchSize = 100;
+constexpr std::size_t kDefaultPaymentReconciliationBatchSize = 100;
+constexpr double kDefaultPaymentReconciliationIntervalSeconds = 2.0;
+constexpr double kDefaultPaymentReconciliationMaxBackoffSeconds = 60.0;
 
 struct ComputeShutdown
 {
@@ -98,6 +103,28 @@ std::size_t loadCheckoutReconciliationBatchSize()
     }
     return batchSize;
 }
+
+std::tuple<std::size_t, double, double> loadPaymentReconciliationConfig()
+{
+    auto batchSize = kDefaultPaymentReconciliationBatchSize;
+    auto interval = kDefaultPaymentReconciliationIntervalSeconds;
+    auto maxBackoff = kDefaultPaymentReconciliationMaxBackoffSeconds;
+    const auto &config = drogon::app().getCustomConfig()["payment_reconciliation"];
+    if (config.isNull()) return {batchSize, interval, maxBackoff};
+    if (!config.isObject())
+        throw std::invalid_argument("custom_config.payment_reconciliation must be an object");
+    if (config.isMember("batch_size"))
+    {
+        if (!config["batch_size"].isUInt64() || config["batch_size"].asUInt64() == 0)
+            throw std::invalid_argument("payment_reconciliation.batch_size must be positive");
+        batchSize = static_cast<std::size_t>(config["batch_size"].asUInt64());
+    }
+    if (config.isMember("interval_seconds")) interval = config["interval_seconds"].asDouble();
+    if (config.isMember("max_backoff_seconds")) maxBackoff = config["max_backoff_seconds"].asDouble();
+    if (interval <= 0 || maxBackoff <= 0)
+        throw std::invalid_argument("payment reconciliation intervals must be positive");
+    return {batchSize, interval, maxBackoff};
+}
 }  // namespace
 
 int main(int argc, char *argv[])
@@ -109,7 +136,7 @@ int main(int argc, char *argv[])
     {
         drogon::app().loadConfigFile(configPath);
         ticketing::SeatHoldService::validateConfiguration();
-        ticketing::PaymentSimulation::validateConfiguration();
+        ticketing::PaymentProviderFactory::validateConfiguration();
         ticketing::AuthConfig::validate();
         ticketing::PerformanceMetrics::registerWithApplication();
         const auto &computeConfig = drogon::app().getCustomConfig();
@@ -130,13 +157,19 @@ int main(int argc, char *argv[])
             loadCheckoutReconciliationBatchSize();
         auto expiryWorker = std::make_shared<ticketing::OrderExpiryWorker>(
             batchSize, intervalSeconds);
+        const auto [paymentBatchSize, paymentInterval, paymentMaxBackoff] =
+            loadPaymentReconciliationConfig();
+        auto paymentWorker = std::make_shared<ticketing::PaymentReconciliationWorker>(
+            paymentBatchSize, paymentInterval, paymentMaxBackoff);
         auto checkoutReconciliation =
             std::make_shared<ticketing::CheckoutSessionService>();
         drogon::app().registerBeginningAdvice(
             [expiryWorker,
              checkoutReconciliation,
+             paymentWorker,
              checkoutReconciliationBatchSize] {
                 expiryWorker->start();
+                paymentWorker->start();
                 checkoutReconciliation->reconcileSubmitting(
                     checkoutReconciliationBatchSize,
                     [checkoutReconciliation](std::size_t repaired,

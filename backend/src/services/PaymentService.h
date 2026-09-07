@@ -4,7 +4,7 @@
 #include "repositories/OrderRepository.h"
 #include "repositories/PaymentRepository.h"
 #include "services/OrderLifecycleService.h"
-#include "services/PaymentSimulation.h"
+#include "payments/PaymentProvider.h"
 
 #include <functional>
 #include <memory>
@@ -73,7 +73,11 @@ class PaymentService
     void loadResponse(const std::shared_ptr<StartState> &state,
                       StartPaymentOutcome outcome) const;
     void loadAcceptedAttempt(const std::shared_ptr<StartState> &state) const;
-    static void scheduleCompletion(const std::shared_ptr<StartState> &state);
+    void startProvider(const std::shared_ptr<StartState> &state,
+                       StartPaymentOutcome outcome) const;
+    void handleProviderResult(const std::shared_ptr<StartState> &state,
+                              StartPaymentOutcome outcome,
+                              ProviderResult<ProviderPayment> result) const;
     static void finish(const std::shared_ptr<StartState> &state,
                        StartPaymentResult result,
                        bool rollback = true);

@@ -62,17 +62,25 @@ add_executable(ticketing_backend
     src/services/ReservationService.cpp
     src/controllers/OrderController.cpp
     src/controllers/PaymentController.cpp
+    src/controllers/StripeWebhookController.cpp
     src/controllers/NotificationController.cpp
     src/repositories/OrderRepository.cpp
     src/repositories/PaymentRepository.cpp
+    src/repositories/ProviderEventRepository.cpp
     src/repositories/NotificationRepository.cpp
     src/services/OrderService.cpp
     src/services/OrderLifecycleService.cpp
     src/services/PaymentSimulation.cpp
+    src/payments/SimulationPaymentProvider.cpp
+    src/payments/StripeConfig.cpp
+    src/payments/StripePaymentProvider.cpp
+    src/payments/StripeWebhookVerifier.cpp
     src/services/PaymentService.cpp
+    src/services/PaymentReconciliationService.cpp
     src/services/NotificationService.cpp
     src/services/OrderExpiryService.cpp
     src/workers/OrderExpiryWorker.cpp
+    src/workers/PaymentReconciliationWorker.cpp
     src/controllers/CheckoutSessionController.cpp
     src/repositories/CheckoutSessionRepository.cpp
     src/services/CheckoutSessionService.cpp
@@ -183,6 +191,22 @@ if(BUILD_TESTING)
         NAME performance_metrics_source_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/performance_metrics_source_contract_test.py"
     )
+    add_test(
+        NAME phase11_payment_provider_source_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase11_payment_provider_source_contract_test.py"
+    )
+    add_test(
+        NAME phase11_schema_contract
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase11_schema_contract_test.py"
+    )
+    add_executable(stripe_webhook_verifier_unit
+        tests/stripe_webhook_verifier_unit.cpp
+        src/payments/StripeWebhookVerifier.cpp
+        src/security/Crypto.cpp
+    )
+    target_include_directories(stripe_webhook_verifier_unit PRIVATE src)
+    target_link_libraries(stripe_webhook_verifier_unit PRIVATE OpenSSL::Crypto)
+    add_test(NAME stripe_webhook_verifier_unit COMMAND stripe_webhook_verifier_unit)
     add_executable(password_hash_executor_unit
         tests/password_hash_executor_unit.cpp
         src/security/PasswordHashExecutor.cpp

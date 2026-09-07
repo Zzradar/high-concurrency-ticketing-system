@@ -258,11 +258,14 @@ struct PaymentAttempt
     std::string status;
     std::string startedAt;
     std::string processingDeadline;
-    std::string scheduledCompleteAt;
+    std::optional<std::string> scheduledCompleteAt;
     std::optional<std::string> completedAt;
     std::optional<std::string> timedOutAt;
     std::optional<std::string> acceptedAt;
     std::optional<std::string> failureReason;
+    std::string provider{"simulation"};
+    std::optional<std::string> providerPaymentId;
+    std::optional<std::string> providerStatus;
 
     Json::Value toJson() const
     {
@@ -272,11 +275,13 @@ struct PaymentAttempt
         value["status"] = status;
         value["startedAt"] = startedAt;
         value["processingDeadline"] = processingDeadline;
-        value["scheduledCompleteAt"] = scheduledCompleteAt;
+        if (scheduledCompleteAt) value["scheduledCompleteAt"] = *scheduledCompleteAt;
         if (completedAt) value["completedAt"] = *completedAt;
         if (timedOutAt) value["timedOutAt"] = *timedOutAt;
         if (acceptedAt) value["acceptedAt"] = *acceptedAt;
         if (failureReason) value["failureReason"] = *failureReason;
+        value["provider"] = provider;
+        if (providerStatus) value["providerStatus"] = *providerStatus;
         return value;
     }
 };
@@ -286,6 +291,8 @@ struct PaymentStartResult
     std::string disposition;
     TicketOrder order;
     std::optional<PaymentAttempt> paymentAttempt;
+    std::optional<std::string> paymentActionProvider;
+    std::optional<std::string> paymentActionClientSecret;
 
     Json::Value toJson() const
     {
@@ -295,6 +302,13 @@ struct PaymentStartResult
         value["paymentAttempt"] = paymentAttempt
                                       ? paymentAttempt->toJson()
                                       : Json::Value{Json::nullValue};
+        if (paymentActionProvider && paymentActionClientSecret)
+        {
+            value["paymentAction"]["provider"] = *paymentActionProvider;
+            value["paymentAction"]["type"] = "CLIENT_CONFIRM";
+            value["paymentAction"]["clientSecret"] = *paymentActionClientSecret;
+        }
+        else value["paymentAction"] = Json::Value{Json::nullValue};
         return value;
     }
 };

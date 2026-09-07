@@ -51,12 +51,24 @@ class PaymentRepository
                        const std::string &orderId,
                        double delaySeconds,
                        double graceSeconds,
+                       const std::string &provider,
                        std::function<void(PaymentAttempt)> onSuccess,
                        ErrorCallback onError) const;
     void markTimedOut(const TransactionPtr &transaction,
                       const std::string &attemptId,
                       std::function<void(std::size_t)> onSuccess,
                       ErrorCallback onError) const;
+    void recordProviderPayment(const drogon::orm::DbClientPtr &client,
+                               const std::string &attemptId,
+                               const std::string &providerPaymentId,
+                               const std::string &providerStatus,
+                               bool terminal,
+                               std::function<void(std::size_t)> onSuccess,
+                               ErrorCallback onError) const;
+    void schedulePaymentRetry(const drogon::orm::DbClientPtr &client,
+                              const std::string &attemptId,
+                              std::function<void()> onSuccess,
+                              ErrorCallback onError) const;
     void markFailed(const TransactionPtr &transaction,
                     const std::string &attemptId,
                     const std::string &reason,
@@ -73,6 +85,7 @@ class PaymentRepository
                       const std::string &orderId,
                       std::int64_t amount,
                       const std::string &reason,
+                      const std::string &provider,
                       std::function<void(std::size_t)> onSuccess,
                       ErrorCallback onError) const;
 };
