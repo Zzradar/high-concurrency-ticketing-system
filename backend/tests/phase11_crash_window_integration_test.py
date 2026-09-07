@@ -206,12 +206,96 @@ class CrashWindowIntegrationTest(unittest.TestCase):
 
     def test_g_refund_claim_crash_lease_expiry_recovery(self):
         order, refund, provider_id = self.refund_ready('case-g')
-        self.install_fault("refunds", f"NEW.id='{refund}' AND NEW.status='SUCCEEDED'")
-        fake("/__admin__/configure", {"refundId": provider_id, "refundStatus": "succeeded"})
-        self.wake("refunds", refund)
-        self.crash_and_restart("refunds", refund)
-        self.assert_refunded(order, refund)
-        self.assertGreaterEqual(self.retrieved('refund', provider_id), 2)
+        # Stop while the provider is still nonterminal. Never contend with the
+        # gated terminal UPDATE by issuing a wake UPDATE from the test process.
+        compose('stop', 'backend')
+        container = compose('ps', '-aq', 'backend').strip()
+
+        def backend_state():
+            return subprocess.run(
+                ['docker', 'inspect', '--format', '{{.State.Running}} {{.State.ExitCode}}', container],
+                check=True, capture_output=True, text=True).stdout.strip()
+
+        wait_until(lambda: backend_state().startswith('false '), message='old worker stopped')
+        waiter = None
+        try:
+            psql(f"""UPDATE refunds SET next_reconcile_at=clock_timestamp(),
+                reconciliation_lease_until=NULL,reconciliation_lease_token=NULL
+                WHERE id='{refund}';""")
+            self.assertEqual(psql(f"""SELECT status,next_reconcile_at<=clock_timestamp(),
+                reconciliation_lease_until IS NULL,reconciliation_lease_token IS NULL,
+                provider_terminal_at IS NULL FROM refunds WHERE id='{refund}';"""),
+                'PROCESSING\tt\tt\tt\tt')
+            initial_claims = int(psql(f"SELECT provider_retry_count FROM refunds WHERE id='{refund}';"))
+            self.install_fault('refunds', f"NEW.id='{refund}' AND NEW.status='SUCCEEDED'")
+            fake('/__admin__/configure', {'refundId': provider_id, 'refundStatus': 'succeeded'})
+            initial_retrieves = self.retrieved('refund', provider_id)
+            compose('start', 'backend')
+
+            # A separate connection sees only committed claim data. The joined
+            # activity/lock record identifies the exact terminal SQL to kill.
+            waiter = int(wait_until(lambda: psql("""SELECT a.pid FROM pg_stat_activity a
+                JOIN pg_locks l ON l.pid=a.pid
+                WHERE l.locktype='advisory' AND l.objid=771109 AND NOT l.granted
+                  AND a.wait_event_type='Lock' AND a.wait_event='advisory'
+                  AND a.query LIKE '%UPDATE refunds SET%'"""),
+                message='refund terminal SQL waiting at advisory gate'))
+            lease = psql(f"""SELECT reconciliation_lease_token,provider_retry_count,
+                status,reconciliation_lease_until>clock_timestamp(),refunded_at IS NULL,
+                provider_terminal_at IS NULL FROM refunds WHERE id='{refund}';""").split('\t')
+            self.assertTrue(lease[0])
+            self.assertEqual(int(lease[1]), initial_claims + 1)
+            self.assertEqual(lease[2:], ['PROCESSING', 't', 't', 't'])
+            at_gate_retrieves = self.retrieved('refund', provider_id)
+            self.assertGreater(at_gate_retrieves, initial_retrieves)
+            print('Case G: due/no lease -> committed claim -> retrieve -> terminal SQL at gate', flush=True)
+
+            compose('kill', '-s', 'SIGKILL', 'backend')
+            wait_until(lambda: backend_state() == 'false 137', message='SIGKILL exit confirmed')
+            # PostgreSQL can continue an autocommit statement after client death.
+            # Terminate only the observed gated session before releasing its gate.
+            psql(f'SELECT pg_terminate_backend({waiter});')
+            wait_until(lambda: psql(f"""SELECT
+                (SELECT COUNT(*) FROM pg_stat_activity WHERE pid={waiter}) +
+                (SELECT COUNT(*) FROM pg_locks WHERE pid={waiter});""") == '0',
+                message='old DB session and all its locks gone')
+            after_crash = psql(f"""SELECT reconciliation_lease_token,provider_retry_count,
+                status,refunded_at IS NULL,provider_terminal_at IS NULL
+                FROM refunds WHERE id='{refund}';""").split('\t')
+            self.assertEqual(after_crash, [lease[0], lease[1], 'PROCESSING', 't', 't'])
+            self.assertEqual(psql(f"SELECT COUNT(*) FROM user_notifications WHERE order_id='{order['id']}' AND type='AUTO_REFUND_COMPLETED';"), '0')
+
+            # Both writes happen while the backend is dead. Keep the dead owner's
+            # token; advance only time/scheduling, never shorten production lease.
+            psql(f"""UPDATE refunds SET reconciliation_lease_until=clock_timestamp()-INTERVAL '1 second',
+                next_reconcile_at=clock_timestamp() WHERE id='{refund}';""")
+            self.assertEqual(psql(f"SELECT reconciliation_lease_token,reconciliation_lease_until<clock_timestamp() FROM refunds WHERE id='{refund}';"), lease[0] + '\tt')
+            self.remove_fault()
+            print('Case G: SIGKILL 137 -> DB rollback/locks gone -> old lease retained and expired', flush=True)
+            compose('start', 'backend')
+            self.assert_refunded(order, refund)
+            self.assertGreater(int(psql(f"SELECT provider_retry_count FROM refunds WHERE id='{refund}';")), int(lease[1]))
+            self.assertGreater(self.retrieved('refund', provider_id), at_gate_retrieves)
+            self.assertEqual(psql(f"SELECT reconciliation_lease_until IS NULL FROM refunds WHERE id='{refund}';"), 't')
+
+            # Check the recovered scenario before tearDown removes its evidence.
+            verifier = BACKEND_ROOT.parent / 'performance' / 'verification' / 'verify.sql'
+            rows = psql(verifier.read_text(encoding='utf-8')).splitlines()
+            self.assertEqual(len(rows), 14)
+            self.assertTrue(all(row.split('\t')[1] == '0' for row in rows), rows)
+            psql((BACKEND_ROOT / 'db' / 'tests' / '005_verify_payment_provider_recovery.sql').read_text(encoding='utf-8'))
+            print('Case G: reclaim -> fresh retrieve -> SUCCEEDED/exactly one notification/lease cleared; verifiers=0', flush=True)
+        finally:
+            # On failure, kill before releasing the gate: never allow a waiting
+            # autocommit statement to turn cleanup into an accidental success.
+            if backend_state().startswith('true '):
+                compose('kill', '-s', 'SIGKILL', 'backend')
+            wait_until(lambda: backend_state().startswith('false '))
+            psql("SELECT pg_terminate_backend(pid) FROM pg_locks WHERE locktype='advisory' AND objid=771109 AND NOT granted;")
+            wait_until(lambda: psql("SELECT COUNT(*) FROM pg_locks WHERE locktype='advisory' AND objid=771109 AND NOT granted;") == '0')
+            self.remove_fault()
+            self.assertEqual(psql("SELECT COUNT(*) FROM pg_trigger WHERE tgname='phase11_fault';"), '0')
+            self.assertEqual(psql("SELECT COUNT(*) FROM pg_locks WHERE locktype='advisory' AND objid=771109;"), '0')
 
     def test_payment_fallback_retrieves_and_rejects_each_identity_mismatch(self):
         order, attempt, payment = self.start('identity')
