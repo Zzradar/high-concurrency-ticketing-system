@@ -1,4 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
+import json
+import os
 from pathlib import Path
 import subprocess
 import unittest
@@ -16,7 +18,6 @@ from order_expiry_integration_test import (
 
 
 PEER_CONTAINER = "ticketing-phase4-expiry-peer"
-COMPOSE_NETWORK = "backend_default"
 
 
 def docker(args: list[str], *, check: bool = True) -> subprocess.CompletedProcess:
@@ -40,6 +41,25 @@ def remove_peer() -> None:
     docker(["rm", "-f", PEER_CONTAINER], check=False)
 
 
+def compose_container(service: str) -> str:
+    container = docker(["compose", "ps", "-q", service]).stdout.strip()
+    if not container:
+        raise AssertionError(f"compose service {service} has no container")
+    return container
+
+
+def container_identity(container: str) -> tuple[str, set[str]]:
+    project = docker(
+        ["inspect", "--format", '{{ index .Config.Labels "com.docker.compose.project" }}', container]
+    ).stdout.strip()
+    networks = json.loads(
+        docker(
+            ["inspect", "--format", "{{json .NetworkSettings.Networks}}", container]
+        ).stdout
+    )
+    return project, set(networks)
+
+
 class OrderExpiryConcurrencyTest(unittest.TestCase):
     def setUp(self) -> None:
         remove_peer()
@@ -61,18 +81,40 @@ class OrderExpiryConcurrencyTest(unittest.TestCase):
         commands = (
             ["compose", "up", "-d", "--force-recreate", "backend"],
             [
+                "compose",
                 "run",
                 "-d",
+                "--no-deps",
                 "--name",
                 PEER_CONTAINER,
-                "--network",
-                COMPOSE_NETWORK,
-                "backend-backend:latest",
+                "backend",
             ],
         )
         with ThreadPoolExecutor(max_workers=2) as executor:
             results = list(executor.map(docker, commands))
         self.assertEqual([result.returncode for result in results], [0, 0])
+
+        primary = compose_container("backend")
+        postgres = compose_container("postgres")
+        identities = {
+            "primary": container_identity(primary),
+            "peer": container_identity(PEER_CONTAINER),
+            "postgres": container_identity(postgres),
+        }
+        projects = {project for project, _ in identities.values()}
+        self.assertEqual(len(projects), 1, identities)
+        expected_project = os.environ.get("COMPOSE_PROJECT_NAME")
+        if expected_project:
+            self.assertEqual(projects, {expected_project})
+        shared_networks = set.intersection(
+            *(networks for _, networks in identities.values())
+        )
+        self.assertTrue(shared_networks, identities)
+        print(
+            "compose isolation:",
+            f"project={projects.pop()}",
+            f"shared_networks={','.join(sorted(shared_networks))}",
+        )
 
         wait_for_order_status(order_id, "EXPIRED", timeout=20)
         docker(["compose", "up", "-d", "--wait", "backend"])

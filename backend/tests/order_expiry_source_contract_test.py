@@ -63,6 +63,16 @@ class OrderExpirySourceContractTest(unittest.TestCase):
         self.assertIn("getLoop()->runAfter", worker)
         self.assertNotIn("runEvery", worker)
 
+    def test_concurrency_harness_inherits_compose_project_and_network(self) -> None:
+        source = read("tests/order_expiry_concurrency_test.py")
+        self.assertNotIn("backend_default", source)
+        self.assertNotIn("backend-backend:latest", source)
+        self.assertNotIn('"--network"', source)
+        self.assertIn('"compose",\n                "run"', source)
+        self.assertIn('"--no-deps"', source)
+        self.assertIn('"com.docker.compose.project"', source)
+        self.assertIn('os.environ.get("COMPOSE_PROJECT_NAME")', source)
+
 
 if __name__ == "__main__":
     unittest.main()
