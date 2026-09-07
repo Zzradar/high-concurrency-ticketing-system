@@ -199,6 +199,9 @@ if(BUILD_TESTING)
         NAME phase11_schema_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase11_schema_contract_test.py"
     )
+    add_executable(stripe_config_unit tests/stripe_config_unit.cpp src/payments/StripeConfig.cpp)
+    target_include_directories(stripe_config_unit PRIVATE src)
+    add_test(NAME stripe_config_unit COMMAND stripe_config_unit)
     add_executable(stripe_webhook_verifier_unit
         tests/stripe_webhook_verifier_unit.cpp
         src/payments/StripeWebhookVerifier.cpp

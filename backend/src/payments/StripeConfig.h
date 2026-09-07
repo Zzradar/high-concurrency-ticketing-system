@@ -12,6 +12,7 @@ struct StripeConfig
     std::string currency{"cny"};
     std::string apiBaseUrl{"https://api.stripe.com"};
     double timeoutSeconds{5.0};
+    double processingGraceSeconds{600.0};
 
     static StripeConfig load();
     static void validate(const StripeConfig &config);

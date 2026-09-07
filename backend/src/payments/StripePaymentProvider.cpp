@@ -169,7 +169,7 @@ void StripePaymentProvider::createOrRecoverPayment(
 {
     const auto body = form({{"amount", std::to_string(input.amount)},
                             {"currency", input.currency},
-                            {"automatic_payment_methods[enabled]", "true"},
+                            {"payment_method_types[]", "card"},
                             {"metadata[local_payment_attempt_id]", input.attemptId},
                             {"metadata[order_id]", input.orderId}});
     const auto idempotencyKey = input.attemptId;

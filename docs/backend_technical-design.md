@@ -563,7 +563,7 @@ Worker 只在锁 Order 时使用 `SKIP LOCKED`；在线支付和取消等待同�
 `PAYMENT_PROCESSING` 状态。
 
 `Order.expires_at` 表示允许开始支付的截止时间。截止前发起的合法 Attempt 在自身
-10 秒 `processing_grace_seconds` 内会阻止 Worker 过期；锁 Order 后通过
+Provider-specific grace（Simulation 10 秒，Stripe card 默认 600 秒）内会阻止 Worker 过期；锁 Order 后通过
 `clock_timestamp()` 取得权威时间。渠道成功且订单仍可接纳时，同一事务完成：
 
 ```text
@@ -1001,4 +1001,4 @@ MVP 完成时必须能够完整演示：
 
 ### Phase 11：真实支付渠道与可靠恢复
 
-支付主线现采用小型 `PaymentProvider` 边界，默认 `simulation`，Stripe Sandbox 通过 Drogon 异步 HttpClient 直接调用 REST（Stripe 无官方 C++ 服务端 SDK）。PaymentAttempt/Refund 的 provider identity、同步时间、终态与退避均持久化；Stripe Webhook 只做原始 body 验签和 Inbox 入库，主动对账 worker retrieve 最新对象后再进入既有 Order-first 生命周期。`PaymentAttempt.id` 和 `Refund.id` 分别是渠道 create 的固定幂等键。迟到成功先形成 PROCESSING Refund，真正成功/失败后分别通知，不再把 INSERT 等同于退款完成。完整设计见 `payment_provider_phase11_design.md`。Phase 12 买家退款与 grace 产品规则调整尚未实施。
+支付主线现采用小型 `PaymentProvider` 边界，默认 `simulation`，Stripe Sandbox 通过 Drogon 异步 HttpClient 直接调用 REST（Stripe 无官方 C++ 服务端 SDK）。PaymentAttempt/Refund 的 provider identity、同步时间、终态与退避均持久化；Stripe Webhook 只做原始 body 验签和 Inbox 入库，主动对账 worker retrieve 最新对象后再进入既有 Order-first 生命周期。`PaymentAttempt.id` 和 `Refund.id` 分别是渠道 create 的固定幂等键。迟到成功先形成 PROCESSING Refund，真正成功/失败后分别通知，不再把 INSERT 等同于退款完成。完整设计见 `payment_provider_phase11_design.md`。Phase 12 买家退款尚未实施。Stripe v1 = card-only，不支持长时间异步 Payment Method。Provider::processingGraceSeconds() 给出 Simulation 原配置 10 秒、Stripe 默认 600 秒；STRIPE_PROCESSING_GRACE_SECONDS 启动时校验为正有限数。600 秒支持真人 3DS，是业务默认值，不是容量/SLO。未来增加 Provider/Payment Method 必须重新设计支付时限与 Seat 回收语义。沿用 processing_deadline，不新增 migration 或修改历史 Attempt。

@@ -694,5 +694,5 @@ Phase 11 前端已接入官方 `@stripe/stripe-js`。仅严格匹配 `provider=s
 
 `return_url` 为同源 `/orders/{encodedOrderId}?paymentReturn=1&paymentAttemptId={encodedLocalAttemptId}`。本地 hint 不可信：先加载可访问 Order，再 GET Attempt 并验证 orderId；匹配 PROCESSING 才轮询，terminal 刷新 Order 和通知。路由守卫在认证跳转前移除 `payment_intent`、`payment_intent_client_secret`、`redirect_status`，不读取其值；恢复结束使用 Router replace 清理本地 hint，保留无关 query。非法/不存在/其他订单的 hint 不触发错误订单轮询。
 
-主动观察窗口仍为约 15 秒，超时仅提示结果仍未确定；后端继续 Webhook/Reconciliation。取消成功或 Order 进入 PAID/CANCELLED/EXPIRED 时销毁 Element、停止本地轮询、忽略过时回调；不调用 Stripe cancel，也不能撤回已提交的渠道支付。后端原 10 秒 processing grace 未修改。真实 Stripe Sandbox、真实 3DS 超过 10 秒的行为尚未验证（NOT RUN：缺少外部凭据和 Stripe CLI）；前端 mock 不证明 grace 足够。
+主动观察窗口仍为约 15 秒，超时仅提示结果仍未确定；后端继续 Webhook/Reconciliation。取消成功或 Order 进入 PAID/CANCELLED/EXPIRED 时销毁 Element、停止本地轮询、忽略过时回调；不调用 Stripe cancel，也不能撤回已提交的渠道支付。后端 Simulation grace 保持 10 秒，Stripe v1 = card-only，grace 默认 600 秒，由 STRIPE_PROCESSING_GRACE_SECONDS 配置并在启动时校验为正数。600 秒用于真人 3DS 认证，是业务默认值，不是容量/SLO。第一版不支持长时间异步 Payment Method；未来新增 Provider/Payment Method 必须重新设计支付时限与 Seat 回收语义。前端继续使用 CLIENT_CONFIRM 并以 Backend Attempt/Order 为准，不依据 grace 作业务判断。历史 deadline 不变，超时和迟到成功退款语义保持。真实 Stripe Sandbox/3DS 尚未执行，仍为后续 Gate。
 

@@ -70,6 +70,7 @@ class PaymentProvider
     using RefundCompletion = std::function<void(ProviderResult<ProviderRefund>)>;
     virtual ~PaymentProvider() = default;
     virtual std::string name() const = 0;
+    virtual double processingGraceSeconds() const = 0;
     virtual std::optional<double> scheduledDelaySeconds() const { return std::nullopt; }
     virtual void createOrRecoverPayment(CreatePaymentRequest request,
                                         PaymentCompletion completion) = 0;

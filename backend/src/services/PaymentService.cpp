@@ -1,7 +1,5 @@
 #include "services/PaymentService.h"
 
-#include "services/PaymentSimulation.h"
-
 #include <drogon/drogon.h>
 #include <drogon/utils/Utilities.h>
 
@@ -14,7 +12,6 @@ struct PaymentService::StartState
     std::string orderId;
     std::string userId;
     ExpirableOrderRow order;
-    double processingGraceSeconds{10.0};
     std::shared_ptr<PaymentProvider> provider;
     std::optional<PaymentAttempt> attempt;
     OrderRepository::TransactionPtr transaction;
@@ -41,8 +38,6 @@ void PaymentService::startPayment(
     state->completion = std::move(completion);
     try
     {
-        state->processingGraceSeconds =
-            PaymentSimulation::loadConfiguration().processingGraceSeconds;
         state->provider = PaymentProviderFactory::create();
     }
     catch (const std::exception &error)
@@ -187,7 +182,7 @@ void PaymentService::createAttempt(const std::shared_ptr<StartState> &state) con
     const auto delay = state->provider->scheduledDelaySeconds().value_or(0.0);
     paymentRepository_.createAttempt(
         state->transaction, attemptId, state->orderId,
-        delay, state->processingGraceSeconds, state->provider->name(),
+        delay, state->provider->processingGraceSeconds(), state->provider->name(),
         [this, state](PaymentAttempt attempt) {
             state->attempt = std::move(attempt);
             state->createdAttempt = true;

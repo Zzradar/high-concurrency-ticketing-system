@@ -2,7 +2,7 @@
 
 ## 目标与边界
 
-Phase 11 在不改变 Phase 8 的 Order-first 业务状态机、不扩大 10 秒 processing grace 的前提下，把渠道交互从 `PaymentService` 内的不可恢复 timer 提升为 `PaymentProvider + Webhook Inbox + 主动对账`。默认 provider 仍是 `simulation`；第一家真实 provider 是 Stripe Sandbox。Phase 12 的买家主动退款、部分退款和单座退款不在本阶段。
+Phase 11 保持 Phase 8 的 Order-first 业务状态机，把渠道交互从 `PaymentService` 内的不可恢复 timer 提升为 `PaymentProvider + Webhook Inbox + 主动对账`。默认 provider 仍是 `simulation`，processing grace 保持 10 秒；Stripe v1 仅支持 card，grace 默认 600 秒。Phase 12 的买家主动退款、部分退款和单座退款不在本阶段。
 
 Stripe 没有官方 C++ 服务端 SDK，因此后端使用 Drogon 1.9.13 的异步 `HttpClient` 直接调用 REST。外部 HTTP 永远发生在 PostgreSQL 事务之外，timeout 默认 5 秒。请求固定 `Stripe-Version: 2026-07-29.dahlia`，Webhook endpoint 必须配置相同版本。
 
@@ -17,8 +17,13 @@ Stripe 没有官方 C++ 服务端 SDK，因此后端使用 Drogon 1.9.13 的异�
 - `STRIPE_CURRENCY` 缺省 cny；
 - `STRIPE_API_BASE_URL` 缺省 `https://api.stripe.com`，测试可覆盖到 Fake Stripe；
 - `STRIPE_HTTP_TIMEOUT_SECONDS` 缺省 5 秒。
+- `STRIPE_PROCESSING_GRACE_SECONDS` 缺省 600 秒，启动时校验为正有限数；只影响新建 Stripe Attempt。
 
-PaymentIntent create 使用 `PaymentAttempt.id` 作为 `Idempotency-Key`，包含 amount、currency、automatic payment methods 及本地 attempt/order metadata，不使用 `confirm=true`。Refund create 使用 `Refund.id` 作为幂等键，并绑定原 PaymentIntent、全额 amount 和本地 refund/order metadata。超时、连接断开、429 和 5xx 只安排退避重试，不产生金融失败。
+PaymentIntent create 使用 `PaymentAttempt.id` 作为 `Idempotency-Key`，包含 amount、currency、`payment_method_types[]=card` 及本地 attempt/order metadata，不发送 automatic_payment_methods 或 `confirm=true`。Refund create 使用 `Refund.id` 作为幂等键，并绑定原 PaymentIntent、全额 amount 和本地 refund/order metadata。超时、连接断开、429 和 5xx 只安排退避重试，不产生金融失败。
+
+`PaymentProvider::processingGraceSeconds()` 定义渠道宽限，Simulation 读取原 `payment_simulation.processing_grace_seconds=10`，Stripe 读取自身配置。PaymentService 将宽限传给现有 createAttempt，保存为 `started_at + grace` 的 processing_deadline；无需 migration，不修改历史 Attempt。600 秒是支持真人填写卡信息和 3DS 的业务运行默认值，不是性能 SLO 或全 Provider 通用规则。[Stripe 3DS 流程](https://docs.stripe.com/payments/3d-secure/authentication-flow)和 [EMVCo 浏览器 OOB 流程](https://www.emvco.com/dynamic/emv-3-d-secure-whitepaper-v2/out-of-band-oob-authentication/oob-flow-for-browser-channel/)是认证时限设计参考，不意味着所有认证一定能在此窗口完成。
+
+Stripe v1 不支持 ACH/SEPA/Klarna/Alipay/WeChat Pay 等长时间异步 Payment Method。未来增加 Provider 或 Payment Method 时，必须重新设计支付时限与 Seat 回收语义。合法 Attempt 在自身 deadline 内阻止订单过期；超过 deadline 后继续 TIMED_OUT/EXPIRED、释放座位及迟到成功异步退款，绝不复活已过期订单。前端不依据 grace 作业务裁决。
 
 ## 持久化与恢复
 

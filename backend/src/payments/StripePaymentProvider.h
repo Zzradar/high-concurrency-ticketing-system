@@ -12,6 +12,7 @@ class StripePaymentProvider final : public PaymentProvider
   public:
     explicit StripePaymentProvider(StripeConfig config);
     std::string name() const override { return "stripe"; }
+    double processingGraceSeconds() const override { return config_.processingGraceSeconds; }
     void createOrRecoverPayment(CreatePaymentRequest request,
                                 PaymentCompletion completion) override;
     void retrievePayment(RetrievePaymentRequest request,

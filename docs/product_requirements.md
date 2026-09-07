@@ -122,7 +122,7 @@ Hold 过期或 Redis 数据丢失不会删除 CheckoutSession 中保存的购买
 MVP 的模拟支付在发起后约 2～6 秒完成，约有 1% 概率失败。支付失败且订单仍在期限内
 时可以重试；支付处理中仍允许用户取消，二者由服务端对同一订单进行最终仲裁。
 
-15 分钟订单期限表示允许开始支付的截止时间。截止前发起的支付会获得约 10 秒的短暂
+15 分钟订单期限表示允许开始支付的截止时间。截止前发起的模拟支付获得 10 秒、Stripe card 支付默认获得 600 秒的
 处理宽限；这不会延长订单供用户再次发起支付的期限。已经取消或过期的订单不会因
 迟到成功而恢复，迟到成功的款项会自动全额退款。
 
@@ -181,7 +181,7 @@ MVP 的模拟支付在发起后约 2～6 秒完成，约有 1% 概率失败。�
 - 对已实现的 Stripe Provider、Webhook Inbox、主动查单和前端 Payment Element 进行真实 Sandbox 验证并完成发布核验；
 - 设计正常 PAID 订单的主动退票与退款能力。
 
-Phase 11 保持默认 simulation 开箱即用和原 10 秒 processing grace；Stripe client secret 只在订单 owner 发起或恢复支付时临时返回。BUYER 主动退款仍属于 Phase 12，真实 Stripe Sandbox 凭据验证属于发布 Gate。
+Phase 11 保持默认 simulation 开箱即用和原 10 秒 processing grace；Stripe v1 = card-only，grace 默认 600 秒，由 STRIPE_PROCESSING_GRACE_SECONDS 配置。600 秒用于真人填写和 3DS 认证，是业务运行默认值，不是容量/SLO。第一版不支持长时间异步 Payment Method；未来增加 Provider/Payment Method 必须重新设计支付时限与 Seat 回收语义。Stripe client secret 只在订单 owner 发起或恢复支付时临时返回。BUYER 主动退款仍属于 Phase 12，真实 Stripe Sandbox 凭据验证属于发布 Gate。
 
 Phase 11 前端支付为两阶段：先开始/恢复支付，再在官方 Stripe Payment Element 中填写并确认。设置前端 `VITE_STRIPE_PUBLISHABLE_KEY` 后使用“开始支付”，接收到 Stripe action 后显示支付方式和“确认支付”；默认无 key 的 simulation 保留模拟支付文案及原行为。前端无法在第一次 pay 之前从 Order contract 获知 provider；缺 key 但收到 Stripe action 时明确报配置错误并保留支付尝试。
 
@@ -189,7 +189,7 @@ Stripe 处理必要的 3DS/redirect，使用 `redirect: if_required` 和当前�
 
 正式成功/失败仍由本地 Backend PaymentAttempt/Order 决定。用户可修正的支付输入错误只在组件附近显示；网络结果未知时同步服务器，不自动重建支付。前端只主动观察约 15 秒，之后提示稍后刷新。支付期间仍可取消订单，已提交渠道操作可能迟到成功，由后端负责自动退款。
 
-后端 10 秒 processing grace 未修改。真实 Stripe Sandbox = NOT RUN（当前环境缺少外部凭据及 Stripe CLI）；10 秒 grace 的真实 3DS 验证：未执行。发布前必须按正常人工速度完成 3DS，记录 started_at、认证完成时间、provider/Order 终态、processingDeadline、accepted_at 和是否发生错误迟到退款；若正常操作因超时导致不合理退款，应作为主方案业务规则 blocker 评审，前端不得自行绕过。Phase 12 未实施。
+后端宽限已按 Provider 区分：Simulation 10 秒，Stripe card 默认 600 秒；历史 Attempt deadline 不变。超过 deadline 的 TIMED_OUT/EXPIRED 和迟到成功退款语义保持。真实 Stripe Sandbox/3DS = NOT RUN，发布前必须按正常人工速度完成 3DS，记录 started_at、认证完成时间、provider/Order 终态、processingDeadline、accepted_at 和是否发生错误迟到退款；前端不得自行绕过服务端时限。Phase 12 未实施。
 
 ### 6.3 按压测决定
 

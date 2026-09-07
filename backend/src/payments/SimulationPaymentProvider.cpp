@@ -5,7 +5,8 @@
 namespace ticketing
 {
 SimulationPaymentProvider::SimulationPaymentProvider()
-    : decision_(PaymentSimulation::decide(PaymentSimulation::loadConfiguration()))
+    : config_(PaymentSimulation::loadConfiguration()),
+      decision_(PaymentSimulation::decide(config_))
 {
 }
 

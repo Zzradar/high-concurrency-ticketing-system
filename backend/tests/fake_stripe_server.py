@@ -16,6 +16,7 @@ class Store:
         self.payment_keys = {}
         self.refund_keys = {}
         self.create_payment_calls = []
+        self.payment_requests = []
         self.create_refund_calls = []
         self.payment_mode = "processing"
         self.refund_mode = "succeeded"
@@ -66,6 +67,7 @@ class Handler(BaseHTTPRequestHandler):
                     "paymentKeys": dict(STORE.payment_keys),
                     "refundKeys": dict(STORE.refund_keys),
                     "createPaymentCalls": list(STORE.create_payment_calls),
+                    "paymentRequests": list(STORE.payment_requests),
                     "createRefundCalls": list(STORE.create_refund_calls),
                 })
             return
@@ -88,6 +90,7 @@ class Handler(BaseHTTPRequestHandler):
                 STORE.payments.clear(); STORE.refunds.clear()
                 STORE.payment_keys.clear(); STORE.refund_keys.clear()
                 STORE.create_payment_calls.clear(); STORE.create_refund_calls.clear()
+                STORE.payment_requests.clear()
                 STORE.payment_mode = "processing"; STORE.refund_mode = "succeeded"
                 STORE.fail_once.clear()
             return self.json_response(200, {"ok": True})
@@ -110,6 +113,7 @@ class Handler(BaseHTTPRequestHandler):
             key = self.headers.get("Idempotency-Key", "")
             with STORE.lock:
                 STORE.create_payment_calls.append(key)
+                STORE.payment_requests.append({"idempotencyKey": key, "form": values})
                 object_id = STORE.payment_keys.get(key)
                 if not object_id:
                     object_id = "pi_fake_" + str(len(STORE.payments) + 1)

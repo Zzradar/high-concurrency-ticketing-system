@@ -88,6 +88,65 @@ class Phase11StripeIntegrationTest(unittest.TestCase):
         self.assertEqual(psql("SELECT COUNT(*) FROM payment_provider_events WHERE provider_event_id='evt-duplicate';"), "1")
         self.assertEqual(psql(f"SELECT COUNT(*) FROM user_notifications WHERE order_id='{order['id']}' AND type='PAYMENT_SUCCEEDED';"), "1")
 
+    def test_card_only_request_and_provider_deadline(self):
+        order, attempt = self.start("stripe-card-grace", SEATS[0])
+        requests = [r for r in fake("/__admin__/state")["paymentRequests"]
+                    if r["idempotencyKey"] == attempt]
+        self.assertTrue(requests)
+        for request in requests:
+            form = request["form"]
+            self.assertEqual(form["payment_method_types[]"], ["card"])
+            self.assertFalse(any(k.startswith("automatic_payment_methods") for k in form))
+            self.assertEqual(form["amount"], [str(order["totalAmount"])])
+            self.assertEqual(form["currency"], ["cny"])
+            self.assertEqual(form["metadata[local_payment_attempt_id]"], [attempt])
+            self.assertEqual(form["metadata[order_id]"], [order["id"]])
+        self.assertAlmostEqual(float(psql(
+            f"SELECT EXTRACT(EPOCH FROM processing_deadline-started_at) FROM payment_attempts WHERE id='{attempt}';")),
+            float(os.environ.get("STRIPE_PROCESSING_GRACE_SECONDS", "600")), places=3)
+
+    def test_3ds_grace_skips_expiry_then_times_out_and_refunds(self):
+        fake("/__admin__/configure", {"refundMode": "processing"})
+        order, attempt = self.start("stripe-3ds-grace", SEATS[1])
+        payment = payment_for_attempt(attempt)
+        fake("/__admin__/configure", {"paymentId": payment["id"], "paymentStatus": "requires_action"})
+        psql(f"""
+            BEGIN;
+            UPDATE orders SET created_at=clock_timestamp()-INTERVAL '20 minutes',
+                expires_at=clock_timestamp()-INTERVAL '1 second' WHERE id='{order['id']}';
+            UPDATE reservations SET created_at=clock_timestamp()-INTERVAL '20 minutes',
+                expires_at=clock_timestamp()-INTERVAL '1 second' WHERE id='{order['reservationId']}';
+            UPDATE payment_attempts SET started_at=clock_timestamp()-INTERVAL '11 seconds',
+                processing_deadline=clock_timestamp()+INTERVAL '589 seconds' WHERE id='{attempt}';
+            COMMIT;
+        """)
+        # An expired control order proves the periodic expiry worker has run.
+        control, _ = create_order("stripe-grace-control", SEATS[2])
+        psql(f"""
+            UPDATE orders SET created_at=clock_timestamp()-INTERVAL '20 minutes',
+                expires_at=clock_timestamp()-INTERVAL '1 second' WHERE id='{control['id']}';
+            UPDATE reservations SET created_at=clock_timestamp()-INTERVAL '20 minutes',
+                expires_at=clock_timestamp()-INTERVAL '1 second' WHERE id='{control['reservationId']}';
+        """)
+        wait_until(lambda: psql(f"SELECT status FROM orders WHERE id='{control['id']}';") == "EXPIRED",
+                   message="expiry worker control")
+        def states():
+            return psql(f"""SELECT a.status,o.status,r.status,s.status FROM payment_attempts a
+                JOIN orders o ON o.id=a.order_id JOIN reservations r ON r.id=o.reservation_id
+                JOIN session_seats s ON s.id='{SEATS[1]}' WHERE a.id='{attempt}';""")
+        self.assertEqual(states().split('\t'), ['PROCESSING', 'PENDING_PAYMENT', 'ACTIVE', 'HELD'])
+        psql(f"""WITH moment AS (SELECT clock_timestamp() AS now)
+            UPDATE payment_attempts SET started_at=moment.now-INTERVAL '601 seconds',
+                processing_deadline=moment.now-INTERVAL '1 second' FROM moment WHERE id='{attempt}';""")
+        wait_until(lambda: states().split('\t') == ['TIMED_OUT', 'EXPIRED', 'EXPIRED', 'AVAILABLE'],
+                   message="600 second grace exceeded")
+        fake("/__admin__/configure", {"paymentId": payment['id'], "paymentStatus": "succeeded"})
+        psql(f"UPDATE payment_attempts SET next_reconcile_at=clock_timestamp() WHERE id='{attempt}';")
+        wait_until(lambda: psql(f"SELECT status FROM refunds WHERE payment_attempt_id='{attempt}';") == 'PROCESSING',
+                   message="late success asynchronous refund obligation")
+        self.assertEqual(states().split('\t'), ['SUCCEEDED', 'EXPIRED', 'EXPIRED', 'AVAILABLE'])
+        self.assertEqual(psql(f"SELECT accepted_at IS NULL FROM payment_attempts WHERE id='{attempt}';"), 't')
+
     def test_create_response_lost_and_webhook_lost_recover_by_scan(self):
         fake("/__admin__/configure", {"paymentMode": "response_lost_once"})
         order, _ = create_order("stripe-response-lost", SEATS[1])

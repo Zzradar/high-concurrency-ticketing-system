@@ -52,6 +52,7 @@ services:
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
       STRIPE_CURRENCY: ${STRIPE_CURRENCY:-cny}
+      STRIPE_PROCESSING_GRACE_SECONDS: ${STRIPE_PROCESSING_GRACE_SECONDS:-600}
       STRIPE_API_BASE_URL: ${STRIPE_API_BASE_URL:-https://api.stripe.com}
     healthcheck:
       test: ["CMD-SHELL", "curl --fail --silent http://127.0.0.1:8080/health >/dev/null"]

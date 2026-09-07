@@ -89,6 +89,16 @@ def wait_attempt(attempt_id: str, statuses=("SUCCEEDED", "FAILED"), timeout=12):
 
 
 class PaymentIntegrationTest(unittest.TestCase):
+    def test_simulation_processing_grace_remains_ten_seconds(self):
+        order, _ = create_order("simulation-grace", SEATS[0])
+        status, response = request_json(f"/orders/{order['id']}/pay", method="POST")
+        self.assertEqual(status, 202)
+        attempt = response['paymentAttempt']['id']
+        self.assertAlmostEqual(float(psql(
+            f"SELECT EXTRACT(EPOCH FROM processing_deadline-started_at) FROM payment_attempts WHERE id='{attempt}';")),
+            10.0, places=3)
+        wait_attempt(attempt)
+
     def setUp(self) -> None:
         cleanup(create_users=True)
 
