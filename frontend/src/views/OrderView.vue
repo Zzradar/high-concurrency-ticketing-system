@@ -17,6 +17,8 @@ defineProps<{
   paymentPolling: boolean
   cancelling: boolean
   paymentAttempt: PaymentAttempt | null
+  stripeMode?: boolean
+  paymentPrepared?: boolean
 }>()
 
 defineEmits<{
@@ -61,10 +63,10 @@ defineEmits<{
     />
 
     <section v-if="order.status === 'PENDING_PAYMENT'" class="order-actions">
-      <button class="primary-button order-pay-button" type="button" :disabled="paymentStarting || paymentPolling" @click="$emit('pay')">
+      <button class="primary-button order-pay-button" type="button" :disabled="paymentStarting || paymentPolling || paymentPrepared || cancelling" @click="$emit('pay')">
         <span v-if="paymentStarting || paymentPolling" class="button-spinner"></span>
         <CreditCard v-else :size="19" aria-hidden="true" />
-        {{ paymentStarting ? '正在发起支付…' : paymentPolling ? '支付处理中…' : '模拟支付 ' + formatCny(order.totalAmount) }}
+        {{ paymentStarting ? '正在创建或恢复支付…' : paymentPolling ? '支付处理中…' : paymentPrepared ? '支付已准备' : (stripeMode ? '开始支付 ' : '模拟支付 ') + formatCny(order.totalAmount) }}
       </button>
       <button class="secondary-button" type="button" :disabled="cancelling" @click="$emit('cancel')">
         <span v-if="cancelling" class="button-spinner"></span>
@@ -72,6 +74,8 @@ defineEmits<{
         {{ cancelling ? '正在取消…' : '取消订单' }}
       </button>
     </section>
+
+    <slot v-if="order.status === 'PENDING_PAYMENT'" />
 
     <p v-if="paymentAttempt?.status === 'PROCESSING'" class="payment-state" role="status">
       支付渠道处理中；你仍可主动取消订单，迟到成功将自动退款。

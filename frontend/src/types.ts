@@ -119,17 +119,26 @@ export interface PaymentAttempt {
   status: PaymentAttemptStatus
   startedAt: string
   processingDeadline: string
-  scheduledCompleteAt: string
+  scheduledCompleteAt?: string
+  provider: string
+  providerStatus?: string
   completedAt?: string
   timedOutAt?: string
   acceptedAt?: string
   failureReason?: string
 }
 
+export interface PaymentAction {
+  provider: string
+  type: string
+  clientSecret: string
+}
+
 export interface PaymentStartResult {
   disposition: 'STARTED_NEW' | 'REUSED_PROCESSING' | 'ALREADY_PAID'
   order: TicketOrder
   paymentAttempt: PaymentAttempt | null
+  paymentAction: PaymentAction | null
 }
 
 export interface CheckoutConfirmationResult {

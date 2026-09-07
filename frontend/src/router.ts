@@ -6,6 +6,7 @@ import {
 } from 'vue-router'
 import { authState } from './auth/authState'
 import { routeNames } from './navigation'
+import { cleanPaymentQuery, hasStripeQuery } from './payments/paymentReturn'
 import EventListPage from './pages/EventListPage.vue'
 import LoginView from './pages/LoginView.vue'
 import NotFoundPage from './pages/NotFoundPage.vue'
@@ -60,6 +61,10 @@ export function createAppRouter(history: RouterHistory = createWebHistory()) {
   })
 
   appRouter.beforeEach(async (to) => {
+    // Strip provider parameters before auth can copy fullPath into a login redirect.
+    if (hasStripeQuery(to.query)) {
+      return { path: to.path, query: cleanPaymentQuery(to.query, false), hash: to.hash, replace: true }
+    }
     const user = await authState.ensureAuthLoaded()
     if (to.meta.requiresAuth && !user) {
       return { name: routeNames.login, query: { redirect: to.fullPath } }

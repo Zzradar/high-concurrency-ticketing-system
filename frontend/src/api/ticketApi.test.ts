@@ -225,6 +225,8 @@ describe('ticketApi contract and mock transaction flow', () => {
 
     const started = await ticketApi.payOrder(order.id)
     expect(started.order.status).toBe('PENDING_PAYMENT')
+    expect(started.paymentAction).toBeNull()
+    expect(started.paymentAttempt?.provider).toBe('simulation')
     expect(started.paymentAttempt?.status).toBe('PROCESSING')
     await new Promise((resolve) => setTimeout(resolve, 55))
 

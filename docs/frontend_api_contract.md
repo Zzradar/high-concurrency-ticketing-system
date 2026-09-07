@@ -163,11 +163,11 @@ createReservation 的 TypeScript 返回类型要求同时包含 reservation 和 
 ### 3.6 PaymentAttempt、PaymentStartResult 与 UserNotification
 
 `PaymentAttempt` 包含 `id`、`orderId`、`status`、`startedAt`、
-`processingDeadline`、`scheduledCompleteAt`，以及可选的 `completedAt`、`timedOutAt`、
+`processingDeadline`、`provider`，以及可选的 `scheduledCompleteAt`、`providerStatus`、`completedAt`、`timedOutAt`、
 `acceptedAt`、`failureReason`。状态为 `PROCESSING / SUCCEEDED / FAILED / TIMED_OUT`；
 `acceptedAt` 存在才表示渠道成功已被 Order 接纳。
 
-`PaymentStartResult` 固定包含 `order` 和可空的 `paymentAttempt`。`UserNotification`
+`PaymentStartResult` 固定包含 `disposition`、`order`、可空的 `paymentAttempt` 和可空的 `paymentAction`。`UserNotification`
 包含 `id`、`orderId`、`type`、`title`、`message`、`createdAt` 和可选 `readAt`；`type`
 为 `ORDER_CREATED / PAYMENT_SUCCEEDED / ORDER_CANCELLED / ORDER_EXPIRED /
 AUTO_REFUND_COMPLETED`。
@@ -684,5 +684,15 @@ Redis 不可用的降级由后端处理，前端不感知 Redis 故障细节。
 
 ### 8.1 Phase 11 支付启动增量契约
 
-`POST /orders/{orderId}/pay` 保持 `disposition`、`order`、`paymentAttempt`，新增 `paymentAction`。Stripe 返回 `{ "provider": "stripe", "type": "CLIENT_CONFIRM", "clientSecret": "..." }`，simulation 返回 null。clientSecret 只由已认证 owner route 返回；`GET /payment-attempts/{id}` 不返回 providerPaymentId 或 clientSecret。`scheduledCompleteAt` 只在 simulation 存在，Stripe 响应可缺省。前端仍以 PaymentAttempt.status 和 Order.status 为业务真相，不用 providerStatus 直接判定订单成功。POST /pay 响应丢失时再次调用同一 order 的 pay，会以 `REUSED_PROCESSING` 返回同一 Attempt 和可恢复的 clientSecret。后续前端 Phase 11 使用 Stripe.js/Payment Element；本轮未修改 frontend。
+`POST /orders/{orderId}/pay` 保持 `disposition`、`order`、`paymentAttempt`，新增 `paymentAction`。Stripe 返回 `{ "provider": "stripe", "type": "CLIENT_CONFIRM", "clientSecret": "..." }`，simulation 返回 null。clientSecret 只由已认证 owner route 返回；`GET /payment-attempts/{id}` 不返回 providerPaymentId 或 clientSecret。`scheduledCompleteAt` 只在 simulation 存在，Stripe 响应可缺省。前端仍以 PaymentAttempt.status 和 Order.status 为业务真相，不用 providerStatus 直接判定订单成功。POST /pay 响应丢失时，若同一 Attempt 仍满足后端 PROCESSING/deadline 复用条件，再次调用该 order 的 pay 返回 `REUSED_PROCESSING` 和可恢复的 clientSecret；超过期限后的决定仍由后端作出。
+
+Phase 11 前端已接入官方 `@stripe/stripe-js`。仅严格匹配 `provider=stripe` 且 `type=CLIENT_CONFIRM`、非空 clientSecret、属于当前订单的 PROCESSING Attempt 时挂载 Payment Element。未知 provider/type、非法 action 或缺失 publishable key 都安全显示错误并保留 Attempt，不自动重复 POST，不伪造 FAILED。
+
+两阶段流程：开始/恢复支付 → POST pay → Payment Element 收集支付信息 → 用户确认 → `confirmPayment({ elements, confirmParams: { return_url }, redirect: 'if_required' })`。非跳转返回和 transport 结果未知均查询 Backend Attempt/Order；provider status 不直接决定 PAID。simulation/null action 保留直接 polling 行为，不要求 key、不加载 Stripe.js。
+
+前端配置只使用 `VITE_STRIPE_PUBLISHABLE_KEY`，需在 Vite 启动/构建时提供。clientSecret 只在页面和 Elements 内存中使用，不写浏览器存储、通知、日志、分析事件或自建 URL。刷新/关闭页面会丢失该值；用户显式重新开始支付时由后端恢复身份。
+
+`return_url` 为同源 `/orders/{encodedOrderId}?paymentReturn=1&paymentAttemptId={encodedLocalAttemptId}`。本地 hint 不可信：先加载可访问 Order，再 GET Attempt 并验证 orderId；匹配 PROCESSING 才轮询，terminal 刷新 Order 和通知。路由守卫在认证跳转前移除 `payment_intent`、`payment_intent_client_secret`、`redirect_status`，不读取其值；恢复结束使用 Router replace 清理本地 hint，保留无关 query。非法/不存在/其他订单的 hint 不触发错误订单轮询。
+
+主动观察窗口仍为约 15 秒，超时仅提示结果仍未确定；后端继续 Webhook/Reconciliation。取消成功或 Order 进入 PAID/CANCELLED/EXPIRED 时销毁 Element、停止本地轮询、忽略过时回调；不调用 Stripe cancel，也不能撤回已提交的渠道支付。后端原 10 秒 processing grace 未修改。真实 Stripe Sandbox、真实 3DS 超过 10 秒的行为尚未验证（NOT RUN：缺少外部凭据和 Stripe CLI）；前端 mock 不证明 grace 足够。
 

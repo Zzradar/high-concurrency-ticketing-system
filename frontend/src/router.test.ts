@@ -52,4 +52,11 @@ describe('application router', () => {
     expect(testRouter.currentRoute.value.fullPath).toBe('/missing/deep/path')
     expect(document.title).toBe('页面不存在 | 票迹')
   })
+
+  it('strips Stripe query before copying a protected URL into login redirect', async () => {
+    const testRouter = createAppRouter(createMemoryHistory())
+    await testRouter.push('/orders/O1?paymentReturn=1&paymentAttemptId=P1&payment_intent=pi_x&payment_intent_client_secret=never_copy&redirect_status=succeeded')
+    expect(testRouter.currentRoute.value.query.redirect).toBe('/orders/O1?paymentReturn=1&paymentAttemptId=P1')
+    expect(testRouter.currentRoute.value.fullPath).not.toContain('never_copy')
+  })
 })

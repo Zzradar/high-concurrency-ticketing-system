@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ticketApi, TicketApiError } from '../api/ticketApi'
 import PageBreadcrumbs from '../components/PageBreadcrumbs.vue'
 import PageState from '../components/PageState.vue'
+import StripePaymentPanel from '../components/StripePaymentPanel.vue'
+import { cleanPaymentQuery } from '../payments/paymentReturn'
 import { routeNames } from '../navigation'
 import { requestNotificationRefresh, showNotice } from '../uiSignals'
 import OrderView from '../views/OrderView.vue'
-import type { PaymentAttempt, Seat, TicketEvent, TicketOrder, TicketSession } from '../types'
+import type { PaymentAction, PaymentAttempt, Seat, TicketEvent, TicketOrder, TicketSession } from '../types'
 
 const route = useRoute()
 const router = useRouter()
@@ -16,28 +18,53 @@ const event = ref<TicketEvent | null>(null)
 const session = ref<TicketSession | null>(null)
 const seats = ref<Seat[]>([])
 const paymentAttempt = ref<PaymentAttempt | null>(null)
+const paymentAction = ref<PaymentAction | null>(null)
+const paymentBlocked = ref(false)
+const stripeMode = ref(Boolean(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY?.trim()))
 const loading = ref(true)
 const paymentStarting = ref(false)
 const paymentPolling = ref(false)
 const cancelling = ref(false)
 const error = ref('')
 let paymentGeneration = 0
+let pageGeneration = 0
+let readGeneration = 0
+let paymentTimer: number | undefined
+
+function stopPayment() {
+  paymentGeneration++
+  window.clearTimeout(paymentTimer)
+  paymentPolling.value = false
+  paymentAction.value = null
+  paymentBlocked.value = false
+}
+
+function adoptOrder(value: TicketOrder) {
+  order.value = value
+  if (value.status !== 'PENDING_PAYMENT') stopPayment()
+}
 
 async function refreshOrder(silent = false) {
+  const page = pageGeneration
+  const read = ++readGeneration
   if (!silent) loading.value = true
   if (!silent) error.value = ''
   try {
     const value = await ticketApi.getOrder(String(route.params.orderId))
-    order.value = value
+    if (page !== pageGeneration || read !== readGeneration) return false
+    adoptOrder(value)
     if (!session.value || session.value.id !== value.sessionId) {
-      session.value = await ticketApi.getSession(value.sessionId)
-      event.value = await ticketApi.getEvent(value.eventId)
-      seats.value = await ticketApi.getSeats(value.sessionId)
+      const details = await Promise.all([ticketApi.getSession(value.sessionId), ticketApi.getEvent(value.eventId), ticketApi.getSeats(value.sessionId)])
+      if (page !== pageGeneration || read !== readGeneration) return false
+      ;[session.value, event.value, seats.value] = details
     }
+    return true
   } catch (cause) {
+    if (page !== pageGeneration || read !== readGeneration) return false
     error.value = cause instanceof TicketApiError ? cause.message : '订单加载失败。'
+    return false
   } finally {
-    loading.value = false
+    if (page === pageGeneration && read === readGeneration) loading.value = false
   }
 }
 
@@ -49,8 +76,15 @@ function pollPayment(attemptId: string) {
     if (generation !== paymentGeneration) return
     try {
       const attempt = await ticketApi.getPaymentAttempt(attemptId)
+      if (generation !== paymentGeneration) return
+      if (attempt.orderId !== order.value?.id) {
+        paymentPolling.value = false
+        error.value = '支付恢复信息与当前订单不匹配，已忽略。'
+        return
+      }
       paymentAttempt.value = attempt
       await refreshOrder(true)
+      if (generation !== paymentGeneration) { requestNotificationRefresh(); return }
       if (attempt.status !== 'PROCESSING') {
         paymentPolling.value = false
         requestNotificationRefresh()
@@ -58,62 +92,98 @@ function pollPayment(attemptId: string) {
         return
       }
     } catch { /* retry transient reads */ }
+    if (generation !== paymentGeneration) return
     if (Date.now() - started >= 15000) {
       paymentPolling.value = false
       error.value = '支付结果仍在处理中，请稍后刷新订单和通知。'
       return
     }
-    window.setTimeout(poll, 1000)
+    paymentTimer = window.setTimeout(poll, 1000)
   }
   void poll()
 }
 
 async function pay() {
-  if (!order.value) return
+  if (!order.value || order.value.status !== 'PENDING_PAYMENT' || paymentStarting.value || paymentPolling.value || cancelling.value || paymentBlocked.value || paymentAction.value) return
+  const page = pageGeneration
+  const generation = ++paymentGeneration
   paymentStarting.value = true
   error.value = ''
   try {
     const result = await ticketApi.payOrder(order.value.id)
-    order.value = result.order
+    if (page !== pageGeneration || generation !== paymentGeneration) return
+    readGeneration++
+    adoptOrder(result.order)
     paymentAttempt.value = result.paymentAttempt
+    if (result.paymentAttempt?.provider === 'stripe' || result.paymentAction) stripeMode.value = true
     const messages = {
       STARTED_NEW: '正在处理支付……',
       REUSED_PROCESSING: '该订单已有支付正在处理中，正在同步同一笔支付结果。',
       ALREADY_PAID: '该订单此前已经完成支付，已同步最新订单状态。',
     }
     showNotice(messages[result.disposition])
-    if (result.paymentAttempt?.status === 'PROCESSING') pollPayment(result.paymentAttempt.id)
+    if (result.order.status === 'PENDING_PAYMENT' && result.disposition !== 'ALREADY_PAID') {
+      if (result.paymentAction != null) {
+        const action = result.paymentAction
+        if (action.provider !== 'stripe' || action.type !== 'CLIENT_CONFIRM') {
+          error.value = '当前支付方式暂不受此客户端支持；请刷新订单状态。'
+          paymentBlocked.value = true
+        } else if (typeof action.clientSecret !== 'string' || !action.clientSecret.trim() || !result.paymentAttempt || result.paymentAttempt.orderId !== result.order.id) {
+          error.value = '支付组件数据无效，请刷新订单状态。'
+          paymentBlocked.value = true
+        } else if (result.paymentAttempt.status === 'PROCESSING') {
+          paymentAction.value = action
+        }
+      } else if (result.paymentAttempt?.status === 'PROCESSING') pollPayment(result.paymentAttempt.id)
+    }
     requestNotificationRefresh()
   } catch (cause) {
+    if (page !== pageGeneration || generation !== paymentGeneration) return
     error.value = cause instanceof TicketApiError ? cause.message : '支付请求结果未知，已重新读取订单。'
     await refreshOrder(true)
   } finally {
-    paymentStarting.value = false
+    if (page === pageGeneration) paymentStarting.value = false
   }
 }
 
+function submitted(attemptId: string, uncertain: boolean) {
+  if (order.value?.status !== 'PENDING_PAYMENT' || paymentAttempt.value?.id !== attemptId) return
+  paymentAction.value = null
+  error.value = uncertain ? '支付结果暂未确认，正在同步服务器状态。' : ''
+  pollPayment(attemptId)
+  void refreshOrder(true)
+}
+
 async function cancel() {
-  if (!order.value) return
+  if (!order.value || cancelling.value) return
+  const page = pageGeneration
   cancelling.value = true
   error.value = ''
   try {
     const result = await ticketApi.cancelOrder(order.value.id)
-    order.value = result.order
+    if (page !== pageGeneration) return
+    readGeneration++
+    adoptOrder(result.order)
+    stopPayment()
     showNotice(result.disposition === 'CANCELLED_NOW'
       ? '订单已取消，座位已释放。'
       : '该订单此前已经取消，已同步最新状态。')
     requestNotificationRefresh()
+    await refreshOrder(true)
   } catch (cause) {
+    if (page !== pageGeneration) return
     error.value = cause instanceof TicketApiError ? cause.message : '取消订单失败。'
     await refreshOrder(true)
   } finally {
-    cancelling.value = false
+    if (page === pageGeneration) cancelling.value = false
   }
 }
 
 async function expire() {
   if (!order.value) return
-  order.value = await ticketApi.expireOrderForDemo(order.value.id)
+  const page = pageGeneration
+  const value = await ticketApi.expireOrderForDemo(order.value.id)
+  if (page === pageGeneration) adoptOrder(value)
 }
 
 function focusSync() {
@@ -121,12 +191,57 @@ function focusSync() {
   requestNotificationRefresh()
 }
 
+async function restore() {
+  const page = pageGeneration
+  const returning = route.query.paymentReturn === '1'
+  const hint = route.query.paymentAttemptId
+  const query = cleanPaymentQuery(route.query)
+  const hasPaymentQuery = Object.keys(query).length !== Object.keys(route.query).length
+  try {
+    const accessible = await refreshOrder()
+    if (!returning || !accessible || !order.value || page !== pageGeneration) return
+    if (typeof hint !== 'string' || !hint.trim()) {
+      error.value = '支付恢复信息无效，请刷新订单状态。'
+      return
+    }
+    const attempt = await ticketApi.getPaymentAttempt(hint)
+    if (page !== pageGeneration) return
+    if (attempt.orderId !== order.value.id) {
+      error.value = '支付恢复信息与当前订单不匹配，已忽略。'
+      return
+    }
+    paymentAttempt.value = attempt
+    if (attempt.provider === 'stripe') stripeMode.value = true
+    if (attempt.status === 'PROCESSING' && order.value.status === 'PENDING_PAYMENT') pollPayment(attempt.id)
+    else { await refreshOrder(true); requestNotificationRefresh() }
+  } catch {
+    if (page === pageGeneration) error.value = '无法恢复该支付尝试，请刷新订单状态。'
+  } finally {
+    if (page === pageGeneration && hasPaymentQuery) await router.replace({ path: route.path, query, hash: route.hash })
+  }
+}
+
+watch(() => route.params.orderId, () => {
+  pageGeneration++
+  readGeneration++
+  stopPayment()
+  order.value = null
+  session.value = null
+  event.value = null
+  paymentAttempt.value = null
+  paymentStarting.value = false
+  cancelling.value = false
+  stripeMode.value = Boolean(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY?.trim())
+  void restore()
+})
+
 onMounted(() => {
-  void refreshOrder()
+  void restore()
   window.addEventListener('focus', focusSync)
 })
 onBeforeUnmount(() => {
-  paymentGeneration += 1
+  pageGeneration++
+  stopPayment()
   window.removeEventListener('focus', focusSync)
 })
 </script>
@@ -143,5 +258,7 @@ onBeforeUnmount(() => {
   </main>
   <p v-else-if="error" class="message-banner message-banner--error" role="alert">{{ error }}</p>
   <p v-if="loading && !order" class="page-shell">正在加载订单…</p>
-  <OrderView v-else-if="order && event && session" :order="order" :event="event" :session="session" :seats="seats" :refreshing="loading" :payment-starting="paymentStarting" :payment-polling="paymentPolling" :cancelling="cancelling" :payment-attempt="paymentAttempt" @pay="pay" @cancel="cancel" @expire="expire" @refresh="refreshOrder" @start-over="router.push({ name: routeNames.events })" />
+  <OrderView v-else-if="order && event && session" :order="order" :event="event" :session="session" :seats="seats" :refreshing="loading" :payment-starting="paymentStarting" :payment-polling="paymentPolling" :cancelling="cancelling" :payment-attempt="paymentAttempt" :stripe-mode="stripeMode" :payment-prepared="Boolean(paymentAction) || paymentBlocked" @pay="pay" @cancel="cancel" @expire="expire" @refresh="refreshOrder" @start-over="router.push({ name: routeNames.events })">
+    <StripePaymentPanel v-if="order.status === 'PENDING_PAYMENT' && paymentAction && paymentAttempt" :client-secret="paymentAction.clientSecret" :payment-attempt-id="paymentAttempt.id" :order-id="order.id" :disabled="cancelling" @submitted="submitted" />
+  </OrderView>
 </template>

@@ -17,6 +17,7 @@ export default defineConfig({
     env: {
       ...process.env,
       VITE_USE_MOCK_API: 'true',
+      VITE_STRIPE_PUBLISHABLE_KEY: '',
     },
   },
 })

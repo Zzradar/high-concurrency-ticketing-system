@@ -927,3 +927,37 @@ A01 自动变成 HELD
 7. 用户可以通过通知中心看到支付、取消、过期与自动退款结果，并幂等标记已读。
 
 MVP 第一阶段的目标是形成一个清晰、稳定、方便后端联调和演示的票务前端，而不是追求复杂视觉效果或完整商业产品能力。
+
+## Phase 11 前端：Payment Element 与回跳恢复
+
+官方依赖为 `@stripe/stripe-js`（npm lockfile 9.15.0），不引入 Vue wrapper 或自行收集卡号/CVC。实现依据 Stripe 官方 [confirmPayment](https://docs.stripe.com/js/payment_intents/confirm_payment)、[Payment Element](https://docs.stripe.com/js/elements_object/create_payment_element) 和 [Elements 支付接入](https://docs.stripe.com/payments/accept-a-payment?platform=web&ui=elements)。本轮保留既有 Vue/Vite/TypeScript/Axios/Playwright 版本。
+
+- `payments/stripeClient.ts` 仅读取 `VITE_STRIPE_PUBLISHABLE_KEY`，动态导入官方包并缓存一个 Stripe Promise。simulation 不调用 helper；缺 key 不加载脚本。加载失败只输出固定安全提示，刷新页面可重新初始化。
+- `StripePaymentPanel.vue` 管理 `stripeElementLoading`、ready/change complete、`stripeConfirming` 和局部错误。为每个 clientSecret 创建独立 Elements/Payment Element；secret、订单或 Attempt 变化以及 unmount 均 destroy，并使旧异步回调失效。默认字段和支付方式由 Stripe/Backend 决定。
+- `OrderPage.vue` 管理 `paymentStarting`、`paymentPolling`、当前 Attempt/action 及取消状态。开始按钮与组件确认按钮分离；缺 key/不支持 action 不重复 pay。取消按钮独立可用。正式 Order 终态均只来自 Backend，终态刷新销毁组件并停止 polling。
+- `confirmPayment` 使用 Elements、同源订单 `return_url` 和 `redirect: 'if_required'`；由 Stripe 处理 3DS/redirect。非跳转返回后销毁准备表单，立即 refreshOrder 并查询同一本地 Attempt。validation/card error 仅显示经过防御性 secret 脱敏的 message；transport error/throw/无明确结果均进入 Backend 恢复，不自动第二次 POST。
+- `payments/paymentReturn.ts` 生成编码后的本地 Order/Attempt URL，并按 query 键排除 provider 参数，绝不访问 Stripe 自动追加的 secret 值。Router 在登录守卫复制 fullPath 前就移除 provider 参数，OrderPage 在恢复结束 replace 清理本地 hint。认证后先验证 Order 可访问，再读取 owner 隔离的 Attempt，比较 orderId；非法 hint/404/跨订单提示安全错误。无关 query 保留。
+- page/payment/read generation 阻止路由切换、取消和较新读取之后的旧响应覆盖当前状态。已提交的 Stripe confirm Promise 没有本地撤回能力；取消后前端销毁 Element、忽略返回，迟到成功交给后端退款。
+- clientSecret 不持久化，仅用作页面/Elements 内存输入。重新打开页面需用户显式 pay，由后端按 PROCESSING/deadline 条件复用；ALREADY_PAID 直接展示后端 Order。不同客户端不生成支付身份。
+- 默认 simulation/null action 继续每约 1 秒观察 Attempt，最长约 15 秒，超时显示结果未定；不将 Stripe provider status 或浏览器超时当作正式 Order 终态。10 秒 processing grace 完全未修改。
+
+### Phase 11 验证边界
+
+Vitest 使用官方包 mock，覆盖 loadStripe、elements/create/mount/destroy、ready/change/loaderror、确认成功/输入错误/transport/未完成 redirect 抽象、取消、重开、多客户端已有结果、15 秒超时及回跳校验。Mock Playwright 的测试代码仅在开发模块中覆写 API 返回，不添加 production window 后门，不请求 Stripe 网络。真实 Playwright 继续使用现有 Backend/PostgreSQL/Redis 与 simulation；只恢复专用 E2E 订单数据，不改 Schema/Seed/配置。
+
+Real Stripe Sandbox = NOT RUN；reason = missing external credentials/tooling。Stripe CLI 未安装/未执行。普通卡、真实 3DS、真实失败、Webhook forwarding 暂停后的主动 reconcile 与真实 late-success refund 均未执行。10 秒 grace 的真实 3DS 验证：未执行。mock 中等待认证 11 秒仅证明前端不会自行宣告失败，不能证明 Backend 的 10 秒规则对真实用户足够。进入发布前必须补充正常人工速度的 3DS 时间线及 accepted_at/退款证据。
+
+验证记录（2026-09-07，本地 main，Phase11 后端基线 `02277be`）：
+
+| 验证 | 结果 |
+| --- | --- |
+| Frontend Vitest full | 12 files，87/87 PASS |
+| vue-tsc -b / production build | PASS |
+| 根目录 E2E TypeScript | PASS |
+| Mock Playwright full | 7/7 PASS（原有 4 项 + 新增 3 项） |
+| Real simulation Playwright round1 | 5/5 PASS，34.1 秒 |
+| Real simulation Playwright round2 | 5/5 PASS，30.4 秒；连续两轮 full pass |
+| clientSecret storage/log/notification 路径及前端 secret-key 搜索 | PASS；仅内存使用，query getter 测试确认未读取 provider secret 值 |
+| Real Stripe Sandbox / Stripe CLI / 真实 3DS grace | NOT RUN；缺少外部凭据和 CLI |
+
+Mock 浏览器首次新增测试直接调用 API login，未同步页面 authState，导致 3 项被登录守卫拦截；测试改用项目 authState.login 后全量通过。生产认证逻辑未为测试添加旁路。上述 Sandbox 缺项仍是正式发布核验前置条件，本地前端实现不代表真实渠道已验收。

@@ -625,7 +625,7 @@ async function mockPayOrder(orderId: string): Promise<PaymentStartResult> {
     const accepted = [...paymentAttempts.values()].find(
       (attempt) => attempt.orderId === orderId && attempt.acceptedAt,
     )
-    return clone({ disposition: 'ALREADY_PAID', order, paymentAttempt: accepted ?? null })
+    return clone({ disposition: 'ALREADY_PAID', order, paymentAttempt: accepted ?? null, paymentAction: null })
   }
   if (order.status === 'EXPIRED') {
     throw new TicketApiError('订单已过期。', 'ORDER_EXPIRED')
@@ -634,12 +634,13 @@ async function mockPayOrder(orderId: string): Promise<PaymentStartResult> {
     throw new TicketApiError('当前订单无法支付。', 'ORDER_NOT_PAYABLE')
   }
   const existing = activeProcessingAttempt(orderId)
-  if (existing) return clone({ disposition: 'REUSED_PROCESSING', order, paymentAttempt: existing })
+  if (existing) return clone({ disposition: 'REUSED_PROCESSING', order, paymentAttempt: existing, paymentAction: null })
 
   const startedAt = new Date()
   const delay = mockPaymentDelayMilliseconds ?? 2000 + Math.random() * 4000
   const attempt: PaymentAttempt = {
     id: 'PAY-' + ++sequence,
+    provider: 'simulation',
     orderId,
     status: 'PROCESSING',
     startedAt: startedAt.toISOString(),
@@ -649,7 +650,7 @@ async function mockPayOrder(orderId: string): Promise<PaymentStartResult> {
   paymentAttempts.set(attempt.id, attempt)
   const outcome = mockPaymentOutcome ?? (Math.random() < 0.01 ? 'FAILURE' : 'SUCCESS')
   window.setTimeout(() => finishMockPayment(attempt.id, outcome), delay)
-  return clone({ disposition: 'STARTED_NEW', order, paymentAttempt: attempt })
+  return clone({ disposition: 'STARTED_NEW', order, paymentAttempt: attempt, paymentAction: null })
 }
 
 async function mockCancelOrder(orderId: string): Promise<CancelOrderResult> {

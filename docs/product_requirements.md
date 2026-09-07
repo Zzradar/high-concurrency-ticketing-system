@@ -178,10 +178,18 @@ MVP 的模拟支付在发起后约 2～6 秒完成，约有 1% 概率失败。�
 
 ### 6.2 后续阶段
 
-- 完成 Stripe Sandbox Provider、签名 Webhook Inbox、主动查单、跨 Backend 重启恢复和异步系统退款；
+- 对已实现的 Stripe Provider、Webhook Inbox、主动查单和前端 Payment Element 进行真实 Sandbox 验证并完成发布核验；
 - 设计正常 PAID 订单的主动退票与退款能力。
 
 Phase 11 保持默认 simulation 开箱即用和原 10 秒 processing grace；Stripe client secret 只在订单 owner 发起或恢复支付时临时返回。BUYER 主动退款仍属于 Phase 12，真实 Stripe Sandbox 凭据验证属于发布 Gate。
+
+Phase 11 前端支付为两阶段：先开始/恢复支付，再在官方 Stripe Payment Element 中填写并确认。设置前端 `VITE_STRIPE_PUBLISHABLE_KEY` 后使用“开始支付”，接收到 Stripe action 后显示支付方式和“确认支付”；默认无 key 的 simulation 保留模拟支付文案及原行为。前端无法在第一次 pay 之前从 Order contract 获知 provider；缺 key 但收到 Stripe action 时明确报配置错误并保留支付尝试。
+
+Stripe 处理必要的 3DS/redirect，使用 `redirect: if_required` 和当前订单 return_url。回跳只以本地 paymentAttemptId 为查询线索，验证所属订单后恢复；Stripe 自动追加的支付参数会清除。clientSecret 仅存在内存，不写 localStorage/sessionStorage、日志或通知。刷新、关闭页面或换客户端后，用户显式继续支付，由后端决定是否复用同一 Attempt。
+
+正式成功/失败仍由本地 Backend PaymentAttempt/Order 决定。用户可修正的支付输入错误只在组件附近显示；网络结果未知时同步服务器，不自动重建支付。前端只主动观察约 15 秒，之后提示稍后刷新。支付期间仍可取消订单，已提交渠道操作可能迟到成功，由后端负责自动退款。
+
+后端 10 秒 processing grace 未修改。真实 Stripe Sandbox = NOT RUN（当前环境缺少外部凭据及 Stripe CLI）；10 秒 grace 的真实 3DS 验证：未执行。发布前必须按正常人工速度完成 3DS，记录 started_at、认证完成时间、provider/Order 终态、processingDeadline、accepted_at 和是否发生错误迟到退款；若正常操作因超时导致不合理退款，应作为主方案业务规则 blocker 评审，前端不得自行绕过。Phase 12 未实施。
 
 ### 6.3 按压测决定
 
