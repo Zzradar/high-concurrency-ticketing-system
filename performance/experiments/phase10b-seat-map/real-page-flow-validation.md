@@ -2,13 +2,17 @@
 
 ## 结论
 
-本轮确认前端已经真实接入 Static Layout 与 Dynamic Availability，且完整 Page Entry 单项在
-10、30、60 次页面进入/秒下均通过。但新版 Mixed Read 2× 在固定 4-worker / queue16 下出现
-69 次 compute rejection 和 HTTP 503；最终真实后端 Playwright 复验还暴露出 5,000 座页面中前排
-座位可能落在可视区域之外、无法由普通点击选择的问题。因此 **Phase10B-3 本轮不封板**。前者不是
-PostgreSQL 权威数据损坏，而是完整页面进入中的 Layout 与持续 Availability refresh 共享 executor 后，
-组合压力比上一轮仅测 Availability 的 Mixed Read 更早触及计算容量边界；后者属于前端修复任务，
-本轮按范围约束只保留证据，不修改前端。
+Phase10B-3 的目的是确认 Static Layout / Dynamic Availability 的真实页面接入、稳定区域、首次失稳
+区域、首要瓶颈、数据正确性和过载保护行为。本轮确认前端已经真实接入拆分接口，且完整 Page Entry
+单项在 10、30、60 次页面进入/秒下均通过。新版 Mixed Read 1× 是当前固定资源下最高已验证稳定的
+组合档；Mixed Read 2× 出现 69 次 compute rejection 和 HTTP 503，是当前固定 4-worker / queue16
+下 Seat Map 有界计算执行器的 first observed overload（首次观察到过载），不是整个系统的精确容量上限。
+
+先前发现的 5,000 座页面首排前部不可点击问题，已由后续提交
+`27039f630ca6fe84f3259abb75b9903a5c919d27` 修复。该提交保持普通 click，新增首尾座位、横向滚动、
+zone 切换、窄视口和键盘操作覆盖，真实 Playwright 连续两轮 5/5。因此该功能 blocker 已关闭。
+当前没有尚未解决的 Phase10B-3 设计或功能 blocker，**Phase10B-3 技术验证已完成，可以进入独立发布
+核验**；这不等于已经发布，也不构成商业 SLA、多实例能力或生产容量承诺。
 
 本轮没有修改 `frontend/` 或 `backend/`，没有通过扩 worker、扩 queue、扩连接池、缓存或 Delta
 隐藏结果。完整机器可读证据见 `real-page-flow-browser.json` 与
@@ -127,13 +131,19 @@ active=3，queue wait p95=1.85ms。2× 共 9,614 个 HTTP 请求，没有 droppe
 HTTP 503/system error，与 compute rejected=69 一致；Page Entry 失败 14 组，独立 refresh 失败 55 次。
 Public/Auth 没有失败，分类指标没有被全局 p95 掩盖。
 
+Page Entry 的 14 个失败由 Layout 2 个和 Availability 12 个组成，再加独立 refresh 的 55 个失败，
+与 69 次 rejection/503 一一对应。这里的 503 是有界 compute queue 满时的主动过载保护，不是压测器
+漏发、Redis timeout、PostgreSQL 故障或 callback offload 失效。秒级采样没有捕获到 queue16 的全部
+瞬时峰值不构成矛盾；reject 本身证明请求提交当时队列已达到容量边界。
+
 2× 的 compute active 达到 4；1 秒级采样看到 queue 峰值 7，但发生 rejection 证明更细粒度瞬间已经触及
 queue16。queue wait p95=90.29ms、execution p95=48.04ms。Availability Redis lookup p95 上升至
 134.21ms，但 timeout/error/parse error 仍为 0。Layout DB/materialize p95=24.61ms，Availability
 DB/materialize p95=22.56ms；PostgreSQL verifier 仍通过。
 
-4× 会形成 Page Entry 60/s 加 refresh 240/s，即总 Availability 300/s，已达到上一轮明确 first observed
-unstable；由于 2× 已经失稳，本轮未执行 4× 或 8×。
+4× 会形成 Page Entry 60/s 加 refresh 240/s，即总 Availability 300/s，已达到上一轮 Availability 单接口
+明确 first observed overload；由于 2× 已经观察到组合过载，本轮未执行 4× 或 8×。历史单接口的
+Availability 200/s 是最高已验证稳定档，300/s 是首次观察到过载档；两者都不是整个系统的容量或精确极限。
 
 ## 系统资源与权威数据
 
@@ -154,25 +164,29 @@ PaymentAttempt、Refund、Notification 或正式 Seat 所有权。
 
 前端 Vitest 9 files/50 tests、`vue-tsc -b` 和生产构建通过；Frontend Mock Playwright 4/4 通过。
 根目录真实 E2E 在旧卷上首次因历史幂等数据命中 PAID/EXPIRED 而 1/4，通过安全 guard 仅重建三个
-`ticketing_phase10a_*` 卷后曾 4/4 通过。最终以同一 5,000 座 Performance 数据集复验时为 2/4：
-checkout-smoke 在点击 `R001-004` 时超时，失败截图显示一行 500 个座位被居中后，当前可视区域从约
-243 号座位开始，目标前排座位处于视口外；multi-client 随后也超时。该不一致不满足“所有真实 E2E
-回归通过”的封板门槛，且本轮没有修改前端。上述 reset 没有清理用户标准开发卷。
+`ticketing_phase10a_*` 卷后曾 4/4 通过。随后同一 5,000 座 Performance 数据集复验暴露首排前部
+不可点击问题；提交 `27039f63` 使用 `flex-start` fallback 与 `safe center` 修复大 row 溢出，同时保持
+小 row 居中。审查确认新增测试没有 force-click、DOM 强制 click、替换为中间座位、缩小 5,000 座
+fixture 或修改 Seed；修复报告的真实 Playwright 连续两轮均为 5/5，checkout-smoke 与 multi-client
+均通过。因此该 blocker 已关闭。上述 reset 没有清理用户标准开发卷。
 
 Performance Python 101/101、Backend CTest 23/23、Read API 4/4、Seat Hold 11/11、Checkout 6/6、
 Auth 7/7 均通过。数据库 verifier 的 14 项不变量全部 violation_count=0，observability verifier 为
-PASS；真实后端 Playwright 的最终结果则如上为 2/4，并非全部通过。
+PASS。可达性修复后的独立发布核验仍需按发布流程重新执行，不把本阶段测试等同于发布完成。
 
-Phase10B-3 的前端接入、真实请求图、Page Entry 60/s 单项和数据正确性已经被证明，但新版 Mixed 2×
-存在未解释为可接受行为的 69 个系统拒绝，且 5,000 座真实 UI 回归未全部通过，不满足封板条件。
-因此当前结论是：
+Phase10B-3 已找到稳定组合档、首次过载组合档和 Seat Map bounded compute executor 瓶颈；过载时
+69 次 503 与 69 次 reject 一一对应，没有丢失 workload、Redis 错误或数据库不变量破坏。项目没有
+业务 SLO 要求 Mixed 2× 必须稳定，因此该档位用于标定当前资源边界，不再作为必须继续优化的 blocker。
+当前结论是：
 
 ```text
-Phase10B-3：尚未封板
-阻塞证据 1：固定 4/16 下真实组合 Mixed Read 2× 出现 69 次 compute rejection / HTTP 503
-阻塞证据 2：5,000 座真实后端 Playwright 最终复验 2/4，前排座位可能处于不可点击的视口外区域
+Phase10B-3：技术验证完成，可以进入独立发布核验
+稳定档：Mixed Read 1× 是当前固定资源下最高已验证稳定组合档
+过载档：Mixed Read 2× 是当前固定资源下首次观察到过载的组合档
+当前设计/功能 blocker：无
 ```
 
-这不推翻 Availability 单项最高已验证稳定 200/s，也不能把 200/s 扩大成整个系统容量。下一任务应先审查
-真实 Page Entry 与 refresh 组合的容量预算和资源隔离取舍；本轮不实施 Delta、缓存、WebSocket、扩池、
-Waiting Room、zone 分区或其他优化。
+如果未来明确要求提高单实例 Seat Map 容量，Mixed 2× 中同一 Session 的 Layout 在 Page Entry 30/s 下
+重复读取、构造 JSON 和 gzip，使 Static Layout 服务端复用或 Cache 成为有证据支持的候选；但在决定
+实施前仍需明确可变字段、price 缓存边界、失效策略和多 Backend 一致性。本轮不实施 Cache、ETag、
+singleflight、Delta、WebSocket、扩池、Waiting Room、zone 分区、分页或其他优化。

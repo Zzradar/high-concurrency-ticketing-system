@@ -355,10 +355,13 @@ DTO/JSON/Response 构造；queue full 与 legacy 一样返回 `503 SEAT_MAP_BUSY
 Phase10B-3.5 的真实浏览器记录确认：首次进入先取 Session，再并行取 Event、Layout 和 Availability；
 创建及更新 CheckoutSession 后只刷新 Availability，Layout 不重复读取。完整 Page Entry 单项在已测试的
 10/30/60 次页面进入每秒均稳定，但包含 Public、Auth、完整 Page Entry 和后续 Availability refresh 的
-新版 Mixed Read 2× 在固定 4-worker / queue16 下出现 69 次 compute rejection / HTTP 503。因此
-最终 5,000 座真实后端 Playwright 复验也因前排座位落在可点击视口外而仅通过 2/4。
-Phase10B-3 当前尚未封板，不能把 Availability 单项 200/s 描述为系统容量；本阶段也没有据此引入缓存、
-Delta、WebSocket 或扩池。证据与边界见
+新版 Mixed Read 1× 是当前固定资源下最高已验证稳定组合档，2× 则出现 69 次 compute rejection /
+HTTP 503，是 4-worker / queue16 有界 Seat Map executor 的首次观察到过载档，不是整个系统的精确容量。
+先前 5,000 座首排前部不可点击问题已由 `27039f63` 修复，普通 click、首尾座位、窄视口和键盘操作均有
+覆盖，真实 Playwright 连续两轮 5/5。Phase10B-3 已完成稳定区、首次过载区、瓶颈、正确性与过载保护
+验证，当前没有未解决的设计/功能 blocker，可以进入独立发布核验；这不等于已经发布。Availability
+单接口 200/s 只是最高已验证稳定档，300/s 只是首次观察到过载档，均不能描述为系统容量。本阶段没有
+据此引入缓存、Delta、WebSocket 或扩池。证据与边界见
 `performance/experiments/phase10b-seat-map/real-page-flow-validation.md`。
 
 ### 5.3 提交座位预订
