@@ -1,7 +1,12 @@
 services:
+  fake-stripe:
+    image: python:3.12-alpine
+    command: ["python", "/tests/fake_stripe_server.py", "--port", "18081"]
+    ports: ["18085:18081"]
+    volumes: ["./fake_stripe_server.py:/tests/fake_stripe_server.py:ro"]
   redis:
     image: redis:7.4-alpine
-    ports: ["16380:6379"]
+    ports: ["16382:6379"]
     volumes:
       - type: tmpfs
         target: /data
@@ -18,9 +23,9 @@ services:
       POSTGRES_USER: ticketing
       POSTGRES_PASSWORD: ticketing_dev
       TZ: Asia/Shanghai
-    ports: ["15433:5432"]
+    ports: ["15435:5432"]
     volumes:
-      - phase11_postgres_data:/var/lib/postgresql/data
+      - phase12_postgres_data:/var/lib/postgresql/data
       - ../db/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql:ro
       - ../db/migrations/002_add_reservation_idempotency.sql:/docker-entrypoint-initdb.d/002_add_reservation_idempotency.sql:ro
       - ../db/migrations/003_add_checkout_sessions.sql:/docker-entrypoint-initdb.d/003_add_checkout_sessions.sql:ro
@@ -44,16 +49,18 @@ services:
       retries: 30
 
   backend:
-    image: phase11_build-backend:latest
+    image: phase12-backend:local
+    command: ["stdbuf", "-oL", "./ticketing_backend", "config/config.docker.json"]
     depends_on:
       postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
-    ports: ["18082:8080"]
+    ports: ["18094:8080"]
     environment:
       TICKETING_PAYMENT_PROVIDER: ${TICKETING_PAYMENT_PROVIDER:-simulation}
       TICKETING_PAYMENT_FORCE_OUTCOME: ${TICKETING_PAYMENT_FORCE_OUTCOME:-}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_HTTP_TIMEOUT_SECONDS: 15
       STRIPE_CURRENCY: ${STRIPE_CURRENCY:-cny}
       STRIPE_PROCESSING_GRACE_SECONDS: ${STRIPE_PROCESSING_GRACE_SECONDS:-600}
       STRIPE_API_BASE_URL: ${STRIPE_API_BASE_URL:-https://api.stripe.com}
@@ -64,4 +71,4 @@ services:
       retries: 30
 
 volumes:
-  phase11_postgres_data:
+  phase12_postgres_data:

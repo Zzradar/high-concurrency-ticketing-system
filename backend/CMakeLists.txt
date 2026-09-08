@@ -60,6 +60,10 @@ add_executable(ticketing_backend
     src/controllers/ReservationController.cpp
     src/repositories/ReservationRepository.cpp
     src/services/ReservationService.cpp
+    src/controllers/RefundController.cpp
+    src/repositories/RefundRepository.cpp
+    src/services/RefundService.cpp
+    src/services/RefundLifecycleService.cpp
     src/controllers/OrderController.cpp
     src/controllers/PaymentController.cpp
     src/controllers/StripeWebhookController.cpp
@@ -111,6 +115,7 @@ endif()
 
 if(BUILD_TESTING)
     find_package(Python3 COMPONENTS Interpreter REQUIRED)
+    add_test(NAME phase12_source_contract COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase12_source_contract_test.py")
     add_test(
         NAME schema_contract
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/schema_contract_test.py"
@@ -233,4 +238,11 @@ if(BUILD_TESTING)
     )
     target_include_directories(seat_display_status_unit PRIVATE src)
     add_test(NAME seat_display_status_unit COMMAND seat_display_status_unit)
+endif()
+
+option(TICKETING_PHASE12_EXTERNAL_TESTS "Register tests requiring the isolated Phase12 Docker environment" OFF)
+if(BUILD_TESTING AND TICKETING_PHASE12_EXTERNAL_TESTS)
+    add_test(NAME phase12_migration COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase12_migration_test.py")
+    add_test(NAME phase12_buyer_refund COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase12_buyer_refund_integration_test.py")
+    set_tests_properties(phase12_migration phase12_buyer_refund PROPERTIES RUN_SERIAL TRUE LABELS integration)
 endif()

@@ -52,6 +52,11 @@ void SimulationPaymentProvider::createOrRecoverRefund(
                           .providerStatus = "succeeded",
                           .mappedState = ProviderRefundState::Succeeded,
                           .terminal = true};
+    refund.providerPaymentId = request.providerPaymentId;
+    refund.localRefundId = request.refundId;
+    refund.orderId = request.orderId;
+    refund.amount = request.amount;
+    refund.currency = request.currency;
     drogon::app().getLoop()->queueInLoop(
         [completion = std::move(completion), refund = std::move(refund)]() mutable {
             completion({ProviderTransportOutcome::Success, std::move(refund), {}});
@@ -66,6 +71,11 @@ void SimulationPaymentProvider::retrieveRefund(
                           .providerStatus = "succeeded",
                           .mappedState = ProviderRefundState::Succeeded,
                           .terminal = true};
+    refund.providerPaymentId = request.providerPaymentId;
+    refund.localRefundId = request.refundId;
+    refund.orderId = request.orderId;
+    refund.amount = request.amount;
+    refund.currency = request.currency;
     completion({ProviderTransportOutcome::Success, std::move(refund), {}});
 }
 }  // namespace ticketing

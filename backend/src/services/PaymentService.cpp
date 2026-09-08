@@ -273,7 +273,7 @@ void PaymentService::startProvider(const std::shared_ptr<StartState> &state,
     const CreatePaymentRequest request{.attemptId = state->attempt->id,
                                        .orderId = state->orderId,
                                        .amount = state->order.totalAmount,
-                                       .currency = PaymentProviderFactory::configuredCurrency()};
+                                       .currency = state->attempt->currency};
     auto completion = [this, state, outcome](ProviderResult<ProviderPayment> result) {
         handleProviderResult(state, outcome, std::move(result));
     };

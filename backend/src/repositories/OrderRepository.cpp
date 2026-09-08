@@ -9,6 +9,20 @@ namespace ticketing
 {
 namespace
 {
+Json::Value parseJsonColumn(const drogon::orm::Row &row, const char *column)
+{
+    if (row[column].isNull())
+        return {};
+    Json::Value v;
+    Json::CharReaderBuilder b;
+    const auto text = row[column].as<std::string>();
+    std::string errors;
+    auto reader = std::unique_ptr<Json::CharReader>(b.newCharReader());
+    if (!reader->parse(text.data(), text.data() + text.size(), &v, &errors))
+        throw std::runtime_error("Invalid refund projection");
+    return v;
+}
+
 void logDatabaseError(const char *operation,
                       const drogon::orm::DrogonDbException &error)
 {
@@ -66,7 +80,13 @@ void OrderRepository::findByIdForUser(
                     ticket_order.paid_at AT TIME ZONE 'UTC',
                     'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'
                 )
-            END AS paid_at
+            END AS paid_at,
+ (SELECT jsonb_build_object('id',f.id,'orderId',f.order_id,'status',f.status,'amount',f.amount,'currency',f.currency,'source',f.source,'reason',f.reason)
+ FROM refunds f WHERE f.order_id=ticket_order.id AND f.source='BUYER')::text AS buyer_refund,
+ jsonb_build_object('eligible',ticket_order.status='PAID' AND session.start_time>clock_timestamp() AND NOT EXISTS(SELECT 1 FROM refunds f WHERE f.order_id=ticket_order.id AND f.source='BUYER'),
+ 'deadline',TO_CHAR(session.start_time AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
+ 'reason',CASE WHEN EXISTS(SELECT 1 FROM refunds f WHERE f.order_id=ticket_order.id AND f.source='BUYER') THEN 'ALREADY_REQUESTED'
+ WHEN ticket_order.status<>'PAID' THEN 'ORDER_NOT_REFUNDABLE' WHEN session.start_time<=clock_timestamp() THEN 'REFUND_WINDOW_CLOSED' ELSE NULL END)::text AS refund_eligibility
         FROM orders AS ticket_order
         JOIN reservations AS reservation
             ON reservation.id = ticket_order.reservation_id
@@ -106,6 +126,8 @@ void OrderRepository::findByIdForUser(
                                     first["paid_at"].as<std::string>()},
             };
 
+            order.buyerRefund = parseJsonColumn(first, "buyer_refund");
+            order.refundEligibility = parseJsonColumn(first, "refund_eligibility");
             order.seatIds.reserve(rows.size());
             for (const auto &row : rows)
             {
@@ -154,7 +176,9 @@ void OrderRepository::listForUser(
                        'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS created_at,
                CASE WHEN ticket_order.paid_at IS NULL THEN NULL ELSE
                    TO_CHAR(ticket_order.paid_at AT TIME ZONE 'UTC',
-                           'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') END AS paid_at
+                           'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') END AS paid_at,
+ (SELECT jsonb_build_object('id',f.id,'orderId',f.order_id,'status',f.status,'amount',f.amount,'currency',f.currency,'source',f.source,'reason',f.reason)
+ FROM refunds f WHERE f.order_id=ticket_order.id AND f.source='BUYER')::text AS buyer_refund
         FROM selected_orders
         JOIN orders AS ticket_order ON ticket_order.id = selected_orders.id
         JOIN reservations AS reservation ON reservation.id = ticket_order.reservation_id
@@ -188,6 +212,7 @@ void OrderRepository::listForUser(
                                             row["paid_at"].as<std::string>()},
                     });
                 }
+                orders.back().buyerRefund = parseJsonColumn(row, "buyer_refund");
                 orders.back().seatIds.push_back(
                     row["session_seat_id"].as<std::string>());
             }
@@ -552,6 +577,42 @@ void OrderRepository::transitionOrder(
         [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
             logDatabaseError("Failed to transition order", error); onError();
         }, orderId, targetStatus);
+}
+
+void OrderRepository::releaseSoldSeatsForBuyerRefund(const TransactionPtr &tx,
+                                                     const std::string &id,
+                                                     std::function<void(std::size_t)> ok,
+                                                     ErrorCallback err) const
+{
+    tx->execSqlAsync(
+        "UPDATE session_seats s SET status='AVAILABLE',current_reservation_id=NULL FROM "
+        "reservation_session_seats item "
+        "WHERE item.reservation_id=$1 AND s.id=item.session_seat_id AND s.status='SOLD' AND "
+        "s.current_reservation_id IS NULL RETURNING s.id",
+        [ok](const drogon::orm::Result &r) { ok(r.size()); },
+        [err](const drogon::orm::DrogonDbException &) { err(); }, id);
+}
+void OrderRepository::cancelConfirmedReservationForBuyerRefund(const TransactionPtr &tx,
+                                                               const std::string &id,
+                                                               std::function<void(std::size_t)> ok,
+                                                               ErrorCallback err) const
+{
+    tx->execSqlAsync(
+        "UPDATE reservations SET status='CANCELLED' WHERE id=$1 AND status='CONFIRMED' RETURNING "
+        "id",
+        [ok](const drogon::orm::Result &r) { ok(r.size()); },
+        [err](const drogon::orm::DrogonDbException &) { err(); }, id);
+}
+void OrderRepository::cancelPaidOrderForBuyerRefund(const TransactionPtr &tx, const std::string &id,
+                                                    const std::string &moment,
+                                                    std::function<void(std::size_t)> ok,
+                                                    ErrorCallback err) const
+{
+    tx->execSqlAsync(
+        "UPDATE orders SET status='CANCELLED',refunded_at=$2::timestamptz WHERE id=$1 AND "
+        "status='PAID' AND refunded_at IS NULL RETURNING id",
+        [ok](const drogon::orm::Result &r) { ok(r.size()); },
+        [err](const drogon::orm::DrogonDbException &) { err(); }, id, moment);
 }
 
 void OrderRepository::payOrder(

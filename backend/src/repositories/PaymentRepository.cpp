@@ -1,4 +1,5 @@
 #include "repositories/PaymentRepository.h"
+#include "payments/PaymentProvider.h"
 
 #include <drogon/drogon.h>
 
@@ -21,7 +22,7 @@ constexpr const char *kAttemptColumns = R"SQL(
     attempt.failure_reason,
     attempt.provider,
     attempt.provider_payment_id,
-    attempt.provider_status
+    attempt.provider_status, attempt.currency
 )SQL";
 
 void logDatabaseError(const char *operation,
@@ -54,6 +55,7 @@ PaymentAttempt mapAttempt(const drogon::orm::Row &row)
         .provider = row["provider"].as<std::string>(),
         .providerPaymentId = optionalText(row, "provider_payment_id"),
         .providerStatus = optionalText(row, "provider_status"),
+        .currency = row["currency"].as<std::string>(),
     };
 }
 }  // namespace
@@ -176,12 +178,14 @@ void PaymentRepository::createAttempt(
     std::function<void(PaymentAttempt)> onSuccess,
     ErrorCallback onError) const
 {
-    const std::string sql = "WITH moment AS (SELECT clock_timestamp() AS now), "
+    const std::string sql =
+        "WITH moment AS (SELECT clock_timestamp() AS now), "
         "inserted AS (INSERT INTO payment_attempts (id, order_id, status, started_at, "
-        "processing_deadline, scheduled_complete_at, provider, next_reconcile_at) "
+        "processing_deadline, scheduled_complete_at, provider, next_reconcile_at, currency) "
         "SELECT $1, $2, 'PROCESSING', now, now + ($3 * INTERVAL '1 second'), "
         "CASE WHEN $5 = 'simulation' THEN now + ($4 * INTERVAL '1 second') ELSE NULL END, "
-        "$5, CASE WHEN $5 = 'simulation' THEN NULL ELSE now END FROM moment RETURNING *) SELECT " +
+        "$5, CASE WHEN $5 = 'simulation' THEN NULL ELSE now END, $6 FROM moment RETURNING *) "
+        "SELECT " +
         std::string{kAttemptColumns} + " FROM inserted AS attempt";
     transaction->execSqlAsync(
         sql,
@@ -191,7 +195,9 @@ void PaymentRepository::createAttempt(
         [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
             logDatabaseError("Failed to create payment attempt", error);
             onError();
-        }, attemptId, orderId, graceSeconds, delaySeconds, provider);
+        },
+        attemptId, orderId, graceSeconds, delaySeconds, provider,
+        PaymentProviderFactory::configuredCurrency());
 }
 
 void PaymentRepository::recordProviderPayment(
@@ -308,12 +314,17 @@ void PaymentRepository::insertRefund(const TransactionPtr &transaction,
 {
     transaction->execSqlAsync(
         "INSERT INTO refunds (id, payment_attempt_id, order_id, amount, reason, refunded_at, "
-        "source, status, provider, next_reconcile_at) "
-        "VALUES ($1, $2, $3, $4, $5, NULL, 'SYSTEM', 'PROCESSING', $6, clock_timestamp()) "
+        "source, status, provider, next_reconcile_at, currency) "
+        "SELECT $1, $2, $3, $4, $5, NULL, 'SYSTEM', 'PROCESSING', $6, clock_timestamp(), currency "
+        "FROM payment_attempts WHERE id = $2 "
         "ON CONFLICT (payment_attempt_id) DO NOTHING RETURNING id",
-        [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) { onSuccess(rows.size()); },
+        [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) {
+            onSuccess(rows.size());
+        },
         [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {
-            logDatabaseError("Failed to create automatic refund", error); onError();
-        }, refundId, attemptId, orderId, amount, reason, provider);
+            logDatabaseError("Failed to create automatic refund", error);
+            onError();
+        },
+        refundId, attemptId, orderId, amount, reason, provider);
 }
 }  // namespace ticketing

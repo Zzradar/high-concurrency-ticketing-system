@@ -34,6 +34,8 @@ class StripePaymentProvider final : public PaymentProvider
     static ProviderResult<ProviderRefund> mapRefund(const Json::Value &json,
                                                    const CreateRefundRequest &expected);
 
+    struct RefundScan;
+    void scanRefunds(std::shared_ptr<RefundScan> scan);
     StripeConfig config_;
     drogon::HttpClientPtr client_;
 };

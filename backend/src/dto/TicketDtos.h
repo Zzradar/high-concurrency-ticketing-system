@@ -159,6 +159,23 @@ struct Reservation
     }
 };
 
+struct Refund
+{
+    std::string id, orderId, paymentAttemptId, source, reason, status, currency, createdAt;
+    std::int64_t amount{};
+    std::optional<std::string> refundedAt, failedAt;
+    Json::Value toJson() const
+    {
+        Json::Value v;
+        v["id"]=id; v["orderId"]=orderId; v["paymentAttemptId"]=paymentAttemptId;
+        v["source"]=source; v["reason"]=reason; v["status"]=status; v["currency"]=currency;
+        v["amount"]=Json::Int64(amount); v["createdAt"]=createdAt;
+        if(refundedAt) v["refundedAt"]=*refundedAt;
+        if(failedAt) { v["failedAt"]=*failedAt; v["failureCode"]="PROVIDER_REFUND_FAILED"; }
+        return v;
+    }
+};
+
 struct TicketOrder
 {
     std::string id;
@@ -171,6 +188,8 @@ struct TicketOrder
     std::string expiresAt;
     std::string createdAt;
     std::optional<std::string> paidAt;
+    Json::Value buyerRefund;
+    Json::Value refundEligibility;
 
     Json::Value toJson() const
     {
@@ -188,6 +207,9 @@ struct TicketOrder
         value["totalAmount"] = Json::Int64(totalAmount);
         value["expiresAt"] = expiresAt;
         value["createdAt"] = createdAt;
+        value["buyerRefund"] = buyerRefund;
+        if (!refundEligibility.isNull())
+            value["refundEligibility"] = refundEligibility;
         if (paidAt)
         {
             value["paidAt"] = *paidAt;
@@ -266,6 +288,7 @@ struct PaymentAttempt
     std::string provider{"simulation"};
     std::optional<std::string> providerPaymentId;
     std::optional<std::string> providerStatus;
+    std::string currency;
 
     Json::Value toJson() const
     {
@@ -281,6 +304,7 @@ struct PaymentAttempt
         if (acceptedAt) value["acceptedAt"] = *acceptedAt;
         if (failureReason) value["failureReason"] = *failureReason;
         value["provider"] = provider;
+        value["currency"] = currency;
         if (providerStatus) value["providerStatus"] = *providerStatus;
         return value;
     }

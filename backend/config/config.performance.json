@@ -182,6 +182,46 @@
             "help": "Refund rows by bounded local status",
             "type": "gauge",
             "labels": ["status"]
+          },
+          {
+            "name": "ticketing_refund_requests_total",
+            "help": "ticketing_refund_requests_total",
+            "type": "counter",
+            "labels": [
+              "outcome"
+            ]
+          },
+          {
+            "name": "ticketing_refund_reconciliation_total",
+            "help": "ticketing_refund_reconciliation_total",
+            "type": "counter",
+            "labels": [
+              "source",
+              "recovery_reason",
+              "outcome"
+            ]
+          },
+          {
+            "name": "ticketing_refund_identity_conflicts_total",
+            "help": "ticketing_refund_identity_conflicts_total",
+            "type": "counter",
+            "labels": [
+              "reason"
+            ]
+          },
+          {
+            "name": "ticketing_refund_lifecycle_failures_total",
+            "help": "ticketing_refund_lifecycle_failures_total",
+            "type": "counter",
+            "labels": [
+              "stage"
+            ]
+          },
+          {
+            "name": "ticketing_refund_processing_age_seconds",
+            "help": "ticketing_refund_processing_age_seconds",
+            "type": "gauge",
+            "labels": []
           }
         ]
       }

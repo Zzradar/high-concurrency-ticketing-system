@@ -4,8 +4,9 @@
 import argparse
 import json
 import threading
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import parse_qs, unquote
+from urllib.parse import parse_qs, unquote, urlsplit
 
 
 class Store:
@@ -22,6 +23,12 @@ class Store:
         self.payment_mode = "processing"
         self.refund_mode = "succeeded"
         self.fail_once = set()
+        self.refund_lists = []
+        self.list_mode = "normal"
+        self.list_pages = None
+        self.refund_error = None
+        self.refund_delay = 0
+        self.refund_delayed = 0
 
     def reset(self):
         self.__init__()
@@ -43,11 +50,12 @@ class Handler(BaseHTTPRequestHandler):
     def log_request_line(self):
         print(f"{self.command} {self.path}", flush=True)
 
-    def json_response(self, status, value):
+    def json_response(self, status, value, retry=False):
         data = json.dumps(value, separators=(",", ":")).encode()
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(data)))
+        if retry: self.send_header("Stripe-Should-Retry", "true")
         self.end_headers()
         self.wfile.write(data)
 
@@ -71,6 +79,8 @@ class Handler(BaseHTTPRequestHandler):
                     "paymentRequests": list(STORE.payment_requests),
                     "createRefundCalls": list(STORE.create_refund_calls),
                     "retrievals": list(STORE.retrievals),
+                    "refundLists": list(STORE.refund_lists),
+                    "refundDelayed": STORE.refund_delayed,
                 })
             return
         if self.path.startswith("/v1/payment_intents/"):
@@ -80,12 +90,39 @@ class Handler(BaseHTTPRequestHandler):
                 STORE.retrievals.append({"kind": "payment", "id": object_id,
                                          "status": value.get("status") if value else None})
             return self.json_response(200 if value else 404, value or {"error": {"type": "invalid_request_error"}})
+        if urlsplit(self.path).path == "/v1/refunds":
+            params = parse_qs(urlsplit(self.path).query)
+            with STORE.lock:
+                STORE.refund_lists.append(params)
+                mode = STORE.list_mode
+                if mode == "network":
+                    self.connection.shutdown(1); self.connection.close(); return
+                if mode == "invalid_json":
+                    data=b"{broken-json"
+                    self.send_response(200);self.send_header("Content-Type","application/json");self.send_header("Content-Length",str(len(data)));self.end_headers();self.wfile.write(data);return
+                if mode == "invalid":
+                    return self.json_response(200, {"data": "invalid", "has_more": False})
+                if mode == "empty_more":
+                    return self.json_response(200, {"data": [], "has_more": True})
+                if STORE.list_pages is not None:
+                    cursor = form_value(params, "starting_after")
+                    index = 0 if not cursor else int(cursor.split("_")[-1]) + 1
+                    index = min(index, len(STORE.list_pages)-1)
+                    return self.json_response(200, STORE.list_pages[index])
+                values = [r for r in STORE.refunds.values() if r["payment_intent"] == form_value(params, "payment_intent")]
+                cursor = form_value(params, "starting_after")
+                start = next((i+1 for i,r in enumerate(values) if r["id"] == cursor),0) if cursor else 0
+                limit = int(form_value(params, "limit", "100"))
+                return self.json_response(200, {"data": values[start:start+limit], "has_more": len(values)>start+limit})
         if self.path.startswith("/v1/refunds/"):
             object_id = unquote(self.path.rsplit("/", 1)[-1])
             with STORE.lock:
                 value = STORE.refunds.get(object_id)
+                delay=STORE.refund_delay; STORE.refund_delay=0
+                if delay: STORE.refund_delayed+=1
                 STORE.retrievals.append({"kind": "refund", "id": object_id,
                                          "status": value.get("status") if value else None})
+            if delay: time.sleep(delay)
             return self.json_response(200 if value else 404, value or {"error": {"type": "invalid_request_error"}})
         self.json_response(404, {"error": {"type": "not_found"}})
 
@@ -100,10 +137,18 @@ class Handler(BaseHTTPRequestHandler):
                 STORE.retrievals.clear()
                 STORE.payment_mode = "processing"; STORE.refund_mode = "succeeded"
                 STORE.fail_once.clear()
+                STORE.refund_delay=0; STORE.refund_delayed=0
+                STORE.refund_lists.clear(); STORE.list_mode="normal"; STORE.list_pages=None; STORE.refund_error=None
             return self.json_response(200, {"ok": True})
         if self.path == "/__admin__/configure":
             config = self.read_json()
             with STORE.lock:
+                if "refundDelayOnce" in config: STORE.refund_delay=config["refundDelayOnce"]
+                if "listMode" in config: STORE.list_mode=config["listMode"]
+                if "listPages" in config: STORE.list_pages=config["listPages"]
+                if "refundError" in config: STORE.refund_error=config["refundError"]
+                if "forgetRefundKeys" in config: STORE.refund_keys.clear()
+                for refund in config.get("seedRefunds", []): STORE.refunds[refund["id"]]=refund
                 if "paymentMode" in config: STORE.payment_mode = config["paymentMode"]
                 if "refundMode" in config: STORE.refund_mode = config["refundMode"]
                 if "paymentPatch" in config:
@@ -161,12 +206,16 @@ class Handler(BaseHTTPRequestHandler):
             key = self.headers.get("Idempotency-Key", "")
             with STORE.lock:
                 STORE.create_refund_calls.append(key)
+                if STORE.refund_error:
+                    err=STORE.refund_error
+                    return self.json_response(err["status"], {"error": {"type":err.get("type","invalid_request_error"),"code":err.get("code","unknown")}}, retry=err.get("retry",False))
                 object_id = STORE.refund_keys.get(key)
                 if not object_id:
                     object_id = "re_fake_" + str(len(STORE.refunds) + 1)
                     STORE.refund_keys[key] = object_id
                     STORE.refunds[object_id] = {
-                        "id": object_id, "object": "refund", "status": STORE.refund_mode,
+                        "id": object_id, "object": "refund", "status": "succeeded" if STORE.refund_mode=="response_lost_once" else STORE.refund_mode,
+                        "currency": STORE.payments[form_value(values, "payment_intent")]["currency"],
                         "payment_intent": form_value(values, "payment_intent"),
                         "amount": int(form_value(values, "amount", "0")),
                         "metadata": {"local_refund_id": form_value(values, "metadata[local_refund_id]"),

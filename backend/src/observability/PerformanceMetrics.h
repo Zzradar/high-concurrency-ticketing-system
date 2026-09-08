@@ -39,6 +39,12 @@ class PerformanceMetrics final
     static void observePaymentReconciliation(std::string_view objectKind,
                                              std::string_view outcome);
     static void setPaymentReconciliationPending(double value);
+    static void refundRequest(std::string_view outcome);
+    static void refundReconciliation(std::string_view source, std::string_view reason,
+                                     std::string_view outcome);
+    static void refundConflict(std::string_view reason);
+    static void refundFailure(std::string_view stage);
+    static void refundAge(double seconds);
     static void setRefundStatusCount(std::string_view status, double value);
 };
 }  // namespace ticketing

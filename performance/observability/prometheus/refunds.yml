@@ -1,0 +1,22 @@
+# Provisional operational thresholds, not a validated business SLO.
+# Ratify against Phase 12-2 Sandbox and load measurements before production use.
+groups:
+  - name: refunds
+    rules:
+      - alert: RefundIdentityConflict
+        expr: increase(ticketing_refund_identity_conflicts_total[10m]) > 0
+        labels: {severity: critical}
+        annotations: {summary: "Refund identity or pagination conflict; inspect safe backend logs"}
+      - alert: RefundProviderBlocked
+        expr: increase(ticketing_refund_reconciliation_total{outcome="blocked"}[10m]) > 0
+        labels: {severity: critical}
+        annotations: {summary: "Refund blocked by authentication, permissions, or identity conflict"}
+      - alert: RefundLocalTerminalFailure
+        expr: increase(ticketing_refund_reconciliation_total{recovery_reason="terminal",outcome="failed"}[10m]) >= 3
+        labels: {severity: critical}
+        annotations: {summary: "Provider terminal result repeatedly fails local atomic completion"}
+      - alert: RefundProcessingTooLong
+        expr: ticketing_refund_processing_age_seconds > 900
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "Refund age exceeds provisional 15 minute investigation threshold"}

@@ -64,6 +64,11 @@ struct MetricsState
     std::shared_ptr<CounterCollector> paymentReconciliation;
     std::shared_ptr<GaugeCollector> paymentReconciliationPending;
     std::shared_ptr<GaugeCollector> refundsByStatus;
+    std::shared_ptr<CounterCollector> refundRequests;
+    std::shared_ptr<CounterCollector> refundReconciliation;
+    std::shared_ptr<CounterCollector> refundConflicts;
+    std::shared_ptr<CounterCollector> refundFailures;
+    std::shared_ptr<GaugeCollector> refundAge;
 };
 
 std::atomic<MetricsState *> seatMapMetrics{nullptr};
@@ -256,13 +261,23 @@ void PerformanceMetrics::registerWithApplication()
             "ticketing_payment_reconciliation_pending");
         state->refundsByStatus = exporter->getCollector<drogon::monitoring::Gauge>(
             "ticketing_refunds_by_status");
+        state->refundRequests =
+            exporter->getCollector<drogon::monitoring::Counter>("ticketing_refund_requests_total");
+        state->refundReconciliation = exporter->getCollector<drogon::monitoring::Counter>(
+            "ticketing_refund_reconciliation_total");
+        state->refundConflicts = exporter->getCollector<drogon::monitoring::Counter>(
+            "ticketing_refund_identity_conflicts_total");
+        state->refundFailures = exporter->getCollector<drogon::monitoring::Counter>(
+            "ticketing_refund_lifecycle_failures_total");
+        state->refundAge = exporter->getCollector<drogon::monitoring::Gauge>(
+            "ticketing_refund_processing_age_seconds");
         if (!state->requests || !state->durations || !state->inFlight ||
             !state->passwordHashQueueDepth ||
             !state->passwordHashActiveWorkers ||
             !state->passwordHashSubmissions || !state->passwordHashQueueWait ||
             !state->passwordHashExecution || !state->paymentProviderRequests ||
             !state->paymentWebhooks || !state->paymentReconciliation ||
-            !state->paymentReconciliationPending || !state->refundsByStatus)
+            !state->paymentReconciliationPending || !state->refundsByStatus || !state->refundRequests || !state->refundReconciliation || !state->refundConflicts || !state->refundFailures || !state->refundAge)
         {
             throw std::runtime_error(
                 "performance metric collector types do not match their configuration");
@@ -434,6 +449,35 @@ void PerformanceMetrics::setRefundStatusCount(std::string_view status, double va
 {
     if (auto *state = seatMapMetrics.load(std::memory_order_acquire))
         state->refundsByStatus->metric({std::string{status}})->set(value);
+}
+
+void PerformanceMetrics::refundRequest(std::string_view outcome)
+{
+    if (auto *s = seatMapMetrics.load())
+        s->refundRequests->metric({std::string(outcome)})->increment();
+}
+void PerformanceMetrics::refundReconciliation(std::string_view source, std::string_view reason,
+                                              std::string_view outcome)
+{
+    if (auto *s = seatMapMetrics.load())
+        s->refundReconciliation
+            ->metric({std::string(source), std::string(reason), std::string(outcome)})
+            ->increment();
+}
+void PerformanceMetrics::refundConflict(std::string_view reason)
+{
+    if (auto *s = seatMapMetrics.load())
+        s->refundConflicts->metric({std::string(reason)})->increment();
+}
+void PerformanceMetrics::refundFailure(std::string_view stage)
+{
+    if (auto *s = seatMapMetrics.load())
+        s->refundFailures->metric({std::string(stage)})->increment();
+}
+void PerformanceMetrics::refundAge(double seconds)
+{
+    if (auto *s = seatMapMetrics.load())
+        s->refundAge->metric({})->set(seconds);
 }
 
 std::shared_ptr<SeatMapComputeObserver> PerformanceMetrics::seatMapComputeObserver()

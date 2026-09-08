@@ -35,7 +35,8 @@ void PaymentReconciliationService::processInbox(
     const std::shared_ptr<RunState> &state) const
 {
     auto client = drogon::app().getDbClient("default");
-    client->execSqlAsync(R"SQL(
+    client->execSqlAsync(
+        R"SQL(
         WITH claimed AS (
             SELECT id, provider, object_kind, provider_object_id, local_reference_id
             FROM payment_provider_events
@@ -57,8 +58,7 @@ void PaymentReconciliationService::processInbox(
             RETURNING claimed.id
         ), wake_refunds AS (
             UPDATE refunds AS refund
-            SET provider_refund_id = COALESCE(refund.provider_refund_id, claimed.provider_object_id),
-                next_reconcile_at = CASE WHEN refund.status = 'PROCESSING'
+            SET next_reconcile_at = CASE WHEN refund.status = 'PROCESSING'
                                          THEN clock_timestamp() ELSE NULL END
             FROM claimed
             WHERE claimed.object_kind = 'REFUND'
@@ -82,14 +82,16 @@ void PaymentReconciliationService::processInbox(
             state->summary.failed++;
             auto completion = std::move(state->completion);
             completion(state->summary);
-        }, state->batchSize);
+        },
+        state->batchSize);
 }
 
 void PaymentReconciliationService::claimPayments(
     const std::shared_ptr<RunState> &state) const
 {
     auto client = drogon::app().getDbClient("default");
-    client->execSqlAsync(R"SQL(
+    client->execSqlAsync(
+        R"SQL(
         WITH claimed AS (
             SELECT attempt.id,
                    CASE WHEN attempt.provider_status IN ('succeeded','canceled')
@@ -119,13 +121,14 @@ void PaymentReconciliationService::claimPayments(
             RETURNING attempt.*, claimed.recovery_reason
         )
         SELECT leased.id, leased.order_id, leased.provider, leased.provider_payment_id,
-               ticket_order.total_amount, leased.recovery_reason
+               ticket_order.total_amount, leased.currency, leased.recovery_reason
         FROM leased JOIN orders AS ticket_order ON ticket_order.id = leased.order_id
     )SQL",
         [this, state](const drogon::orm::Result &rows) {
             state->pending += rows.size();
             state->summary.scanned += rows.size();
-            for (const auto &row : rows) processPayment(state, row);
+            for (const auto &row : rows)
+                processPayment(state, row);
             claimRefunds(state);
         },
         [state](const drogon::orm::DrogonDbException &error) {
@@ -133,53 +136,31 @@ void PaymentReconciliationService::claimPayments(
             state->summary.failed++;
             state->claimsComplete = true;
             finishOne(state);
-        }, state->batchSize, state->maxBackoffSeconds, state->leaseToken);
+        },
+        state->batchSize, state->maxBackoffSeconds, state->leaseToken);
 }
 
 void PaymentReconciliationService::claimRefunds(
     const std::shared_ptr<RunState> &state) const
 {
-    auto client = drogon::app().getDbClient("default");
-    client->execSqlAsync(R"SQL(
-        WITH claimed AS (
-            SELECT refund.id,
-                   CASE WHEN refund.reconciliation_lease_until IS NOT NULL THEN 'lease_expired'
-                        ELSE 'retry_due' END AS recovery_reason
-            FROM refunds AS refund
-            WHERE refund.status = 'PROCESSING'
-              AND refund.provider_terminal_at IS NULL
-              AND refund.next_reconcile_at <= clock_timestamp()
-              AND (refund.reconciliation_lease_until IS NULL
-                   OR refund.reconciliation_lease_until <= clock_timestamp())
-            ORDER BY refund.next_reconcile_at
-            FOR UPDATE SKIP LOCKED
-            LIMIT $1
-        ), leased AS (
-            UPDATE refunds AS refund
-            SET provider_retry_count = provider_retry_count + 1,
-                reconciliation_lease_token = $3,
-                reconciliation_lease_until = clock_timestamp() + INTERVAL '30 seconds',
-                next_reconcile_at = clock_timestamp() + LEAST($2, power(2, LEAST(provider_retry_count, 5))) * INTERVAL '1 second'
-            FROM claimed WHERE refund.id = claimed.id
-            RETURNING refund.*, claimed.recovery_reason
-        )
-        SELECT leased.id, leased.order_id, leased.amount, leased.provider,
-               leased.provider_refund_id, attempt.provider_payment_id, leased.recovery_reason
-        FROM leased JOIN payment_attempts AS attempt ON attempt.id = leased.payment_attempt_id
-    )SQL",
+    refundRepository_.claim(
+        drogon::app().getDbClient("default"), state->batchSize, state->maxBackoffSeconds,
+        state->leaseToken,
         [this, state](const drogon::orm::Result &rows) {
             state->pending += rows.size();
             state->summary.scanned += rows.size();
             state->claimsComplete = true;
-            for (const auto &row : rows) processRefund(state, row);
-            if (state->pending == 0) finishOne(state);
+            for (const auto &row : rows)
+                processRefund(state, row);
+            if (state->pending == 0)
+                finishOne(state);
         },
-        [state](const drogon::orm::DrogonDbException &error) {
-            LOG_ERROR << "Refund reconciliation claim failed: " << error.base().what();
+        [state] {
             state->summary.failed++;
             state->claimsComplete = true;
-            if (state->pending == 0) finishOne(state);
-        }, state->batchSize, state->maxBackoffSeconds, state->leaseToken);
+            if (state->pending == 0)
+                finishOne(state);
+        });
 }
 
 void PaymentReconciliationService::processPayment(
@@ -189,9 +170,10 @@ void PaymentReconciliationService::processPayment(
     const auto orderId = row["order_id"].as<std::string>();
     PerformanceMetrics::observePaymentReconciliation("payment", row["recovery_reason"].as<std::string>());
     auto provider = PaymentProviderFactory::createNamed(row["provider"].as<std::string>());
-    CreatePaymentRequest base{.attemptId = attemptId, .orderId = orderId,
+    CreatePaymentRequest base{.attemptId = attemptId,
+                              .orderId = orderId,
                               .amount = row["total_amount"].as<std::int64_t>(),
-                              .currency = PaymentProviderFactory::configuredCurrency()};
+                              .currency = row["currency"].as<std::string>()};
     auto done = [this, state, attemptId, orderId, provider, base](ProviderResult<ProviderPayment> result) {
         if (result.outcome != ProviderTransportOutcome::Success || !result.value)
         {
@@ -243,78 +225,90 @@ void PaymentReconciliationService::processRefund(
         state->summary.retried++; finishOne(state); return;
     }
     auto provider = PaymentProviderFactory::createNamed(row["provider"].as<std::string>());
-    auto done = [state, refundId, orderId](ProviderResult<ProviderRefund> result) {
+    const auto attemptId = row["payment_attempt_id"].as<std::string>();
+    const auto source = row["source"].as<std::string>();
+    // RefundLifecycleService owns AUTO_REFUND_COMPLETED / AUTO_REFUND_FAILED
+    // and BUYER terminal effects; the worker never releases inventory itself.
+    auto done = [this, state, refundId, orderId, attemptId, source,
+                 provider](ProviderResult<ProviderRefund> result) {
         if (result.outcome != ProviderTransportOutcome::Success || !result.value)
         {
-            state->summary.retried++; releaseLease(state, false, refundId); return;
-        }
-        const auto refund = std::move(*result.value);
-        auto client = drogon::app().getDbClient("default");
-        if (!refund.terminal)
-        {
-            client->execSqlAsync(
-                "UPDATE refunds SET provider_refund_id = COALESCE(provider_refund_id, $2), "
-                "provider_status = $3, provider_last_sync_at = clock_timestamp(), "
-                "next_reconcile_at = clock_timestamp() + INTERVAL '2 seconds', "
-                "reconciliation_lease_until = NULL, reconciliation_lease_token = NULL "
-                "WHERE id = $1 AND status = 'PROCESSING' AND reconciliation_lease_token = $4 "
-                "AND (provider_refund_id IS NULL OR provider_refund_id = $2)",
-                [state](const drogon::orm::Result &) { state->summary.retried++; finishOne(state); },
-                [state](const drogon::orm::DrogonDbException &) { state->summary.failed++; finishOne(state); },
-                refundId, refund.providerRefundId, refund.providerStatus, state->leaseToken);
+            const bool slow = result.failureClass == ProviderFailureClass::OPERATIONAL ||
+                              result.failureClass == ProviderFailureClass::IDENTITY_CONFLICT;
+            PerformanceMetrics::refundReconciliation(source, "provider",
+                                                     slow ? "blocked" : "retry");
+            if (result.failureClass == ProviderFailureClass::IDENTITY_CONFLICT)
+                PerformanceMetrics::refundConflict(result.safeError);
+            if (slow)
+                LOG_ERROR << "REFUND_PROVIDER_BLOCKED code=" << result.safeError
+                          << " refund=" << refundId;
+            drogon::app().getDbClient("default")->execSqlAsync(
+                "UPDATE refunds SET next_reconcile_at=CASE WHEN $3 THEN clock_timestamp()+INTERVAL "
+                "'5 minutes' ELSE next_reconcile_at END, "
+                "reconciliation_lease_until=NULL,reconciliation_lease_token=NULL WHERE id=$1 AND "
+                "status='PROCESSING' AND reconciliation_lease_token=$2",
+                [state](const drogon::orm::Result &) {
+                    state->summary.retried++;
+                    finishOne(state);
+                },
+                [state](const drogon::orm::DrogonDbException &) {
+                    state->summary.failed++;
+                    finishOne(state);
+                },
+                refundId, state->leaseToken, slow);
             return;
         }
-        const bool succeeded = refund.mappedState == ProviderRefundState::Succeeded;
-        const auto safeReason = refund.failureCode.value_or("PROVIDER_REFUND_FAILED").substr(0, 200);
-        client->execSqlAsync(R"SQL(
-            WITH updated AS (
-                UPDATE refunds SET
-                    provider_refund_id = COALESCE(provider_refund_id, $2),
-                    provider_status = $3,
-                    provider_last_sync_at = clock_timestamp(),
-                    provider_terminal_at = clock_timestamp(),
-                    status = CASE WHEN $4 THEN 'SUCCEEDED' ELSE 'FAILED' END,
-                    refunded_at = CASE WHEN $4 THEN clock_timestamp() ELSE NULL END,
-                    failed_at = CASE WHEN $4 THEN NULL ELSE clock_timestamp() END,
-                    failure_reason = CASE WHEN $4 THEN NULL ELSE $5 END,
-                    next_reconcile_at = NULL,
-                    reconciliation_lease_until = NULL, reconciliation_lease_token = NULL
-                WHERE id = $1 AND status = 'PROCESSING'
-                  AND reconciliation_lease_token = $7
-                  AND (provider_refund_id IS NULL OR provider_refund_id = $2)
-                RETURNING order_id, payment_attempt_id
-            )
-            INSERT INTO user_notifications (id, user_id, order_id, type, title, message, dedupe_key)
-            SELECT $6, ticket_order.user_id, updated.order_id,
-                   CASE WHEN $4 THEN 'AUTO_REFUND_COMPLETED' ELSE 'AUTO_REFUND_FAILED' END,
-                   CASE WHEN $4 THEN '自动退款已完成' ELSE '自动退款失败' END,
-                   CASE WHEN $4 THEN '支付结果晚于订单终态到达，款项已原路全额退回。'
-                        ELSE '自动退款未能完成，请联系支持人员处理。' END,
-                   CASE WHEN $4 THEN 'auto-refund:' ELSE 'auto-refund-failed:' END || updated.payment_attempt_id
-            FROM updated JOIN orders AS ticket_order ON ticket_order.id = updated.order_id
-            ON CONFLICT (dedupe_key) DO NOTHING
-        )SQL",
-            [state](const drogon::orm::Result &) { state->summary.completed++; finishOne(state); },
-            [state](const drogon::orm::DrogonDbException &error) {
-                LOG_ERROR << "Refund terminal transition failed: " << error.base().what();
-                state->summary.failed++; finishOne(state);
-            }, refundId, refund.providerRefundId, refund.providerStatus, succeeded,
-            safeReason, "NTF-" + drogon::utils::getUuid(true), state->leaseToken);
+        auto refund = *result.value;
+        PerformanceMetrics::refundReconciliation(source, "provider", refund.terminal ? "terminal_observed" : "processing");
+        if(refund.mappedState==ProviderRefundState::ActionRequired)LOG_ERROR << "REFUND_REQUIRES_ACTION refund=" << refundId;
+        if (refund.terminal)
+        {
+            refundLifecycle_.complete(
+                refundId, {orderId, attemptId, refund, state->leaseToken},
+                [state, source](RefundLifecycleOutcome outcome) {
+                    PerformanceMetrics::refundReconciliation(
+                        source, "terminal",
+                        outcome == RefundLifecycleOutcome::Failed ? "failed" : "completed");
+                    if (outcome == RefundLifecycleOutcome::Failed)
+                        state->summary.failed++;
+                    else
+                        state->summary.completed++;
+                    finishOne(state);
+                });
+            return;
+        }
+        drogon::app().getDbClient("default")->execSqlAsync(
+            "UPDATE refunds SET "
+            "provider_refund_id=COALESCE(provider_refund_id,$2),provider_status=$3,provider_last_"
+            "sync_at=clock_timestamp(), "
+            "next_reconcile_at=clock_timestamp()+INTERVAL '2 "
+            "seconds',reconciliation_lease_until=NULL,reconciliation_lease_token=NULL "
+            "WHERE id=$1 AND status='PROCESSING' AND reconciliation_lease_token=$4 AND "
+            "(provider_refund_id IS NULL OR provider_refund_id=$2)",
+            [state](const drogon::orm::Result &) {
+                state->summary.retried++;
+                finishOne(state);
+            },
+            [state](const drogon::orm::DrogonDbException &) {
+                state->summary.failed++;
+                finishOne(state);
+            },
+            refundId, refund.providerRefundId, refund.providerStatus, state->leaseToken);
     };
+    CreateRefundRequest base{.refundId = refundId,
+                             .orderId = orderId,
+                             .providerPaymentId = row["provider_payment_id"].as<std::string>(),
+                             .amount = row["amount"].as<std::int64_t>(),
+                             .currency = row["currency"].as<std::string>(),
+                             .provider = provider->name()};
     if (row["provider_refund_id"].isNull())
-        provider->createOrRecoverRefund(
-            {.refundId = refundId, .orderId = orderId,
-             .providerPaymentId = row["provider_payment_id"].as<std::string>(),
-             .amount = row["amount"].as<std::int64_t>()}, std::move(done));
+        provider->createOrRecoverRefund(base, std::move(done));
     else
     {
         RetrieveRefundRequest request;
-        request.refundId = refundId;
-        request.orderId = orderId;
-        request.amount = row["amount"].as<std::int64_t>();
-        request.providerPaymentId = row["provider_payment_id"].as<std::string>();
+        static_cast<CreateRefundRequest &>(request) = base;
         request.providerRefundId = row["provider_refund_id"].as<std::string>();
-        provider->retrieveRefund(std::move(request), std::move(done));
+        provider->retrieveRefund(request, std::move(done));
     }
 }
 

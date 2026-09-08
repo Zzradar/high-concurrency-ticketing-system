@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
+#include <set>
 #include <utility>
 
 namespace
@@ -44,12 +45,22 @@ std::optional<std::string> jsonString(const Json::Value &value, const char *memb
 
 std::string safeStripeError(const Json::Value &json)
 {
-    if (!json.isObject() || !json["error"].isObject()) return "STRIPE_REQUEST_REJECTED";
-    const auto &error = json["error"];
-    if (error["code"].isString()) return error["code"].asString().substr(0, 120);
-    if (error["type"].isString()) return error["type"].asString().substr(0, 120);
-    return "STRIPE_REQUEST_REJECTED";
+    if (!json.isObject() || !json["error"].isObject())
+        return "STRIPE_UNKNOWN_ERROR";
+    const auto &e = json["error"];
+    const auto code = e["code"].isString() ? e["code"].asString() : "";
+    const auto type = e["type"].isString() ? e["type"].asString() : "";
+    if (code == "idempotency_key_in_use")
+        return "STRIPE_RETRY";
+    if (code == "charge_already_refunded" || code == "amount_too_large")
+        return "STRIPE_EXTERNAL_REFUND_CONFLICT";
+    if (type == "idempotency_error")
+        return "STRIPE_IDEMPOTENCY_CONFLICT";
+    if (type == "authentication_error" || type == "permission_error" || code == "api_key_expired")
+        return "STRIPE_OPERATIONAL";
+    return "STRIPE_UNKNOWN_ERROR";
 }
+
 }  // namespace
 
 namespace ticketing
@@ -92,7 +103,12 @@ void StripePaymentProvider::request(
             const auto code = static_cast<int>(response->statusCode());
             if (code < 200 || code >= 300)
             {
-                const auto error = json ? safeStripeError(*json) : "STRIPE_HTTP_ERROR";
+                auto error = json ? safeStripeError(*json) : "STRIPE_INVALID_JSON";
+                if (isRetryableStatus(response->statusCode()) ||
+                    response->getHeader("Stripe-Should-Retry") == "true")
+                    error = "STRIPE_RETRY";
+                else if (code == 401 || code == 403)
+                    error = "STRIPE_OPERATIONAL";
                 const auto outcome = isRetryableStatus(response->statusCode())
                                          ? ProviderTransportOutcome::RetryableError
                                          : ProviderTransportOutcome::PermanentError;
@@ -145,28 +161,52 @@ ProviderResult<ProviderPayment> StripePaymentProvider::mapPayment(
     return {ProviderTransportOutcome::Success, std::move(payment), {}};
 }
 
+namespace
+{
+ProviderResult<ProviderRefund> refundError(std::string code)
+{
+    auto category = ProviderFailureClass::TRANSIENT;
+    if (code == "STRIPE_OPERATIONAL")
+        category = ProviderFailureClass::OPERATIONAL;
+    if (code.find("CONFLICT") != std::string::npos || code.find("MISMATCH") != std::string::npos ||
+        code == "STRIPE_REFUND_PAGINATION")
+        category = ProviderFailureClass::IDENTITY_CONFLICT;
+    return {ProviderTransportOutcome::RetryableError, std::nullopt, std::move(code), category};
+}
+bool textEquals(const Json::Value &v, const std::string &expected)
+{
+    return v.isString() && v.asString() == expected;
+}
+} // namespace
 ProviderResult<ProviderRefund> StripePaymentProvider::mapRefund(
     const Json::Value &json, const CreateRefundRequest &expected)
 {
-    if (!json.isObject() || json["object"].asString() != "refund" ||
-        !json["id"].isString() || !json["status"].isString())
-        return {ProviderTransportOutcome::RetryableError, std::nullopt, "STRIPE_INVALID_REFUND"};
-    if (json["amount"].asInt64() != expected.amount ||
-        json["payment_intent"].asString() != expected.providerPaymentId ||
-        json["metadata"]["local_refund_id"].asString() != expected.refundId ||
-        json["metadata"]["order_id"].asString() != expected.orderId)
-        return {ProviderTransportOutcome::RetryableError, std::nullopt, "STRIPE_REFUND_MISMATCH"};
+    if (!json.isObject() || !textEquals(json["object"], "refund") || !json["id"].isString() ||
+        json["id"].asString().find("re_") != 0 || !json["status"].isString())
+        return refundError("STRIPE_INVALID_REFUND");
+    if (expected.provider != "stripe" || !json["amount"].isInt64() ||
+        json["amount"].asInt64() != expected.amount ||
+        !textEquals(json["currency"], expected.currency) ||
+        !textEquals(json["payment_intent"], expected.providerPaymentId) ||
+        !json["metadata"].isObject() ||
+        !textEquals(json["metadata"]["local_refund_id"], expected.refundId) ||
+        !textEquals(json["metadata"]["order_id"], expected.orderId))
+        return refundError("STRIPE_REFUND_MISMATCH");
     ProviderRefund refund{.provider = "stripe",
                           .providerRefundId = json["id"].asString(),
                           .providerStatus = json["status"].asString()};
+    refund.providerPaymentId = expected.providerPaymentId;
+    refund.localRefundId = expected.refundId;
+    refund.orderId = expected.orderId;
+    refund.amount = expected.amount;
+    refund.currency = expected.currency;
     if (refund.providerStatus == "succeeded") { refund.mappedState = ProviderRefundState::Succeeded; refund.terminal = true; }
     else if (refund.providerStatus == "failed" || refund.providerStatus == "canceled")
     {
         refund.mappedState = ProviderRefundState::Failed; refund.terminal = true;
-        refund.failureCode = jsonString(json, "failure_reason");
+        refund.failureCode = "PROVIDER_REFUND_FAILED";
     }
     else if (refund.providerStatus == "requires_action") refund.mappedState = ProviderRefundState::ActionRequired;
-    else refund.mappedState = ProviderRefundState::Processing;
     return {ProviderTransportOutcome::Success, std::move(refund), {}};
 }
 
@@ -204,35 +244,91 @@ void StripePaymentProvider::retrievePayment(
             });
 }
 
-void StripePaymentProvider::createOrRecoverRefund(
-    CreateRefundRequest input, RefundCompletion completion)
+struct StripePaymentProvider::RefundScan
 {
-    const auto body = form({{"payment_intent", input.providerPaymentId},
-                            {"amount", std::to_string(input.amount)},
-                            {"metadata[local_refund_id]", input.refundId},
-                            {"metadata[order_id]", input.orderId}});
-    const auto idempotencyKey = input.refundId;
-    request(drogon::Post, "/v1/refunds", body, idempotencyKey,
-            [input = std::move(input), completion = std::move(completion)](ProviderTransportOutcome outcome,
-                                                  const Json::Value *json, std::string error) {
-                if (outcome != ProviderTransportOutcome::Success)
-                    return completion({outcome, std::nullopt, std::move(error)});
-                completion(mapRefund(*json, input));
-            });
+    CreateRefundRequest input;
+    RefundCompletion completion;
+    unsigned pages{};
+    std::string cursor;
+    std::set<std::string> cursors;
+    std::optional<ProviderRefund> match;
+};
+void StripePaymentProvider::createOrRecoverRefund(CreateRefundRequest input,
+                                                  RefundCompletion completion)
+{
+    auto scan = std::make_shared<RefundScan>();
+    scan->input = std::move(input);
+    scan->completion = std::move(completion);
+    scanRefunds(scan);
 }
-
-void StripePaymentProvider::retrieveRefund(
-    RetrieveRefundRequest input, RefundCompletion completion)
+void StripePaymentProvider::scanRefunds(std::shared_ptr<RefundScan> scan)
+{
+    const auto path =
+        "/v1/refunds?payment_intent=" + drogon::utils::urlEncode(scan->input.providerPaymentId) +
+        "&limit=100" +
+        (scan->cursor.empty() ? "" : "&starting_after=" + drogon::utils::urlEncode(scan->cursor));
+    ++scan->pages;
+    request(
+        drogon::Get, path, {}, std::nullopt,
+        [this, scan](ProviderTransportOutcome outcome, const Json::Value *json, std::string error) {
+            if (outcome != ProviderTransportOutcome::Success)
+                return scan->completion(refundError(error));
+            if (!json->isObject() || !(*json)["data"].isArray() || !(*json)["has_more"].isBool() ||
+                (*json)["data"].size() > 100)
+                return scan->completion(refundError("STRIPE_INVALID_JSON"));
+            for (const auto &candidate : (*json)["data"])
+            {
+                if (!candidate.isObject() || !candidate["metadata"].isObject())
+                    return scan->completion(refundError("STRIPE_INVALID_JSON"));
+                if (textEquals(candidate["metadata"]["local_refund_id"], scan->input.refundId))
+                {
+                    if (scan->match)
+                        return scan->completion(refundError("STRIPE_MULTIPLE_REFUND_CONFLICT"));
+                    auto mapped = mapRefund(candidate, scan->input);
+                    if (!mapped.value)
+                        return scan->completion(std::move(mapped));
+                    scan->match = std::move(mapped.value);
+                }
+            }
+            if ((*json)["has_more"].asBool())
+            {
+                const auto &data = (*json)["data"];
+                if (scan->pages >= 10 || data.empty() || !data[data.size() - 1]["id"].isString())
+                    return scan->completion(refundError("STRIPE_REFUND_PAGINATION"));
+                auto cursor = data[data.size() - 1]["id"].asString();
+                if (cursor.find("re_") != 0 || !scan->cursors.insert(cursor).second)
+                    return scan->completion(refundError("STRIPE_REFUND_PAGINATION"));
+                scan->cursor = cursor;
+                scanRefunds(scan);
+                return;
+            }
+            if (scan->match)
+                return scan->completion(
+                    {ProviderTransportOutcome::Success, std::move(scan->match), {}});
+            const auto &input = scan->input;
+            const auto body = form({{"payment_intent", input.providerPaymentId},
+                                    {"amount", std::to_string(input.amount)},
+                                    {"metadata[local_refund_id]", input.refundId},
+                                    {"metadata[order_id]", input.orderId}});
+            request(
+                drogon::Post, "/v1/refunds", body, input.refundId,
+                [scan](ProviderTransportOutcome result, const Json::Value *value, std::string err) {
+                    if (result != ProviderTransportOutcome::Success)
+                        return scan->completion(refundError(err));
+                    scan->completion(mapRefund(*value, scan->input));
+                });
+        });
+}
+void StripePaymentProvider::retrieveRefund(RetrieveRefundRequest input, RefundCompletion completion)
 {
     const auto path = "/v1/refunds/" + drogon::utils::urlEncode(input.providerRefundId);
-    request(drogon::Get, path,
-            {}, std::nullopt,
-            [input = std::move(input), completion = std::move(completion)](ProviderTransportOutcome outcome,
-                                                  const Json::Value *json, std::string error) {
+    request(drogon::Get, path, {}, std::nullopt,
+            [input = std::move(input), completion = std::move(completion)](
+                ProviderTransportOutcome outcome, const Json::Value *json, std::string error) {
                 if (outcome != ProviderTransportOutcome::Success)
-                    return completion({outcome, std::nullopt, std::move(error)});
-                if ((*json)["id"].asString() != input.providerRefundId)
-                    return completion({ProviderTransportOutcome::RetryableError, std::nullopt, "STRIPE_REFUND_ID_MISMATCH"});
+                    return completion(refundError(error));
+                if (!json->isObject() || !textEquals((*json)["id"], input.providerRefundId))
+                    return completion(refundError("STRIPE_REFUND_ID_MISMATCH"));
                 completion(mapRefund(*json, input));
             });
 }

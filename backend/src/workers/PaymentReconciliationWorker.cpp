@@ -37,15 +37,24 @@ void PaymentReconciliationWorker::runCurrentRound()
                     LOG_ERROR << "Payment reconciliation failures=" << summary.failed;
                 auto weakAgain = weakSelf;
                 drogon::app().getDbClient("default")->execSqlAsync(
-                    "SELECT status, COUNT(*) AS count FROM refunds GROUP BY status",
+                    "SELECT status, COUNT(*) AS count, COALESCE(MAX(EXTRACT(EPOCH FROM "
+                    "clock_timestamp()-created_at)) FILTER (WHERE status='PROCESSING'),0) AS age "
+                    "FROM refunds GROUP BY status",
                     [weakAgain](const drogon::orm::Result &rows) {
+                        PerformanceMetrics::refundAge(0);
                         for (const auto &row : rows)
+                        {
+                            if (row["status"].as<std::string>() == "PROCESSING")
+                                PerformanceMetrics::refundAge(row["age"].as<double>());
                             PerformanceMetrics::setRefundStatusCount(
                                 row["status"].as<std::string>(), row["count"].as<double>());
-                        if (auto current = weakAgain.lock()) current->scheduleNextRound();
+                        }
+                        if (auto current = weakAgain.lock())
+                            current->scheduleNextRound();
                     },
                     [weakAgain](const drogon::orm::DrogonDbException &) {
-                        if (auto current = weakAgain.lock()) current->scheduleNextRound();
+                        if (auto current = weakAgain.lock())
+                            current->scheduleNextRound();
                     });
             }
         });

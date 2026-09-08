@@ -8,6 +8,13 @@
 
 namespace ticketing
 {
+enum class ProviderFailureClass
+{
+    TRANSIENT,
+    OPERATIONAL,
+    IDENTITY_CONFLICT,
+    DEFINITIVE_REJECT
+};
 enum class ProviderTransportOutcome { Success, RetryableError, PermanentError };
 enum class ProviderPaymentState { Processing, ActionRequired, Succeeded, Failed };
 enum class ProviderRefundState { Processing, ActionRequired, Succeeded, Failed };
@@ -33,6 +40,8 @@ struct ProviderRefund
     std::optional<std::string> failureCode;
     std::optional<std::string> failureMessage;
     bool terminal{};
+    std::string providerPaymentId, localRefundId, orderId, currency;
+    std::int64_t amount{};
 };
 
 template <typename Value> struct ProviderResult
@@ -40,6 +49,7 @@ template <typename Value> struct ProviderResult
     ProviderTransportOutcome outcome{ProviderTransportOutcome::RetryableError};
     std::optional<Value> value;
     std::string safeError;
+    ProviderFailureClass failureClass{ProviderFailureClass::TRANSIENT};
 };
 
 struct CreatePaymentRequest
@@ -61,6 +71,8 @@ struct CreateRefundRequest
     std::string orderId;
     std::string providerPaymentId;
     std::int64_t amount{};
+    std::string currency;
+    std::string provider;
 };
 
 struct RetrieveRefundRequest : CreateRefundRequest

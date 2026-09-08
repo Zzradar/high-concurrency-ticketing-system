@@ -1,0 +1,190 @@
+--- a/backend/tests/phase3_schema_contract_test.py
++++ b/backend/tests/phase3_schema_contract_test.py
+@@ -37,8 +37,8 @@
+             "/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql",
+             "/docker-entrypoint-initdb.d/006_add_user_authentication.sql",
+             "/docker-entrypoint-initdb.d/007_add_payment_provider_recovery.sql",
+-            "/docker-entrypoint-initdb.d/008_demo_seed.sql",
+-            "/docker-entrypoint-initdb.d/009_verify_seed.sql",
++            "/docker-entrypoint-initdb.d/010_demo_seed.sql",
++            "/docker-entrypoint-initdb.d/011_verify_seed.sql",
+         )
+         positions = [COMPOSE.index(path) for path in expected]
+         self.assertEqual(positions, sorted(positions))
+--- a/backend/tests/phase5_schema_contract_test.py
++++ b/backend/tests/phase5_schema_contract_test.py
+@@ -60,11 +60,11 @@
+             "/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql",
+             "/docker-entrypoint-initdb.d/006_add_user_authentication.sql",
+             "/docker-entrypoint-initdb.d/007_add_payment_provider_recovery.sql",
+-            "/docker-entrypoint-initdb.d/008_demo_seed.sql",
+-            "/docker-entrypoint-initdb.d/009_verify_seed.sql",
+-            "/docker-entrypoint-initdb.d/010_verify_checkout_schema.sql",
+-            "/docker-entrypoint-initdb.d/011_verify_payment_schema.sql",
+-            "/docker-entrypoint-initdb.d/012_verify_auth_schema.sql",
++            "/docker-entrypoint-initdb.d/010_demo_seed.sql",
++            "/docker-entrypoint-initdb.d/011_verify_seed.sql",
++            "/docker-entrypoint-initdb.d/012_verify_checkout_schema.sql",
++            "/docker-entrypoint-initdb.d/013_verify_payment_schema.sql",
++            "/docker-entrypoint-initdb.d/014_verify_auth_schema.sql",
+         )
+         positions = [COMPOSE.index(path) for path in expected]
+         self.assertEqual(positions, sorted(positions))
+--- a/backend/tests/phase8_schema_contract_test.py
++++ b/backend/tests/phase8_schema_contract_test.py
+@@ -57,10 +57,10 @@
+             self.assertIn(dto, DTO)
+         sequence = (
+             "005_add_payment_lifecycle.sql", "006_add_user_authentication.sql",
+-            "007_add_payment_provider_recovery.sql", "008_demo_seed.sql",
+-            "009_verify_seed.sql", "010_verify_checkout_schema.sql",
+-            "011_verify_payment_schema.sql", "012_verify_auth_schema.sql",
+-            "013_verify_payment_provider_recovery.sql",
++            "007_add_payment_provider_recovery.sql", "010_demo_seed.sql",
++            "011_verify_seed.sql", "012_verify_checkout_schema.sql",
++            "013_verify_payment_schema.sql", "014_verify_auth_schema.sql",
++            "015_verify_payment_provider_recovery.sql",
+         )
+         positions = [COMPOSE.index(name) for name in sequence]
+         self.assertEqual(positions, sorted(positions))
+--- a/backend/tests/phase9_auth_schema_contract_test.py
++++ b/backend/tests/phase9_auth_schema_contract_test.py
+@@ -53,11 +53,11 @@
+             "005_add_payment_lifecycle.sql",
+             "006_add_user_authentication.sql",
+             "007_add_payment_provider_recovery.sql",
+-            "008_demo_seed.sql",
+-            "009_verify_seed.sql",
+-            "010_verify_checkout_schema.sql",
+-            "011_verify_payment_schema.sql",
+-            "012_verify_auth_schema.sql",
++            "010_demo_seed.sql",
++            "011_verify_seed.sql",
++            "012_verify_checkout_schema.sql",
++            "013_verify_payment_schema.sql",
++            "014_verify_auth_schema.sql",
+         )
+         positions = [COMPOSE.index(name) for name in sequence]
+         self.assertEqual(positions, sorted(positions))
+--- a/backend/tests/performance_metrics_source_contract_test.py
++++ b/backend/tests/performance_metrics_source_contract_test.py
+@@ -61,6 +61,11 @@
+                 "ticketing_payment_reconciliation_total",
+                 "ticketing_payment_reconciliation_pending",
+                 "ticketing_refunds_by_status",
++                "ticketing_refund_requests_total",
++                "ticketing_refund_reconciliation_total",
++                "ticketing_refund_identity_conflicts_total",
++                "ticketing_refund_lifecycle_failures_total",
++                "ticketing_refund_processing_age_seconds",
+             },
+         )
+         self.assertEqual(
+--- a/backend/tests/order_lifecycle_integration_test.py
++++ b/backend/tests/order_lifecycle_integration_test.py
+@@ -21,12 +21,12 @@
+             f"""
+             INSERT INTO payment_attempts (
+                 id, order_id, status, started_at, processing_deadline,
+-                scheduled_complete_at
++                scheduled_complete_at, currency
+             ) VALUES (
+                 'PAY-IT-GRACE', '{order_id}', 'PROCESSING',
+                 clock_timestamp() - INTERVAL '2 minutes',
+                 clock_timestamp() + INTERVAL '1 minute',
+-                clock_timestamp() + INTERVAL '30 seconds'
++                clock_timestamp() + INTERVAL '30 seconds', 'cny'
+             );
+             """
+         )
+@@ -49,12 +49,12 @@
+             WHERE id = '{order_id}';
+             INSERT INTO payment_attempts (
+                 id, order_id, status, started_at, processing_deadline,
+-                scheduled_complete_at
++                scheduled_complete_at, currency
+             ) VALUES (
+                 'PAY-IT-DEADLINE', '{order_id}', 'PROCESSING',
+                 clock_timestamp() - INTERVAL '3 minutes',
+                 clock_timestamp() - INTERVAL '30 seconds',
+-                clock_timestamp() - INTERVAL '1 minute'
++                clock_timestamp() - INTERVAL '1 minute', 'cny'
+             );
+             COMMIT;
+             """
+--- a/backend/db/tests/003_verify_payment_schema.sql
++++ b/backend/db/tests/003_verify_payment_schema.sql
+@@ -2,7 +2,7 @@
+
+ INSERT INTO payment_attempts (
+     id, order_id, status, started_at, processing_deadline,
+-    scheduled_complete_at
++    scheduled_complete_at, currency
+ )
+ VALUES (
+     'PAY-SCHEMA-TEST',
+@@ -10,7 +10,7 @@
+     'PROCESSING',
+     clock_timestamp(),
+     clock_timestamp() + INTERVAL '10 seconds',
+-    clock_timestamp() + INTERVAL '2 seconds'
++    clock_timestamp() + INTERVAL '2 seconds', 'cny'
+ );
+
+ DO $$
+@@ -18,10 +18,10 @@
+     BEGIN
+         INSERT INTO payment_attempts (
+             id, order_id, status, started_at, processing_deadline,
+-            scheduled_complete_at
++            scheduled_complete_at, currency
+         )
+         SELECT 'PAY-SCHEMA-DUPLICATE', order_id, 'PROCESSING',
+-               started_at, processing_deadline, scheduled_complete_at
++               started_at, processing_deadline, scheduled_complete_at, currency
+         FROM payment_attempts WHERE id = 'PAY-SCHEMA-TEST';
+         RAISE EXCEPTION 'a second PROCESSING attempt was accepted';
+     EXCEPTION
+@@ -46,7 +46,7 @@
+ WHERE id = 'PAY-SCHEMA-TEST';
+
+ INSERT INTO refunds (
+-    id, payment_attempt_id, order_id, amount, reason, refunded_at
++    id, payment_attempt_id, order_id, amount, reason, refunded_at, currency
+ )
+ VALUES (
+     'RFD-SCHEMA-TEST',
+@@ -54,7 +54,7 @@
+     'TKT-SEED-HELD-ses-concert-1001',
+     256000,
+     'PAYMENT_NOT_ACCEPTED',
+-    clock_timestamp()
++    clock_timestamp(), 'cny'
+ );
+
+ INSERT INTO user_notifications (
+@@ -74,11 +74,11 @@
+ BEGIN
+     BEGIN
+         INSERT INTO refunds (
+-            id, payment_attempt_id, order_id, amount, reason, refunded_at
++            id, payment_attempt_id, order_id, amount, reason, refunded_at, currency
+         ) VALUES (
+             'RFD-SCHEMA-DUPLICATE', 'PAY-SCHEMA-TEST',
+             'TKT-SEED-HELD-ses-concert-1001', 256000,
+-            'PAYMENT_NOT_ACCEPTED', clock_timestamp()
++            'PAYMENT_NOT_ACCEPTED', clock_timestamp(), 'cny'
+         );
+         RAISE EXCEPTION 'duplicate attempt refund was accepted';
+     EXCEPTION
+--- a/backend/tests/phase11_stripe_integration_test.py
++++ b/backend/tests/phase11_stripe_integration_test.py
+@@ -186,7 +186,7 @@
+                    message="refund completion")
+         state = fake("/__admin__/state")
+         self.assertEqual(len(state["refunds"]), 1)
+-        self.assertGreaterEqual(state["createRefundCalls"].count(refund_id), 2)
++        self.assertEqual(state["createRefundCalls"].count(refund_id), 1)
+         self.assertEqual(psql(f"SELECT status FROM orders WHERE id='{order['id']}';"), "CANCELLED")
+
+     def test_refund_terminal_failure_notifies(self):

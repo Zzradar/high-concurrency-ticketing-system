@@ -3,6 +3,7 @@
 #include "payments/PaymentProvider.h"
 #include "repositories/PaymentRepository.h"
 #include "services/OrderLifecycleService.h"
+#include "services/RefundLifecycleService.h"
 
 #include <cstddef>
 #include <functional>
@@ -39,6 +40,8 @@ class PaymentReconciliationService
     static void releaseLease(const std::shared_ptr<RunState> &state,
                              bool payment, const std::string &id);
 
+    RefundRepository refundRepository_;
+    RefundLifecycleService refundLifecycle_;
     PaymentRepository paymentRepository_;
     OrderLifecycleService lifecycleService_;
 };
