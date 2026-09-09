@@ -4,6 +4,9 @@ import type {
   CheckoutConfirmationResult,
   CancelOrderResult,
   CurrentUser,
+  CreateRefundResult,
+  Refund,
+  RefundEligibility,
   PaymentAttempt,
   PaymentStartResult,
   Reservation,
@@ -195,6 +198,17 @@ let orders = new Map<string, TicketOrder>()
 let checkoutSessions = new Map<string, CheckoutSession>()
 let checkoutConfirmations = new Map<string, Promise<CheckoutSession>>()
 let paymentAttempts = new Map<string, PaymentAttempt>()
+let refunds = new Map<string, Refund>()
+let mockRefundOutcome: 'SUCCEEDED' | 'FAILED' = 'SUCCEEDED'
+let mockRefundDelay = 4000
+let refundDue = new Map<string, number>()
+const refundDeadlines: Record<string, string> = {
+  'ses-concert-1001': '2026-10-01T11:30:00.000Z',
+  'ses-concert-1002': '2026-10-02T11:30:00.000Z',
+  'ses-concert-1003': '2026-10-03T11:30:00.000Z',
+  'ses-basketball-2001': '2026-11-08T10:30:00.000Z',
+  'ses-basketball-2002': '2026-11-09T11:00:00.000Z',
+}
 let notifications: UserNotification[] = []
 let sequence = 24082600
 let mockPaymentDelayMilliseconds: number | null = null
@@ -397,6 +411,7 @@ async function mockCreateReservation(sessionId: string, seatIds: string[]): Prom
     createdAt: now.toISOString(),
   }
   const order: TicketOrder = {
+    buyerRefund: null,
     id: orderId,
     reservationId,
     eventId: session.eventId,
@@ -571,7 +586,81 @@ async function mockGetOrder(orderId: string) {
   const order = orders.get(orderId)
   if (!order) throw new TicketApiError('未找到该订单。', 'ORDER_NOT_FOUND')
   synchronizeExpiry(order)
-  return clone(order)
+  synchronizeMockRefund(order)
+  return clone({ ...order, refundEligibility: mockRefundEligibility(order) })
+}
+
+function mockRefundEligibility(order: TicketOrder): RefundEligibility {
+  const deadline = refundDeadlines[order.sessionId]
+  if (!deadline) throw new TicketApiError('场次不存在。', 'SESSION_NOT_FOUND')
+  const reason = order.buyerRefund ? 'ALREADY_REQUESTED'
+    : order.status !== 'PAID' ? 'ORDER_NOT_REFUNDABLE'
+    : Date.now() >= Date.parse(deadline) ? 'REFUND_WINDOW_CLOSED' : null
+  return { eligible: reason === null, deadline, reason }
+}
+
+function synchronizeMockRefund(order: TicketOrder) {
+  const refund = [...refunds.values()].find((item) => item.orderId === order.id && item.source === 'BUYER')
+  if (!refund) return
+  const due = refundDue.get(refund.id)
+  if (refund.status === 'PROCESSING' && due !== undefined && Date.now() >= due) {
+    refund.status = mockRefundOutcome
+    refundDue.delete(refund.id)
+    if (refund.status === 'SUCCEEDED') {
+      refund.refundedAt = new Date().toISOString()
+      order.status = 'CANCELLED'
+      const reservation = reservations.get(order.reservationId)
+      if (reservation) reservation.status = 'CANCELLED'
+      ensureSeats(order.sessionId).forEach((seat) => {
+        if (order.seatIds.includes(seat.id) && seat.status === 'SOLD') seat.status = 'AVAILABLE'
+      })
+      addNotification(order, 'REFUND_COMPLETED', '退款已完成', '退款已完成，订单已取消，原座位已释放。', 'refund:' + refund.id)
+    } else {
+      refund.failedAt = new Date().toISOString()
+      refund.failureCode = 'PROVIDER_REFUND_FAILED'
+      addNotification(order, 'REFUND_FAILED', '退款失败', '退款失败，订单和座位权益仍然有效。当前版本不支持再次自动退款。', 'refund:' + refund.id)
+    }
+  }
+  const { id, orderId, status, amount, currency } = refund
+  order.buyerRefund = { id, orderId, status, amount, currency, source: 'BUYER', reason: 'BUYER_REQUESTED' }
+}
+
+async function mockCreateRefund(orderId: string): Promise<CreateRefundResult> {
+  await wait()
+  const user = requireMockUser()
+  const order = orders.get(orderId)
+  if (!order || reservations.get(order.reservationId)?.userId !== user.id) {
+    throw new TicketApiError('未找到该订单。', 'ORDER_NOT_FOUND')
+  }
+  synchronizeMockRefund(order)
+  const existing = [...refunds.values()].find((item) => item.orderId === orderId && item.source === 'BUYER')
+  if (existing) return clone({ disposition: existing.status === 'PROCESSING' ? 'REUSED_PROCESSING' : 'REUSED_TERMINAL', refund: existing, pollAfterMs: 2000 })
+  const eligibility = mockRefundEligibility(order)
+  if (eligibility.reason) throw new TicketApiError('订单当前不可退款。', eligibility.reason)
+  const attempt = [...paymentAttempts.values()].find((item) => item.orderId === orderId && item.status === 'SUCCEEDED' && item.acceptedAt)
+  if (!attempt) throw new TicketApiError('退款暂不可用。', 'INTERNAL_ERROR')
+  const refund: Refund = {
+    id: 'RFD-' + ++sequence, orderId, paymentAttemptId: attempt.id,
+    source: 'BUYER', reason: 'BUYER_REQUESTED', status: 'PROCESSING',
+    amount: order.totalAmount, currency: 'cny', createdAt: new Date().toISOString(),
+  }
+  refunds.set(refund.id, refund)
+  refundDue.set(refund.id, Date.now() + mockRefundDelay)
+  const { id, status, amount, currency } = refund
+  order.buyerRefund = { id, orderId, status, amount, currency, source: 'BUYER', reason: 'BUYER_REQUESTED' }
+  return clone({ disposition: 'CREATED', refund, pollAfterMs: 2000 })
+}
+
+async function mockGetRefund(id: string): Promise<Refund> {
+  await wait()
+  const user = requireMockUser()
+  const refund = refunds.get(id)
+  const order = refund && orders.get(refund.orderId)
+  if (!refund || !order || reservations.get(order.reservationId)?.userId !== user.id) {
+    throw new TicketApiError('未找到退款记录。', 'REFUND_NOT_FOUND')
+  }
+  synchronizeMockRefund(order)
+  return clone(refund)
 }
 
 function finishMockPayment(attemptId: string, outcome: 'SUCCESS' | 'FAILURE') {
@@ -612,6 +701,13 @@ function finishMockPayment(attemptId: string, outcome: 'SUCCESS' | 'FAILURE') {
     '支付结果晚于订单终态到达，款项已原路全额退回。',
     'auto-refund:' + attempt.id,
   )
+  const refundId = 'RFD-' + ++sequence
+  refunds.set(refundId, {
+    id: refundId, orderId: order.id, paymentAttemptId: attempt.id,
+    source: 'SYSTEM', reason: order.status === 'CANCELLED' ? 'ORDER_CANCELLED_BEFORE_PAYMENT_CONFIRMATION' : 'PAYMENT_NOT_ACCEPTED',
+    status: 'SUCCEEDED', amount: order.totalAmount, currency: 'cny',
+    createdAt: now.toISOString(), refundedAt: now.toISOString(),
+  })
   synchronizeExpiry(order)
 }
 
@@ -751,6 +847,14 @@ export function normalizeSeatAvailabilityResponse(
 }
 
 export const ticketApi = {
+  async createRefund(orderId: string): Promise<CreateRefundResult> {
+    if (isMockMode) return mockCreateRefund(orderId)
+    return (await http.post<CreateRefundResult>('/orders/' + orderId + '/refunds')).data
+  },
+  async getRefund(refundId: string): Promise<Refund> {
+    if (isMockMode) return mockGetRefund(refundId)
+    return (await http.get<Refund>('/refunds/' + refundId)).data
+  },
   async login(username: string, password: string): Promise<CurrentUser> {
     if (isMockMode) return mockLogin(username, password)
     return (await http.post<CurrentUser>('/auth/login', { username, password })).data
@@ -889,6 +993,7 @@ export const ticketApi = {
     if (isMockMode) {
       await wait()
       requireMockUser()
+      orders.forEach(synchronizeMockRefund)
       return clone(
         [...orders.values()]
           .filter((order) => !filters.status || order.status === filters.status)
@@ -932,6 +1037,10 @@ export function resetMockData() {
   checkoutSessions = new Map()
   checkoutConfirmations = new Map()
   paymentAttempts = new Map()
+  refunds = new Map()
+  refundDue = new Map()
+  mockRefundOutcome = 'SUCCEEDED'
+  mockRefundDelay = 4000
   notifications = []
   sequence = 24082600
   mockPaymentDelayMilliseconds = null
@@ -941,6 +1050,11 @@ export function resetMockData() {
 
 export function setMockLatency(milliseconds: number) {
   mockLatency = milliseconds
+}
+
+export function setMockRefundSimulation(options: { delayMilliseconds: number; outcome: 'SUCCEEDED' | 'FAILED' }) {
+  mockRefundDelay = options.delayMilliseconds
+  mockRefundOutcome = options.outcome
 }
 
 export function setMockPaymentSimulation(options: {

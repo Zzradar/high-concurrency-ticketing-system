@@ -5,6 +5,7 @@ import { ticketApi, TicketApiError } from '../api/ticketApi'
 import PageBreadcrumbs from '../components/PageBreadcrumbs.vue'
 import PageState from '../components/PageState.vue'
 import StripePaymentPanel from '../components/StripePaymentPanel.vue'
+import BuyerRefundPanel from '../components/BuyerRefundPanel.vue'
 import { cleanPaymentQuery } from '../payments/paymentReturn'
 import { routeNames } from '../navigation'
 import { requestNotificationRefresh, showNotice } from '../uiSignals'
@@ -26,6 +27,14 @@ const paymentStarting = ref(false)
 const paymentPolling = ref(false)
 const cancelling = ref(false)
 const error = ref('')
+const refundSubmitting = ref(false)
+const refundMessage = ref('')
+let refundTimer: number | undefined
+let foreground = document.visibilityState !== 'hidden' && document.hasFocus()
+let resumedByVisibility = false
+let disposed = false
+let orderRead: { page: number; read: number; promise: Promise<boolean> } | null = null
+let focusRead: Promise<void> | null = null
 let paymentGeneration = 0
 let pageGeneration = 0
 let readGeneration = 0
@@ -49,13 +58,41 @@ function adoptOrder(value: TicketOrder) {
 
 async function refreshOrder(silent = false) {
   const page = pageGeneration
+  // Coalesce current reads; invalidated reads must finish before the next GET starts.
+  if (orderRead) {
+    const pending = orderRead
+    if (pending.page === page && pending.read === readGeneration) return pending.promise
+    await pending.promise
+    if (disposed || page !== pageGeneration) return false
+    return refreshOrder(silent)
+  }
+  if (disposed) return false
   const read = ++readGeneration
+  const promise = readOrder(page, read, silent)
+  orderRead = { page, read, promise }
+  try { return await promise } finally {
+    if (orderRead?.promise === promise) orderRead = null
+    if (page === pageGeneration && !disposed) scheduleRefund()
+  }
+}
+
+async function readOrder(page: number, read: number, silent: boolean) {
+  window.clearTimeout(refundTimer)
   if (!silent) loading.value = true
   if (!silent) error.value = ''
   try {
-    const value = await ticketApi.getOrder(String(route.params.orderId))
+    const orderId = String(route.params.orderId)
+    let value = await ticketApi.getOrder(orderId)
     if (page !== pageGeneration || read !== readGeneration) return false
+    const completed = order.value?.buyerRefund?.status === 'PROCESSING' && value.buyerRefund?.status === 'SUCCEEDED'
     adoptOrder(value)
+    refundMessage.value = ''
+    if (completed) {
+      requestNotificationRefresh()
+      value = await ticketApi.getOrder(orderId)
+      if (page !== pageGeneration || read !== readGeneration) return false
+      adoptOrder(value)
+    }
     if (!session.value || session.value.id !== value.sessionId) {
       const details = await Promise.all([ticketApi.getSession(value.sessionId), ticketApi.getEvent(value.eventId), ticketApi.getSeats(value.sessionId)])
       if (page !== pageGeneration || read !== readGeneration) return false
@@ -64,10 +101,65 @@ async function refreshOrder(silent = false) {
     return true
   } catch (cause) {
     if (page !== pageGeneration || read !== readGeneration) return false
-    error.value = cause instanceof TicketApiError ? cause.message : '订单加载失败。'
+    if (cause instanceof TicketApiError && cause.code === 'ORDER_NOT_FOUND') order.value = null
+    error.value = '订单加载失败，请稍后刷新。'
     return false
   } finally {
     if (page === pageGeneration && read === readGeneration) loading.value = false
+  }
+}
+
+function scheduleRefund() {
+  window.clearTimeout(refundTimer)
+  if (disposed || !foreground || orderRead || refundSubmitting.value || order.value?.buyerRefund?.source !== 'BUYER' || order.value.buyerRefund.status !== 'PROCESSING') return
+  refundTimer = window.setTimeout(() => void refreshOrder(true), 2000)
+}
+
+async function requestRefund() {
+  const current = order.value
+  if (!current || refundSubmitting.value || current.buyerRefund || current.refundEligibility?.eligible !== true || Date.parse(current.refundEligibility.deadline) <= Date.now()) return
+  const page = pageGeneration
+  const read = ++readGeneration
+  refundSubmitting.value = true
+  refundMessage.value = ''
+  window.clearTimeout(refundTimer)
+  try {
+    const result = await ticketApi.createRefund(current.id)
+    if (page !== pageGeneration) return
+    const refund = result.refund
+    if (refund.source !== 'BUYER' || refund.reason !== 'BUYER_REQUESTED' || refund.orderId !== current.id) {
+      throw new Error('Refund identity mismatch')
+    }
+    if (read === readGeneration && order.value) {
+      const { id, orderId, status, amount, currency } = refund
+      order.value = { ...order.value, buyerRefund: { id, orderId, status, amount, currency, source: 'BUYER', reason: 'BUYER_REQUESTED' } }
+    }
+    // A newer read outranks a late POST; success also requires authoritative Order sync.
+    if (refund.status === 'SUCCEEDED' || read !== readGeneration || orderRead) {
+      readGeneration++
+      await refreshOrder(true)
+    }
+    if (page === pageGeneration) requestNotificationRefresh()
+  } catch (cause) {
+    if (page !== pageGeneration) return
+    if (cause instanceof TicketApiError && cause.code === 'ORDER_NOT_FOUND') {
+      order.value = null
+      error.value = '订单不存在或不可访问。'
+      return
+    }
+    readGeneration++
+    await refreshOrder(true)
+    if (page !== pageGeneration) return
+    if (cause instanceof TicketApiError && ['ORDER_NOT_REFUNDABLE', 'REFUND_WINDOW_CLOSED'].includes(cause.code)) {
+      refundMessage.value = cause.code === 'REFUND_WINDOW_CLOSED' ? '场次已经开始，当前不可退款。' : '订单当前不可退款。'
+    } else if (!order.value?.buyerRefund) {
+      refundMessage.value = '申请结果暂时无法确认，请刷新或稍后重试。'
+    }
+  } finally {
+    if (page === pageGeneration) {
+      refundSubmitting.value = false
+      scheduleRefund()
+    }
   }
 }
 
@@ -94,6 +186,7 @@ async function syncAttempt(attemptId: string, generation: number) {
 }
 
 async function refreshStatus(silent = false) {
+  if (!silent) readGeneration++
   const generation = paymentGeneration
   const attemptId = paymentAttempt.value?.id
   const refreshed = await refreshOrder(silent)
@@ -216,9 +309,31 @@ async function expire() {
   if (page === pageGeneration) adoptOrder(value)
 }
 
-function focusSync() {
-  void refreshStatus(true)
+function syncForeground() {
+  foreground = document.visibilityState !== 'hidden'
+  if (!foreground || focusRead || disposed) return
+  focusRead = refreshStatus(true).finally(() => { focusRead = null })
   requestNotificationRefresh()
+}
+
+function focusSync() {
+  // One activation can emit both events, even with a completed GET between them.
+  if (resumedByVisibility) { resumedByVisibility = false; return }
+  syncForeground()
+}
+
+function blurSync() {
+  foreground = false
+  resumedByVisibility = false
+  window.clearTimeout(refundTimer)
+}
+
+function visibilitySync() {
+  if (document.visibilityState === 'hidden') blurSync()
+  else if (!foreground && document.hasFocus()) {
+    syncForeground()
+    resumedByVisibility = true
+  }
 }
 
 async function restore() {
@@ -254,6 +369,9 @@ async function restore() {
 watch(() => route.params.orderId, () => {
   pageGeneration++
   readGeneration++
+  window.clearTimeout(refundTimer)
+  refundSubmitting.value = false
+  refundMessage.value = ''
   stopPayment()
   order.value = null
   session.value = null
@@ -268,11 +386,18 @@ watch(() => route.params.orderId, () => {
 onMounted(() => {
   void restore()
   window.addEventListener('focus', focusSync)
+  window.addEventListener('blur', blurSync)
+  document.addEventListener('visibilitychange', visibilitySync)
 })
 onBeforeUnmount(() => {
   pageGeneration++
+  readGeneration++
+  disposed = true
+  window.clearTimeout(refundTimer)
   stopPayment()
   window.removeEventListener('focus', focusSync)
+  window.removeEventListener('blur', blurSync)
+  document.removeEventListener('visibilitychange', visibilitySync)
 })
 </script>
 
@@ -289,6 +414,9 @@ onBeforeUnmount(() => {
   <p v-else-if="error" class="message-banner message-banner--error" role="alert">{{ error }}</p>
   <p v-if="loading && !order" class="page-shell">正在加载订单…</p>
   <OrderView v-else-if="order && event && session" :order="order" :event="event" :session="session" :seats="seats" :refreshing="loading" :payment-starting="paymentStarting" :payment-polling="paymentPolling" :cancelling="cancelling" :payment-attempt="paymentAttempt" :stripe-mode="stripeMode" :payment-prepared="Boolean(paymentAction) || paymentBlocked" @pay="pay" @cancel="cancel" @expire="expire" @refresh="refreshStatus" @start-over="router.push({ name: routeNames.events })">
+    <template #refund>
+      <BuyerRefundPanel :order="order" :submitting="refundSubmitting" :message="refundMessage" @request="requestRefund" />
+    </template>
     <StripePaymentPanel v-if="order.status === 'PENDING_PAYMENT' && paymentAction && paymentAttempt" :client-secret="paymentAction.clientSecret" :payment-attempt-id="paymentAttempt.id" :order-id="order.id" :disabled="cancelling" @submitted="submitted" />
   </OrderView>
 </template>

@@ -13,6 +13,49 @@ export type NotificationType =
   | 'ORDER_CANCELLED'
   | 'ORDER_EXPIRED'
   | 'AUTO_REFUND_COMPLETED'
+  | 'AUTO_REFUND_FAILED'
+  | 'REFUND_COMPLETED'
+  | 'REFUND_FAILED'
+
+export type RefundStatus = 'PROCESSING' | 'SUCCEEDED' | 'FAILED'
+export type RefundSource = 'BUYER' | 'SYSTEM'
+export type RefundReason = 'BUYER_REQUESTED'
+  | 'ORDER_CANCELLED_BEFORE_PAYMENT_CONFIRMATION'
+  | 'ORDER_EXPIRED_BEFORE_PAYMENT_CONFIRMATION'
+  | 'DUPLICATE_LATE_PAYMENT' | 'PAYMENT_NOT_ACCEPTED'
+
+export interface BuyerRefundSummary {
+  id: string
+  orderId: string
+  source: 'BUYER'
+  reason: 'BUYER_REQUESTED'
+  status: RefundStatus
+  amount: number // 整数最小货币单位
+  currency: string
+}
+
+export interface Refund extends Omit<BuyerRefundSummary, 'source' | 'reason'> {
+  source: RefundSource
+  reason: RefundReason
+  paymentAttemptId: string
+  createdAt: string
+  refundedAt?: string
+  failedAt?: string
+  failureCode?: 'PROVIDER_REFUND_FAILED'
+}
+
+export interface RefundEligibility {
+  eligible: boolean
+  deadline: string
+  reason: 'ALREADY_REQUESTED' | 'ORDER_NOT_REFUNDABLE' | 'REFUND_WINDOW_CLOSED' | null
+}
+
+export type CreateRefundDisposition = 'CREATED' | 'REUSED_PROCESSING' | 'REUSED_TERMINAL'
+export interface CreateRefundResult {
+  disposition: CreateRefundDisposition
+  refund: Refund
+  pollAfterMs: number
+}
 
 export interface TicketEvent {
   id: string
@@ -92,6 +135,8 @@ export interface TicketOrder {
   expiresAt: string
   createdAt: string
   paidAt?: string
+  buyerRefund: BuyerRefundSummary | null
+  refundEligibility?: RefundEligibility // 订单列表和部分写操作响应省略；详情始终返回
 }
 
 export interface ReservationResult {

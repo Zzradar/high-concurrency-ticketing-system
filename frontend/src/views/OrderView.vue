@@ -55,12 +55,16 @@ defineEmits<{
     </section>
 
     <OrderSummary
+      v-if="order.buyerRefund?.status !== 'SUCCEEDED' || order.status === 'CANCELLED'"
       :order="order"
       :event="event"
       :session="session"
       :seats="seats"
       @expiry-reached="$emit('refresh')"
     />
+    <p v-else role="status">正在同步退款后的订单状态…</p>
+
+    <slot name="refund" />
 
     <section v-if="order.status === 'PENDING_PAYMENT'" class="order-actions">
       <button class="primary-button order-pay-button" type="button" :disabled="paymentStarting || paymentPolling || paymentPrepared || cancelling" @click="$emit('pay')">
