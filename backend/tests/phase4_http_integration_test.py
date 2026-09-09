@@ -154,7 +154,23 @@ class OrderGetHttpIntegrationTest(unittest.TestCase):
         self.assertEqual(set(order), {
             "id", "reservationId", "eventId", "sessionId", "seatIds",
             "status", "totalAmount", "expiresAt", "createdAt",
+            "buyerRefund", "refundEligibility",
         })
+        self.assertIsNone(order["buyerRefund"])
+        eligibility = order["refundEligibility"]
+        self.assertIsInstance(eligibility, dict)
+        self.assertEqual(set(eligibility), {"eligible", "deadline", "reason"})
+        self.assertIs(eligibility["eligible"], False)
+        self.assertEqual(eligibility["reason"], "ORDER_NOT_REFUNDABLE")
+        assert_iso_utc(self, eligibility["deadline"])
+        deadline = psql(
+            f"""
+            SELECT TO_CHAR(start_time AT TIME ZONE 'UTC',
+                           'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')
+            FROM sessions WHERE id = '{SESSION_ID}';
+            """
+        )
+        self.assertEqual(eligibility["deadline"], deadline)
         self.assertEqual(order["id"], created["id"])
         self.assertEqual(order["reservationId"], created["reservationId"])
         self.assertEqual(order["eventId"], "evt-concert-2026")

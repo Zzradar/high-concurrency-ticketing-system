@@ -147,11 +147,12 @@ class BuyerRefundTest(unittest.TestCase):
 
  def test_buyer_provider_success_then_process_crash_recovers(self):
   from phase11_crash_window_integration_test import CrashWindowIntegrationTest
-  o=self.paid();r=self.request(o);self.provider(r)
+  o=self.paid();r=self.request(o);provider_refund=self.provider(r)
   helper=CrashWindowIntegrationTest();helper.locker=None
   try:
    helper.install_fault('refunds',f"NEW.id='{r['id']}' AND NEW.status='SUCCEEDED'")
-   self.terminal(r);helper.crash_and_restart('refunds',r['id']);self.assert_done(o,r)
+   fake('/__admin__/configure',{'refundId':provider_refund['id'],'refundStatus':'succeeded'})
+   helper.crash_and_restart('refunds',r['id']);self.assert_done(o,r)
    self.assertEqual(fake('/__admin__/state')['createRefundCalls'].count(r['id']),1)
   finally:helper.remove_fault();compose('start','backend')
  def test_refund_webhook_only_wakes_no_identity_binding(self):
