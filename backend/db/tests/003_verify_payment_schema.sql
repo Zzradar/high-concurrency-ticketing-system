@@ -2,7 +2,7 @@ BEGIN;
 
 INSERT INTO payment_attempts (
     id, order_id, status, started_at, processing_deadline,
-    scheduled_complete_at
+    scheduled_complete_at, currency
 )
 VALUES (
     'PAY-SCHEMA-TEST',
@@ -10,7 +10,7 @@ VALUES (
     'PROCESSING',
     clock_timestamp(),
     clock_timestamp() + INTERVAL '10 seconds',
-    clock_timestamp() + INTERVAL '2 seconds'
+    clock_timestamp() + INTERVAL '2 seconds', 'cny'
 );
 
 DO $$
@@ -18,10 +18,10 @@ BEGIN
     BEGIN
         INSERT INTO payment_attempts (
             id, order_id, status, started_at, processing_deadline,
-            scheduled_complete_at
+            scheduled_complete_at, currency
         )
         SELECT 'PAY-SCHEMA-DUPLICATE', order_id, 'PROCESSING',
-               started_at, processing_deadline, scheduled_complete_at
+               started_at, processing_deadline, scheduled_complete_at, currency
         FROM payment_attempts WHERE id = 'PAY-SCHEMA-TEST';
         RAISE EXCEPTION 'a second PROCESSING attempt was accepted';
     EXCEPTION
@@ -46,7 +46,7 @@ SET status = 'SUCCEEDED',
 WHERE id = 'PAY-SCHEMA-TEST';
 
 INSERT INTO refunds (
-    id, payment_attempt_id, order_id, amount, reason, refunded_at
+    id, payment_attempt_id, order_id, amount, reason, refunded_at, currency
 )
 VALUES (
     'RFD-SCHEMA-TEST',
@@ -54,7 +54,7 @@ VALUES (
     'TKT-SEED-HELD-ses-concert-1001',
     256000,
     'PAYMENT_NOT_ACCEPTED',
-    clock_timestamp()
+    clock_timestamp(), 'cny'
 );
 
 INSERT INTO user_notifications (
@@ -74,11 +74,11 @@ DO $$
 BEGIN
     BEGIN
         INSERT INTO refunds (
-            id, payment_attempt_id, order_id, amount, reason, refunded_at
+            id, payment_attempt_id, order_id, amount, reason, refunded_at, currency
         ) VALUES (
             'RFD-SCHEMA-DUPLICATE', 'PAY-SCHEMA-TEST',
             'TKT-SEED-HELD-ses-concert-1001', 256000,
-            'PAYMENT_NOT_ACCEPTED', clock_timestamp()
+            'PAYMENT_NOT_ACCEPTED', clock_timestamp(), 'cny'
         );
         RAISE EXCEPTION 'duplicate attempt refund was accepted';
     EXCEPTION

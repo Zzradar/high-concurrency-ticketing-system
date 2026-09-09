@@ -61,6 +61,11 @@ class PerformanceMetricsSourceContractTest(unittest.TestCase):
                 "ticketing_payment_reconciliation_total",
                 "ticketing_payment_reconciliation_pending",
                 "ticketing_refunds_by_status",
+                "ticketing_refund_requests_total",
+                "ticketing_refund_reconciliation_total",
+                "ticketing_refund_identity_conflicts_total",
+                "ticketing_refund_lifecycle_failures_total",
+                "ticketing_refund_processing_age_seconds",
             },
         )
         self.assertEqual(

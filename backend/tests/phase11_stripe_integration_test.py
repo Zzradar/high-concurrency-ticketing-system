@@ -186,7 +186,14 @@ class Phase11StripeIntegrationTest(unittest.TestCase):
                    message="refund completion")
         state = fake("/__admin__/state")
         self.assertEqual(len(state["refunds"]), 1)
-        self.assertGreaterEqual(state["createRefundCalls"].count(refund_id), 2)
+        self.assertEqual(state["createRefundCalls"].count(refund_id), 1)
+        # The initially empty provider requires one pre-create scan. A second
+        # query for this PaymentIntent proves recovery after the lost response.
+        self.assertGreaterEqual(
+            sum(query.get("payment_intent") == [payment["id"]]
+                for query in state["refundLists"]),
+            2,
+        )
         self.assertEqual(psql(f"SELECT status FROM orders WHERE id='{order['id']}';"), "CANCELLED")
 
     def test_refund_terminal_failure_notifies(self):

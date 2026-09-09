@@ -53,11 +53,11 @@ class Phase9AuthSchemaContractTest(unittest.TestCase):
             "005_add_payment_lifecycle.sql",
             "006_add_user_authentication.sql",
             "007_add_payment_provider_recovery.sql",
-            "008_demo_seed.sql",
-            "009_verify_seed.sql",
-            "010_verify_checkout_schema.sql",
-            "011_verify_payment_schema.sql",
-            "012_verify_auth_schema.sql",
+            "010_demo_seed.sql",
+            "011_verify_seed.sql",
+            "012_verify_checkout_schema.sql",
+            "013_verify_payment_schema.sql",
+            "014_verify_auth_schema.sql",
         )
         positions = [COMPOSE.index(name) for name in sequence]
         self.assertEqual(positions, sorted(positions))

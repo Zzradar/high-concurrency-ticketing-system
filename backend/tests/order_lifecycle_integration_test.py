@@ -21,12 +21,12 @@ class OrderLifecycleIntegrationTest(unittest.TestCase):
             f"""
             INSERT INTO payment_attempts (
                 id, order_id, status, started_at, processing_deadline,
-                scheduled_complete_at
+                scheduled_complete_at, currency
             ) VALUES (
                 'PAY-IT-GRACE', '{order_id}', 'PROCESSING',
                 clock_timestamp() - INTERVAL '2 minutes',
                 clock_timestamp() + INTERVAL '1 minute',
-                clock_timestamp() + INTERVAL '30 seconds'
+                clock_timestamp() + INTERVAL '30 seconds', 'cny'
             );
             """
         )
@@ -49,12 +49,12 @@ class OrderLifecycleIntegrationTest(unittest.TestCase):
             WHERE id = '{order_id}';
             INSERT INTO payment_attempts (
                 id, order_id, status, started_at, processing_deadline,
-                scheduled_complete_at
+                scheduled_complete_at, currency
             ) VALUES (
                 'PAY-IT-DEADLINE', '{order_id}', 'PROCESSING',
                 clock_timestamp() - INTERVAL '3 minutes',
                 clock_timestamp() - INTERVAL '30 seconds',
-                clock_timestamp() - INTERVAL '1 minute'
+                clock_timestamp() - INTERVAL '1 minute', 'cny'
             );
             COMMIT;
             """
