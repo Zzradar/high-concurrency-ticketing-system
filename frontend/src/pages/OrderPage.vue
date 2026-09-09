@@ -46,6 +46,7 @@ function stopPayment() {
   attemptReadGeneration++
   window.clearTimeout(paymentTimer)
   paymentPolling.value = false
+  paymentAttempt.value = null
   paymentAction.value = null
   paymentBlocked.value = false
   error.value = ''
@@ -190,11 +191,12 @@ async function refreshStatus(silent = false) {
   const generation = paymentGeneration
   const attemptId = paymentAttempt.value?.id
   const refreshed = await refreshOrder(silent)
-  if (!refreshed || generation !== paymentGeneration || !attemptId) return
+  if (!refreshed || generation !== paymentGeneration) return
   if (!paymentAction.value && paymentAttempt.value?.status !== 'PROCESSING') {
     paymentBlocked.value = false
     return
   }
+  if (!attemptId) return
   try {
     await syncAttempt(attemptId, generation)
   } catch {
@@ -238,7 +240,7 @@ async function pay() {
     if (page !== pageGeneration || generation !== paymentGeneration) return
     readGeneration++
     adoptOrder(result.order)
-    paymentAttempt.value = result.paymentAttempt
+    paymentAttempt.value = result.order.status === 'PENDING_PAYMENT' ? result.paymentAttempt : null
     if (result.paymentAttempt?.provider === 'stripe' || result.paymentAction) stripeMode.value = true
     const messages = {
       STARTED_NEW: '正在处理支付……',

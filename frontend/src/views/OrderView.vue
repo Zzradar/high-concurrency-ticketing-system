@@ -81,7 +81,7 @@ defineEmits<{
 
     <slot v-if="order.status === 'PENDING_PAYMENT'" />
 
-    <p v-if="paymentAttempt?.status === 'PROCESSING'" class="payment-state" role="status">
+    <p v-if="order.status === 'PENDING_PAYMENT' && paymentAttempt?.status === 'PROCESSING'" class="payment-state" role="status">
       支付渠道处理中；你仍可主动取消订单，迟到成功将自动退款。
     </p>
 

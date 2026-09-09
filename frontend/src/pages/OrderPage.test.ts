@@ -235,6 +235,32 @@ describe('Phase11 payment page', () => {
     window.dispatchEvent(new Event('focus')); await flushPromises()
     expect(wrapper!.findComponent(StripePaymentPanel).exists()).toBe(false)
     expect(fake.instances[0]!.destroy).toHaveBeenCalledOnce()
+    expect(wrapper!.text()).not.toContain('支付渠道处理中')
+    expect(wrapper!.text()).not.toContain('你仍可主动取消订单')
+  })
+
+  it('clears the stale PROCESSING Attempt when authoritative Order becomes PAID', async () => {
+    await open(); await start()
+    expect(wrapper!.text()).toContain('支付渠道处理中')
+    expect(wrapper!.findAll('button').some((button) => button.text() === '取消订单')).toBe(true)
+    expect(wrapper!.findComponent(StripePaymentPanel).exists()).toBe(true)
+    currentOrder = {
+      ...currentOrder, status: 'PAID', buyerRefund: null, paidAt: new Date().toISOString(),
+      refundEligibility: { eligible: true, deadline: new Date(Date.now() + 3600000).toISOString(), reason: null },
+    }
+    for (let refresh = 0; refresh < 2; refresh++) {
+      await wrapper!.findAll('button').find((button) => button.text() === '刷新状态')!.trigger('click')
+      await flushPromises()
+      expect(wrapper!.text()).toContain('支付成功')
+      expect(wrapper!.text()).toContain('订单已确认')
+      expect(wrapper!.text()).not.toContain('支付渠道处理中')
+      expect(wrapper!.text()).not.toContain('你仍可主动取消订单')
+      expect(wrapper!.findAll('button').some((button) => button.text() === '取消订单')).toBe(false)
+      expect(wrapper!.findComponent(StripePaymentPanel).exists()).toBe(false)
+      expect(fake.instances[0]!.destroy).toHaveBeenCalledOnce()
+      expect(wrapper!.findAll('button').some((button) => button.text() === '申请全额退款')).toBe(true)
+      expect(ticketApi.getPaymentAttempt).not.toHaveBeenCalled()
+    }
   })
 
   it('ALREADY_PAID never mounts a returned action', async () => {
@@ -242,6 +268,9 @@ describe('Phase11 payment page', () => {
     await open(); await start()
     expect(fake.elements).not.toHaveBeenCalled()
     expect(wrapper!.text()).toContain('支付成功')
+    expect(wrapper!.text()).not.toContain('支付渠道处理中')
+    expect(wrapper!.text()).not.toContain('你仍可主动取消订单')
+    expect(wrapper!.findAll('button').some((button) => button.text() === '取消订单')).toBe(false)
   })
 
   it('reopen explicitly recovers the same attempt through REUSED_PROCESSING', async () => {
