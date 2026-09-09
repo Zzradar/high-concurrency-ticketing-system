@@ -8,6 +8,76 @@ const SESSION_IDS = [1, 2, 3, 4].map((value) => `perf-session-001-${value.toStri
 const sessionSeat = (sessionIndex: number, seatIndex: number) =>
   `perf-ss-001-${sessionIndex.toString().padStart(3, '0')}-${seatIndex.toString().padStart(6, '0')}`
 
+test('different users converge after a real first-checkout seat hold conflict', async ({ browser }) => {
+  const contender = await authenticatedContext(browser, 'perf-user-000006')
+  let holder: Awaited<ReturnType<typeof authenticatedContext>> | undefined
+  let holderCheckoutId = ''
+  const sessionId = SESSION_IDS[0]
+  const seatId = sessionSeat(1, 2)
+  try {
+    holder = await authenticatedContext(browser, 'perf-user-000005')
+    const initialCounts = row(`SELECT
+      count(*) FILTER (WHERE user_id = 'perf-user-000005'),
+      count(*) FILTER (WHERE user_id = 'perf-user-000006')
+      FROM checkout_sessions WHERE session_id = ${sqlLiteral(sessionId)};`)
+    const page = await contender.context.newPage()
+    const reads: URL[] = []
+    page.on('request', (request) => {
+      const url = new URL(request.url())
+      if (url.pathname.startsWith(`/api/sessions/${sessionId}/seat`)) reads.push(url)
+    })
+    const count = (suffix: string) => reads.filter((url) => url.pathname.endsWith(suffix)).length
+    await page.goto(`/sessions/${sessionId}/seats`)
+    const target = page.getByRole('button', { name: /^R001-002，可选，/ })
+    await expect(target).toBeEnabled()
+    await expect(page.getByRole('button', { name: '刷新座位状态', exact: true })).toBeEnabled()
+    expect(count('/seat-layout')).toBe(1)
+    expect(count('/seat-availability')).toBe(1)
+    // Observe a stable page long enough to catch an accidentally added short polling loop.
+    await page.waitForTimeout(1500)
+    expect(count('/seat-availability')).toBe(1)
+    await page.getByRole('button', { name: '刷新座位状态', exact: true }).click()
+    await expect(page.getByRole('button', { name: '刷新座位状态', exact: true })).toBeEnabled()
+    expect(count('/seat-availability')).toBe(2)
+
+    const held = await holder.api.createCheckoutSession(sessionId, [seatId])
+    holderCheckoutId = held.id
+    expect(held.status).toBe('SELECTING')
+    expect(held.seatIds).toEqual([seatId])
+    const conflictResponse = page.waitForResponse((response) =>
+      new URL(response.url()).pathname === '/api/checkout-sessions' &&
+      response.request().method() === 'POST' && response.status() === 409,
+    )
+    await target.click()
+    expect((await (await conflictResponse).json()).code).toBe('SEAT_TEMPORARILY_HELD')
+    await expect(page.getByRole('button', { name: /^R001-002，锁定中，/ })).toBeDisabled()
+    await expect(page.getByRole('alert')).toHaveText('所选座位刚被其他用户临时锁定，座位状态已刷新，请重新选择。')
+    expect(count('/seat-availability')).toBe(3)
+    expect(count('/seat-layout')).toBe(1)
+    expect(count('/seats')).toBe(0)
+    expect(reads.filter((url) => url.searchParams.has('checkoutSessionId'))).toHaveLength(0)
+    await expect(page.locator('.selected-seat')).toHaveCount(0)
+    expect(row(`SELECT
+      count(*) FILTER (WHERE user_id = 'perf-user-000005'),
+      count(*) FILTER (WHERE user_id = 'perf-user-000006')
+      FROM checkout_sessions WHERE session_id = ${sqlLiteral(sessionId)};`))
+      .toEqual([String(Number(initialCounts[0]) + 1), initialCounts[1]])
+    expect(row(`SELECT user_id, status FROM checkout_sessions WHERE id = ${sqlLiteral(holderCheckoutId)};`))
+      .toEqual(['perf-user-000005', 'SELECTING'])
+    expect(row(`SELECT status, current_reservation_id IS NULL FROM session_seats WHERE id = ${sqlLiteral(seatId)};`))
+      .toEqual(['AVAILABLE', 't'])
+  } finally {
+    try {
+      if (holderCheckoutId && holder) await holder.api.abandonCheckoutSession(holderCheckoutId)
+    } finally {
+      await Promise.all([
+        contender.context.close(), contender.api.dispose(),
+        holder?.context.close(), holder?.api.dispose(),
+      ])
+    }
+  }
+})
+
 test('checkout-smoke uses UI login and reaches a pending order', async ({ page }) => {
   const seatReadUrls: URL[] = []
   page.on('request', (request) => {

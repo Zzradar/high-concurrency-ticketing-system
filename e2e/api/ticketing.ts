@@ -65,6 +65,17 @@ export class AuthenticatedApi {
     return response.json()
   }
 
+  async createCheckoutSession(sessionId: string, seatIds: string[]): Promise<{ id: string; seatIds: string[]; status: string }> {
+    const response = await this.context.post('/checkout-sessions', {
+      data: { sessionId, seatIds },
+      headers: this.writeHeaders(),
+    })
+    if (!response.ok()) {
+      throw new Error(`checkout arrange failed: ${response.status()} ${await response.text()}`)
+    }
+    return response.json()
+  }
+
   async dispose() {
     await this.context.dispose()
   }

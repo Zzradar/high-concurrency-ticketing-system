@@ -37,8 +37,9 @@ const totalAmount = computed(() =>
         <p class="eyebrow">YOUR SELECTION</p>
         <h2 id="selection-title">已选座位</h2>
       </div>
-      <button class="icon-button" type="button" :aria-label="refreshing ? '正在刷新座位状态' : '刷新座位状态'" :disabled="refreshing" @click="$emit('refresh')">
+      <button class="seat-refresh-button" type="button" :aria-label="refreshing ? '正在刷新座位状态' : '刷新座位状态'" :aria-busy="refreshing" :disabled="refreshing" @click="$emit('refresh')">
         <RefreshCw :class="{ 'is-spinning': refreshing }" :size="18" aria-hidden="true" />
+        <span>{{ refreshing ? '正在刷新' : '刷新座位状态' }}</span>
       </button>
     </div>
 

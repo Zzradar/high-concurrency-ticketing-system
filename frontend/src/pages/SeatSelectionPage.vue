@@ -78,13 +78,14 @@ async function activate(value: CheckoutSession) {
   selectedSeatIds.value = [...value.seatIds]
   recoverable.value = []
   locatorWrite(value)
-  await refreshSeats()
+  const refreshed = await refreshSeats()
   if (value.status === 'RESERVED' && value.order) {
     showNotice('该购票会话此前已经确认，已同步现有订单。')
     await router.push({ name: routeNames.orderDetail, params: { orderId: value.order.id } })
   } else if (value.status === 'SUBMITTING') {
     startSubmittingPoll(value.id)
   }
+  return refreshed
 }
 
 async function recoverCheckout() {
@@ -170,8 +171,19 @@ async function toggleSeat(seat: Seat) {
     await refreshSeats()
   } catch (cause) {
     error.value = cause instanceof TicketApiError ? cause.message : '座位选择同步失败。'
+    const isHoldConflict = cause instanceof TicketApiError && cause.code === 'SEAT_TEMPORARILY_HELD'
+    let refreshed: boolean | undefined
     if (checkout.value) {
-      try { await activate(await ticketApi.getCheckoutSession(checkout.value.id)) } catch { /* keep visible state */ }
+      try {
+        const recovered = await ticketApi.getCheckoutSession(checkout.value.id)
+        refreshed = await activate(recovered)
+      } catch { /* keep visible state */ }
+    }
+    if (isHoldConflict) {
+      if (refreshed === undefined) refreshed = await refreshSeats()
+      error.value = refreshed
+        ? '所选座位刚被其他用户临时锁定，座位状态已刷新，请重新选择。'
+        : '所选座位刚被其他用户临时锁定，最新座位状态暂未取得，请点击“刷新座位状态”后重试。'
     }
   } finally {
     syncing.value = false

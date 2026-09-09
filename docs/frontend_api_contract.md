@@ -194,7 +194,7 @@ POST、PUT、PATCH、DELETE 请求上发送 `X-CSRF-Token`。Cookie 由浏览器
 | 点击“提交预订” | 禁止继续编辑，等待 create/PUT 并把最终集合 flush 到服务端 checkpoint，再正式确认 | POST /checkout-sessions/{id}/confirm |
 | 确认成功 | 使用 CheckoutSession 响应中的 order 并进入订单页 | confirm 响应 RESERVED CheckoutSession |
 | SEAT_CONFLICT | GET 当前 C1 回到 SELECTING，保留服务端意图并刷新动态 Seat Availability | GET CheckoutSession + GET seat-availability |
-| SEAT_TEMPORARILY_HELD | 视为明确业务冲突，保留合理的本地意图并刷新动态 Seat Availability，不进入结果未知轮询 | GET seat-availability；Final PUT 冲突时不调用 confirm |
+| SEAT_TEMPORARILY_HELD | 首次创建失败保留原选择并刷新一次动态状态；已有会话先恢复服务端选择，再复用恢复中的一次刷新；会话读取失败仍尽力刷新一次 | 首次仅 GET seat-availability；已有会话 GET CheckoutSession + GET seat-availability，不重复刷新 |
 | 点击订单“刷新状态” | 更新页面 order | GET /orders/{order.id} |
 | 打开“我的订单” | 按状态筛选当前用户最近订单 | GET /orders?status=...&limit=20 |
 | 直接打开订单 URL | 按 orderId 恢复 Order，再恢复 Event、Session 与 Seat[] | GET /orders/{id}、GET /events/{id}、GET /sessions/{id}、GET seats |
@@ -608,7 +608,7 @@ Confirm 成功响应为 `{ "disposition", "checkoutSession" }`。`disposition` �
 
 边界原则：
 
-1. 用户点选座位先改变 selectedSeatIds，并异步保存 CheckoutSession 意图和临时 Hold；只有 Phase 3 正式 Reservation 成功才是 PostgreSQL 正式锁座。
+1. 用户点选座位后，先请求保存 CheckoutSession（购票会话）意图和临时占座，成功后才更新 selectedSeatIds（本地已选编号）；失败请求不会乐观写入成功选择。只有正式 Reservation（预订）成功才是 PostgreSQL 正式锁座。
 2. 正常 UI 不直接调用 POST /reservations；confirm 返回 RESERVED + order 后才进入订单页。底层 createReservation 仍保留用于 Mock 竞争和较低层测试。
 3. Seat.status、Reservation.status 和 Order.status 的正式值必须以后端为准。
 4. 倒计时仅用于展示；是否过期由 GET /orders/{orderId} 的返回状态决定。
@@ -700,3 +700,14 @@ Backend Attempt FAILED/SUCCEEDED 后统一销毁旧 Element、清 action 和旧�
 
 主动观察窗口仍为约 15 秒，超时仅提示结果仍未确定；后端继续 Webhook/Reconciliation。取消成功或 Order 进入 PAID/CANCELLED/EXPIRED 时销毁 Element、停止本地轮询、忽略过时回调；不调用 Stripe cancel，也不能撤回已提交的渠道支付。后端 Simulation grace 保持 10 秒，Stripe v1 = card-only，grace 默认 600 秒，由 STRIPE_PROCESSING_GRACE_SECONDS 配置并在启动时校验为正数。600 秒用于真人 3DS 认证，是业务默认值，不是容量/SLO。第一版不支持长时间异步 Payment Method；未来新增 Provider/Payment Method 必须重新设计支付时限与 Seat 回收语义。前端继续使用 CLIENT_CONFIRM 并以 Backend Attempt/Order 为准，不依据 grace 作业务判断。历史 deadline 不变，超时和迟到成功退款语义保持。真实 Stripe Sandbox/3DS 尚未执行，仍为后续 Gate。
 
+
+
+### Phase 13 交互与请求边界
+
+账户显示名称现在是菜单触发入口，菜单提供“我的订单”和“退出登录”两个独立操作。前者使用现有订单列表路由，后者保持原有认证退出和浏览器会话存储清理语义。账户菜单与通知互斥，并在外部点击、Escape（退出键）、菜单操作和路由变化时关闭。顶部活动栏目覆盖活动、场次和选座路由，订单栏目覆盖订单列表和详情，手机上仍可通过第二行导航访问。
+
+首次进入选座页仍读取一次 Layout（静态布局）和一次 Availability（动态状态）；手动刷新和临时占座冲突只重新读取动态接口。有当前场次 CheckoutSession（购票会话）时携带 checkoutSessionId，没有时省略。首次创建返回 SEAT_TEMPORARILY_HELD（座位被其他会话临时锁定）时保持请求前选择并刷新一次；已有会话更新冲突时先读取会话，再复用恢复流程的一次动态刷新。会话读取失败也尽力刷新一次，动态刷新失败不再立即重试，因此不会因恢复分支重复请求，也不会重新读取布局或调用旧的 /seats 接口。
+
+自动刷新成功后提示“所选座位刚被其他用户临时锁定，座位状态已刷新，请重新选择。”刷新失败后提示“所选座位刚被其他用户临时锁定，最新座位状态暂未取得，请点击‘刷新座位状态’后重试。”同时保留最后成功快照、合理的已选座位和非阻断警告；首次失败请求的新增选择不会被保存为成功结果。多座位请求可能因其他座位发生冲突，故显示始终取自完整动态快照。其他错误继续走通用处理，不推断为临时竞争。
+
+本轮不改变后端接口和临时占座语义，没有增加座位定时轮询、WebSocket（双向实时连接）、SSE（服务端事件推送）、增量协议或服务端缓存。根目录新增的真实端到端用例使用两个不同账户：竞争者先读取可选座位，持有者通过真实接口占座，竞争者点击旧快照后收到 409；测试检查动态请求只增加一次、页面禁用锁定座位、持有者是唯一新增成功会话，而 PostgreSQL 正式座位仍为 AVAILABLE。测试结束主动放弃持有者会话释放临时占座，不等待到期。

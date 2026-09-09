@@ -156,61 +156,83 @@ h2 {
 .progress-nav {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
-.progress-nav > i {
-  width: clamp(28px, 4vw, 64px);
-  height: 1px;
-  margin: 0 9px;
-  background: var(--line-strong);
-}
-
-.progress-nav > i.is-complete {
-  background: var(--accent);
-}
-
-.progress-step {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: #8d938f;
-}
-
-.progress-step span {
-  display: grid;
-  width: 26px;
-  height: 26px;
-  place-items: center;
-  border: 1px solid var(--line-strong);
-  border-radius: 50%;
-  background: var(--paper);
-  font-size: 0.75rem;
-  font-weight: 800;
-}
-
-.progress-step strong {
-  font-size: 0.76rem;
+.progress-nav > a {
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-small);
+  color: var(--ink-soft);
+  font-size: 0.85rem;
   font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
-.progress-step.is-active,
-.progress-step.is-complete {
-  color: var(--ink);
+.progress-nav > a:hover {
+  background: var(--surface-muted);
 }
 
-.progress-step.is-active span {
-  border-color: var(--ink);
-  color: #fff;
-  background: var(--ink);
-}
-
-.progress-step.is-complete span {
+.progress-nav > a.is-active {
   border-color: var(--accent);
-  color: #fff;
-  background: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-dark);
 }
+
+.account-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 2;
+  width: min(260px, calc(100vw - 36px));
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow-wrap: anywhere;
+}
+
+.account-panel header {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.account-panel small { color: var(--ink-soft); }
+.account-panel nav { display: grid; padding: 6px; }
+.account-panel a, .account-panel button {
+  padding: 12px;
+  border: 0;
+  border-radius: var(--radius-small);
+  color: var(--ink);
+  background: transparent;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.account-panel a:hover, .account-panel button:hover { background: var(--surface-muted); }
+
+.seat-refresh-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--surface);
+  font-size: 0.72rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.seat-refresh-button:disabled { opacity: 0.65; cursor: wait; }
+.selection-panel__header { flex-wrap: wrap; gap: 10px; }
 
 .header-actions {
+  position: relative;
   display: flex;
   align-items: center;
   justify-self: end;
@@ -218,8 +240,10 @@ h2 {
 }
 
 .notification-center {
-  position: relative;
+  position: static;
 }
+
+.account-center { position: relative; }
 
 .notification-button {
   position: relative;
@@ -247,6 +271,7 @@ h2 {
 }
 
 .notification-panel {
+  z-index: 2;
   position: absolute;
   top: 48px;
   right: 0;
@@ -328,7 +353,7 @@ h2 {
   border: 0;
   border-left: 1px solid var(--line);
   background: transparent;
-  cursor: default;
+  cursor: pointer;
   font-size: 0.75rem;
   font-weight: 700;
 }
@@ -1824,7 +1849,6 @@ h2 {
     grid-template-columns: auto 1fr auto;
   }
 
-  .progress-step strong,
   .mode-badge {
     display: none;
   }
@@ -1856,25 +1880,13 @@ h2 {
     padding: 10px 18px;
   }
 
-  .brand small,
-  .user-button span {
+  .brand small {
     display: none;
   }
 
   .brand__mark {
     width: 38px;
     height: 38px;
-  }
-
-  .progress-nav > i {
-    width: 20px;
-    margin: 0 4px;
-  }
-
-  .progress-step span {
-    width: 23px;
-    height: 23px;
-    font-size: 0.66rem;
   }
 
   .page-shell,
@@ -1980,14 +1992,20 @@ h2 {
 
 @media (max-width: 560px) {
   .progress-nav {
-    display: none;
+    grid-row: 2;
+    grid-column: 1 / -1;
+    justify-self: stretch;
+    margin-top: 10px;
   }
+  .progress-nav > a { flex: 1; }
+  .user-button span { max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .site-header {
     grid-template-columns: 1fr auto;
   }
 
   .header-actions {
+    grid-row: 1;
     grid-column: 2;
   }
 
