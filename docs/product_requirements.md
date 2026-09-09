@@ -127,8 +127,25 @@ MVP 的模拟支付在发起后约 2～6 秒完成，约有 1% 概率失败。�
 迟到成功而恢复，迟到成功的款项会自动全额退款。
 
 用户可以通过右上角通知中心查看订单创建、支付成功、订单取消、订单过期和自动退款结果；支付
-失败则在当前订单页直接反馈。第一版不支持对正常 PAID 订单主动发起退票或退款；
-自动退款只处理未被订单接纳的迟到或重复支付成功。
+失败则在当前订单页直接反馈。SYSTEM 自动退款处理未被订单接纳的迟到或重复支付成功；
+Phase 12 的 BUYER 退款处理用户对已接纳支付的主动申请，二者通知和权益语义分离。
+
+### 4.6 开场前买家整单全额退款（Phase 12）
+
+订单 owner 可在场次开场前，对正常 PAID 订单申请一次整单、全额、原路退款。
+金额与币种来自已接纳的支付，用户不能编辑金额；确认框取消不产生申请。
+重复点击、网络重试和截止后的重复查询复用原退款，不形成新的资金义务。
+
+PROCESSING 表示退款义务已受理、尚未完成；订单与座位权益仍然有效。
+SUCCEEDED 后取消订单及预订、释放原座位并发送一次 REFUND_COMPLETED 通知；
+FAILED 保留权益并提示失败，不自动创建第二次退款。座位释放后可正常转售，
+不要求它永久保持 AVAILABLE。刷新、重新登录或换客户端从服务器恢复结果。
+
+当前不支持部分退款、退款失败后自动第二次退款、项目外 Dashboard 退款自动认领，
+以及 succeeded → failed 后续冲正。Stripe Sandbox 不是生产资金或真实银行结算证明。
+真实渠道处理中与前端可见状态已经验收；隐藏/失焦的精确请求调度由确定性自动化测试覆盖，
+未把未观察到的真实浏览器时间线伪称为已观察。证据见
+[Phase12-2B 验收记录](phase12_2b_sandbox_validation.md)。
 
 ## 5. 故障与恢复体验
 
@@ -176,12 +193,12 @@ MVP 的模拟支付在发起后约 2～6 秒完成，约有 1% 概率失败。�
 - Phase 9 用户登录、一个账号多个独立浏览器会话、当前会话退出、我的订单、订单深链接、
   已有操作结果提示和跨客户端通知/焦点同步。
 
-### 6.2 后续阶段
+- Phase 11 Stripe card Provider、Webhook Inbox、主动对账及 Payment Element；
+- Phase 12 开场前买家整单全额退款与本轮 Sandbox 集成验收（分层证据）。
 
-- 对已实现的 Stripe Provider、Webhook Inbox、主动查单和前端 Payment Element 进行真实 Sandbox 验证并完成发布核验；
-- 设计正常 PAID 订单的主动退票与退款能力。
+### 6.2 支付渠道与验收边界
 
-Phase 11 保持默认 simulation 开箱即用和原 10 秒 processing grace；Stripe v1 = card-only，grace 默认 600 秒，由 STRIPE_PROCESSING_GRACE_SECONDS 配置。600 秒用于真人填写和 3DS 认证，是业务运行默认值，不是容量/SLO。第一版不支持长时间异步 Payment Method；未来增加 Provider/Payment Method 必须重新设计支付时限与 Seat 回收语义。Stripe client secret 只在订单 owner 发起或恢复支付时临时返回。BUYER 主动退款仍属于 Phase 12，真实 Stripe Sandbox 凭据验证属于发布 Gate。
+Phase 11 保持默认 simulation 开箱即用和原 10 秒 processing grace；Stripe v1 = card-only，grace 默认 600 秒，由 STRIPE_PROCESSING_GRACE_SECONDS 配置。600 秒用于真人填写和 3DS 认证，是业务运行默认值，不是容量/SLO。第一版不支持长时间异步 Payment Method；未来增加 Provider/Payment Method 必须重新设计支付时限与 Seat 回收语义。Stripe client secret 只在订单 owner 发起或恢复支付时临时返回。BUYER 主动退款已在 Phase 12 落地，真实 Sandbox 验收范围见本轮记录。
 
 Phase 11 前端支付为两阶段：先开始/恢复支付，再在官方 Stripe Payment Element 中填写并确认。设置前端 `VITE_STRIPE_PUBLISHABLE_KEY` 后使用“开始支付”，接收到 Stripe action 后显示支付方式和“确认支付”；默认无 key 的 simulation 保留模拟支付文案及原行为。前端无法在第一次 pay 之前从 Order contract 获知 provider；缺 key 但收到 Stripe action 时明确报配置错误并保留支付尝试。
 
@@ -189,7 +206,7 @@ Stripe 处理必要的 3DS/redirect，使用 `redirect: if_required` 和当前�
 
 正式成功/失败仍由本地 Backend PaymentAttempt/Order 决定。用户可修正的支付输入错误只在组件附近显示；网络结果未知时同步服务器，不自动重建支付。前端只主动观察约 15 秒，之后提示稍后刷新。支付期间仍可取消订单，已提交渠道操作可能迟到成功，由后端负责自动退款。
 
-后端宽限已按 Provider 区分：Simulation 10 秒，Stripe card 默认 600 秒；历史 Attempt deadline 不变。超过 deadline 的 TIMED_OUT/EXPIRED 和迟到成功退款语义保持。真实 Stripe Sandbox/3DS = NOT RUN，发布前必须按正常人工速度完成 3DS，记录 started_at、认证完成时间、provider/Order 终态、processingDeadline、accepted_at 和是否发生错误迟到退款；前端不得自行绕过服务端时限。Phase 12 未实施。
+后端宽限已按 Provider 区分：Simulation 10 秒，Stripe card 默认 600 秒；历史 Attempt deadline 不变。超过 deadline 的 TIMED_OUT/EXPIRED 和迟到成功退款语义保持。本轮 Phase12 Sandbox 已验证 card 支付与退款闭环；未重跑的真实 3DS 专项不能冒充本轮结果。3DS 验收仍需单独记录人工认证时间、processingDeadline、accepted_at 和迟到退款情况；前端不得自行绕过服务端时限。
 
 Phase11 对账可靠性要求：渠道支付终态与本地业务终态原子提交；进程退出或事务失败后仍可恢复。`status` 表示本地完成事实，调度时间不代表完成，Worker lease 仅为临时领取权。旧版支付终态证据与本地状态不一致时，必须重新向渠道查证再幂等恢复，不得复活已终止订单或重复退款/通知。实现保留数据库 CHECK，不增加 Job 表或 MQ，详见 [崩溃一致性设计](payment_reconciliation_crash_consistency_phase11_design.md)。
 

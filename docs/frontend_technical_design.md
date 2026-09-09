@@ -977,3 +977,40 @@ Backend retry contract 核对：当前查询只锁定 status=PROCESSING 的 Atte
 回到独立 Sandbox Gate 后必须补验同一订单的完整路径：拒付卡令 A FAILED → 页面自动或手动刷新恢复 → 旧 Element 消失 → 开始支付重新可用 → B.id != A.id → 成功卡令 B SUCCEEDED、Order PAID、Reservation CONFIRMED、Seat SOLD → 成功通知恰好一次、Refund 为 0。本轮未读取本机 Stripe 凭据文件，未运行真实 Stripe，未执行发布或 Phase12。
 
 本轮验证：Frontend Vitest full 95/95 PASS（新增 8 项恢复用例，并加强 validation、unknown 与 Mock retry 断言）；vue-tsc/production build PASS；Mock Playwright full 8/8 PASS；隔离 simulation Real Playwright full 5/5 PASS（32.3 秒）。确定性测试覆盖 PROCESSING → PROCESSING → FAILED、A → B → PAID、手动刷新、未知结果超时后保护、卡错误最终成功、查询故障以及过时 A 响应不能覆盖 B。Backend diff 为 0；真实 Sandbox 未执行，留给独立 Gate。
+
+
+## Phase 12：可恢复买家全额退款与最终验收
+
+订单详情消费服务端 `buyerRefund` 与 `refundEligibility`。首次确认框仅展示整单金额，
+不收集金额输入；取消/Escape不POST。`ticketApi.createRefund` 的Axios调用不传body，
+沿用Cookie/CSRF。提交标记立即禁用按钮，页面与服务层共同防止重复申请；
+未知结果先GET Order恢复，不能凭超时构造新退款。HTTP 200/202不代表退款资金终态。
+
+仅 BUYER/PROCESSING 安排退款轮询：统一在途Promise串行读取，前一次读取完成后再等待
+2000ms，不使用setInterval。blur/hidden清理timer，在途请求可以结束，但后台不能继续
+排下一轮；恢复立即同步，focus与visibilitychange即使先后分属一个已完成GET两侧，
+仍合并为一次激活读取。后台初次挂载不启动轮询。SUCCEEDED/FAILED、卸载停止轮询。
+page/read/payment代次保护路由切换、旧POST和旧GET；过期异步结果不覆盖新页面。
+识别PROCESSING→SUCCEEDED后另做一次串行权威订单确认，不是并行周期请求。
+
+PROCESSING展示“完成前订单和座位权益仍然有效”；SUCCEEDED展示退款完成、订单取消、
+座位释放；FAILED展示失败与权益有效，不自动第二次申请。初次访问、刷新、重新登录
+都从后端恢复，浏览器存储不作为退款事实。页面只展示本地安全字段，不显示渠道ID或原始错误。
+
+本次支付状态修复：`stopPayment()`清除旧Attempt及action；非待支付的pay响应不重新
+保存旧Attempt；旧PROCESSING提示同时要求Order=PENDING_PAYMENT。
+`refreshStatus()`仅在权威读取成功且代次有效时判断解除支付保护，缺少旧attemptId
+不阻止安全解锁；读失败或仍有活跃支付动作不能解锁。对应39项支付定向门禁。
+
+退款调度断言实际在 `src/pages/OrderPage.refund.test.ts`（44项），属于158项全量门禁；
+与上述39项支付测试不同。已验证串行、隐藏/失焦、恢复立即同步、两种连续事件顺序、
+在途完成后停调度、后台挂载及终态停止。本轮额外输出该44项的verbose日志。
+
+真实渠道处理中与前端可见状态已经验收；隐藏/失焦的精确请求调度由确定性自动化测试覆盖，
+未把未观察到的真实浏览器时间线伪称为已观察。本轮采用获准的分层证据裁决；工具
+没有暴露document.hasFocus，创建另一标签也未使原页实际hidden。没有将这些操作写成
+真实隐藏通过。真实前台请求无重叠，终态停止；详见[Phase12-2B验收](phase12_2b_sandbox_validation.md)。
+前述Phase11小节保留当时的历史测试边界，不代表当前Phase12状态。
+
+当前不支持部分退款、退款失败后自动第二次退款、项目外 Dashboard 退款自动认领，
+以及 succeeded → failed 后续冲正。Stripe Sandbox 不是生产资金或真实银行结算证明。

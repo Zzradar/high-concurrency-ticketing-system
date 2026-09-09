@@ -132,6 +132,8 @@ Phase 7  Redis 临时占座                                      已完成
 Phase 8  支付 + 取消 + 支付/取消/超时状态竞争                已完成
 Phase 9  用户登录 + Session 认证 + 多客户端恢复               已完成
 Phase 10 按压测决定限流/排队/异步受理/操作查询               暂缓
+Phase 11 Stripe card 与可靠对账恢复                          已实现
+Phase 12 买家全额退款与 Sandbox 分层验收                    已完成
 ```
 
 当前后端已经实现并验证：
@@ -159,6 +161,9 @@ POST /checkout-sessions/{id}/abandon
 POST /orders/{orderId}/pay
 POST /orders/{orderId}/cancel
 GET /payment-attempts/{paymentAttemptId}
+POST /orders/{orderId}/refunds
+GET /refunds/{refundId}
+POST /payment-webhooks/stripe
 GET /notifications
 POST /notifications/{notificationId}/read
 ```
@@ -601,7 +606,7 @@ CheckoutSession 在正式预订成功后始终保持 RESERVED，不随支付、�
 已经 PAID 的订单不能通过 MVP 普通取消接口取消。
 
 取消时当前 PROCESSING Attempt 保持原状态，之后的迟到成功按自动全额退款处理。
-正常 PAID 订单的主动退票/退款仍不在当前范围内。
+正常 PAID 订单通过 Phase 12 独立退款入口处理，见第16节；取消接口不直接退款。
 
 ---
 
@@ -814,7 +819,7 @@ Order 和真实关联数据。并发测试不能反复污染这些记录。
 
 ## 13. 当前暂不实现的能力
 
-当前 Phase 3 及核心正确性验证阶段明确不实现：
+当前范围仍不包含以下能力；已落地的 Stripe 和买家退款不列入此清单：
 
 - Redis 座位图缓存。
 - Redis 分布式锁。
@@ -823,10 +828,10 @@ Order 和真实关联数据。并发测试不能反复污染这些记录。
 - WebSocket 实时座位推送。
 - 多后端实例。
 - Nginx 负载均衡。
-- Prometheus / Grafana。
+- 未经压测验证的容量/SLO承诺。
 - Kubernetes。
-- 第三方真实支付。
-- 正常 PAID 订单的主动退票/退款。
+- 生产银行结算验收。
+- 部分退款及退款成功后的冲正。
 - 优惠券。
 - 推荐系统。
 - 复杂后台管理系统。
@@ -996,11 +1001,45 @@ MVP 完成时必须能够完整演示：
 
 只要以上业务闭环和并发正确性成立，才认为核心 MVP 完成。当前 Phase 1～9 已经完成：
 购票会话、恢复、Redis 临时占座、异步支付、取消、超时竞争、自动退款和通知均已落地，
-并通过当前阶段的事务、并发与故障路径验证。真实第三方支付渠道及正常 PAID 订单的
-主动退票/退款仍属于后续能力。
+并通过当前阶段的事务、并发与故障路径验证。Phase 11/12 已加入 Stripe card 集成与
+正常 PAID 订单的买家全额退款；生产结算不在 Sandbox 结论内。
 
 ### Phase 11：真实支付渠道与可靠恢复
 
 对账 P1 收口采用正常路径终态单事务 + 旧版异常自愈扫描。`status` 是本地完成事实，`next_reconcile_at` 仅为调度时间，008 新增 lease/token 仅为临时 Worker ownership。Payment 的 Provider snapshot 与业务终态共用 Order-first 事务；Refund 保留既有原子 SQL，所有 CHECK 保留。详见 [支付对账终态原子提交与异常半状态自愈](payment_reconciliation_crash_consistency_phase11_design.md)。下述“不新增 migration”仅指既有 grace 调整；本轮新增 008 lease migration。
 
-支付主线现采用小型 `PaymentProvider` 边界，默认 `simulation`，Stripe Sandbox 通过 Drogon 异步 HttpClient 直接调用 REST（Stripe 无官方 C++ 服务端 SDK）。PaymentAttempt/Refund 的 provider identity、同步时间、终态与退避均持久化；Stripe Webhook 只做原始 body 验签和 Inbox 入库，主动对账 worker retrieve 最新对象后再进入既有 Order-first 生命周期。`PaymentAttempt.id` 和 `Refund.id` 分别是渠道 create 的固定幂等键。迟到成功先形成 PROCESSING Refund，真正成功/失败后分别通知，不再把 INSERT 等同于退款完成。完整设计见 `payment_provider_phase11_design.md`。Phase 12 买家退款尚未实施。Stripe v1 = card-only，不支持长时间异步 Payment Method。Provider::processingGraceSeconds() 给出 Simulation 原配置 10 秒、Stripe 默认 600 秒；STRIPE_PROCESSING_GRACE_SECONDS 启动时校验为正有限数。600 秒支持真人 3DS，是业务默认值，不是容量/SLO。未来增加 Provider/Payment Method 必须重新设计支付时限与 Seat 回收语义。沿用 processing_deadline，不新增 migration 或修改历史 Attempt。
+支付主线现采用小型 `PaymentProvider` 边界，默认 `simulation`，Stripe Sandbox 通过 Drogon 异步 HttpClient 直接调用 REST（Stripe 无官方 C++ 服务端 SDK）。PaymentAttempt/Refund 的 provider identity、同步时间、终态与退避均持久化；Stripe Webhook 只做原始 body 验签和 Inbox 入库，主动对账 worker retrieve 最新对象后再进入既有 Order-first 生命周期。`PaymentAttempt.id` 和 `Refund.id` 分别是渠道 create 的固定幂等键。迟到成功先形成 PROCESSING Refund，真正成功/失败后分别通知，不再把 INSERT 等同于退款完成。完整设计见 `payment_provider_phase11_design.md`。Phase 12 买家退款已实施，见第16节。Stripe v1 = card-only，不支持长时间异步 Payment Method。Provider::processingGraceSeconds() 给出 Simulation 原配置 10 秒、Stripe 默认 600 秒；STRIPE_PROCESSING_GRACE_SECONDS 启动时校验为正有限数。600 秒支持真人 3DS，是业务默认值，不是容量/SLO。未来增加 Provider/Payment Method 必须重新设计支付时限与 Seat 回收语义。沿用 processing_deadline，不新增 migration 或修改历史 Attempt。
+
+
+## 16. Phase 12：买家整单全额退款
+
+`POST /orders/{orderId}/refunds` 要求 owner 认证、Origin/CSRF 和空正文，拒绝包括 `{}`
+在内的任何非空 body。RefundService 首先锁 Order 并查询已有 BUYER Refund；重复申请
+先复用原记录，再考虑新申请资格。首次申请要求 PAID、数据库时间早于场次开场，
+且恰好一条已接纳支付。金额、币种和 provider identity 从该支付取得。
+请求事务只持久化 PROCESSING 退款义务，提交成功才返回202；不在事务内调用 Stripe。
+
+Worker 使用租约 token 领取任务。尚无渠道退款 ID 时，Create 前按已接纳 PaymentIntent
+执行 List：每页100条、starting_after分页、至多10页，未扫描完整不能据此创建。
+完整匹配 payment_intent、amount、currency、metadata.local_refund_id、metadata.order_id；
+多对象或身份冲突停止创建并保留可恢复义务。有已知渠道ID时Retrieve；Create也使用
+本地Refund.id作为固定幂等键，并核验返回身份。网络未知不能解释为失败或再次资金动作。
+Webhook 原始正文验签后进入唯一 Inbox，只唤醒对账，不直接认领外部退款或提交终态。
+
+RefundLifecycleService 固定锁序：Order → Refund → Reservation → SessionSeat（ID升序）。
+在触碰库存前核对 PROCESSING、租约栅栏、退款与支付完整身份。BUYER成功还要求
+PAID/CONFIRMED、完整非空且无重复的座位关联、SOLD且指针NULL，以及目标订单/预订
+为唯一有效拥有者。旧租约即使座位已转售也不能改动库存。
+
+同一终态事务更新 Refund=SUCCEEDED、Order/Reservation=CANCELLED、释放座位，并写入
+恰好一条 `REFUND_COMPLETED`，dedupe_key为 `refund-terminal:<localRefundId>`；
+Order和Refund共用同一完成时间。不变量失败回滚整笔事务，不提前释放权益。
+FAILED保留订单与座位；SYSTEM退款终态不改变票务权益，也不发送BUYER完成通知。
+迁移009、实现细节及故障门禁见[Phase12-1记录](phase12_1_implementation.md)。
+
+真实渠道身份、幂等、pending→succeeded与跨表闭环见
+[Phase12-2B验收](phase12_2b_sandbox_validation.md)。真实渠道处理中与前端可见状态已经验收；
+隐藏/失焦的精确请求调度由确定性自动化测试覆盖，未把未观察到的真实浏览器时间线伪称为已观察。
+
+当前不支持部分退款、退款失败后自动第二次退款、项目外 Dashboard 退款自动认领，
+以及 succeeded → failed 后续冲正。Stripe Sandbox 不是生产资金或真实银行结算证明。
