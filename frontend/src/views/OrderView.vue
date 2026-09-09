@@ -26,7 +26,8 @@ defineEmits<{
   cancel: []
   expire: []
   refresh: []
-  startOver: []
+  backToOrders: []
+  browseEvents: []
 }>()
 </script>
 
@@ -38,9 +39,9 @@ defineEmits<{
         { label: order.id.length > 14 ? order.id.slice(0, 14) + '…' : order.id },
       ]"
     />
-    <button class="back-button" type="button" @click="$emit('startOver')">
+    <button class="back-button" type="button" @click="$emit('backToOrders')">
       <ArrowLeft :size="17" aria-hidden="true" />
-      返回活动列表
+      返回我的订单
     </button>
 
     <section class="order-page-heading">
@@ -89,7 +90,7 @@ defineEmits<{
       v-if="order.status !== 'PENDING_PAYMENT'"
       class="primary-button order-finish-button"
       type="button"
-      @click="$emit('startOver')"
+      @click="$emit('browseEvents')"
     >
       <RotateCcw :size="18" aria-hidden="true" />
       继续浏览活动

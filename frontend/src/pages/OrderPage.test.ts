@@ -4,6 +4,7 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 import OrderPage from './OrderPage.vue'
 import StripePaymentPanel from '../components/StripePaymentPanel.vue'
 import { ticketApi } from '../api/ticketApi'
+import { routeNames } from '../navigation'
 import type { PaymentAttempt, PaymentAction, TicketOrder } from '../types'
 
 const fake = vi.hoisted(() => {
@@ -82,6 +83,35 @@ async function confirm() {
   await wrapper!.get('.stripe-payment-panel button').trigger('click')
   await flushPromises()
 }
+
+describe('order detail navigation', () => {
+  it('returns a directly opened pending order to the orders route', async () => {
+    await open()
+    expect(wrapper!.text()).not.toContain('返回活动列表')
+    expect(wrapper!.findAll('button').some((button) => button.text() === '继续浏览活动')).toBe(false)
+    const back = wrapper!.findAll('button').find((button) => button.text() === '返回我的订单')
+    expect(back).toBeDefined()
+    await back!.trigger('click')
+    await flushPromises()
+    expect(testRouter.currentRoute.value.name).toBe(routeNames.orders)
+    expect(testRouter.currentRoute.value.fullPath).toBe('/orders')
+  })
+
+  it('keeps browsing events separate from returning to orders for a terminal order', async () => {
+    currentOrder.status = 'PAID'
+    await open()
+    await wrapper!.findAll('button').find((button) => button.text() === '返回我的订单')!.trigger('click')
+    await flushPromises()
+    expect(testRouter.currentRoute.value.name).toBe(routeNames.orders)
+    expect(testRouter.currentRoute.value.fullPath).toBe('/orders')
+    wrapper!.unmount()
+    await open()
+    await wrapper!.findAll('button').find((button) => button.text() === '继续浏览活动')!.trigger('click')
+    await flushPromises()
+    expect(testRouter.currentRoute.value.name).toBe(routeNames.events)
+    expect(testRouter.currentRoute.value.fullPath).toBe('/events')
+  })
+})
 
 describe('Phase11 payment page', () => {
   it('destroys and recreates Elements for a different clientSecret and on unmount', async () => {

@@ -70,6 +70,9 @@ test('活动、场次、登录、选座和确认保持真实 URL', async ({ page
   await page.getByRole('button', { name: '提交预订' }).click()
   await expect(page).toHaveURL(/\/orders\/TKT-/)
   await expect(page).toHaveTitle('订单详情 | 票迹')
+  await page.getByRole('button', { name: '返回我的订单', exact: true }).click()
+  await expect(page).toHaveURL(/\/orders$/)
+  await expect(page.getByRole('navigation', { name: '主要导航' }).getByRole('link', { name: '我的订单', exact: true })).toHaveAttribute('aria-current', 'page')
 })
 
 test('选座深链可直接打开并刷新', async ({ page }) => {

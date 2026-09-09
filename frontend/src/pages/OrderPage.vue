@@ -415,7 +415,7 @@ onBeforeUnmount(() => {
   </main>
   <p v-else-if="error" class="message-banner message-banner--error" role="alert">{{ error }}</p>
   <p v-if="loading && !order" class="page-shell">正在加载订单…</p>
-  <OrderView v-else-if="order && event && session" :order="order" :event="event" :session="session" :seats="seats" :refreshing="loading" :payment-starting="paymentStarting" :payment-polling="paymentPolling" :cancelling="cancelling" :payment-attempt="paymentAttempt" :stripe-mode="stripeMode" :payment-prepared="Boolean(paymentAction) || paymentBlocked" @pay="pay" @cancel="cancel" @expire="expire" @refresh="refreshStatus" @start-over="router.push({ name: routeNames.events })">
+  <OrderView v-else-if="order && event && session" :order="order" :event="event" :session="session" :seats="seats" :refreshing="loading" :payment-starting="paymentStarting" :payment-polling="paymentPolling" :cancelling="cancelling" :payment-attempt="paymentAttempt" :stripe-mode="stripeMode" :payment-prepared="Boolean(paymentAction) || paymentBlocked" @pay="pay" @cancel="cancel" @expire="expire" @refresh="refreshStatus" @back-to-orders="router.push({ name: routeNames.orders })" @browse-events="router.push({ name: routeNames.events })">
     <template #refund>
       <BuyerRefundPanel :order="order" :submitting="refundSubmitting" :message="refundMessage" @request="requestRefund" />
     </template>
