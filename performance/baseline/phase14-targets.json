@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "seed": 14001,
+  "scope": "Disjoint within one Run ID. Reuse only after full snapshot restore and empty Redis; fresh idempotency namespace and evidence directory per run.",
+  "dataset": {"registeredUsers": 1000000, "activeAuthSessions": 100000, "loginUsers": 10000, "events": 2, "sessionsPerEvent": 10, "seatsPerSession": 5000},
+  "behavior": {"browse": 60, "hold": 25, "order": 15, "thinkSeconds": [1, 10], "refreshSeconds": [30, 90], "maxPurchasesPerUser": 1, "maxSeats": 4},
+  "online": {"rounds": [[{"users":2500,"rampSeconds":120,"holdSeconds":300},{"users":5000,"rampSeconds":120,"holdSeconds":300},{"users":10000,"rampSeconds":300,"holdSeconds":600}],[{"users":10000,"rampSeconds":300,"holdSeconds":600}]]},
+  "burst": {"users":10000,"windowsSeconds":[60,30,10],"seatsPerUser":1},
+  "hotspot": {"users":10000,"seats":1000,"contendersPerSeat":10,"windowSeconds":10,"h1Repeats":2,"h2SessionCounts":[10,20],"h3P95OffsetSeconds":1,"h3MaxOffsetSeconds":2},
+  "login": {"users":10000,"windowsSeconds":[60,10],"backgroundWarmSeconds":120,"backgroundRecoverySeconds":300,"fallbackFraction":0.7,"backgroundGoodputFraction":0.9,"backgroundLatencyRatio":1.5,"busyLatencyMs":[1000,2000]},
+  "expiry": {"orders":10000,"futureSeconds":60,"windowSeconds":1,"maxObserveSeconds":1200,"afterDrainSeconds":120,"futureDrainGoalSeconds":60},
+  "soak": {"seconds":1800,"extendedSeconds":3600,"fallbackFraction":0.7},
+  "probes": {"controlRate":2,"paymentRate":2,"paymentScenarios":["U1","U2","J1","O1","L1","L2"],"paymentDelaySeconds":[2,6],"paymentDeadlineSeconds":30,"paymentFailureRate":0,"pollSeconds":1},
+  "latencyMs": {"health":[500,1000],"auth":[500,1000],"page":[1500,3000],"availability":[800,1500],"hold":[1500,3000],"adjust":[1500,3000],"confirm":[1500,3000],"journey":[4000,8000]},
+  "recovery": {"observeSeconds":300,"queueZeroDeadlineSeconds":60,"continuousSeconds":30,"inflightIdleAllowance":2,"controlWindowSeconds":60,"controlMinSamples":100,"controlBaselineRatio":1.5,"memoryPeakFraction":0.85,"memoryWindowSeconds":60,"memoryGrowthFraction":0.01,"restarts":0,"oom":0},
+  "stop": {"windowSeconds":10,"minErrorSamples":100,"errorFraction":0.01,"consecutiveErrorWindows":2,"smallWindowErrors":3,"stalledInflight":100,"stallSeconds":10,"queueFraction":0.9,"queueSeconds":10,"transactionWaiters":100,"transactionWaitSeconds":10,"oldestTransactionSeconds":3,"memoryFraction":0.9,"maxSameLevelRepeat":1},
+  "generator": {"cpuFraction":0.8,"cpuContinuousSeconds":10,"memoryFraction":0.9,"maxClockSkewMs":100,"maxShards":16,"dropped":0,"interrupted":0,"sampleSeconds":1,"hotspotSampleSeconds":0.2,"maxSamplingOverheadFraction":0.05,"diskSafetyFactor":2,"releaseLeadSeconds":30},
+  "calibration": {"authSamples":1000,"baselineSeconds":60},
+  "environment": {"projectPrefix":"phase14-","applicationName":"ticketing_backend_phase14","database":"ticketing","localPort":18414,"prometheusPort":19414,"maxRuns":50,"retentionDays":7},
+  "slices": {"main":[0,10000],"calibration":[10000,11000],"control":[11000,12000],"payment":[12000,22000],"expiry":[22000,32000],"background":[32000,42000],"backgroundHold":[42000,52000],"backgroundOrder":[52000,62000],"login":[100000,110000]},
+  "seatSlices": {"main":[0,40000],"payment":[40000,50000],"expiry":[50000,60000],"backgroundHold":[60000,70000],"backgroundOrder":[70000,80000],"control":[80000,81000]},
+  "smoke": {"users":20,"authSamples":20,"registeredUsers":2100,"activeAuthSessions":2000,"loginUsers":20,"seatsPerSession":100,"rampSeconds":2,"holdSeconds":4,"burstWindowsSeconds":[6,3,1],"hotspotSeats":2,"hotspotWindowSeconds":2,"loginWindowsSeconds":[6,2],"backgroundWarmSeconds":4,"recoverySeconds":6,"expiryFutureSeconds":8,"expiryObserveSeconds":30,"expiryAfterDrainSeconds":2,"soakSeconds":12,"releaseLeadSeconds":8,"baselineSeconds":4}
+}

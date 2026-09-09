@@ -1,0 +1,304 @@
+{
+  "listeners": [
+    {
+      "address": "0.0.0.0",
+      "port": 8080,
+      "https": false
+    }
+  ],
+  "db_clients": [
+    {
+      "name": "default",
+      "rdbms": "postgresql",
+      "host": "postgres",
+      "port": 5432,
+      "dbname": "ticketing",
+      "user": "ticketing",
+      "passwd": "ticketing_dev",
+      "is_fast": false,
+      "number_of_connections": 4,
+      "timeout": 5.0,
+      "client_encoding": "UTF8",
+      "connect_options": {
+        "application_name": "ticketing_backend_phase14"
+      }
+    }
+  ],
+  "redis_clients": [
+    {
+      "name": "seat_holds",
+      "host": "redis",
+      "port": 6379,
+      "is_fast": false,
+      "number_of_connections": 2,
+      "timeout": 0.4
+    },
+    {
+      "name": "auth_sessions",
+      "host": "redis",
+      "port": 6379,
+      "is_fast": false,
+      "number_of_connections": 2,
+      "timeout": 0.4
+    }
+  ],
+  "app": {
+    "number_of_threads": 0,
+    "enable_session": false,
+    "document_root": "./public",
+    "upload_path": "uploads",
+    "client_max_body_size": "1M",
+    "client_max_memory_body_size": "64K"
+  },
+  "plugins": [
+    {
+      "name": "drogon::plugin::PromExporter",
+      "dependencies": [],
+      "config": {
+        "path": "/metrics",
+        "collectors": [
+          {
+            "name": "ticketing_seat_map_compute_queue_depth",
+            "help": "Seat map tasks waiting in the bounded compute queue",
+            "type": "gauge",
+            "labels": []
+          },
+          {
+            "name": "ticketing_seat_map_compute_active_workers",
+            "help": "Seat map workers executing post-processing tasks",
+            "type": "gauge",
+            "labels": []
+          },
+          {
+            "name": "ticketing_seat_map_compute_submissions_total",
+            "help": "Seat map compute submissions by bounded queue outcome",
+            "type": "counter",
+            "labels": [
+              "outcome"
+            ]
+          },
+          {
+            "name": "ticketing_seat_map_compute_queue_wait_seconds",
+            "help": "Seat map accepted task time waiting for a compute worker",
+            "type": "histogram",
+            "labels": []
+          },
+          {
+            "name": "ticketing_seat_map_compute_execution_seconds",
+            "help": "Seat map post-processing through HTTP callback return and task destruction, not socket flush",
+            "type": "histogram",
+            "labels": []
+          },
+          {
+            "name": "ticketing_seat_map_stage_duration_seconds",
+            "help": "Seat map diagnostic stage elapsed wall time; callback is not socket flush",
+            "type": "histogram",
+            "labels": [
+              "stage"
+            ]
+          },
+          {
+            "name": "ticketing_seat_map_redis_lookup_total",
+            "help": "Seat map Redis read outcomes, including owner decoding failures",
+            "type": "counter",
+            "labels": [
+              "outcome"
+            ]
+          },
+          {
+            "name": "ticketing_seat_map_requests_in_flight",
+            "help": "Seat map requests from post routing until pre sending, not socket flush",
+            "type": "gauge",
+            "labels": []
+          },
+          {
+            "name": "ticketing_http_requests_total",
+            "help": "Total ticketing backend HTTP requests",
+            "type": "counter",
+            "labels": [
+              "method",
+              "route",
+              "status_class"
+            ]
+          },
+          {
+            "name": "ticketing_http_request_duration_seconds",
+            "help": "Ticketing backend HTTP request duration in seconds",
+            "type": "histogram",
+            "labels": [
+              "method",
+              "route",
+              "status_class"
+            ]
+          },
+          {
+            "name": "ticketing_http_requests_in_flight",
+            "help": "Ticketing backend HTTP requests currently in flight",
+            "type": "gauge",
+            "labels": []
+          },
+          {
+            "name": "ticketing_password_hash_queue_depth",
+            "help": "Password hash tasks currently waiting in the bounded queue",
+            "type": "gauge",
+            "labels": []
+          },
+          {
+            "name": "ticketing_password_hash_active_workers",
+            "help": "Password hash workers currently executing Argon2",
+            "type": "gauge",
+            "labels": []
+          },
+          {
+            "name": "ticketing_password_hash_submissions_total",
+            "help": "Password hash task submissions by bounded queue outcome",
+            "type": "counter",
+            "labels": [
+              "outcome"
+            ]
+          },
+          {
+            "name": "ticketing_password_hash_queue_wait_seconds",
+            "help": "Time password hash tasks spend waiting in the bounded queue",
+            "type": "histogram",
+            "labels": []
+          },
+          {
+            "name": "ticketing_password_hash_execution_seconds",
+            "help": "Time spent executing Argon2 password verification",
+            "type": "histogram",
+            "labels": []
+          },
+          {
+            "name": "ticketing_payment_provider_requests_total",
+            "help": "Payment provider calls by bounded operation and outcome",
+            "type": "counter",
+            "labels": [
+              "provider",
+              "operation",
+              "outcome"
+            ]
+          },
+          {
+            "name": "ticketing_payment_webhooks_total",
+            "help": "Payment webhooks by provider and bounded outcome",
+            "type": "counter",
+            "labels": [
+              "provider",
+              "outcome"
+            ]
+          },
+          {
+            "name": "ticketing_payment_reconciliation_total",
+            "help": "Payment reconciliation results by object kind and outcome",
+            "type": "counter",
+            "labels": [
+              "object_kind",
+              "outcome"
+            ]
+          },
+          {
+            "name": "ticketing_payment_reconciliation_pending",
+            "help": "Objects claimed by the most recent reconciliation round",
+            "type": "gauge",
+            "labels": []
+          },
+          {
+            "name": "ticketing_refunds_by_status",
+            "help": "Refund rows by bounded local status",
+            "type": "gauge",
+            "labels": [
+              "status"
+            ]
+          },
+          {
+            "name": "ticketing_refund_requests_total",
+            "help": "ticketing_refund_requests_total",
+            "type": "counter",
+            "labels": [
+              "outcome"
+            ]
+          },
+          {
+            "name": "ticketing_refund_reconciliation_total",
+            "help": "ticketing_refund_reconciliation_total",
+            "type": "counter",
+            "labels": [
+              "source",
+              "recovery_reason",
+              "outcome"
+            ]
+          },
+          {
+            "name": "ticketing_refund_identity_conflicts_total",
+            "help": "ticketing_refund_identity_conflicts_total",
+            "type": "counter",
+            "labels": [
+              "reason"
+            ]
+          },
+          {
+            "name": "ticketing_refund_lifecycle_failures_total",
+            "help": "ticketing_refund_lifecycle_failures_total",
+            "type": "counter",
+            "labels": [
+              "stage"
+            ]
+          },
+          {
+            "name": "ticketing_refund_processing_age_seconds",
+            "help": "ticketing_refund_processing_age_seconds",
+            "type": "gauge",
+            "labels": []
+          }
+        ]
+      }
+    }
+  ],
+  "custom_config": {
+    "seat_map_compute_workers": 4,
+    "seat_map_compute_queue_capacity": 16,
+    "order_expiry_worker": {
+      "batch_size": 100,
+      "interval_seconds": 5.0
+    },
+    "checkout_session_reconciliation": {
+      "batch_size": 100
+    },
+    "checkout_seat_hold": {
+      "ttl_seconds": 300
+    },
+    "payment_simulation": {
+      "min_delay_seconds": 2.0,
+      "max_delay_seconds": 6.0,
+      "failure_rate": 0,
+      "processing_grace_seconds": 10.0
+    },
+    "authentication": {
+      "idle_timeout_seconds": 86400,
+      "absolute_timeout_seconds": 604800,
+      "session_cache_ttl_seconds": 300,
+      "last_seen_write_interval_seconds": 300,
+      "cookie_name": "ticketing_session",
+      "csrf_cookie_name": "ticketing_csrf",
+      "cookie_secure": false,
+      "allowed_origins": [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://performance.local"
+      ],
+      "password_hash_workers": 4,
+      "password_hash_queue_capacity": 64,
+      "argon2_time_cost": 2,
+      "argon2_memory_cost_kib": 65536,
+      "argon2_parallelism": 1
+    },
+    "login_rate_limit": {
+      "window_seconds": 60,
+      "max_failures": 5
+    },
+    "performance_metrics": {
+      "enabled": true
+    }
+  }
+}

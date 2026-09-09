@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 import re
 import secrets
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -216,6 +217,16 @@ def load_profile(name_or_path: str) -> tuple[dict[str, Any], Path]:
         profile = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
         raise ValueError(f"cannot read profile {path}: {error}") from error
+    if 'phase14Targets' in profile:
+        targets = json.loads((path.parent / profile['phase14Targets']).read_text(encoding='utf-8'))
+        base = json.loads((path.parent / profile['baseProfile']).read_text(encoding='utf-8'))
+        d = targets['dataset']
+        base.update(name=profile['name'], seed=targets['seed'], registeredUsers=d['registeredUsers'],
+                    activeAuthSessions=d['activeAuthSessions'], events=d['events'], sessionsPerEvent=d['sessionsPerEvent'])
+        base['seatLayout'] = {'rows': d['seatsPerSession']//50, 'seatsPerRow': 50}
+        base['priceZones'] = [{'name':'STANDARD','rows':base['seatLayout']['rows'],'price':68000}]
+        base['phase14'] = True
+        profile = base
     validate_profile(profile)
     return profile, path
 
@@ -731,6 +742,97 @@ def workload_users(credentials: list[dict[str, str]]) -> list[dict[str, str]]:
     ]
 
 
+def load_auth_spread(path: Path) -> tuple[int, int, int]:
+    idle, absolute = load_auth_timeouts(path)
+    auth = json.loads(path.read_text(encoding='utf-8'))['custom_config']['authentication']
+    interval = auth['last_seen_write_interval_seconds']
+    if isinstance(interval, bool) or not isinstance(interval, int) or not 0 < interval < idle <= absolute:
+        raise ValueError('last_seen interval must fit valid idle and absolute timeouts')
+    return idle, absolute, interval
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open('rb') as stream:
+        for block in iter(lambda: stream.read(1024*1024), b''):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def export_phase14(output: Path, targets: dict, auth_config: Path) -> dict:
+    """Stream existing SQL template and credential arrays; never connect to a DB.
+
+    A run runner applies this only after validating its dedicated environment.
+    Secret files stay under the ignored generated/results directories.
+    """
+    import tracemalloc
+    started = time.monotonic()
+    tracemalloc.start()
+    output = output.resolve()
+    profile, _ = load_profile('phase14-1m-users-100k-auth')
+    d = targets['dataset']
+    profile.update(registeredUsers=d['registeredUsers'],activeAuthSessions=d['activeAuthSessions'],
+                   events=d['events'],sessionsPerEvent=d['sessionsPerEvent'])
+    profile['seatLayout'] = {'rows':d['seatsPerSession']//50,'seatsPerRow':50}
+    profile['priceZones'] = [{'name':'STANDARD','rows':profile['seatLayout']['rows'],'price':68000}]
+    shape = validate_profile(profile)
+    idle, absolute, interval = load_auth_spread(auth_config)
+    output.mkdir(parents=True,exist_ok=True)
+    estimate = estimate_generation(shape)['generatedFileBytes']*targets['generator']['diskSafetyFactor']
+    if shutil.disk_usage(output).free < estimate: raise DatasetError('insufficient disk before generation')
+    if any(output.iterdir()): raise DatasetError('generation output must be empty')
+    template = build_generation_sql(profile,shape,[],idle,absolute)
+    prefix, suffix = template.split('COPY perf_auth_input (id, user_id, token_hash) FROM STDIN;\n',1)
+    suffix = suffix[suffix.index('\\.')+2:]
+    old = f'''       clock_timestamp(),
+       clock_timestamp(),
+       clock_timestamp() + make_interval(secs => {idle}),
+       clock_timestamp() + make_interval(secs => {absolute}),'''
+    age = f"((substring(id from '[0-9]+$')::bigint - 1 + {targets['seed']}) % {interval})::int"
+    new = f'''       transaction_timestamp() - make_interval(secs => {interval}),
+       transaction_timestamp() - make_interval(secs => {age}),
+       transaction_timestamp() + make_interval(secs => {idle} - {age}),
+       transaction_timestamp() + make_interval(secs => {absolute} - {interval}),'''
+    if old not in suffix: raise DatasetError('SQL auth template contract changed')
+    suffix = suffix.replace(old,new)
+    with (output/'dataset.sql').open('w',encoding='utf-8',newline='\n') as sql, (output/'sessions.json').open('w',encoding='utf-8',newline='\n') as sessions:
+        sql.write(prefix+'COPY perf_auth_input (id, user_id, token_hash) FROM STDIN;\n')
+        sessions.write('[')
+        for index in range(shape.active_auth_sessions):
+            item = generate_session_credentials(1)[0]
+            for field,kind in [('userId','user'),('username','user'),('authSessionId','auth')]:
+                item[field]=performance_id(kind,index+1)
+            sql.write(f"{item['authSessionId']}\t{item['userId']}\t{item['tokenHash']}\n")
+            if index: sessions.write(',\n')
+            json.dump(public_sessions([item])[0],sessions,separators=(',',':'))
+        sessions.write(']\n'); sql.write('\\.\n'+suffix)
+    with (output/'workload-users.json').open('w',encoding='utf-8') as users:
+        users.write('[')
+        for index in range(*targets['slices']['login']):
+            if index != targets['slices']['login'][0]: users.write(',\n')
+            uid=performance_id('user',index+1)
+            json.dump({'userId':uid,'username':uid},users)
+        users.write(']\n')
+    with (output/'workload-seats.json').open('w',encoding='utf-8') as seats:
+        seats.write('[')
+        for i in range(shape.session_seats):
+            if i: seats.write(',\n')
+            session=i%shape.sessions; number=i//shape.sessions+1
+            e=session//profile['sessionsPerEvent']+1; s=session%profile['sessionsPerEvent']+1
+            json.dump({'sessionId':performance_id('session',e,s),'sessionSeatId':performance_id('session-seat',e,s,number)},seats)
+        seats.write(']\n')
+    _, peak = tracemalloc.get_traced_memory(); tracemalloc.stop()
+    files = {p.name:{'bytes':p.stat().st_size,'sha256':file_sha256(p)} for p in sorted(output.iterdir())}
+    manifest = {'version':1,'mode':targets['mode'],'profile':profile['name'],'profileSha256':profile_sha256(profile),
+                'targetsSha256':targets['sourceSha256'],'authConfigSha256':file_sha256(auth_config),
+                'generatorSha256':file_sha256(Path(__file__)),'gitHead':git_head(),
+                'counts':d,'slices':targets['slices'],'seatSlices':targets['seatSlices'],
+                'lastSeenIntervalSeconds':interval,'files':files,
+                'generation':{'seconds':time.monotonic()-started,'pythonPeakAllocatedBytes':peak,'estimatedBytes':estimate}}
+    write_json_atomic(output/'dataset-manifest.json',manifest)
+    return manifest
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--profile", default="smoke", help="profile name or JSON path")
@@ -739,6 +841,8 @@ def main() -> int:
     args = parser.parse_args()
     try:
         profile, path = load_profile(args.profile)
+        if profile.get('phase14'):
+            raise DatasetError('Phase14 generation requires the guarded run_phase14.py entry point')
         shape = validate_profile(profile)
         estimate = estimate_generation(shape)
         idle_timeout, absolute_timeout = load_auth_timeouts()

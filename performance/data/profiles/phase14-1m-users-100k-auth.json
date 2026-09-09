@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "name": "phase14-1m-users-100k-auth",
+  "phase14Targets": "../../baseline/phase14-targets.json",
+  "baseProfile": "cardinality-1m.json"
+}
