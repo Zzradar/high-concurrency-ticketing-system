@@ -53,11 +53,12 @@ def _intervals(values, limit):
 
 
 def validate(t):
-    if t['version'] != 1 or sum(t['behavior'][k] for k in ('browse','hold','order')) != 100:
+    if t['version'] != 2 or sum(t['behavior'][k] for k in ('browse','hold','order')) != 100:
         raise ValueError('invalid version or behavior proportions')
     for key in ('thinkSeconds','refreshSeconds'):
         a,b = t['behavior'][key]
         if not 0 < a <= b: raise ValueError('invalid behavior window')
+    if not 0 < t['generator']['scheduler_delivery_guard_seconds'] <= 5:raise ValueError('invalid non-business scheduler guard')
     d = t['dataset']
     if d['activeAuthSessions'] + d['loginUsers'] > d['registeredUsers']:
         raise ValueError('insufficient registered users')

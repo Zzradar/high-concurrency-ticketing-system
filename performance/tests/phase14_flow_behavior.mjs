@@ -88,3 +88,9 @@ for(const neverPay of [false,true]) {
     assert.deepEqual(Object.keys(h.options.scenarios),['control_auth','payment']);
 }
 console.log('PASS Phase14 flow: grouping, classification, bounds, once-only branches, same-checkout recovery, login jar, payment terminal/deadline, bounded tags');
+
+for(const fn of ['enter','refresh','burst','hotspot','login','backgroundHold','backgroundOrder','control','payment']) {
+    const h=await harness({fn,index:targets.dataset.registeredUsers+1});
+    assert.equal(h.requests.length,0,fn+' tail must not send HTTP or acquire an identity');
+    assert.deepEqual(h.points.map(x=>x.metric),['phase14_scheduler_boundary']);
+}

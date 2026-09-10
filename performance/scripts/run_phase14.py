@@ -2,6 +2,7 @@
 """Guarded Phase14 campaign. Default is a read-only plan; --yes authorizes execution."""
 from __future__ import annotations
 import argparse
+from copy import deepcopy
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from fractions import Fraction
@@ -67,6 +68,23 @@ def guard_model(model,project,data_root,t):
     return sorted(allowed)
 
 
+def guard_delivery(scenarios,t):
+    """Preserve the business curve; only keep the executor alive beyond its endpoint."""
+    schedule={};seconds=t['generator']['scheduler_delivery_guard_seconds']
+    for name,scenario in scenarios.items():
+        kind=scenario['executor']
+        if kind not in ('constant-arrival-rate','ramping-arrival-rate'):continue
+        original=deepcopy(scenario)
+        if kind=='constant-arrival-rate':
+            duration=float(scenario['duration'][:-1]);scenario['duration']=f'{duration+seconds:g}s'
+        else:
+            duration=sum(float(x['duration'][:-1]) for x in scenario['stages'])
+            scenario['stages'].append({'target':scenario['stages'][-1]['target'],'duration':f'{seconds:g}s'})
+        schedule[name]={'businessExecutor':original,'businessWindowSeconds':duration,
+                        'schedulerGuardSeconds':seconds,'executorWindowSeconds':duration+seconds}
+    return schedule
+
+
 def build_spec(t,case,run_id,*,round_index=0,window_index=0,path='formal',session_count=1,control_only=False,passed_u1=None,passed_u2=None):
     if case not in ('G0','U1','U2','J1','O1','H1','H2','H3','L1','L2','S1'):raise ValueError('unknown case')
     if not 0<=round_index<len(t['online']['rounds']) or not 0<=window_index<len(t['burst']['windowsSeconds']):raise ValueError('invalid round/window')
@@ -121,14 +139,15 @@ def build_spec(t,case,run_id,*,round_index=0,window_index=0,path='formal',sessio
         arrival('payment','payment',t['probes']['paymentRate']*total,total)
     for name,m in mapping.items():
         if name=='payment' and m['count']>t['slices']['payment'][1]-t['slices']['payment'][0]:raise ValueError('payment pool exhausted before run')
-    return {'version':1,'case':case,'mode':t['mode'],'targets':t,'runId':run_id,'idempotencyNamespace':run_id,
+    delivery_schedule=guard_delivery(scenarios,t)
+    return {'version':2,'deliverySchedule':delivery_schedule,'case':case,'mode':t['mode'],'targets':t,'runId':run_id,'idempotencyNamespace':run_id,
             'roundIndex':round_index,'windowIndex':window_index,'path':path,'sessionCount':session_count,
             'controlOnly':control_only,'scenarios':scenarios,'mapping':mapping,'plan':plan,'loadSeconds':total,'workload':workload}
 
 
 class Environment:
     def __init__(self,t,root,*,project='phase14-capacity'):
-        self.t=t;self.root=Path(root);self.project=project;self.data=GENERATED/t['mode']
+        self.t=t;self.root=Path(root);self.project=project;self.data=GENERATED/(t['mode']+'-v'+str(t['version']))
         if not PROJECT_RE.fullmatch(project):raise ValueError('invalid Phase14 project')
         self.env={k:os.environ[k] for k in ('PATH','SystemRoot','WINDIR','TEMP','TMP','USERPROFILE','HOME','DOCKER_HOST','DOCKER_CONTEXT','ProgramFiles','LOCALAPPDATA') if k in os.environ}
         self.env.update(PHASE14_PROJECT=project,PHASE14_PORT=str(t['environment']['localPort']),PHASE14_PROMETHEUS_PORT=str(t['environment']['prometheusPort']),PHASE14_DATA_ROOT=str(self.data.resolve()))
@@ -331,11 +350,11 @@ class RawProgress:
         return self.bad,self.dropped
 
 
-def execute_case(args,t,env):
+def execute_case(args,t,env,*,spec_factory=build_spec):
     if args.case=='E1':return execute_expiry(t,env)
     root=env.root;run_id=root.name;snapshot=env.data/'base.dump'
     if not snapshot.is_file():raise ValueError('prepare the matching dataset snapshot first')
-    spec=build_spec(t,args.case,run_id,round_index=args.round,window_index=args.window,path=args.path,session_count=args.session_count,
+    spec=spec_factory(t,args.case,run_id,round_index=args.round,window_index=args.window,path=args.path,session_count=args.session_count,
                     control_only=getattr(args,'control_only',False),passed_u1=getattr(args,'passed_u1',[]),passed_u2=getattr(args,'passed_u2',[]))
     if args.shards*2>t['generator']['maxShards']:raise ValueError('main and probe shards exceed fixed label budget')
     base_segments=segments(args.shards,t)
@@ -391,7 +410,7 @@ def execute_case(args,t,env):
                      '--out',f'json=/results/{run_id}/shards/{number}/raw.json',f'workloads/{spec["workload"]}.js']
             with (root/'commands.jsonl').open('a',encoding='utf-8') as f:f.write(json.dumps({'at':utc_now(),'argv':args_k6})+'\n')
             processes.append(subprocess.Popen(args_k6,stdout=log,stderr=subprocess.STDOUT,env=env.env,cwd=ROOT))
-        deadline=started+t['generator']['releaseLeadSeconds']+spec['loadSeconds']+t['recovery']['observeSeconds']+t['probes']['paymentDeadlineSeconds']+max(t['behavior']['refreshSeconds'])+30
+        deadline=started+t['generator']['releaseLeadSeconds']+spec['loadSeconds']+t['recovery']['observeSeconds']+t['probes']['paymentDeadlineSeconds']+max(t['behavior']['refreshSeconds'])+t['generator']['scheduler_delivery_guard_seconds']+30
         while any(p.poll() is None for p in processes):
             x,pg,rd,raw=sampler.sample();samples.append(x);save_sample(root,x,pg,rd)
             if time.time()>=sentinel_refresh:
@@ -439,7 +458,11 @@ def finish_case(env,spec,slices,stop_reasons,samples,cal,before,started,warnings
         if not raw.exists():raise RuntimeError('missing raw shard; see console.log')
         with raw.open('rb') as source,gzip.open(folder/'raw.json.gz','wb') as destination:shutil.copyfileobj(source,destination)
         (folder/'raw.json.gz.sha256').write_text(sha256(folder/'raw.json.gz'))
-    summary=aggregate(root,slices,spec['plan']);summary['stopReasons']=stop_reasons;write(root/'global-summary.json',summary)
+    summary=aggregate(root,slices,spec['plan']);summary['stopReasons']=stop_reasons
+    summary['businessWindows']={name:{'seconds':spec['deliverySchedule'].get(name,{}).get('businessWindowSeconds',spec['loadSeconds']),
+        'completedIterationsPerSecond':row['completed']/spec['deliverySchedule'].get(name,{}).get('businessWindowSeconds',spec['loadSeconds'])}
+        for name,row in summary['delivery'].items()}
+    write(root/'global-summary.json',summary)
     correctness=verify_run(env,spec,summary);write(root/'correctness.json',correctness)
     after=pg_snapshot(env);write(root/'postgres-after.json',after);write(root/'postgres-delta.json',pg_delta(before,after))
     controls=[]
@@ -465,7 +488,7 @@ def finish_case(env,spec,slices,stop_reasons,samples,cal,before,started,warnings
     collect_prometheus(env,started,time.time())
     functional=not stop_reasons and not summary['errors'] and correctness['passed'] and not any(x['metric']=='phase14_results' and x['tags'][2] in ('system_error','unexpected_contract') and x['count'] for x in summary['counts'])
     write(root/'smoke-check.json',{'passed':functional,'notCapacityEvidence':True})
-    (root/'report.md').write_text(f'# Phase14 {spec["case"]} {t["mode"]}\n\n本地特征不构成万人正式容量证明。\n\nFunctional smoke: {functional}\n\n```json\n'+json.dumps({'delivery':summary['delivery'],'dropped':summary['dropped'],'verdict':result,'correctness':correctness['passed']},ensure_ascii=False,indent=2)+'\n```\n',encoding='utf-8')
+    (root/'report.md').write_text(f'# Phase14 {spec["case"]} {t["mode"]}\n\n本地特征不构成万人正式容量证明。\n\nFunctional smoke: {functional}\n\n```json\n'+json.dumps({'businessWindowSeconds':spec['loadSeconds'],'nonBusinessDeliverySchedule':spec['deliverySchedule'],'delivery':summary['delivery'],'dropped':summary['dropped'],'verdict':result,'correctness':correctness['passed']},ensure_ascii=False,indent=2)+'\n```\n',encoding='utf-8')
     print(json.dumps({'runId':run_id,'functionalSmoke':functional,'correctness':correctness['passed'],'stopReasons':stop_reasons,'deliveryErrors':summary['errors']},ensure_ascii=False))
     return 0 if functional else 1
 
@@ -507,7 +530,12 @@ def campaign(args,t,env):
             old=RESULTS/record['runId']
             check=json.loads((old/'smoke-check.json').read_text(encoding='utf-8'))
             manifest=json.loads((old/'manifest.json').read_text(encoding='utf-8'))
-            if not check['passed'] or manifest['targetsSha256']!=t['sourceSha256']:raise ValueError('checkpoint evidence invalid')
+            if not check['passed']:raise ValueError('checkpoint evidence invalid')
+            if manifest['targetsSha256']!=t['sourceSha256']:
+                previous=json.loads((old/'phase14-targets.json').read_text(encoding='utf-8'))
+                current=json.loads((ROOT/'performance/baseline/phase14-targets.json').read_text(encoding='utf-8'))
+                previous.pop('version');current.pop('version');current['generator'].pop('scheduler_delivery_guard_seconds')
+                if previous!=current:raise ValueError('checkpoint business configuration differs')
             records.append(record)
             if record['case'] in passed:passed[record['case']]=[t['burst']['users']]
             if record['case'] in ('L1','L2') and record['arguments'].get('control_only'):controls[record['case']]=old

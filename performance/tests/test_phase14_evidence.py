@@ -106,6 +106,22 @@ class Phase14EvidenceTests(unittest.TestCase):
         self.assertIn('host_swap_activity',result['measurement_validity']['reasons'])
         self.assertEqual(result['capacity']['status'],'not_applicable')
 
+    def test_guard_ticks_do_not_hide_dropped_or_interrupted_in_any_mode(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);shard(root,0,[1]);p=root/'shards/0/raw.json.gz'
+            with gzip.open(p,'rt') as f:rows=[json.loads(line) for line in f]
+            rows=[x for x in rows if not (x.get('type')=='Point' and x['metric']=='phase14_iterations_completed')]
+            rows += [{'type':'Metric','metric':name,'data':{'type':'counter'}} for name in ('dropped_iterations','phase14_scheduler_boundary')]
+            rows += [{'type':'Point','metric':name,'data':{'time':'2026-09-10T00:00:00Z','value':1,'tags':{'scenario':'main','shard':'0'}}} for name in ('dropped_iterations','phase14_scheduler_boundary')]
+            with gzip.open(p,'wt') as f:
+                for x in rows:f.write(json.dumps(x)+'\n')
+            p.with_suffix(p.suffix+'.sha256').write_text(evidence.sha256(p))
+            summary=evidence.aggregate(root,[{'shard':'0'}],{'main':1})
+            self.assertIn('dropped iterations',summary['errors']);self.assertIn('main: missing/interrupted iterations',summary['errors'])
+            for smoke in (False,True):
+                result=evidence.verdict(summary,{'passed':True},{'passed':True},{'isolated':True},model.load_targets(smoke=smoke),smoke=smoke)
+                self.assertEqual(result['measurement_validity']['status'],'fail')
+
     def test_recovery_requires_continuous_complete_evidence(self):
         t=model.load_targets();rows=[sample(i) for i in range(301)]
         baseline={'httpIdleMax':0,'redisIdleMax':0,'controlP95':{'health':10,'auth':10,'availability':10}}

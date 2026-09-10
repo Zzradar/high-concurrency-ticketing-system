@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "seed": 14001,
   "scope": "Disjoint within one Run ID. Reuse only after full snapshot restore and empty Redis; fresh idempotency namespace and evidence directory per run.",
   "dataset": {
@@ -188,6 +188,7 @@
     "maxSameLevelRepeat": 1
   },
   "generator": {
+    "scheduler_delivery_guard_seconds": 1,
     "cpuFraction": 0.8,
     "cpuContinuousSeconds": 10,
     "memoryFraction": 0.9,

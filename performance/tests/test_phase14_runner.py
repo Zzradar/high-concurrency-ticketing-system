@@ -151,6 +151,33 @@ class RunnerTests(unittest.TestCase):
             env=runner.Environment(load_targets(smoke=True),tmp);env.validate=Mock();env.compose=Mock()
             env.reset();env.validate.assert_called_once();env.compose.assert_not_called()
 
+    def test_shared_guard_preserves_business_curve_plan_and_window(self):
+        for smoke in (False,True):
+            t=load_targets(smoke=smoke);n=t['burst']['users']
+            for case in ('G0','U2','J1','O1','H1','H2','H3','L1','L2'):
+                with patch.object(runner,'guard_delivery',return_value={}):
+                    original=runner.build_spec(t,case,'test',passed_u1=[n],passed_u2=[n])
+                guarded=runner.build_spec(t,case,'test',passed_u1=[n],passed_u2=[n])
+                for key in ('mapping','plan','loadSeconds'):self.assertEqual(original[key],guarded[key])
+                for name,row in guarded['deliverySchedule'].items():
+                    self.assertEqual(row['businessExecutor'],original['scenarios'][name])
+                    actual=guarded['scenarios'][name];prior=original['scenarios'][name]
+                    for key in ('rate','timeUnit','startRate','startTime','exec'):
+                        self.assertEqual(actual.get(key),prior.get(key))
+                    if 'stages' in prior:self.assertEqual(actual['stages'][:-1],prior['stages'])
+                    self.assertEqual(row['executorWindowSeconds']-row['businessWindowSeconds'],1)
+
+    def test_stopped_fault_fixture_is_historical_but_current_oom_retained(self):
+        from phase14_sampling import scoped_containers
+        fixture={'id':'old','service':'backend-failure','state':'exited','healthy':'unhealthy'}
+        core={'id':'db','service':'postgres','state':'running'}
+        gen={'id':'g','service':'k6','state':'running'};seen=set()
+        current,bad=scoped_containers([fixture,core,gen],seen)
+        self.assertEqual(current,[core,gen]);self.assertEqual(bad,[])
+        gen.update(state='exited',oom=True)
+        self.assertIn(gen,scoped_containers([fixture,core,gen],seen)[0])
+        fixture['state']='running';self.assertEqual(scoped_containers([fixture,core],seen)[1],['old'])
+
     def test_every_case_has_bounded_plans_and_isolated_payment(self):
         for smoke in (False,True):
             t=load_targets(smoke=smoke);n=t['burst']['users']

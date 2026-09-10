@@ -101,8 +101,16 @@ class LightPostgresSampler:
                 'scope':'target PostgreSQL client activity only; separate from host and application metrics'}
 
 
+def scoped_containers(containers,seen_generators):
+    services={'backend','postgres','redis','postgres-exporter','redis-exporter','prometheus','noop'}
+    seen_generators.update(x['id'] for x in containers if x['service']=='k6' and x['state']=='running')
+    current=[x for x in containers if x['service'] in services or x['id'] in seen_generators]
+    unexpected=[x['id'] for x in containers if x['state']=='running' and x['service'] not in services|{'k6'}]
+    return current,unexpected
+
+
 class Sampler:
-    def __init__(self,env):self.env=env;self.previous_requests=None;self.previous_host=None;self.last_blocking=0
+    def __init__(self,env):self.env=env;self.previous_requests=None;self.previous_host=None;self.last_blocking=0;self.seen_generators=set()
     def sample(self):
         env=self.env;now=time.time();start=time.monotonic()
         def docker():
@@ -138,6 +146,7 @@ class Sampler:
             a=pool.submit(metrics,env);b=pool.submit(postgres,env);c=pool.submit(docker);d=pool.submit(redis)
             h=pool.submit(host)
             m,raw=a.result();pg=b.result();containers,stats=c.result();rd=d.result();host_data=h.result()
+        current,unexpected=scoped_containers(containers,self.seen_generators)
         app={x['name'].lstrip('/'):x for x in containers}
         sut_memory=[];gen_memory=[];gen_cpu=[]
         for item in stats:
@@ -150,9 +159,9 @@ class Sampler:
             elif service in ('backend','postgres','redis'):sut_memory.append(memory)
         requests=m.get('ticketing_http_requests_total',0)
         sample={'time':now,'collectionSeconds':time.monotonic()-start,'metrics':m,'containers':containers,'dockerStats':stats,
-                'correctnessFailure':False,'restarted':any(x['restartCount'] for x in containers),
-                'oom':any(x['oom'] for x in containers),'unhealthy':any(x['healthy']=='unhealthy' for x in containers),
-                'wrongEnvironment':False,'swapping':self.previous_host is not None and (host_data['swapIn']>self.previous_host['swapIn'] or host_data['swapOut']>self.previous_host['swapOut']),
+                'correctnessFailure':False,'restarted':any(x['restartCount'] for x in current),
+                'oom':any(x['oom'] for x in current),'unhealthy':any(x['healthy']=='unhealthy' for x in current) or any(x['state']!='running' for x in current if x['service'] in ('backend','postgres','redis')),
+                'wrongEnvironment':bool(unexpected),'excludedHistoricalContainers':[x['id'] for x in containers if x not in current],'swapping':self.previous_host is not None and (host_data['swapIn']>self.previous_host['swapIn'] or host_data['swapOut']>self.previous_host['swapOut']),
                 'swapInDelta':host_data['swapIn']-self.previous_host['swapIn'] if self.previous_host else 0,
                 'swapOutDelta':host_data['swapOut']-self.previous_host['swapOut'] if self.previous_host else 0,
                 'networkExhausted':False,'fdExhausted':host_data['fileHandles'][0]>=host_data['fileHandles'][2]*.9,
