@@ -79,4 +79,27 @@ class ReportTests(unittest.TestCase):
             if row['method'] in ('POST','PUT'):self.assertTrue(row['hasSessionCookie'] and row['hasCsrfHeader'])
         self.assertEqual(data['externalContainerAudit']['changed'],[])
 
+    def test_v3_completion_keeps_startup_and_diagnostics_separate(self):
+        data=json.loads((ROOT/'performance/experiments/phase14-capacity/v3-evidence-summary.json').read_text(encoding='utf-8'))
+        self.assertEqual(data['status'],'code_tests_and_local_functional_rehearsal_complete')
+        self.assertEqual(len(data['runs']),12);self.assertTrue(data['browser']['startupContract']['passed'])
+        self.assertTrue(data['historyAudit']['unchangedBusinessConfig'])
+        self.assertEqual(data['historyAudit']['v2VerdictsUnchanged'],25)
+        for row in data['runs']:
+            self.assertTrue(row['functionalSmoke']);self.assertTrue(row['correctness']['passed']);self.assertEqual(row['dropped'],0)
+            for key in ('capacity','overload_protection','formal_recovery'):self.assertEqual(row['verdict'][key]['status'],'not_applicable')
+            self.assertIn('formalRecovery',row['verdict']['diagnostic'])
+            for count in row['startupDelivery'].values():
+                self.assertEqual(count['planned'],count['started']);self.assertEqual(count['started'],count['completed'])
+            if row['case'].startswith('L'):
+                self.assertEqual(row['startupDelivery']['startup']['planned'],0)
+                self.assertTrue(row['backgroundStartup']['finishedBeforeRelease']);self.assertTrue(row['backgroundStartup']['check']['passed'])
+            else:self.assertEqual(row['startupDelivery']['startup']['planned'],20)
+        self.assertFalse(data['preservedFirstFailure']['correctness']['passed'])
+        self.assertEqual(data['samplingDiagnostic']['comparison']['status'],'not_applicable')
+        for leg in data['samplingDiagnostic']['legs']:
+            self.assertEqual(leg['requests'],1200);self.assertEqual(leg['failures'],0);self.assertEqual(leg['dropped'],0)
+        self.assertEqual(data['externalContainerAudit']['changed'],[])
+        self.assertEqual(data['checks']['ctest']['passed'],30)
+
 if __name__=='__main__':unittest.main()

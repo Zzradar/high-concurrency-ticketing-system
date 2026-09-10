@@ -1,6 +1,6 @@
-# Phase14 实施记录（v2，本地预演完成）
+# Phase14 实施记录（v3）
 
-共享调度保护尾段、完整缩小矩阵、持久只读采样和浏览器请求链校准已完成。当前结论见 [交付报告](../performance/experiments/phase14-capacity/report.md) 和 [v2 机器可读证据](../performance/experiments/phase14-capacity/v2-evidence-summary.json)。本地功能通过不表示正式测量合格：登录相对延迟、短窗采样对照及正式恢复窗口仍有未通过项，不提供万人容量承诺。下方保留阶段实施历史，最终状态以 v2 报告为准。
+冷启动模型与新 smoke 判定已收尾，详见 [v3 实施说明](phase14_v3_closeout.md) 和 [当前交付报告](../performance/experiments/phase14-capacity/report.md)。下方保留 v1/v2 实施历史；旧失败与旧判定不修改。正式万人容量尚未验证，当前没有证据证明或否定万人容量。
 
 ## 基线和授权边界
 
