@@ -31,7 +31,7 @@ class RunnerTests(unittest.TestCase):
                 if len(calls)>=2:ready.set()
                 return {'time':time.time(),'activeWaits':0,'lockWaits':0}
             with patch('phase14_sampling.postgres',side_effect=read):
-                sampler=LightPostgresSampler(env,.01).start()
+                sampler=LightPostgresSampler(env,.01,read=lambda:read(env)).start()
                 self.assertTrue(ready.wait(2));result=sampler.stop()
             self.assertEqual(result['intervalSeconds'],.01);self.assertGreaterEqual(result['samples'],2)
             self.assertEqual(result['errors'],[]);self.assertFalse(sampler.thread.is_alive())
@@ -39,7 +39,7 @@ class RunnerTests(unittest.TestCase):
 
     def test_light_postgres_read_failure_is_reported(self):
         with tempfile.TemporaryDirectory() as tmp, patch('phase14_sampling.postgres',side_effect=RuntimeError('read failed')):
-            sampler=LightPostgresSampler(Mock(root=Path(tmp)),.01).start();sampler.thread.join(timeout=2)
+            sampler=LightPostgresSampler(Mock(root=Path(tmp)),.01,read=lambda:__import__('phase14_sampling').postgres(None)).start();sampler.thread.join(timeout=2)
             result=sampler.stop();self.assertTrue(result['errors']);self.assertEqual(result['samples'],0)
 
     def test_resource_preflight_rejects_new_swap_before_load(self):
@@ -177,6 +177,24 @@ class RunnerTests(unittest.TestCase):
         gen.update(state='exited',oom=True)
         self.assertIn(gen,scoped_containers([fixture,core,gen],seen)[0])
         fixture['state']='running';self.assertEqual(scoped_containers([fixture,core],seen)[1],['old'])
+
+    def test_persistent_reader_reuses_pipe_and_fails_on_eof(self):
+        import queue
+        from phase14_pg_stream import ActivityConnection
+        c=ActivityConnection.__new__(ActivityConnection);c.process=Mock();c.lines=queue.Queue()
+        c.lines.put('{"one":1}\n');c.lines.put('{"two":2}\n');c.lines.put(None)
+        self.assertEqual(c.sql('SELECT 1;'),'{"one":1}');self.assertEqual(c.sql('SELECT 2;'),'{"two":2}')
+        self.assertEqual(c.process.stdin.write.call_count,2)
+        with self.assertRaises(RuntimeError):c.sql('SELECT 3;')
+
+    def test_persistent_cleanup_targets_owned_connection_only(self):
+        import subprocess
+        from phase14_pg_stream import ActivityConnection
+        c=ActivityConnection.__new__(ActivityConnection);c.env=Mock();c.reader=Mock();c.process=Mock();c.pid=42;c.birth='2026-09-10T00:00:00Z'
+        c.process.poll.return_value=None;c.process.wait.side_effect=[subprocess.TimeoutExpired('fixture',7),0]
+        c.close();query=c.env.sql.call_args.args[0]
+        self.assertIn('pid=42',query);self.assertIn("backend_start='2026-09-10T00:00:00Z'",query)
+        self.assertIn("application_name='phase14_sampler'",query)
 
     def test_every_case_has_bounded_plans_and_isolated_payment(self):
         for smoke in (False,True):

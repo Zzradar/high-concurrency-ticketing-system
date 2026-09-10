@@ -2,6 +2,7 @@
 import gzip
 import json
 import subprocess
+import sys
 import time
 from datetime import datetime,timezone
 from pathlib import Path
@@ -24,7 +25,7 @@ def compare(rows,limit):
     ratios={k:median(k,True)/median(k,False)-1 for k in ('p95Ms','p99Ms')}
     return {'relativeIncrease':ratios,'limit':limit,'passed':all(v<=limit for v in ratios.values()),
         'sampleSizeLimited':True,'measurement_validity':'fail','capacity':'not_applicable',
-        'reason':'local no-op characterization; short smoke control is not a formal overhead bound'}
+        'reason':'local no-op characterization; co-located control does not establish a formal overhead bound'}
 
 def stop_owned(env,name):
     item=json.loads(env.command(['docker','inspect',name]).stdout)[0]
@@ -32,12 +33,16 @@ def stop_owned(env,name):
     env.command(['docker','stop',item['Id']])
 
 
+def baseline_seconds(t,full=False):
+    return load_targets()['calibration']['baselineSeconds'] if full else t['calibration']['baselineSeconds']
+
+
 def main():
     t=load_targets(smoke=True);root=RESULTS/('phase14-sampling-overhead-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ'))
     env=Environment(t,root);env.validate();env.compose('up','-d','noop')
     source=root/'k6-source';source.mkdir();(source/'overhead.js').write_text(SCRIPT)
     override=root/'source-compose.json';write(override,{'services':{'k6':{'volumes':[{'type':'bind','source':str(source.resolve()),'target':'/scripts','read_only':True}]}}})
-    seconds=t['calibration']['baselineSeconds'];plan=int(t['burst']['users']/min(t['burst']['windowsSeconds'])*seconds);rows=[]
+    seconds=baseline_seconds(t,'--formal-baseline-duration' in sys.argv);write(root/'input.json',{'mode':'smoke','baselineSeconds':seconds,'durationSource':'formal calibration baseline' if '--formal-baseline-duration' in sys.argv else 'smoke baseline','arrivalRate':t['burst']['users']/min(t['burst']['windowsSeconds']),'order':['off','on','on','off']});plan=int(t['burst']['users']/min(t['burst']['windowsSeconds'])*seconds);rows=[]
     for i,enabled in enumerate((False,True,True,False)):
         folder=root/str(i);folder.mkdir();env.root=folder
         sampler=Sampler(env);guard=StopGuard(t);before,pg,rd,_=sampler.sample();save_sample(folder,before,pg,rd)

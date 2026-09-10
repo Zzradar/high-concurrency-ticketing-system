@@ -64,3 +64,12 @@ class NoopCleanupTests(unittest.TestCase):
         self.assertEqual(env.command.call_count,1)
         env.command.return_value.stdout=json.dumps([{'Id':'exact-id','Config':{'Labels':{'com.docker.compose.project':'phase14-capacity'}}}]).encode()
         stop_owned(env,'named');self.assertEqual(env.command.call_args.args,(['docker','stop','exact-id'],))
+
+class NoopBaselineTests(unittest.TestCase):
+    def test_long_control_uses_existing_baseline_without_changing_smoke_input(self):
+        from phase14_sampling_overhead import baseline_seconds
+        from phase14_model import load_targets
+        t=load_targets(smoke=True);before=t['calibration']['baselineSeconds']
+        self.assertEqual(baseline_seconds(t),before)
+        self.assertEqual(baseline_seconds(t,True),load_targets()['calibration']['baselineSeconds'])
+        self.assertEqual(t['calibration']['baselineSeconds'],before)

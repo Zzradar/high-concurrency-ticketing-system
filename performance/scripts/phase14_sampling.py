@@ -74,17 +74,26 @@ def pg_delta(before,after):
 
 class LightPostgresSampler:
     """Separate PG activity cadence, independent of slow Docker stats collection."""
-    def __init__(self,env,interval):
+    def __init__(self,env,interval,*,read=None):
         if interval<=0:raise ValueError('invalid sampling interval')
-        self.env=env;self.interval=interval;self.done=threading.Event();self.samples=[];self.errors=[]
+        self.env=env;self.interval=interval;self.read=read;self.done=threading.Event();self.samples=[];self.errors=[]
         self.thread=threading.Thread(target=self._run,name='phase14-pg-activity',daemon=True)
     def start(self):self.thread.start();return self
     def _run(self):
-        path=self.env.root/'postgres-light.jsonl';deadline=time.monotonic()
+        path=self.env.root/'postgres-light.jsonl';connection=None
         try:
+            if self.read is None:
+                from phase14_pg_stream import ActivityConnection
+                from types import SimpleNamespace
+                connection=ActivityConnection(self.env)
+                proxy=SimpleNamespace(t=self.env.t,sql=connection.sql)
+                read=lambda:postgres(proxy)
+                (self.env.root/'postgres-light-connection.json').write_text(json.dumps({'pid':connection.pid,'backendStart':connection.birth,'readOnly':True,'closed':False}))
+            else:read=self.read
+            deadline=time.monotonic()
             with path.open('w',encoding='utf-8') as stream:
                 while not self.done.is_set():
-                    begin=time.monotonic();row=postgres(self.env)
+                    begin=time.monotonic();row=read()
                     row.update(collectionSeconds=time.monotonic()-begin,startLateSeconds=max(0,begin-deadline))
                     self.samples.append(row);stream.write(json.dumps(row)+'\n');stream.flush()
                     deadline+=self.interval
@@ -92,12 +101,19 @@ class LightPostgresSampler:
                     if deadline<time.monotonic():deadline=time.monotonic()
                     self.done.wait(max(0,deadline-time.monotonic()))
         except Exception as error:self.errors.append(type(error).__name__+': '+str(error))
+        finally:
+            if connection:
+                try:
+                    connection.close()
+                    (self.env.root/'postgres-light-connection.json').write_text(json.dumps({'pid':connection.pid,'backendStart':connection.birth,'readOnly':True,'closed':True}))
+                except Exception as error:self.errors.append('connection cleanup: '+str(error))
     def stop(self):
         self.done.set();self.thread.join(timeout=15)
         if self.thread.is_alive():self.errors.append('light sampler did not stop')
         gaps=[b['time']-a['time'] for a,b in zip(self.samples,self.samples[1:])]
         return {'intervalSeconds':self.interval,'samples':len(self.samples),'errors':self.errors,
                 'maxGapSeconds':max(gaps,default=None),'collectionSeconds':sum(x['collectionSeconds'] for x in self.samples),
+                'connectionMode':'persistent_read_only' if self.read is None else 'injected_test_reader',
                 'scope':'target PostgreSQL client activity only; separate from host and application metrics'}
 
 
