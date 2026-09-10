@@ -46,3 +46,5 @@ Run ID：`phase14-smoke-u2-20260910T021810Z-70c707`。使用完整 smoke 快照�
 回归适配仅改变运行位置和夹具执行方式：旧 psql helper 路由至专用 Phase14 SQL 入口；Redis kill/rm/up 夹具改为 tmpfs stop/start，保留容器与原业务断言。没有执行 down/rm/prune/-v，未停止其他项目容器或宿主 Stripe CLI/Vite。源码及前端文件未被格式化或回退，未 push。
 
 尚未完成：第二轮 U2 及剩余完整压力矩阵（O/H/L/E/S 等），H3 真正同时发车与轻量采样窗口验证，当前浏览器请求图校准。Phase11/12 Stripe 协议专属集成测试本次未运行；已运行的模拟支付测试覆盖共享支付/退款服务，但不声称替代 Stripe 协议验收。正式容量运行仍缺压力机与 SUT 的 CPU/资源隔离。
+
+后续用户已批准共享调度边界修复；本文作为当时的失败与范围确认记录保留，最新结果见 [v2 交付报告](../performance/experiments/phase14-capacity/report.md)。

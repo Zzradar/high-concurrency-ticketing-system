@@ -1,6 +1,6 @@
-# Phase14 实施记录（阶段性，未完成验收）
+# Phase14 实施记录（v2，本地预演完成）
 
-当前按冻结停止条件暂停后续压力运行，原因和逐轮结果见 [阶段报告](../performance/experiments/phase14-capacity/report.md)。这份记录不表示 Phase14 已完成，也不提供万人容量承诺。
+共享调度保护尾段、完整缩小矩阵、持久只读采样和浏览器请求链校准已完成。当前结论见 [交付报告](../performance/experiments/phase14-capacity/report.md) 和 [v2 机器可读证据](../performance/experiments/phase14-capacity/v2-evidence-summary.json)。本地功能通过不表示正式测量合格：登录相对延迟、短窗采样对照及正式恢复窗口仍有未通过项，不提供万人容量承诺。下方保留阶段实施历史，最终状态以 v2 报告为准。
 
 ## 基线和授权边界
 
@@ -84,3 +84,23 @@ PostgreSQL 活动等待过滤目标库、应用名、client backend 和 active �
 ## 2026-09-10 smoke 停止语义续验
 
 模式差异已提交；新 U2 因计划 10 次、实际 9 次而停止，尚未完成完整矩阵。57 项独立集成回归、真实指标及 exporter 夹具已通过，no-op 采样对照已完成。历史失败保留不变，详见 [续验记录](phase14_smoke_policy_followup.md)。
+
+## v2 最终接线与运行方式
+
+`phase14-targets.json` version 2 只增加非业务 `generator.scheduler_delivery_guard_seconds=1`。共享 `guard_delivery` 覆盖所有 constant/ramping arrival 场景；原业务曲线保存在 spec.deliverySchedule，吞吐分母来自 businessWindows。H3 per-vu 波次不作同类改动。新数据目录为 `performance/generated/phase14/smoke-v2`，不会覆盖 v1 数据或旧 Run ID。
+
+`phase14_pg_stream.py` 在专用库中维持一个 read-only 监测连接，5 秒 statement timeout，正常关闭 psql；异常清理仅针对本连接 PID、backend_start 和 application_name。`LightPostgresSampler` 将连接从业务等待统计中排除，实际 H3 最大间隔约 219ms。历史已退出故障容器只保留为证据，不参与当前健康判断；意外运行的额外服务仍拒绝，已见本轮压力容器的退出/OOM 仍跟踪。
+
+```powershell
+python -X utf8 performance/scripts/run_phase14.py plan --smoke
+python -X utf8 performance/scripts/run_phase14.py prepare --smoke --yes
+python -X utf8 performance/scripts/phase14_delivery_probe.py
+python -X utf8 performance/scripts/run_phase14.py campaign --smoke --yes --shards 2
+python -X utf8 performance/scripts/phase14_sampling_overhead.py --formal-baseline-duration
+```
+
+开销命令仅把 no-op 对照腿时长设为配置已有的 60 秒空闲基线；输入仍为 smoke 的固定 20 请求/秒，不能称正式压测。浏览器校准先在没有其他 Phase14 压力运行时使用 `calibrate --smoke --yes` 恢复快照，再运行 `node performance/scripts/record_phase14_page_flow.mjs`。脚本使用独立 15174 端口，不加载环境凭据，缓存位于结果目录；记录请求时序及身份/CSRF 是否携带，不保存秘密值。
+
+本地矩阵 25 条累计记录全部完成功能与数据库门禁，其中本轮新运行 21 条；另有单/双分片交付探针和 2 条 H3 采样复验。Python 框架 156 项通过，既有后端集成 57 项、真实 metrics 触发 5 项、exporter 故障检查 6 项通过。最终文档测试数见最终日志。没有重复前端门禁，前端树保持不变。
+
+正式运行仍受隔离条件约束；当前 `campaign` 不会将共享主机运行提升为正式容量结果。已校准浏览器入口还包含固定核心 API 旅程以外的认证/通知/列表请求，若要测整页总流量，应在正式测量前明确新的模型版本，不能静默修改本批已冻结输入。

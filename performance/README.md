@@ -154,7 +154,14 @@ python performance/scripts/render_baseline_report.py `
 ```
 
 报告区分 confirmed stable、highest tested、first observed unstable 和未测试边界。当前结果只适用于报告中记录的单机 Docker Desktop / WSL2 环境，不是生产 SLO 或最大容量声明；Phase 10B 条目均为尚未实施的受控实验候选。
-# Phase14 阶段进度
+## Phase14 v2 本地验证
 
-Phase14 尚未完成验收；最近缩小批次因宿主 VM 交换触发冻结停止条件。
-运行入口、边界与剩余工作见 [实施记录](../docs/phase14_implementation.md)，实际数据生成、认证预检及已执行场景见 [阶段报告](experiments/phase14-capacity/report.md)。**本地特征不构成万人正式容量证明。**
+共享调度保护尾段、完整缩小矩阵、真实 exporter / metrics、持久只读采样和浏览器请求链校准已完成。v2 配置保留原业务参数，仅增加 1 秒非业务保护时间；业务吞吐不包含尾段。历史失败、短窗开销失败和登录相对保护未通过结果均保留。
+
+```powershell
+python -X utf8 performance/scripts/run_phase14.py plan --smoke
+python -X utf8 performance/scripts/run_phase14.py prepare --smoke --yes
+python -X utf8 performance/scripts/run_phase14.py campaign --smoke --yes --shards 2
+```
+
+新 smoke 数据位于 `performance/generated/phase14/smoke-v2`。运行与保护细节见 [实施记录](../docs/phase14_implementation.md)，完整场景表、局限及证据见 [交付报告](experiments/phase14-capacity/report.md) 和 [v2 汇总](experiments/phase14-capacity/v2-evidence-summary.json)。**本地特征不构成万人正式容量证明；功能预演完成不表示全部性能门槛通过。**

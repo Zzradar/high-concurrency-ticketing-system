@@ -51,4 +51,32 @@ class ReportTests(unittest.TestCase):
         self.assertEqual(data['overhead']['comparison']['capacity'],'not_applicable')
         self.assertTrue(all(x['requests']==x['planned'] and x['dropped']==0 for x in data['overhead']['legs']))
 
+    def test_v2_matrix_retains_failures_and_never_claims_formal_capacity(self):
+        data=json.loads((ROOT/'performance/experiments/phase14-capacity/v2-evidence-summary.json').read_text(encoding='utf-8'))
+        self.assertEqual(len(data['runs']),25);self.assertEqual(data['newV2MatrixRuns'],21)
+        self.assertTrue(data['configuration']['businessConfigurationUnchanged'])
+        self.assertEqual(data['configuration']['historyChangedFiles'],[])
+        for row in data['runs']:
+            self.assertTrue(row['functionalSmoke']);self.assertTrue(row['correctness']['passed'])
+            self.assertEqual(row['verdict']['measurement_validity']['status'],'fail')
+            self.assertEqual(row['verdict']['capacity']['status'],'not_applicable')
+            if 'delivery' in row:
+                self.assertEqual(row['dropped'],0)
+                for delivered in row['delivery'].values():
+                    if delivered['planned'] is not None:self.assertEqual(delivered['planned'],delivered['started'])
+                    self.assertEqual(delivered['started'],delivered['completed'])
+        for probe in data['deliveryProbes']:
+            self.assertGreater(probe['boundaryTicks'],0);self.assertEqual(probe['httpRequests'],30)
+            self.assertEqual(probe['nativeIterations'],probe['businessCompleted']+probe['boundaryTicks'])
+        for retry in data['h3PersistentSamplingRetests']:
+            self.assertTrue(retry['connection']['closed']);self.assertTrue(retry['connection']['readOnly'])
+            self.assertLess(retry['light']['maxGapSeconds'],retry['light']['intervalSeconds']*2)
+        self.assertFalse(data['samplingComparisons'][1]['comparison']['passed'])
+        self.assertTrue(data['samplingComparisons'][2]['comparison']['passed'])
+        self.assertEqual(data['samplingComparisons'][2]['input']['baselineSeconds'],60)
+        self.assertTrue(data['browser']['layoutAvailabilityOverlapObserved'])
+        for row in data['browser']['afterSecondSelection']['requests']:
+            if row['method'] in ('POST','PUT'):self.assertTrue(row['hasSessionCookie'] and row['hasCsrfHeader'])
+        self.assertEqual(data['externalContainerAudit']['changed'],[])
+
 if __name__=='__main__':unittest.main()

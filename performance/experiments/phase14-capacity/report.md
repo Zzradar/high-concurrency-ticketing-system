@@ -1,91 +1,107 @@
-# Phase14 阶段性证据：工程实现未完成验收
+# Phase14 本地预演与交付报告（v2）
 
-**本地特征不构成万人正式容量证明。** 当前按冻结的宿主交换停止条件暂停；不得把下表 smoke 或百万注册数据规模写成万人容量通过。
+**U2 调度边界修复、完整缩小矩阵、观测复验和浏览器请求链校准已完成。正式测量未达资格：本地特征不构成万人正式容量证明。**
 
-## 首次批次停止（历史）
+功能通过不代表性能门槛全部通过：L1/L2 背景余票相对延迟未通过，smoke 时长不足以满足正式恢复窗口，持久采样的首次 4 秒对照未通过。所有结果保留原判定。
 
-`phase14-smoke-u1-20260910T001313Z-90e143` 在第二轮 U1 检测到宿主 VM `pswpin: 322787 → 322791`，`pswpout: 537116 → 537116`。该轮数据库全局不变量全为 0、dropped=0；仍判测量无效并停止后续场景。运行器只停止本 Run ID 的 k6，未操作其他项目。
+## 基线与范围
 
-未证实后端容量瓶颈。共享宿主无专属 CPU 核，存在其他项目进程；仅能确认交换发生，不能将其归因于 Phase14 或某个业务组件。
+起始干净 main：`a45cab7e4e33c7153d8a98114ebef45be9beef3a`。本轮修复提交 `9b1d086`，持久只读采样及浏览器校准提交 `e321f0e`。最终文档提交见 Git 日志。未 push；未改 frontend、业务状态机、迁移、连接池、线程池、队列或回收批量。模拟支付沿用现有提供者。
 
-## 所有实际启动的负载轮次
+本批 25 条矩阵记录：4 条已通过的 v1 G0/U1/U2 前序记录，经业务参数完全相同核验后只读复用；新增 21 条 v2 运行。另有单/双分片交付探针各一次，以及两条 H3 持久采样复验。每个新运行完整恢复快照、清空 Redis，使用新 Run ID、幂等命名空间和证据目录。
 
-| Run ID | 场景 | 功能 smoke | 测量有效性 | 稳定容量 | 过载保护 | dropped | DB 校验 |
-|---|---|---|---|---|---|---|---|
-| phase14-smoke-e1-20260909T170528Z-12a45d | E1 | True | fail | not_applicable | not_applicable | — | True |
-| phase14-smoke-g0-20260910T001135Z-0fa1cf | G0 | True | fail | not_applicable | not_applicable | 0 | True |
-| phase14-smoke-h1-20260909T170120Z-bf934b | H1 | True | fail | not_applicable | fail | 0 | True |
-| phase14-smoke-j1-20260909T164500Z-9c83c5 | J1 | 未完成 | 未完成 | 未完成 | 未完成 | — | 未完成 |
-| phase14-smoke-j1-20260909T165206Z-6e1f3c | J1 | True | fail | not_applicable | not_applicable | 0 | True |
-| phase14-smoke-u1-20260909T165520Z-f0856a | U1 | True | fail | not_applicable | not_applicable | 0 | True |
-| phase14-smoke-u1-20260909T170651Z-a52876 | U1 | True | fail | not_applicable | not_applicable | 0 | True |
-| phase14-smoke-u1-20260909T170740Z-eb9b9d | U1 | False | fail | not_applicable | not_applicable | 1.0 | False |
-| phase14-smoke-u1-20260909T171208Z-2c296f | U1 | False | fail | not_applicable | not_applicable | 1.0 | False |
-| phase14-smoke-u1-20260910T001227Z-f79044 | U1 | True | fail | not_applicable | not_applicable | 0 | True |
-| phase14-smoke-u1-20260910T001313Z-90e143 | U1 | False | fail | not_applicable | not_applicable | 0 | True |
+## 非业务保护尾段
 
-每轮完整 planned/started/completed/interrupted、五类步骤计数、原始合并 p95/p99、恢复判定和错误列表见 [evidence-summary.json](evidence-summary.json)。原始 JSON/gzip、SHA256、PostgreSQL 快照、采样与命令记录保留于 `performance/results/<Run ID>/`，不进入 Git。
+配置升为 version 2，仅新增 `generator.scheduler_delivery_guard_seconds=1`；其他业务字段逐项相同。旧哈希 `669c9d44809dcfdf939f561e4b0fcf60cf7582497324414bbc7e8c4c29a98749`；新哈希 `917a03daa02168de6a430b1cf45e13b1510d9f7eca3fd6c32558e42835d95674`。旧失败目录 101 个文件哈希无变化。
 
-早期通过轮不代表当前全部新增核对项已运行：H1 临时占座首次预演验证的是 2 胜/18 冲突和全局数据库不变量，随后增加的 Redis owner/TTL 对账仅完成单元测试，待新轮执行。短 smoke 保留正式恢复窗口，因此不作为“五分钟恢复通过”。
+共享生成器为 constant/ramping arrival 增加执行器尾段，原阶段速率、timeUnit、startTime、时长、计划数、身份映射保持不变。H3 的 per-vu-iterations 没有同类积分终点取消问题，不改其发车模型。逻辑上界检查先于身份访问和 HTTP；额外 tick 只计固定 phase14_scheduler_boundary，业务 started/completed 不增加。
 
-## 数据及认证预检
+真实单分片/双分片探针分别产生 30/29 个边界 tick；两轮均只有 30 个 HTTP、30 个业务完成，包含常速 20/20/20 与升压 10/10/10，dropped=0。回归证明尾段不能豁免 dropped、中断、系统错误或正式模式交付守恒。
 
-- 实际生成 1,000,000 注册用户、100,000 预置会话、20 个场次、100,000 场次座位。生成耗时 6.093 秒；进程峰值工作集 25395200 bytes；Python 跟踪峰值分配 489784 bytes。
-- 已将正式数据导入 Phase14 独立数据库并生成快照。数据文件大小、哈希及源配置哈希见证据汇总内 generation.manifest。
-- 1000 cold + 1000 hot `/auth/me` 全部身份匹配，分别耗时 16.578 秒、14.188 秒。预热 10000 身份后，100000 会话仍覆盖 300 个写回秒桶，桶计数范围 296–385。
-- 敏感随机 token 只在被忽略的生成目录；上述生成统计来自独立 formal-memory-proof 输出，token 随机性导致它与实际导入 formal 数据文件哈希不同，均保留各自 manifest，不混用。
+业务吞吐使用 businessWindows.seconds，不使用扩展执行器窗口。例如 U2 refresh_0 按原 2 秒计算 10/2=5 次/秒，refresh_1 按原 4 秒计算 40/4=10 次/秒。执行器保护时间单列在 spec.deliverySchedule。
 
-## 失败记录与处理
+## 逐轮矩阵
 
-- 首次 smoke 数据库校验器因 psql 默认分隔符不匹配失败；改为显式 Tab 分隔，保留原日志。
-- k6 时间戳小数位解析失败：9 位截断后仍漏掉 5 位情形，导致批次中止；现在统一兼容 RFC3339Nano 1–9 位，增加边界测试。中止轮仍失败，未用重新分析将其改成成功。
-- 支付探针 VU 在边界 tick 耗尽，产生 1 dropped；已添加压力机端边界余量，实际 HTTP 计划数量不变。后续完整 U1 轮 dropped=0。
-- 认证预检曾发生自动权限审核超时及一次 HTTP 超时；失败日志保留，增加抽样进度后实际完成冷/热与预热。
-- 最新批次遇宿主交换，保持停止，不关闭停止规则，不以重跑碰运气。
+以下计数只取主负载（U2 含所有进入/刷新阶段，L 含登录与背景），排除 control/payment 探针。闭合模型没有有限 planned，以 — 表示。E1 是 20 组订单夹具，不是 k6 迭代。全部功能检查、数据库对账通过；完整分步骤成功/冲突/拒绝/错误、分位数及资源峰值见 JSON。
 
-## 尚未完成
+| 场景/参数 | Run ID | 配置 | planned / started / completed | dropped | 测量 / 容量 / 过载保护 |
+|---|---|---:|---|---:|---|
+| G0 {} | phase14-smoke-g0-20260910T014114Z-a26cab | 1 | 20 / 20 / 20 | 0 | fail / not_applicable / not_applicable |
+| U1 {"round":0} | phase14-smoke-u1-20260910T014150Z-ea4415 | 1 | — / 59 / 59 | 0 | fail / not_applicable / not_applicable |
+| U1 {"round":1} | phase14-smoke-u1-20260910T014235Z-cc30e7 | 1 | — / 58 / 58 | 0 | fail / not_applicable / not_applicable |
+| U2 {"round":0} | phase14-smoke-u2-20260910T014323Z-c168c4 | 1 | 70 / 70 / 70 | 0 | fail / not_applicable / not_applicable |
+| U2 {"round":1} | phase14-smoke-u2-20260910T030307Z-2c6690 | 2 | 70 / 70 / 70 | 0 | fail / not_applicable / not_applicable |
+| J1 {"window":0} | phase14-smoke-j1-20260910T030354Z-bb82d0 | 2 | 20 / 20 / 20 | 0 | fail / not_applicable / not_applicable |
+| J1 {"window":1} | phase14-smoke-j1-20260910T030442Z-8a13e9 | 2 | 20 / 20 / 20 | 0 | fail / not_applicable / not_applicable |
+| J1 {"window":2} | phase14-smoke-j1-20260910T030525Z-72afc7 | 2 | 20 / 20 / 20 | 0 | fail / not_applicable / not_applicable |
+| O1 {"window":0} | phase14-smoke-o1-20260910T030608Z-146265 | 2 | 20 / 20 / 20 | 0 | fail / not_applicable / not_applicable |
+| O1 {"window":1} | phase14-smoke-o1-20260910T030655Z-59b1b1 | 2 | 20 / 20 / 20 | 0 | fail / not_applicable / not_applicable |
+| O1 {"window":2} | phase14-smoke-o1-20260910T030741Z-e86cba | 2 | 20 / 20 / 20 | 0 | fail / not_applicable / not_applicable |
+| E1 {} | phase14-smoke-e1-20260910T030824Z-93e06e | 2 | 20 组 / 20 组到期 | 不适用 | fail / not_applicable / not_applicable |
+| H1 {"path":"temporary"} | phase14-smoke-h1-20260910T030852Z-800fd2 | 2 | 20 / 20 / 20 | 0 | fail / not_applicable / fail |
+| H1 {"path":"temporary"} | phase14-smoke-h1-20260910T030936Z-57cc88 | 2 | 20 / 20 / 20 | 0 | fail / not_applicable / fail |
+| H1 {"path":"formal"} | phase14-smoke-h1-20260910T031017Z-c1e6f2 | 2 | 20 / 20 / 20 | 0 | fail / not_applicable / fail |
+| H1 {"path":"formal"} | phase14-smoke-h1-20260910T031101Z-196a13 | 2 | 20 / 20 / 20 | 0 | fail / not_applicable / fail |
+| H2 {"session_count":10} | phase14-smoke-h2-20260910T031147Z-b66698 | 2 | 20 / 20 / 20 | 0 | fail / not_applicable / fail |
+| H2 {"session_count":20} | phase14-smoke-h2-20260910T031233Z-c7ccd0 | 2 | 20 / 20 / 20 | 0 | fail / not_applicable / fail |
+| H3 {"path":"temporary"} | phase14-smoke-h3-20260910T031315Z-cf421f | 2 | 20 / 20 / 20 | 0 | fail / not_applicable / fail |
+| H3 {"path":"formal"} | phase14-smoke-h3-20260910T031358Z-4789f7 | 2 | 20 / 20 / 20 | 0 | fail / not_applicable / fail |
+| L1 {"control_only":true} | phase14-smoke-l1-20260910T031445Z-f56c8a | 2 | 224 / 224 / 224 | 0 | fail / not_applicable / fail |
+| L1 {"control_only":false} | phase14-smoke-l1-20260910T031543Z-2cc58c | 2 | 244 / 244 / 244 | 0 | fail / not_applicable / fail |
+| L2 {"control_only":true} | phase14-smoke-l2-20260910T031641Z-99eb15 | 2 | 168 / 168 / 168 | 0 | fail / not_applicable / fail |
+| L2 {"control_only":false} | phase14-smoke-l2-20260910T031737Z-8e30f8 | 2 | 188 / 188 / 188 | 0 | fail / not_applicable / fail |
+| S1 {} | phase14-smoke-s1-20260910T031833Z-b7490f | 2 | — / 131 / 131 | 0 | fail / not_applicable / not_applicable |
 
-- U2 第二轮未通过；O1、H1 正式预订与重复、H2、H3、L1/L2（含完全同速对照）、S1 的完整缩小矩阵未运行。J1 只执行过首档；U1 两轮在获准释放资源后的续跑中均通过功能预演。
-- G0 已执行缩小 no-op 调度，但正式规模 no-op 和有/无采样的开销对照未完成。H3 200 ms 轻量采样的新代码仅有单元测试，实际采样与开销证明未完成。
-- 本次真实浏览器少量页面请求图校准、被观测接入触及的全部后端集成回归、真实等待/idle ClientRead exporter 故障夹具验证未运行。
-- login 背景对照汇总、Redis 热点 owner/TTL 运行核对等新增分支尚未取得端到端证据；最终规范门禁未全通过。
-- 正式隔离环境未建立，正式 U1/U2 万人及 S1 30/60 分钟容量场景未运行。
+H1 的 formal 指正式预订路径，所有上表运行仍是 smoke，不能误读为正式容量运行。H1/H2 每轮 2 个赢家、18 个冲突；H3 每轮 1 个赢家、19 个冲突。H2 数据库所有者座位集合额外与预定映射逐项核对一致。
 
-Phase14 未修改前端，沿用合入主分支前端门禁；本阶段不包含真实 Stripe 万级支付、电子票或验票。
+## 未通过项及观测边界
 
-## 工程检查
+- 历史 U2 换入停止和后续 10 计划/9 启动失败仍为失败；新 U2 `phase14-smoke-u2-20260910T030307Z-2c6690` 的升压段达到 10/10/10。没有改成 planned=9，没有容忍少 1 或运行结束后补发。
+- H1 重复轮的孤立换入保留 host_swap_activity，测量仍 fail、capacity 仍 not_applicable，但未阻断 smoke 功能矩阵。换出和其他安全停止规则保留。
+- L1/L2 均完成 20 次登录和 20 次身份核对。背景余票请求数量与对照相同，但 p95 分别为 3→5ms、3→6ms，超过 1.5 倍线；背景占座/下单比较通过。L2 是已授权缩小功能矩阵的一部分，其执行不能表示正式 L1 升档门禁通过。
+- 所有正式恢复窗口继续按原 30/60/300 秒等标准评估，短 smoke 的 recovery 保持失败，未放宽为通过；不声称完成正式过载恢复验收。
+- E1 20 组合法订单约 6.365 秒排空，remaining=0，状态/库存/通知对账一致；不外推万人回收时间。
 
-- Python performance 回归：138/138，1.080 秒；日志 `performance/results/phase14-engineering/python-tests-approved-stop-final.log`。
-- 既有 metrics 源码契约：4/4，0.008 秒；Phase14 契约：3/3，0.134 秒。
-- 标准 Dockerfile 构建成功，CTest 30/30，测试段 0.96 秒；日志 `performance/results/phase14-engineering/backend-build-first.log`。
-- `git diff --check` 通过；前端文件未改动；未 push。
+最初 H3 轻量采样逐次启动 Docker CLI，实际最大间隔约 590ms。原记录不改。改为一个只读监测连接后，两条新 H3 运行保持 20/20/20、单赢家与零 dropped：
+- `phase14-smoke-h3-20260910T032511Z-f16aa8`：99 点，名义间隔 200ms，平均 200.05ms，最大 219.34ms；发车集中度通过，连接关闭。
+- `phase14-smoke-h3-20260910T032750Z-aed9b9`：113 点，名义间隔 200ms，平均 199.91ms，最大 218.68ms；发车集中度通过，连接关闭。
 
-## 获准释放资源后的续跑（2026-09-10）
+## 采样开销对照
 
-用户明确批准停止三个旧项目，要求精确标签、仅 stop、保留卷、核验其他容器，并在空闲后观察两个新的 60 秒窗口。已按该约束执行。完整容器 ID、名称、镜像、状态、端口、挂载与 Compose 配置路径见 [停止审计证据](approved-project-stop-evidence.json)。
+每腿固定 20 个 no-op 请求/秒，顺序 off/on/on/off。两腿分位数的中位数仅用于对照，不用于拼接分片全局百分位。k6 场景汇总仍从所有分片原始点重算。
 
-- 仅一次 `docker stop`，参数为再次 inspect 确認后的 12 个精确 ID；三项目标签完全匹配。三个命名数据卷保留，其他容器状态、端口及挂载内容不变。未停止宿主 Stripe CLI、Vite 或其他进程。
-- 首次复核因 Docker 返回挂载数组排序不同而中止；保留首次日志，按 Destination/Source 排序后严格比较全部字段，确认无内容变化。随后只执行只读复核与观察，没有再次 stop。
-- 停止前/后 VM MemAvailable 分别为 12651245568 / 12851503104 bytes；SwapTotal 为 4294967296 bytes，SwapFree 均为 4083687424 bytes；pswpin/pswpout 均为 322791/537116。
-- 空闲判据为连续 30 秒 CPU idle+iowait 占比至少 90%。之后两个独立窗口各 60.203 秒，pswpin 始终为 322791，pswpout 始终为 537116。窗口内每次采样均核对，不借用停止前计数。
-- Phase14 恢复入口改用本项目应用客户端 stop、原卷内完整 pg_restore、专属 Redis FLUSHALL，再启动本项目客户端。k6 只读源码挂载改为 Compose 合并配置。续跑命令没有 down/rm/prune 或 -v。
+| 采样实现 / 时长 | 每腿请求 | p95 增幅 | p99 增幅 | 5% 比较 |
+|---|---:|---:|---:|---|
+| 逐次CLI / 4s | 80 | -0.75% | -7.15% | True |
+| 持久只读 / 4s | 80 | 5.60% | 39.06% | False |
+| 持久只读 / 60s | 1200 | -4.20% | 1.02% | True |
 
-| Run ID | 场景/轮次 | 资源预检 | 功能 smoke | dropped | DB 一致性 |
-|---|---|---|---|---|---|
-| phase14-smoke-g0-20260910T014114Z-a26cab | G0 / 1 | True | True | 0 | True |
-| phase14-smoke-u1-20260910T014150Z-ea4415 | U1 / 1 | True | True | 0 | True |
-| phase14-smoke-u1-20260910T014235Z-cc30e7 | U1 / 2 | True | True | 0 | True |
-| phase14-smoke-u2-20260910T014323Z-c168c4 | U2 / 1 | True | True | 0 | True |
-| phase14-smoke-u2-20260910T014409Z-495ad3 | U2 / 2 | True | False | 0 | True |
+三组错误/dropped 均为 0。持久采样首次 4 秒对照失败保留；随后预先指定采用已有正式空闲基线的 60 秒时长补做一次，原速率不变。新对照通过不覆盖旧失败；没有反复运行同配置挑最好值。当前同宿主、低输入对照仍不能建立正式采样开销上界。
 
-上述轮次的 measurement_validity 均为 fail（本地 smoke），capacity 均为 not_applicable，overload_protection 均为 not_applicable。不能把功能预演成功提升成正式容量通过。
+## 浏览器请求链校准
 
-**最新停止：第二轮 U2 在统一释放前约 4.862 秒，pswpin 从 322791 增至 322803，pswpout 仍为 537116。** 运行器立即停止该轮 k6，后续矩阵、集成回归和压力观测未继续。数据仍一致，但主要计划没有全部送达，该轮失败；不能因为交换发生在释放前就静默放宽已冻结停止规则。此前两个空闲窗口通过，不能保证后续无换页。
+证据：`performance/results/phase14-browser-v2-20260910T033309Z/browser.json`。读取当前 frontend 源码，独立 15174 端口，API 指向 Phase14 18414；不加载 .env，阻止外部网络，未访问 Stripe。缓存写入独立证据目录，前端树 `3cee03224b2955157f8b13cd935b703f6d7a478d` 前后不变。
 
-停止时 SUT 最大内存占限额约 5.61%，压力机最大内存约 1.82%，压力机 CPU 约 0.125%。只能确认宿主交换读取增长，尚不能据此诊断后端瓶颈或断定关闭更多旧项目就能解决。
+匿名和已登录选座核心链均只读一次 session、event、layout、availability；实测布局与余票请求时间区间重叠。首次选座创建一次 checkout 并刷新余票，第二次只 PUT 同一 checkout 并再刷新余票。两次写入均携带会话 Cookie 和 CSRF 头，证据仅保存是否携带的布尔值，不保存秘密值。
 
-本次另外补充了 H2 小 profile 跨两个活动映射、独立 PostgreSQL 1s/200ms 轻量采样与停止/错误处理单元测试；这些新增分支仍待实际运行验证，采样开销对照未完成。全部 performance 离线回归 138/138（1.080 秒）；backend 无新改动，沿用已记录的 CTest/观测契约结果。
+**模型范围差异**：当前冷启动已登录页面还读取两次 auth/me、两次 notifications、checkout 列表及订单列表。固定 k6 模型覆盖冻结的核心 API 旅程，并不是当前整个浏览器页面总流量的完整复刻；这些附加调用已记录，未在同一批次擅自加入冻结输入。正式测量前若要覆盖整页总流量，需要另行定义模型版本。
 
-## 2026-09-10 smoke 停止语义续验
+## 工程检查与文件
 
-模式差异已提交；新 U2 因计划 10 次、实际 9 次而停止，尚未完成完整矩阵。57 项独立集成回归、真实指标及 exporter 夹具已通过，no-op 采样对照已完成。历史失败保留不变，详见 [续验记录](../../../docs/phase14_smoke_policy_followup.md)。
+- Python performance（含最终报告回归）：157/157，1.352 秒，`performance/results/phase14-engineering/v2-final-tests.log`。
+- 既有后端集成：57/57；真实 metrics 触发夹具另 5/5；exporter 故障检查 6/6。明细与耗时沿用 [已完成回归汇总](smoke-policy-followup.json)。
+- backend 本轮没有新生产改动；沿用标准 Dockerfile 构建及 CTest 30/30、源码契约 4/4、Phase14 契约 3/3 的真实通过记录。本轮未重复构建，未跑前端测试套件。浏览器仅校准协议，不作为前端新功能验收。
+- 数据生成仍是 1m 注册/100k 会话；真实生成耗时、文件哈希、约 24.2MiB OS 峰值及 1000 冷/热身份核对见 [早期证据](evidence-summary.json)。这是数据规模，不是并发人数。v2 smoke 使用独立 smoke-v2 数据及快照，旧数据保留。
+- 只读复核 89 个非 Phase14 容器状态与原批准停止后完全相同；三个旧项目卷仍存在。未执行 down/rm/prune/-v，未停止宿主 Stripe CLI、原 Vite 或其他非本会话进程。
+- 新增/修改：共享调度生成、v2 配置、单/双分片 no-op 夹具、持久 PG 监测、浏览器校准、测试及本报告；主要路径见 [实施记录](../../../docs/phase14_implementation.md)。
+
+## 结论边界与证据索引
+
+本地工程预演已执行完整，冻结 API 模型的调度、分类、身份、数据对账和报告链得到验证。不能说全部性能门槛通过，不能说系统支持万人在线。正式环境仍缺压力机与被测系统的核/资源隔离；正式 G0、万人 U1/U2 及长期 S1 未运行。登录相对保护失败及当前浏览器附加请求也须在正式测量设计中明确处理。
+
+目前没有证据确认后端容量瓶颈。已证实并修复的是生成器边界交付和采样器启动开销问题，不能据此推断数据库或 Redis 的万人容量。Phase14 不包含真实 Stripe 万级支付、电子票、验票。
+
+- [v2 逐轮原始汇总](v2-evidence-summary.json)
+- [保留的 v1 阶段报告](report-v1-checkpoints.md)
+- [保留的旧停止证据](approved-project-stop-evidence.json)
+- [保留的 smoke 语义续验](smoke-policy-followup.json)
