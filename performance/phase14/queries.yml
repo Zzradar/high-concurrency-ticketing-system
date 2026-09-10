@@ -66,6 +66,20 @@ pg_lock_summary:
         usage: GAUGE
         description: PostgreSQL locks waiting to be granted
 
+pg_order_expiry:
+  query: |
+    SELECT count(*)::bigint AS pending,
+           COALESCE(EXTRACT(EPOCH FROM clock_timestamp() - min(expires_at)), 0)::double precision AS oldest_seconds
+    FROM orders
+    WHERE status = 'PENDING_PAYMENT' AND expires_at <= clock_timestamp()
+  metrics:
+    - pending:
+        usage: GAUGE
+        description: Expired orders still pending processing in this dedicated database
+    - oldest_seconds:
+        usage: GAUGE
+        description: Age in seconds of the oldest expired pending order
+
 pg_idle_transactions:
   query: |
     SELECT count(*) FILTER (WHERE state = 'idle in transaction')::bigint AS idle,

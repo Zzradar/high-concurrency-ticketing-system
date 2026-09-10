@@ -18,6 +18,8 @@ def load_targets(path=TARGETS, *, smoke=False):
     t['mode'] = 'smoke' if smoke else 'formal'
     if smoke:
         s = t['smoke']
+        t['behavior']['thinkSeconds'] = s['thinkSeconds']
+        t['behavior']['refreshSeconds'] = s['refreshSeconds']
         t['dataset'].update({k: s[k] for k in ('registeredUsers', 'activeAuthSessions', 'loginUsers', 'seatsPerSession')})
         for stages in t['online']['rounds']:
             for stage in stages:

@@ -44,6 +44,8 @@ class K6ConfigurationTests(unittest.TestCase):
         self.assertIn("positiveInteger('PREALLOCATED_VUS')", scenarios)
         self.assertNotIn("maxVUs", scenarios)
         sleep_allowed = {
+            # Phase14 separates open arrivals from closed VU think/refresh and payment polling.
+            "phase14-flow.js",
             "payment-lifecycle.js",
             "synthetic-mixed-transactional.js",
             "formal-hot-seat-wave.js",

@@ -1,0 +1,95 @@
+name: ${PHASE14_PROJECT:?Phase14 runner must set project}
+services:
+  noop:
+    image: nginx:1.28-alpine
+    profiles: [load]
+    cpus: 2
+    mem_limit: 128m
+    volumes: ["./phase14/noop.conf:/etc/nginx/nginx.conf:ro"]
+  postgres:
+    image: postgres:16-alpine
+    command: ["postgres", "-c", "shared_preload_libraries=pg_stat_statements", "-c", "track_io_timing=on", "-c", "log_lock_waits=on"]
+    environment:
+      POSTGRES_USER: ticketing
+      POSTGRES_PASSWORD: ticketing_dev
+      POSTGRES_DB: ticketing
+    cpus: 2
+    mem_limit: 1g
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./postgres/000_observability.sql:/docker-entrypoint-initdb.d/000_observability.sql:ro
+      - ../backend/db/migrations:/migrations:ro
+      - ./phase14/init.sh:/docker-entrypoint-initdb.d/010_schema.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ticketing -d ticketing"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--latency-tracking", "yes"]
+    cpus: 1
+    mem_limit: 512m
+    tmpfs: [/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  backend:
+    image: phase14-backend:local
+    command: ["./ticketing_backend", "config/config.phase14.json"]
+    environment:
+      TICKETING_PAYMENT_PROVIDER: simulation
+      TICKETING_PAYMENT_FORCE_OUTCOME: SUCCESS
+    cpus: 4
+    mem_limit: 2g
+    ports: ["127.0.0.1:${PHASE14_PORT:?}:8080"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://127.0.0.1:8080/health >/dev/null"]
+      interval: 2s
+      timeout: 2s
+      retries: 40
+  postgres-exporter:
+    image: ghcr.io/prometheus-community/postgres-exporter:v0.20.1
+    environment:
+      DATA_SOURCE_NAME: postgresql://ticketing_metrics:ticketing_metrics_dev@postgres:5432/ticketing?sslmode=disable&application_name=ticketing_postgres_exporter
+      PG_EXPORTER_EXTEND_QUERY_PATH: /etc/postgres_exporter/queries.yml
+    volumes: ["./phase14/queries.yml:/etc/postgres_exporter/queries.yml:ro"]
+    depends_on:
+      postgres: {condition: service_healthy}
+    mem_limit: 128m
+  redis-exporter:
+    image: ghcr.io/oliver006/redis_exporter:v1.89.0
+    environment: {REDIS_ADDR: "redis://redis:6379"}
+    depends_on:
+      redis: {condition: service_healthy}
+    mem_limit: 128m
+  prometheus:
+    image: prom/prometheus:v3.14.0
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus", "--storage.tsdb.retention.time=7d"]
+    volumes:
+      - ./phase14/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus:/prometheus
+    ports: ["127.0.0.1:${PHASE14_PROMETHEUS_PORT:?}:9090"]
+    mem_limit: 512m
+  k6:
+    image: grafana/k6:2.2.0
+    profiles: [load]
+    cpus: 4
+    mem_limit: 2g
+    working_dir: /scripts
+    volumes:
+      - ./k6:/scripts:ro
+      - ${PHASE14_DATA_ROOT:?}:/data:ro
+      - ./results:/results
+volumes:
+  postgres:
+    name: ${PHASE14_PROJECT}_postgres
+    labels: {ticketing.phase14: capacity}
+  prometheus:
+    name: ${PHASE14_PROJECT}_prometheus
+    labels: {ticketing.phase14: capacity}
