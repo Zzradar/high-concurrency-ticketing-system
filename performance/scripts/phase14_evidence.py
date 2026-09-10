@@ -207,14 +207,22 @@ def verdict(summary,correctness,recovered,validity,t,*,overload=False,smoke=Fals
     latency=[]
     for row in summary['trends']:
         scenario,step,result=row['tags']
-        limit=t['latencyMs'].get(step)
+        limit=t['latencyMs'].get(step.removeprefix('startup_'))
         if row['metric']=='phase14_duration_ms' and result=='business_success' and limit and (row['p95']>limit[0] or row['p99']>limit[1]):latency.append(row['tags'])
     valid=not reasons;correct=correctness.get('passed') is True;rest=recovered.get('passed') is True
     system_bad=any(x[2] in ('system_error','unexpected_contract') for x in bad)
     unexpected_rejection=any(x[2]=='capacity_rejection' and x[1]!='login' for x in bad)
     busy_latency=any(row['metric']=='phase14_duration_ms' and row['tags'][1:] == ['login','capacity_rejection'] and
                      (row['p95']>t['login']['busyLatencyMs'][0] or row['p99']>t['login']['busyLatencyMs'][1]) for row in summary['trends'])
-    return {'measurement_validity':{'status':'pass' if valid else 'fail','reasons':reasons},
+    result={'measurement_validity':{'status':'pass' if valid else 'fail','reasons':reasons},
             'capacity':{'status':'pass' if valid and correct and rest and not bad and not latency else 'not_applicable' if not valid else 'fail','badResults':bad,'latencyFailures':latency},
             'overload_protection':{'status':'not_applicable' if not overload else 'pass' if valid and correct and rest and not system_bad and not unexpected_rejection and not busy_latency and not latency else 'fail',
                                    'reason':'not an overload experiment' if not overload else 'requires correctness, valid delivery, controls and recovery'}}
+
+    if smoke:
+        result['diagnostic']={'capacity':result['capacity'],'overload_protection':result['overload_protection'],
+                              'formalRecovery':recovered,'latencyFailures':latency}
+        for key in ('capacity','overload_protection','formal_recovery'):
+            result[key]={'status':'not_applicable','reason':'smoke sample size and duration do not qualify for formal performance evaluation'}
+        result['functional']={'status':'pass' if correct and bool(summary['counts'] and summary['trends']) and not summary['errors'] and not validity.get('errors') and not system_bad else 'fail'}
+    return result

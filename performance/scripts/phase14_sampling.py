@@ -37,6 +37,21 @@ def postgres(env):
     return value
 
 
+def postgres_clock_sample(env):
+    # Bootstrap Docker/psql BEFORE timing SQL. CLI process launch is asymmetric
+    # transport latency, not a clock offset. The frozen offset guard is unchanged.
+    from phase14_pg_stream import ActivityConnection
+    from types import SimpleNamespace
+    connection=ActivityConnection(env)
+    try:
+        value=postgres(SimpleNamespace(t=env.t,sql=connection.sql))
+        value['clockTransport']='established_read_only_psql'
+        value['clockConnectionPid']=connection.pid
+    finally:connection.close()
+    value['clockConnectionClosed']=True
+    return value
+
+
 def pg_snapshot(env):
     return json.loads(env.sql('''SELECT json_build_object(
       'serverVersion',current_setting('server_version'),'postmasterStart',pg_postmaster_start_time(),
@@ -159,7 +174,7 @@ class Sampler:
             if any(parsed[k] is None for k in ('cpu','swapIn','swapOut','fileHandles')):raise RuntimeError('host sampling incomplete')
             return parsed
         with ThreadPoolExecutor(max_workers=5) as pool:
-            a=pool.submit(metrics,env);b=pool.submit(postgres,env);c=pool.submit(docker);d=pool.submit(redis)
+            a=pool.submit(metrics,env);b=pool.submit(postgres_clock_sample,env);c=pool.submit(docker);d=pool.submit(redis)
             h=pool.submit(host)
             m,raw=a.result();pg=b.result();containers,stats=c.result();rd=d.result();host_data=h.result()
         current,unexpected=scoped_containers(containers,self.seen_generators)

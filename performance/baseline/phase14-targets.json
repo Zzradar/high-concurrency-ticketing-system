@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "seed": 14001,
   "scope": "Disjoint within one Run ID. Reuse only after full snapshot restore and empty Redis; fresh idempotency namespace and evidence directory per run.",
   "dataset": {
@@ -315,5 +315,21 @@
       1,
       3
     ]
+  },
+  "pageStartup": {
+    "model": "authenticated-cold-page-v1",
+    "requestsPerUser": 10,
+    "stepCounts": {
+      "startup_auth": 2,
+      "startup_notifications": 2,
+      "startup_session": 1,
+      "startup_event": 1,
+      "startup_layout": 1,
+      "startup_availability": 1,
+      "startup_checkouts": 1,
+      "startup_orders": 1
+    },
+    "dependencies": "router auth -> session -> [event, layout, availability] -> [recoverable checkouts, orders]; first successful auth -> notification; app auth -> notification",
+    "orderListLimit": 20
   }
 }

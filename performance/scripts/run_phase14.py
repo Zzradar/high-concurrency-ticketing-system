@@ -140,9 +140,30 @@ def build_spec(t,case,run_id,*,round_index=0,window_index=0,path='formal',sessio
     for name,m in mapping.items():
         if name=='payment' and m['count']>t['slices']['payment'][1]-t['slices']['payment'][0]:raise ValueError('payment pool exhausted before run')
     delivery_schedule=guard_delivery(scenarios,t)
-    return {'version':2,'deliverySchedule':delivery_schedule,'case':case,'mode':t['mode'],'targets':t,'runId':run_id,'idempotencyNamespace':run_id,
+    return {'version':3,'startupPlan':startup_plan(t,case,mapping),'deliverySchedule':delivery_schedule,'case':case,'mode':t['mode'],'targets':t,'runId':run_id,'idempotencyNamespace':run_id,
             'roundIndex':round_index,'windowIndex':window_index,'path':path,'sessionCount':session_count,
             'controlOnly':control_only,'scenarios':scenarios,'mapping':mapping,'plan':plan,'loadSeconds':total,'workload':workload}
+
+
+def startup_plan(t,case,mapping):
+    if case in ('U1','S1'):users=mapping['main']['users']
+    elif case=='U2':users=sum(m['count'] for k,m in mapping.items() if k.startswith('enter_'))
+    elif case=='J1':users=mapping['main']['count']
+    else:users=0
+    return {'users':users,'requests':users*t['pageStartup']['requestsPerUser'],
+            'steps':{k:v*users for k,v in t['pageStartup']['stepCounts'].items()}}
+
+
+def check_startup(summary,plan):
+    """Same exact delivery contract in smoke and formal; never infer from latency."""
+    rows=summary['counts'];observed={}
+    for step,planned in {'startup':plan['users'],**plan['steps']}.items():
+        a=sum(x['count'] for x in rows if x['metric']=='phase14_started' and x['tags'][1]==step)
+        b=sum(x['count'] for x in rows if x['metric']=='phase14_results' and x['tags'][1]==step)
+        observed[step]={'planned':planned,'started':a,'completed':b}
+        if a!=planned or b!=planned:summary['errors'].append('startup delivery mismatch: '+step)
+    summary['startupDelivery']=observed
+    return observed
 
 
 class Environment:
@@ -366,6 +387,9 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
     preflight=resource_preflight(cal,t);write(root/'resource-preflight.json',preflight)
     if not preflight['passed']:raise RuntimeError('resource preflight failed: '+', '.join(preflight['errors']))
     sessions=env.warm(spec)
+    if args.case in ('L1','L2'):
+        from phase14_startup import warm_background
+        warm_background(env,spec)
     if args.case=='G0':env.compose('up','-d','noop')
     # Isolated sentinel hold for mixed-load display correctness.
     sentinel=seat(t['seatSlices']['control'][0],t)
@@ -459,6 +483,7 @@ def finish_case(env,spec,slices,stop_reasons,samples,cal,before,started,warnings
         with raw.open('rb') as source,gzip.open(folder/'raw.json.gz','wb') as destination:shutil.copyfileobj(source,destination)
         (folder/'raw.json.gz.sha256').write_text(sha256(folder/'raw.json.gz'))
     summary=aggregate(root,slices,spec['plan']);summary['stopReasons']=stop_reasons
+    check_startup(summary,spec.get('startupPlan',{'users':0,'steps':{}}))
     summary['businessWindows']={name:{'seconds':spec['deliverySchedule'].get(name,{}).get('businessWindowSeconds',spec['loadSeconds']),
         'completedIterationsPerSecond':row['completed']/spec['deliverySchedule'].get(name,{}).get('businessWindowSeconds',spec['loadSeconds'])}
         for name,row in summary['delivery'].items()}
@@ -476,7 +501,7 @@ def finish_case(env,spec,slices,stop_reasons,samples,cal,before,started,warnings
                         controls.append({'time':timestamp(point['time']),'ms':point['value'],'step':tags['step'],'result':tags['result']})
     recovered=recovery(samples,controls,cal['baseline'],t,spec['releaseAtMs']/1000+spec['loadSeconds'])
     recovered['mode']=t['mode']
-    write(root/'recovery.json',recovered)
+    write(root/'recovery.json',{'status':'not_applicable','diagnostic':recovered} if t['mode']=='smoke' else recovered)
     validity={'isolated':False,'errors':stop_reasons,'warnings':warnings}
     if spec['case']=='H3':
         offsets=[x for x in summary['trends'] if x['metric']=='phase14_start_offset_ms']
@@ -486,7 +511,7 @@ def finish_case(env,spec,slices,stop_reasons,samples,cal,before,started,warnings
     result=verdict(summary,correctness,recovered,validity,t,overload=spec['case'].startswith(('H','L')),smoke=t['mode']=='smoke')
     write(root/'verdict.json',result)
     collect_prometheus(env,started,time.time())
-    functional=not stop_reasons and not summary['errors'] and correctness['passed'] and not any(x['metric']=='phase14_results' and x['tags'][2] in ('system_error','unexpected_contract') and x['count'] for x in summary['counts'])
+    functional=not validity['errors'] and not summary['errors'] and correctness['passed'] and not any(x['metric']=='phase14_results' and x['tags'][2] in ('system_error','unexpected_contract') and x['count'] for x in summary['counts'])
     write(root/'smoke-check.json',{'passed':functional,'notCapacityEvidence':True})
     (root/'report.md').write_text(f'# Phase14 {spec["case"]} {t["mode"]}\n\n本地特征不构成万人正式容量证明。\n\nFunctional smoke: {functional}\n\n```json\n'+json.dumps({'businessWindowSeconds':spec['loadSeconds'],'nonBusinessDeliverySchedule':spec['deliverySchedule'],'delivery':summary['delivery'],'dropped':summary['dropped'],'verdict':result,'correctness':correctness['passed']},ensure_ascii=False,indent=2)+'\n```\n',encoding='utf-8')
     print(json.dumps({'runId':run_id,'functionalSmoke':functional,'correctness':correctness['passed'],'stopReasons':stop_reasons,'deliveryErrors':summary['errors']},ensure_ascii=False))
@@ -576,8 +601,10 @@ def compare_background(control_root,load_root,t):
             return next((x for x in summary['trends'] if x['metric']=='phase14_duration_ms' and x['tags']==[scenario,step,'business_success']),None)
         left,right=row(base),row(loaded)
         passed=bool(left and right and right['count']>=left['count']*t['login']['backgroundGoodputFraction'] and right['p95']<=left['p95']*t['login']['backgroundLatencyRatio'])
-        comparisons.append({'scenario':scenario,'passed':passed,'control':left,'login':right,'seconds':seconds})
-    return {'passed':all(x['passed'] for x in comparisons),'mode':t['mode'],'notFormalCapacityEvidence':t['mode']=='smoke',
+        comparisons.append({'scenario':scenario,'passed':passed,'control':left,'login':right,'seconds':seconds,'p95Ratio':right['p95']/left['p95'] if left and right and left['p95'] else None})
+    return {'status':'not_applicable' if t['mode']=='smoke' else 'pass' if all(x['passed'] for x in comparisons) else 'fail',
+            'diagnostic':{'passed':all(x['passed'] for x in comparisons),'comparisons':comparisons},
+            **({'passed':all(x['passed'] for x in comparisons)} if t['mode']!='smoke' else {}),'mode':t['mode'],'notFormalCapacityEvidence':t['mode']=='smoke',
             'controlRunId':Path(control_root).name,'loginRunId':Path(load_root).name,'comparisons':comparisons}
 
 

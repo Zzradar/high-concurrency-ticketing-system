@@ -53,12 +53,15 @@ def _intervals(values, limit):
 
 
 def validate(t):
-    if t['version'] != 2 or sum(t['behavior'][k] for k in ('browse','hold','order')) != 100:
+    if t['version'] != 3 or sum(t['behavior'][k] for k in ('browse','hold','order')) != 100:
         raise ValueError('invalid version or behavior proportions')
     for key in ('thinkSeconds','refreshSeconds'):
         a,b = t['behavior'][key]
         if not 0 < a <= b: raise ValueError('invalid behavior window')
     if not 0 < t['generator']['scheduler_delivery_guard_seconds'] <= 5:raise ValueError('invalid non-business scheduler guard')
+    startup=t['pageStartup']
+    expected={'startup_auth':2,'startup_notifications':2,'startup_session':1,'startup_event':1,'startup_layout':1,'startup_availability':1,'startup_checkouts':1,'startup_orders':1}
+    if startup['stepCounts']!=expected or startup['requestsPerUser']!=sum(expected.values()) or startup['orderListLimit']!=20:raise ValueError('startup differs from calibrated browser contract')
     d = t['dataset']
     if d['activeAuthSessions'] + d['loginUsers'] > d['registeredUsers']:
         raise ValueError('insufficient registered users')

@@ -23,7 +23,7 @@ def compare(rows,limit):
     groups={enabled:[r for r in rows if r['sampling']==enabled] for enabled in (False,True)}
     def median(key,enabled):return percentile([r[key] for r in groups[enabled]],.5)
     ratios={k:median(k,True)/median(k,False)-1 for k in ('p95Ms','p99Ms')}
-    return {'relativeIncrease':ratios,'limit':limit,'passed':all(v<=limit for v in ratios.values()),
+    return {'status':'not_applicable','diagnostic':{'relativeIncrease':ratios,'limit':limit,'passed':all(v<=limit for v in ratios.values())},
         'sampleSizeLimited':True,'measurement_validity':'fail','capacity':'not_applicable',
         'reason':'local no-op characterization; co-located control does not establish a formal overhead bound'}
 

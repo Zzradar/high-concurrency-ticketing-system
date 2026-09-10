@@ -88,10 +88,10 @@ class RunnerTests(unittest.TestCase):
                 return {'trends':[{'metric':'phase14_duration_ms','tags':[scenario,step,'business_success'],'count':count,'p95':p95}
                     for scenario,step in [('background_refresh','availability'),('background_hold','journey'),('background_order','journey')]]}
             with patch.object(runner,'aggregate',side_effect=[summary(100,100),summary(90,150)]):
-                self.assertTrue(runner.compare_background(*roots,t)['passed'])
+                self.assertTrue(runner.compare_background(*roots,t)['diagnostic']['passed'])
             for count,p95 in ((89,100),(100,151)):
                 with patch.object(runner,'aggregate',side_effect=[summary(100,100),summary(count,p95)]):
-                    self.assertFalse(runner.compare_background(*roots,t)['passed'])
+                    self.assertFalse(runner.compare_background(*roots,t)['diagnostic']['passed'])
 
     def test_redis_owner_and_ttl_require_real_checkout(self):
         t=load_targets(smoke=True);spec=runner.build_spec(t,'H1','phase14-test',path='temporary')

@@ -17,7 +17,9 @@ const output = path.resolve(process.argv[2] || path.join(root, 'performance/resu
 const baseUrl = 'http://127.0.0.1:15174';
 const evidenceRoot=path.dirname(output);
 await mkdir(evidenceRoot,{recursive:true});
-const identities=JSON.parse(await readFile(path.join(root,'performance/generated/phase14/smoke-v2/sessions.json'),'utf8'));
+const targets=JSON.parse(await readFile(path.join(root,'performance/baseline/phase14-targets.json'),'utf8'));
+const identities=JSON.parse(await readFile(path.join(root,`performance/generated/phase14/smoke-v${targets.version}/sessions.json`),'utf8'));
+const {validateColdStartup}=await import('./phase14_browser_contract.mjs');
 const identity=identities[0];
 const sessionId = 'perf-session-001-001';
 const git = args => execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
@@ -73,6 +75,7 @@ function capture(page) {
       }));
     }
   });
+  page.on('response',response=>{const row=records.get(response.request());if(row){row.responseAfterMs=performance.now()-start;row.status=response.status();}});
   page.on('requestfinished',request=>{
     const row=records.get(request);if(row)row.finishedAfterMs=performance.now()-start;
   });
@@ -134,7 +137,11 @@ try {
   await page.getByRole('region', {name: '场次座位状态与区域筛选'}).waitFor();
   await waitForCount(requests, item => item.path.endsWith('/seat-availability'), 1);
   await requests.settled();
+  await page.waitForLoadState('networkidle');
   const authenticatedInitial = summarize(requests);
+  const startupContract=validateColdStartup(authenticatedInitial);
+  await writeFile(path.join(evidenceRoot,'cold-startup.json'),JSON.stringify({authenticatedInitial,startupContract},null,2)+'\n');
+  if(!startupContract.passed)throw new Error('cold startup mismatch: '+JSON.stringify(startupContract));
 
   await page.getByRole('button', {name: /^R001-005，可选，/}).click();
   await page.getByRole('button', {name: '移除座位 R001-005'}).waitFor();
@@ -156,7 +163,7 @@ try {
   const mutations=requests.filter(x=>x.method==='POST'||x.method==='PUT');
   if(mutations.some(x=>!x.hasSessionCookie||!x.hasCsrfHeader))throw new Error('mutation credential/header calibration failed');
   if(git(['status','--short','--','frontend']))throw new Error('frontend changed during calibration');
-  const evidence = {frontendTree:sourceTree,recordedAt: new Date().toISOString(), sessionId, phase14:true, sourceUnmodified:true, envFilesLoaded:false, backend:'http://127.0.0.1:18414',
+  const evidence = {startupContract,targetsVersion:targets.version,frontendTree:sourceTree,recordedAt: new Date().toISOString(), sessionId, phase14:true, sourceUnmodified:true, envFilesLoaded:false, backend:'http://127.0.0.1:18414',
     anonymousInitial, authenticatedInitial, afterFirstSelection, afterSecondSelection, blockedExternalHosts:[...blockedHosts]};
   await writeFile(output, JSON.stringify(evidence, null, 2) + '\n');
   if (afterSecondSelection.layoutReads !== 1 || afterSecondSelection.availabilityReads !== 3 ||

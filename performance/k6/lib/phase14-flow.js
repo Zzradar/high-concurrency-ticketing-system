@@ -47,7 +47,7 @@ function target(slice,index){
 }
 function waitRelease(){const seconds=(spec.releaseAtMs-Date.now())/1000;if(seconds>0)sleep(seconds);}
 export function setup(){waitRelease();return {};}
-function run(fn){waitRelease();iterStarted.add(1,{shard});try{fn();iterCompleted.add(1,{shard});}catch(error){throw error;}}
+async function run(fn){waitRelease();iterStarted.add(1,{shard});try{await fn();iterCompleted.add(1,{shard});}catch(error){throw error;}}
 function mapped(){return spec.mapping[exec.scenario.name];}
 function nextIndex(m){const i=exec.scenario.iterationInTest;if(i>=m.count){boundary.add(1,{shard});return null;}return i+(m.offset||0);}
 function auth(user,step='auth'){return request('GET','/auth/me','GET /auth/me',step,user,null,200,b=>b.id===user.userId);}
@@ -57,33 +57,56 @@ function availability(user,chosen,checkoutId=null) {
         b.sessionId===chosen.sessionId&&Array.isArray(b.seats)&&b.seats.length===t.dataset.seatsPerSession&&
         b.seats.every(x=>x.id&&['AVAILABLE','HELD','SOLD'].includes(x.status)));
 }
-function page(user,chosen) {
-    started.add(1,tags('page'));const begin=Date.now();
-    const s=request('GET',`/sessions/${chosen.sessionId}`,'GET /sessions/{sessionId}','session',user,null,200,b=>b.id===chosen.sessionId&&b.eventId);
-    if(!s.ok){record('page',s.result,Date.now()-begin);return s.result;}
-    const configs=[['event',`/events/${s.body.eventId}`,'GET /events/{eventId}'],['layout',`/sessions/${chosen.sessionId}/seat-layout`,'GET /sessions/{sessionId}/seat-layout'],['availability',`/sessions/${chosen.sessionId}/seat-availability`,'GET /sessions/{sessionId}/seat-availability']];
-    for(const [step] of configs)started.add(1,tags(step));
-    const responses=http.batch(configs.map(([step,path,name])=>({method:'GET',url:base+path,params:{headers:mutationHeaders(user),tags:{name,...tags(step)},timeout:`${t.probes.paymentDeadlineSeconds}s`}})));
-    const bodies=[];let pageResult='business_success';
-    responses.forEach((response,i)=>{
-        let b=null;try{b=response.json();}catch(_){}bodies.push(b);
-        const result=classify(response.status,b,200,x=>i===0?x.id===s.body.eventId:x.sessionId===chosen.sessionId&&Array.isArray(x.seats)&&x.seats.length===t.dataset.seatsPerSession);
-        record(configs[i][0],result,response.timings.duration);if(result!=='business_success')pageResult=result;
-    });
-    if(pageResult==='business_success') {
-        const layout=new Set(bodies[1].seats.map(x=>x.id));
-        const dynamic=new Set(bodies[2].seats.map(x=>x.id));
-        if(layout.size!==t.dataset.seatsPerSession||dynamic.size!==layout.size||![...dynamic].every(id=>layout.has(id)))pageResult='unexpected_contract';
-    }
-    record('page',pageResult,Date.now()-begin);return pageResult;
+// Browser dependency graph: router and App auth start independently. The first
+// successful auth triggers the watcher; App auth also triggers its mounted callback.
+async function startupRead(path,name,step,user,valid) {
+    started.add(1,tags(step));let response=null,body=null;const begin=Date.now();
+    try {response=await http.asyncRequest('GET',base+path,null,{headers:mutationHeaders(user),
+        tags:{name,...tags(step)},timeout:`${t.probes.paymentDeadlineSeconds}s`});body=response.json();}catch(_){}
+    const result=classify(response&&response.status,body,200,valid);
+    record(step,result,Date.now()-begin);return {ok:result==='business_success',result,body};
 }
-function purchase(user,chosen,index,kind,withPage,think=false) {
+async function page(user,chosen) {
+    started.add(1,tags('startup'));const begin=Date.now();let result='business_success';
+    const read=(path,name,step,valid)=>startupRead(path,name,step,user,valid).then(x=>{if(!x.ok)result=x.result;return x;});
+    const notification=()=>read('/notifications','GET /notifications','startup_notifications',Array.isArray);
+    // App mount runs before the router's queued initial navigation guard.
+    const appAuth=read('/auth/me','GET /auth/me','startup_auth',b=>b.id===user.userId);
+    const routerAuth=read('/auth/me','GET /auth/me','startup_auth',b=>b.id===user.userId);
+    let notified=false;
+    const watch=async x=>{if(x.ok&&!notified){notified=true;await notification();}};
+    const watchers=[routerAuth.then(watch),appAuth.then(watch)];
+    const mounted=appAuth.then(x=>x.ok?notification():null);
+    const route=async()=>{
+        if(!(await routerAuth).ok)return;
+        started.add(1,tags('page'));const pageBegin=Date.now();
+        try {
+        const s=await read(`/sessions/${chosen.sessionId}`,'GET /sessions/{sessionId}','startup_session',b=>b.id===chosen.sessionId&&b.eventId);
+        if(!s.ok)return;
+        const [event,layout,dynamic]=await Promise.all([
+            read(`/events/${s.body.eventId}`,'GET /events/{eventId}','startup_event',b=>b.id===s.body.eventId),
+            read(`/sessions/${chosen.sessionId}/seat-layout`,'GET /sessions/{sessionId}/seat-layout','startup_layout',b=>b.sessionId===chosen.sessionId&&Array.isArray(b.seats)&&b.seats.length===t.dataset.seatsPerSession),
+            read(`/sessions/${chosen.sessionId}/seat-availability`,'GET /sessions/{sessionId}/seat-availability','startup_availability',b=>b.sessionId===chosen.sessionId&&Array.isArray(b.seats)&&b.seats.length===t.dataset.seatsPerSession)
+        ]);
+        if(![event,layout,dynamic].every(x=>x.ok))return;
+        const ids=new Set(layout.body.seats.map(x=>x.id));
+        if(ids.size!==t.dataset.seatsPerSession||new Set(dynamic.body.seats.map(x=>x.id)).size!==ids.size||!dynamic.body.seats.every(x=>ids.has(x.id)&&['AVAILABLE','HELD','SOLD'].includes(x.status))){result='unexpected_contract';return;}
+        } finally {record('page',result,Date.now()-pageBegin);}
+        if(result!=='business_success')return;
+        await Promise.all([
+            read(`/checkout-sessions?sessionId=${chosen.sessionId}&recoverable=true`,'GET /checkout-sessions','startup_checkouts',Array.isArray),
+            read(`/orders?sessionId=${chosen.sessionId}&limit=${t.pageStartup.orderListLimit}`,'GET /orders','startup_orders',Array.isArray)
+        ]);
+    };
+    await Promise.all([...watchers,mounted,route()]);
+    record('startup',result,Date.now()-begin);return result;
+}
+async function purchase(user,chosen,index,kind,withPage,think=false) {
     started.add(1,tags('journey'));const begin=Date.now();let paused=0;let result='unexpected_contract';
     function pause(){if(think){const seconds=randomSeconds(index,sequence++,t.behavior.thinkSeconds,t.seed);sleep(seconds);paused+=seconds*1000;}}
     try {
         if(withPage){
-            const authenticated=auth(user);if(!authenticated.ok){result=authenticated.result;return null;}
-            const pageResult=page(user,chosen);if(pageResult!=='business_success'){result=pageResult;return null;}
+            const pageResult=await page(user,chosen);if(pageResult!=='business_success'){result=pageResult;return null;}
         }
         pause();
         if(kind==='browse'){result=availability(user,chosen).result;return null;}
@@ -114,18 +137,18 @@ function purchase(user,chosen,index,kind,withPage,think=false) {
     } finally {record('journey',result,Math.max(0,Date.now()-begin-paused));}
 }
 
-export function online() {run(()=>{
+export function online() {return run(async()=>{
     const m=mapped();if(onlineIndex===null)onlineIndex=exec.vu.idInTest-1;
     const user=identity('main',onlineIndex);const chosen=target('main',onlineIndex);
-    if(state.claim()){entered.add(1,{shard});purchase(user,chosen,onlineIndex,group(onlineIndex,t),true,true);}
+    if(state.claim()){entered.add(1,{shard});await purchase(user,chosen,onlineIndex,group(onlineIndex,t),true,true);}
     else availability(user,chosen);
     const range=t.behavior.refreshSeconds;
     sleep(randomSeconds(onlineIndex,sequence++,range,t.seed));
 });}
-export function enter() {const m=mapped();const i=nextIndex(m);if(i===null)return;run(()=>{entered.add(1,{shard});purchase(identity('main',i),target('main',i),i,group(i,t),true,true);});}
-export function refresh() {const m=mapped();const next=nextIndex(m);if(next===null)return;run(()=>{const i=next%m.users;availability(identity(m.slice||'main',i),target('main',i));});}
-export function burst() {const m=mapped();const i=nextIndex(m);if(i===null)return;run(()=>purchase(identity('main',i),target('main',i),i,'order',spec.case==='J1'));}
-export function hotspot() {const m=mapped();const i=nextIndex(m);if(i===null)return;run(()=>{
+export function enter() {const m=mapped();const i=nextIndex(m);if(i===null)return;return run(async()=>{entered.add(1,{shard});await purchase(identity('main',i),target('main',i),i,group(i,t),true,true);});}
+export function refresh() {const m=mapped();const next=nextIndex(m);if(next===null)return;return run(()=>{const i=next%m.users;availability(identity(m.slice||'main',i),target('main',i));});}
+export function burst() {const m=mapped();const i=nextIndex(m);if(i===null)return;return run(()=>purchase(identity('main',i),target('main',i),i,'order',spec.case==='J1'));}
+export function hotspot() {const m=mapped();const i=nextIndex(m);if(i===null)return;return run(()=>{
     const chosen=hotspotTarget(i,t,m.sessionCount,spec.case==='H3');
     const user=identity('main',i);offset.add(Date.now()-spec.releaseAtMs,tags(m.path==='formal'?'reservation':'hold'));
     if(m.path==='formal') {
@@ -134,14 +157,14 @@ export function hotspot() {const m=mapped();const i=nextIndex(m);if(i===null)ret
         record('reservation',classify(response&&response.status,b,201,x=>x.reservation&&x.reservation.userId===user.userId&&x.order&&x.order.seatIds[0]===chosen.sessionSeatId,['SEAT_CONFLICT']),Date.now()-begin);
     } else request('POST','/checkout-sessions','POST /checkout-sessions','hold',user,{sessionId:chosen.sessionId,seatIds:[chosen.sessionSeatId]},201,b=>b.id&&b.userId===user.userId,['SEAT_TEMPORARILY_HELD']);
 });}
-export function login() {const m=mapped();const i=nextIndex(m);if(i===null)return;run(()=>{
+export function login() {const m=mapped();const i=nextIndex(m);if(i===null)return;return run(()=>{
     const user=users[i];if(!user)throw new Error('login slice exhausted');http.cookieJar().clear(base);
     const result=request('POST','/auth/login','POST /auth/login','login',null,{username:user.username,password:__ENV.LOGIN_PASSWORD},200,b=>b.id===user.userId);
     if(result.ok)request('GET','/auth/me','GET /auth/me','login_identity',null,null,200,b=>b.id===user.userId);
 });}
-export function backgroundHold(){const m=mapped();const i=nextIndex(m);if(i===null)return;run(()=>purchase(identity('backgroundHold',i),target('backgroundHold',i),i,'hold',false));}
-export function backgroundOrder(){const m=mapped();const i=nextIndex(m);if(i===null)return;run(()=>purchase(identity('backgroundOrder',i),target('backgroundOrder',i),i,'order',false));}
-export function control() {const m=mapped();const next=nextIndex(m);if(next===null)return;run(()=>{
+export function backgroundHold(){const m=mapped();const i=nextIndex(m);if(i===null)return;return run(()=>purchase(identity('backgroundHold',i),target('backgroundHold',i),i,'hold',false));}
+export function backgroundOrder(){const m=mapped();const i=nextIndex(m);if(i===null)return;return run(()=>purchase(identity('backgroundOrder',i),target('backgroundOrder',i),i,'order',false));}
+export function control() {const m=mapped();const next=nextIndex(m);if(next===null)return;return run(()=>{
     const i=next%(t.slices.control[1]-t.slices.control[0]);const user=identity('control',i);
     if(m.step==='health')request('GET','/health','GET /health','health',null,null,200,b=>b.status==='ok'&&b.database==='up');
     else if(m.step==='auth')auth(user);else {
@@ -149,9 +172,9 @@ export function control() {const m=mapped();const next=nextIndex(m);if(next===nu
         request('GET',`/sessions/${chosen.sessionId}/seat-availability`,'GET /sessions/{sessionId}/seat-availability','availability',user,null,200,b=>b.sessionId===chosen.sessionId&&b.seats.some(x=>x.id===chosen.sessionSeatId&&x.status==='HELD'));
     }
 });}
-export function payment() {const m=mapped();const i=nextIndex(m);if(i===null)return;run(()=>{
+export function payment() {const m=mapped();const i=nextIndex(m);if(i===null)return;return run(async()=>{
     const begin=Date.now();
-    const user=identity('payment',i);const chosen=target('payment',i);const order=purchase(user,chosen,i,'order',false);
+    const user=identity('payment',i);const chosen=target('payment',i);const order=await purchase(user,chosen,i,'order',false);
     started.add(1,tags('payment_terminal'));let ok=false;
     try{
         if(!order)return;
@@ -169,3 +192,5 @@ export function payment() {const m=mapped();const i=nextIndex(m);if(i===null)ret
     }finally{record('payment_terminal',ok?'business_success':'unexpected_contract',Date.now()-begin);}
 });}
 export function handleSummary(data){return {[`/results/${spec.runId}/shards/${shard}/summary.json`]:JSON.stringify(data),stdout:`Phase14 shard ${shard} summary saved\n`};}
+
+export function warmPage(){const m=mapped();const i=nextIndex(m);if(i===null)return;return run(()=>page(identity(m.slice,i),target(m.seatSlice,i)));}

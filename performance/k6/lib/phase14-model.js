@@ -1,5 +1,5 @@
 export const results = ['business_success','business_conflict','capacity_rejection','system_error','unexpected_contract'];
-export const steps = ['health','auth','session','event','layout','availability','page','hold','adjust','abandon','confirm','recover','order','journey','reservation','login','login_identity','payment_start','payment_poll','payment_terminal'];
+export const steps = ['health','auth','session','event','layout','availability','page','hold','adjust','abandon','confirm','recover','order','journey','reservation','login','login_identity','payment_start','payment_poll','payment_terminal','startup','startup_auth','startup_notifications','startup_session','startup_event','startup_layout','startup_availability','startup_checkouts','startup_orders'];
 
 export function group(index, targets) {
     const bucket=(index+targets.seed)%20*5;

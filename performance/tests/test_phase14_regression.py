@@ -32,9 +32,9 @@ class SamplingComparisonTests(unittest.TestCase):
         from phase14_sampling_overhead import compare
         rows=[{'sampling':False,'p95Ms':10,'p99Ms':20},{'sampling':True,'p95Ms':10.2,'p99Ms':20.1}]*2
         result=compare(rows,.05)
-        self.assertTrue(result['passed']);self.assertEqual(result['capacity'],'not_applicable')
+        self.assertTrue(result['diagnostic']['passed']);self.assertEqual(result['status'],'not_applicable');self.assertNotIn('passed',result);self.assertEqual(result['capacity'],'not_applicable')
         self.assertEqual(result['measurement_validity'],'fail')
-        rows[1]={**rows[1],'p95Ms':20};self.assertFalse(compare(rows,.05)['passed'])
+        rows[1]={**rows[1],'p95Ms':20};self.assertFalse(compare(rows,.05)['diagnostic']['passed'])
 
 class SimulationFailureFixtureTests(unittest.TestCase):
     def test_forced_failure_is_separate_service_and_does_not_change_main(self):

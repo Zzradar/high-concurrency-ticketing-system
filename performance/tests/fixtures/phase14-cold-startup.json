@@ -1,0 +1,140 @@
+{
+  "authenticatedInitial": {
+    "requestCount": 10,
+    "sessionReads": 1,
+    "eventReads": 1,
+    "layoutReads": 1,
+    "availabilityReads": 1,
+    "legacySeatReads": 0,
+    "checkoutCreates": 0,
+    "checkoutSeatUpdates": 0,
+    "requests": [
+      {
+        "sequence": 1,
+        "method": "GET",
+        "path": "/auth/me",
+        "query": {},
+        "startedAfterMs": 166.32270000000017,
+        "hasSessionCookie": true,
+        "hasCsrfHeader": false,
+        "responseAfterMs": 213.66400000000021,
+        "status": 200,
+        "finishedAfterMs": 213.7247000000002
+      },
+      {
+        "sequence": 2,
+        "method": "GET",
+        "path": "/auth/me",
+        "query": {},
+        "startedAfterMs": 167.36990000000014,
+        "hasSessionCookie": true,
+        "hasCsrfHeader": false,
+        "responseAfterMs": 208.33780000000024,
+        "status": 200,
+        "finishedAfterMs": 212.7742000000003
+      },
+      {
+        "sequence": 3,
+        "method": "GET",
+        "path": "/notifications",
+        "query": {},
+        "startedAfterMs": 208.6269000000002,
+        "hasSessionCookie": true,
+        "hasCsrfHeader": false,
+        "responseAfterMs": 221.39060000000018,
+        "status": 200,
+        "finishedAfterMs": 221.43830000000025
+      },
+      {
+        "sequence": 4,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001",
+        "query": {},
+        "startedAfterMs": 212.3363000000004,
+        "hasSessionCookie": true,
+        "hasCsrfHeader": false,
+        "responseAfterMs": 224.17170000000033,
+        "status": 200,
+        "finishedAfterMs": 225.3956000000003
+      },
+      {
+        "sequence": 5,
+        "method": "GET",
+        "path": "/notifications",
+        "query": {},
+        "startedAfterMs": 216.48640000000023,
+        "hasSessionCookie": true,
+        "hasCsrfHeader": false,
+        "responseAfterMs": 227.43190000000004,
+        "status": 200,
+        "finishedAfterMs": 227.4426000000003
+      },
+      {
+        "sequence": 6,
+        "method": "GET",
+        "path": "/events/perf-event-001",
+        "query": {},
+        "startedAfterMs": 224.72140000000036,
+        "hasSessionCookie": true,
+        "hasCsrfHeader": false,
+        "responseAfterMs": 234.45020000000022,
+        "status": 200,
+        "finishedAfterMs": 234.4590000000003
+      },
+      {
+        "sequence": 7,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001/seat-layout",
+        "query": {},
+        "startedAfterMs": 225.17750000000024,
+        "hasSessionCookie": true,
+        "hasCsrfHeader": false,
+        "responseAfterMs": 234.913,
+        "status": 200,
+        "finishedAfterMs": 234.95270000000028
+      },
+      {
+        "sequence": 8,
+        "method": "GET",
+        "path": "/sessions/perf-session-001-001/seat-availability",
+        "query": {},
+        "startedAfterMs": 226.4456,
+        "hasSessionCookie": true,
+        "hasCsrfHeader": false,
+        "responseAfterMs": 242.04770000000008,
+        "status": 200,
+        "finishedAfterMs": 242.3375000000001
+      },
+      {
+        "sequence": 9,
+        "method": "GET",
+        "path": "/checkout-sessions",
+        "query": {
+          "sessionId": "perf-session-001-001",
+          "recoverable": "true"
+        },
+        "startedAfterMs": 242.48610000000008,
+        "hasSessionCookie": true,
+        "hasCsrfHeader": false,
+        "responseAfterMs": 272.24550000000045,
+        "status": 200,
+        "finishedAfterMs": 272.25790000000006
+      },
+      {
+        "sequence": 10,
+        "method": "GET",
+        "path": "/orders",
+        "query": {
+          "sessionId": "perf-session-001-001",
+          "limit": "20"
+        },
+        "startedAfterMs": 243.13330000000042,
+        "hasSessionCookie": true,
+        "hasCsrfHeader": false,
+        "responseAfterMs": 284.34000000000015,
+        "status": 200,
+        "finishedAfterMs": 284.3484000000003
+      }
+    ]
+  }
+}
