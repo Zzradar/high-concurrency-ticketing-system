@@ -1,3 +1,4 @@
+#include "observability/Phase14Metrics.h"
 #include "workers/OrderExpiryWorker.h"
 
 #include <drogon/drogon.h>
@@ -25,9 +26,12 @@ void OrderExpiryWorker::start()
 void OrderExpiryWorker::runCurrentRound()
 {
     auto weakSelf = weak_from_this();
+    const auto started = std::chrono::steady_clock::now();
     service_.runOnce(
         batchSize_,
-        [weakSelf](OrderExpiryRunSummary summary) {
+        [weakSelf, started](OrderExpiryRunSummary summary) {
+            Phase14Metrics::expiry(std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count(),
+                                   summary.scanned, summary.expired, summary.skipped, summary.failed);
             auto self = weakSelf.lock();
             if (!self)
             {

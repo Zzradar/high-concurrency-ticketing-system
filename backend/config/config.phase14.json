@@ -250,6 +250,103 @@
             "help": "ticketing_refund_processing_age_seconds",
             "type": "gauge",
             "labels": []
+          },
+          {
+            "name": "ticketing_flow_requests_in_flight",
+            "help": "Phase14 flow requests in flight",
+            "type": "gauge",
+            "labels": [
+              "flow"
+            ]
+          },
+          {
+            "name": "ticketing_flow_requests_in_flight_high_water",
+            "help": "Phase14 flow requests in flight high water",
+            "type": "gauge",
+            "labels": [
+              "flow"
+            ]
+          },
+          {
+            "name": "ticketing_db_transaction_acquire_in_flight",
+            "help": "Phase14 db transaction acquire in flight",
+            "type": "gauge",
+            "labels": [
+              "flow"
+            ]
+          },
+          {
+            "name": "ticketing_db_transaction_acquire_oldest_seconds",
+            "help": "Phase14 db transaction acquire oldest seconds",
+            "type": "gauge",
+            "labels": [
+              "flow"
+            ]
+          },
+          {
+            "name": "ticketing_db_transaction_acquire_duration_seconds",
+            "help": "Phase14 db transaction acquire duration seconds",
+            "type": "histogram",
+            "labels": [
+              "flow",
+              "outcome"
+            ]
+          },
+          {
+            "name": "ticketing_redis_operations_in_flight",
+            "help": "Phase14 redis operations in flight",
+            "type": "gauge",
+            "labels": [
+              "client",
+              "operation"
+            ]
+          },
+          {
+            "name": "ticketing_redis_operation_duration_seconds",
+            "help": "Phase14 redis operation duration seconds",
+            "type": "histogram",
+            "labels": [
+              "client",
+              "operation",
+              "outcome"
+            ]
+          },
+          {
+            "name": "ticketing_redis_operation_timeouts_total",
+            "help": "Phase14 redis operation timeouts total",
+            "type": "counter",
+            "labels": [
+              "client",
+              "operation"
+            ]
+          },
+          {
+            "name": "ticketing_main_event_loop_lag_seconds",
+            "help": "Phase14 main event loop lag seconds",
+            "type": "gauge",
+            "labels": []
+          },
+          {
+            "name": "ticketing_main_event_loop_lag_high_water_seconds",
+            "help": "Phase14 main event loop lag high water seconds",
+            "type": "gauge",
+            "labels": []
+          },
+          {
+            "name": "ticketing_order_expiry_round_duration_seconds",
+            "help": "Phase14 order expiry round duration seconds",
+            "type": "histogram",
+            "labels": [
+              "outcome"
+            ]
+          },
+          {
+            "name": "ticketing_order_expiry_items_total",
+            "help": "Phase14 order expiry items total",
+            "type": "counter",
+            "labels": [
+              "outcome"
+            ]
           }
         ]
       }
@@ -298,7 +395,8 @@
       "max_failures": 5
     },
     "performance_metrics": {
-      "enabled": true
+      "enabled": true,
+      "phase14": true
     }
   }
 }

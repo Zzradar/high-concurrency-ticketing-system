@@ -1,3 +1,4 @@
+#include "observability/Phase14Metrics.h"
 #include "services/AuthSessionCache.h"
 
 #include "security/AuthConfig.h"
@@ -73,7 +74,7 @@ void AuthSessionCache::get(
     auto done = std::make_shared<decltype(completion)>(std::move(completion));
     try
     {
-        drogon::app().getRedisClient("auth_sessions")->execCommandAsync(
+        Phase14Metrics::execCommandAsync(drogon::app().getRedisClient("auth_sessions"), Phase14Metrics::RedisOperation::AuthRead,
             [done](const drogon::nosql::RedisResult &result) {
                 try
                 {
@@ -118,7 +119,7 @@ void AuthSessionCache::put(const std::string &tokenHash,
     const auto value = serialize(record);
     try
     {
-        drogon::app().getRedisClient("auth_sessions")->execCommandAsync(
+        Phase14Metrics::execCommandAsync(drogon::app().getRedisClient("auth_sessions"), Phase14Metrics::RedisOperation::AuthWrite,
             [](const drogon::nosql::RedisResult &) {},
             [](const std::exception &error) {
                 LOG_WARN << "Authentication session cache write failed: "
@@ -138,7 +139,7 @@ void AuthSessionCache::remove(const std::string &tokenHash) const
     const auto key = keyFor(tokenHash);
     try
     {
-        drogon::app().getRedisClient("auth_sessions")->execCommandAsync(
+        Phase14Metrics::execCommandAsync(drogon::app().getRedisClient("auth_sessions"), Phase14Metrics::RedisOperation::AuthDelete,
             [](const drogon::nosql::RedisResult &) {},
             [](const std::exception &error) {
                 LOG_WARN << "Authentication session cache delete failed: "

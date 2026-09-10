@@ -1,3 +1,4 @@
+#include "observability/Phase14Metrics.h"
 #include "services/CheckoutSessionService.h"
 
 #include <drogon/drogon.h>
@@ -155,7 +156,7 @@ void CheckoutSessionService::create(std::string userId,
     state->seatIds = std::move(*seatIds);
     state->completion = std::move(completion);
     auto client = drogon::app().getDbClient("default");
-    client->newTransactionAsync(
+    Phase14Metrics::newTransactionAsync(client, Phase14Metrics::Flow::Checkout,
         [this, state](const CheckoutSessionRepository::TransactionPtr &tx) {
             if (!tx)
             {
@@ -328,7 +329,7 @@ void CheckoutSessionService::replaceSeats(std::string checkoutSessionId,
     state->targetRevision = state->expectedRevision + 1;
     state->completion = std::move(completion);
     auto client = drogon::app().getDbClient("default");
-    client->newTransactionAsync(
+    Phase14Metrics::newTransactionAsync(client, Phase14Metrics::Flow::Checkout,
         [this, state](const CheckoutSessionRepository::TransactionPtr &tx) {
             if (!tx)
             {
@@ -612,7 +613,7 @@ void CheckoutSessionService::confirm(std::string checkoutSessionId,
     state->userId = std::move(userId);
     state->completion = std::move(completion);
     auto client = drogon::app().getDbClient("default");
-    client->newTransactionAsync(
+    Phase14Metrics::newTransactionAsync(client, Phase14Metrics::Flow::Checkout,
         [this, state](const CheckoutSessionRepository::TransactionPtr &tx) {
             if (!tx)
             {
@@ -807,7 +808,7 @@ void CheckoutSessionService::finalizeReserved(
     const std::shared_ptr<ConfirmState> &state) const
 {
     auto client = drogon::app().getDbClient("default");
-    client->newTransactionAsync(
+    Phase14Metrics::newTransactionAsync(client, Phase14Metrics::Flow::Checkout,
         [this, state](const CheckoutSessionRepository::TransactionPtr &tx) {
             if (!tx)
             {
@@ -921,7 +922,7 @@ void CheckoutSessionService::resetAfterBusinessFailure(
     const std::shared_ptr<ConfirmState> &state) const
 {
     auto client = drogon::app().getDbClient("default");
-    client->newTransactionAsync(
+    Phase14Metrics::newTransactionAsync(client, Phase14Metrics::Flow::Checkout,
         [this, state](const CheckoutSessionRepository::TransactionPtr &tx) {
             if (!tx)
             {
@@ -1087,7 +1088,7 @@ void CheckoutSessionService::reconcileRecord(
     const std::shared_ptr<ResolveState> &state) const
 {
     auto client = drogon::app().getDbClient("default");
-    client->newTransactionAsync(
+    Phase14Metrics::newTransactionAsync(client, Phase14Metrics::Flow::Checkout,
         [this, state](const CheckoutSessionRepository::TransactionPtr &tx) {
             if (!tx)
             {
@@ -1201,7 +1202,7 @@ void CheckoutSessionService::abandon(std::string checkoutSessionId,
     state->userId = std::move(userId);
     state->completion = std::move(completion);
     auto client = drogon::app().getDbClient("default");
-    client->newTransactionAsync(
+    Phase14Metrics::newTransactionAsync(client, Phase14Metrics::Flow::Checkout,
         [this, state](const CheckoutSessionRepository::TransactionPtr &tx) {
             if (!tx)
             {

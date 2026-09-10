@@ -44,6 +44,7 @@ endif()
 
 add_executable(ticketing_backend
     src/main.cpp
+    src/observability/Phase14Metrics.cpp
     src/observability/PerformanceMetrics.cpp
     src/controllers/HealthController.cpp
     src/controllers/EventController.cpp
@@ -245,4 +246,12 @@ if(BUILD_TESTING AND TICKETING_PHASE12_EXTERNAL_TESTS)
     add_test(NAME phase12_migration COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase12_migration_test.py")
     add_test(NAME phase12_buyer_refund COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase12_buyer_refund_integration_test.py")
     set_tests_properties(phase12_migration phase12_buyer_refund PROPERTIES RUN_SERIAL TRUE LABELS integration)
+endif()
+
+if(BUILD_TESTING)
+    add_executable(phase14_observation_unit tests/phase14_observation_unit.cpp)
+    target_include_directories(phase14_observation_unit PRIVATE src)
+    target_link_libraries(phase14_observation_unit PRIVATE Threads::Threads)
+    add_test(NAME phase14_observation_unit COMMAND phase14_observation_unit)
+    add_test(NAME phase14_metrics_source_contract COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase14_metrics_source_contract_test.py")
 endif()

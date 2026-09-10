@@ -1,3 +1,4 @@
+#include "observability/Phase14Metrics.h"
 #include "services/ReservationService.h"
 
 #include <drogon/drogon.h>
@@ -178,7 +179,7 @@ void ReservationService::startTransaction(
     const std::shared_ptr<FlowState> &state) const
 {
     auto client = drogon::app().getDbClient("default");
-    client->newTransactionAsync(
+    Phase14Metrics::newTransactionAsync(client, Phase14Metrics::Flow::Reservation,
         [this, state](
             const std::shared_ptr<drogon::orm::Transaction> &transaction) {
             if (!transaction)

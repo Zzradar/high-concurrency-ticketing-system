@@ -1,3 +1,4 @@
+#include "observability/Phase14Metrics.h"
 #include "services/OrderLifecycleService.h"
 
 #include <drogon/drogon.h>
@@ -68,7 +69,7 @@ void OrderLifecycleService::completePayment(
 void OrderLifecycleService::start(const std::shared_ptr<FlowState> &state) const
 {
     auto client = drogon::app().getDbClient("default");
-    client->newTransactionAsync(
+    Phase14Metrics::newTransactionAsync(client, Phase14Metrics::Flow::Order,
         [this, state](const OrderRepository::TransactionPtr &transaction) {
             if (!transaction)
             {

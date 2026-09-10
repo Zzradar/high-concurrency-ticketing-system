@@ -1,3 +1,4 @@
+#include "observability/Phase14Metrics.h"
 #include "services/PaymentService.h"
 
 #include <drogon/drogon.h>
@@ -53,7 +54,7 @@ void PaymentService::beginTransaction(
     const std::shared_ptr<StartState> &state) const
 {
     auto client = drogon::app().getDbClient("default");
-    client->newTransactionAsync(
+    Phase14Metrics::newTransactionAsync(client, Phase14Metrics::Flow::PaymentControl,
         [this, state](const OrderRepository::TransactionPtr &transaction) {
             if (!transaction)
             {

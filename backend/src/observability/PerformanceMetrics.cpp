@@ -1,3 +1,4 @@
+#include "observability/Phase14Metrics.h"
 #include "observability/PerformanceMetrics.h"
 
 #include "security/PasswordHashExecutor.h"
@@ -220,6 +221,7 @@ void PerformanceMetrics::registerWithApplication()
         return;
     }
 
+    Phase14Metrics::registerWithApplication();
     auto state = std::make_shared<MetricsState>();
     drogon::app().registerBeginningAdvice([state] {
         auto *exporter =

@@ -1,3 +1,4 @@
+#include "observability/Phase14Metrics.h"
 #include "services/RefundService.h"
 #include "observability/PerformanceMetrics.h"
 #include <drogon/drogon.h>
@@ -46,7 +47,7 @@ void RefundService::request(std::string order, std::string user, Completion done
     s->order = std::move(order);
     s->user = std::move(user);
     s->done = std::move(done);
-    drogon::app().getDbClient("default")->newTransactionAsync(
+    Phase14Metrics::newTransactionAsync(drogon::app().getDbClient("default"), Phase14Metrics::Flow::Refund,
         [this, s](const OrderRepository::TransactionPtr &tx) {
             if (!tx)
                 return finish(s, {});

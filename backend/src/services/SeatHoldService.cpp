@@ -1,3 +1,4 @@
+#include "observability/Phase14Metrics.h"
 #include "services/SeatHoldService.h"
 #include "observability/PerformanceMetrics.h"
 
@@ -144,22 +145,22 @@ void executeWithKeys(
     switch (keys.size())
     {
         case 1:
-            client->execCommandAsync(std::forward<Success>(success), std::forward<Error>(error), command, script.data(), script.size(), keys[0].c_str());
+            ticketing::Phase14Metrics::execCommandAsync(client, ticketing::Phase14Metrics::RedisOperation::HoldWrite,std::forward<Success>(success), std::forward<Error>(error), command, script.data(), script.size(), keys[0].c_str());
             break;
         case 2:
-            client->execCommandAsync(std::forward<Success>(success), std::forward<Error>(error), command, script.data(), script.size(), keys[0].c_str(), keys[1].c_str());
+            ticketing::Phase14Metrics::execCommandAsync(client, ticketing::Phase14Metrics::RedisOperation::HoldWrite,std::forward<Success>(success), std::forward<Error>(error), command, script.data(), script.size(), keys[0].c_str(), keys[1].c_str());
             break;
         case 3:
-            client->execCommandAsync(std::forward<Success>(success), std::forward<Error>(error), command, script.data(), script.size(), keys[0].c_str(), keys[1].c_str(), keys[2].c_str());
+            ticketing::Phase14Metrics::execCommandAsync(client, ticketing::Phase14Metrics::RedisOperation::HoldWrite,std::forward<Success>(success), std::forward<Error>(error), command, script.data(), script.size(), keys[0].c_str(), keys[1].c_str(), keys[2].c_str());
             break;
         case 4:
-            client->execCommandAsync(std::forward<Success>(success), std::forward<Error>(error), command, script.data(), script.size(), keys[0].c_str(), keys[1].c_str(), keys[2].c_str(), keys[3].c_str());
+            ticketing::Phase14Metrics::execCommandAsync(client, ticketing::Phase14Metrics::RedisOperation::HoldWrite,std::forward<Success>(success), std::forward<Error>(error), command, script.data(), script.size(), keys[0].c_str(), keys[1].c_str(), keys[2].c_str(), keys[3].c_str());
             break;
         case 5:
-            client->execCommandAsync(std::forward<Success>(success), std::forward<Error>(error), command, script.data(), script.size(), keys[0].c_str(), keys[1].c_str(), keys[2].c_str(), keys[3].c_str(), keys[4].c_str());
+            ticketing::Phase14Metrics::execCommandAsync(client, ticketing::Phase14Metrics::RedisOperation::HoldWrite,std::forward<Success>(success), std::forward<Error>(error), command, script.data(), script.size(), keys[0].c_str(), keys[1].c_str(), keys[2].c_str(), keys[3].c_str(), keys[4].c_str());
             break;
         case 6:
-            client->execCommandAsync(std::forward<Success>(success), std::forward<Error>(error), command, script.data(), script.size(), keys[0].c_str(), keys[1].c_str(), keys[2].c_str(), keys[3].c_str(), keys[4].c_str(), keys[5].c_str());
+            ticketing::Phase14Metrics::execCommandAsync(client, ticketing::Phase14Metrics::RedisOperation::HoldWrite,std::forward<Success>(success), std::forward<Error>(error), command, script.data(), script.size(), keys[0].c_str(), keys[1].c_str(), keys[2].c_str(), keys[3].c_str(), keys[4].c_str(), keys[5].c_str());
             break;
         default:
             throw std::invalid_argument("seat hold operation requires one to six seats");
@@ -462,7 +463,7 @@ void SeatHoldService::readOwners(
                     : PerformanceMetrics::SeatMapRedisOutcome::Error);
             (*done)({SeatHoldOutcome::Unavailable, {}});
         };
-        drogon::app().getRedisClient("seat_holds")->execCommandAsync(
+        Phase14Metrics::execCommandAsync(drogon::app().getRedisClient("seat_holds"), Phase14Metrics::RedisOperation::HoldRead,
             success,
             error,
             "EVAL %b 0 %b",

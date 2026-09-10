@@ -1,3 +1,4 @@
+#include "observability/Phase14Metrics.h"
 #include "services/RefundLifecycleService.h"
 #include "observability/PerformanceMetrics.h"
 #include <drogon/drogon.h>
@@ -61,7 +62,7 @@ void RefundLifecycleService::complete(std::string id, RefundTerminalSnapshot sna
                         : (r.providerStatus != "failed" && r.providerStatus != "canceled")) ||
         s->snapshot.leaseToken.empty())
         return finish(s, RefundLifecycleOutcome::Failed, "snapshot");
-    drogon::app().getDbClient("default")->newTransactionAsync(
+    Phase14Metrics::newTransactionAsync(drogon::app().getDbClient("default"), Phase14Metrics::Flow::Refund,
         [this, s](const OrderRepository::TransactionPtr &tx) {
             if (!tx)
                 return finish(s, RefundLifecycleOutcome::Failed);

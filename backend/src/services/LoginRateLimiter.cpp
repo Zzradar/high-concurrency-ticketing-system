@@ -1,3 +1,4 @@
+#include "observability/Phase14Metrics.h"
 #include "services/LoginRateLimiter.h"
 
 #include "security/AuthConfig.h"
@@ -51,7 +52,7 @@ void LoginRateLimiter::check(const std::string &username,
     const auto maxFailures = AuthConfig::load().loginRateMaxFailures;
     try
     {
-        drogon::app().getRedisClient("auth_sessions")->execCommandAsync(
+        Phase14Metrics::execCommandAsync(drogon::app().getRedisClient("auth_sessions"), Phase14Metrics::RedisOperation::LoginCheck,
             [done](const drogon::nosql::RedisResult &result) {
                 try
                 {
@@ -89,7 +90,7 @@ void LoginRateLimiter::recordFailure(
     const auto window = AuthConfig::load().loginRateWindowSeconds;
     try
     {
-        drogon::app().getRedisClient("auth_sessions")->execCommandAsync(
+        Phase14Metrics::execCommandAsync(drogon::app().getRedisClient("auth_sessions"), Phase14Metrics::RedisOperation::LoginFailure,
             [done](const drogon::nosql::RedisResult &) { (*done)(); },
             [done](const std::exception &error) {
                 LOG_WARN << "Login rate-limit write failed open: " << error.what();
@@ -111,7 +112,7 @@ void LoginRateLimiter::clearUsername(const std::string &username) const
     const auto key = usernameKey(username);
     try
     {
-        drogon::app().getRedisClient("auth_sessions")->execCommandAsync(
+        Phase14Metrics::execCommandAsync(drogon::app().getRedisClient("auth_sessions"), Phase14Metrics::RedisOperation::LoginClear,
             [](const drogon::nosql::RedisResult &) {},
             [](const std::exception &error) {
                 LOG_WARN << "Login rate-limit clear failed: " << error.what();
