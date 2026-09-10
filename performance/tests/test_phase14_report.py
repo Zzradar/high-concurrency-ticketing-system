@@ -36,4 +36,19 @@ class ReportTests(unittest.TestCase):
         for forbidden in ('sessionToken','csrfToken','ticketing_session=','sk_test_','whsec_'):
             self.assertNotIn(forbidden,path.read_text(encoding='utf-8'))
 
+    def test_policy_followup_preserves_failure_and_reports_real_checks(self):
+        path=ROOT/'performance/experiments/phase14-capacity/smoke-policy-followup.json'
+        data=json.loads(path.read_text(encoding='utf-8'))
+        self.assertEqual(data['status'],'incomplete_u2_delivery_guard_stop')
+        self.assertTrue(data['historicalFailureUnchanged']['passed'])
+        self.assertEqual(data['historicalFailureUnchanged']['changedFiles'],[])
+        row=data['u2']['delivery']['refresh_0'];self.assertEqual((row['planned'],row['started']),(10,9))
+        self.assertEqual(data['u2']['verdict']['capacity']['status'],'not_applicable')
+        self.assertEqual(sum(x['tests'] for x in data['regressions']['modules'])+data['paymentFailure']['tests'],57)
+        self.assertTrue(data['liveMetrics']['passed'])
+        self.assertTrue(all(x['passed'] for x in data['exporter']['checks']))
+        self.assertEqual(data['exporter']['cleanup']['remainingFixtureConnections'],0)
+        self.assertEqual(data['overhead']['comparison']['capacity'],'not_applicable')
+        self.assertTrue(all(x['requests']==x['planned'] and x['dropped']==0 for x in data['overhead']['legs']))
+
 if __name__=='__main__':unittest.main()
