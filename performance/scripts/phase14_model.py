@@ -15,6 +15,7 @@ def load_targets(path=TARGETS, *, smoke=False):
     t = json.loads(raw)
     validate(t)
     t['sourceSha256'] = hashlib.sha256(raw).hexdigest()
+    t['formalActiveUserTarget'] = t['online']['rounds'][0][-1]['users']
     t['mode'] = 'smoke' if smoke else 'formal'
     if smoke:
         s = t['smoke']

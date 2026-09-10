@@ -51,6 +51,23 @@ class RunnerTests(unittest.TestCase):
         self.assertFalse(runner.resource_preflight(cal,t)['passed'])
         self.assertFalse(runner.resource_preflight({'idleSamples':[]},t)['passed'])
 
+    def test_preflight_smoke_swap_warning_and_formal_stop(self):
+        from test_phase14_evidence import sample
+        x=sample();x.update(swapping=True,swapInDelta=12,swapOutDelta=0)
+        cal={'idleSamples':[x,x]}
+        result=runner.resource_preflight(cal,load_targets(smoke=True))
+        self.assertTrue(result['passed']);self.assertEqual(result['warnings'][0]['code'],'host_swap_activity')
+        self.assertFalse(runner.resource_preflight(cal,load_targets())['passed'])
+
+    def test_smoke_system_error_stops_without_waiting_for_window(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);folder=root/'shards/0';folder.mkdir(parents=True)
+            (folder/'raw.json').write_text(json.dumps({'type':'Point','metric':'phase14_results',
+                'data':{'time':'2026-09-10T00:00:01Z','value':1,'tags':{'result':'system_error'}}})+'\n')
+            now=runner.timestamp('2026-09-10T00:00:02Z')
+            self.assertEqual(runner.RawProgress(load_targets(smoke=True)).read(root,now),(True,0))
+            self.assertEqual(runner.RawProgress(load_targets()).read(root,now),(False,0))
+
     def test_reset_retains_containers_and_volumes(self):
         with tempfile.TemporaryDirectory() as tmp:
             env=runner.Environment(load_targets(smoke=True),tmp);env.validate=Mock();env.http=Mock()

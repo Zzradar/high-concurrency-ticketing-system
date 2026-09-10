@@ -109,10 +109,25 @@ def aggregate(root, shards, plan, *, start=None, end=None):
             'delivery':delivered,'dropped':dropped,'errors':errors,'seconds':dict(windows)}
 
 
+def smoke_policy(t):
+    populations=[t['burst']['users'],t['hotspot']['users'],t['login']['users']]
+    populations += [s['users'] for stages in t['online']['rounds'] for s in stages]
+    return t.get('mode')=='smoke' and max(populations)<t['formalActiveUserTarget']
+
+
+def swap_policy(x,t):
+    if not x['swapping']:return None,None
+    # Only isolated swap-in is exempted. Swap-out and incomplete direction
+    # evidence retain the original fail-closed stop, including rising memory.
+    if smoke_policy(t) and x.get('swapInDelta',0)>0 and x.get('swapOutDelta')==0:
+        return None,{'code':'host_swap_activity','time':x['time'],'swapInDelta':x['swapInDelta'],'swapOutDelta':0}
+    return 'invalid generator/host: swapping',None
+
+
 class StopGuard:
     """Monotonic timestamp samples. A missing field is invalid evidence, never zero."""
     def __init__(self,t,*,login_protection=False):
-        self.t=t;self.login_protection=login_protection;self.since={};self.error_windows=[]
+        self.t=t;self.login_protection=login_protection;self.since={};self.error_windows=[];self.warnings=[]
     def sustained(self,name,condition,now,seconds):
         if not condition:self.since.pop(name,None);return False
         self.since.setdefault(name,now)
@@ -127,7 +142,10 @@ class StopGuard:
         s=self.t['stop'];g=self.t['generator'];now=x['time'];reasons=[]
         for key in ('correctnessFailure','restarted','oom','unhealthy','wrongEnvironment'):
             if x[key]:reasons.append(key)
-        for key in ('swapping','networkExhausted','fdExhausted'):
+        swap_error,warning=swap_policy(x,self.t)
+        if swap_error:reasons.append(swap_error)
+        if warning:self.warnings.append(warning)
+        for key in ('networkExhausted','fdExhausted'):
             if x[key]:reasons.append('invalid generator/host: '+key)
         if x['generatorMemoryFraction']>=g['memoryFraction']:reasons.append('invalid generator memory')
         if self.sustained('generatorCpu',x['generatorCpuFraction']>=g['cpuFraction'],now,g['cpuContinuousSeconds']):reasons.append('invalid generator cpu')
@@ -178,6 +196,7 @@ def recovery(samples,controls,baseline,t,stop_time):
 
 def verdict(summary,correctness,recovered,validity,t,*,overload=False,smoke=False):
     reasons=list(summary['errors'])+list(validity.get('errors',[]))
+    reasons += sorted({x['code'] for x in validity.get('warnings',[])})
     if not summary['counts'] or not summary['trends']:reasons.append('missing request evidence')
     if not validity.get('isolated'):reasons.append('local_characterization_only')
     if smoke:reasons.append('smoke input is not formal capacity')

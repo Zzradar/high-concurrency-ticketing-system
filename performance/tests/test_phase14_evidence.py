@@ -85,6 +85,27 @@ class Phase14EvidenceTests(unittest.TestCase):
         for key,value in [('transactionOldestSeconds',3.01),('generatorMemoryFraction',.9),('dropped',1),('clockSkewMs',101),('correctnessFailure',True),('oom',True),('swapping',True)]:
             g=evidence.StopGuard(t);s=sample();s[key]=value;self.assertTrue(g.sample(s))
 
+    def test_smoke_swap_in_warns_but_all_other_safety_stops_remain(self):
+        t=model.load_targets(smoke=True);x=sample();x.update(swapping=True,swapInDelta=12,swapOutDelta=0)
+        g=evidence.StopGuard(t)
+        self.assertEqual(g.sample(x),[])
+        self.assertEqual(g.warnings[0]['code'],'host_swap_activity')
+        for key,value in [('oom',True),('restarted',True),('correctnessFailure',True),('dropped',1),('memoryFraction',.91),('swapOutDelta',1)]:
+            bad={**x,key:value};self.assertTrue(evidence.StopGuard(t).sample(bad),key)
+        for formal in (model.load_targets(),{**t,'burst':{**t['burst'],'users':10000}}):
+            self.assertTrue(evidence.StopGuard(formal).sample(x))
+        del x['swapOutDelta']
+        self.assertTrue(evidence.StopGuard(t).sample(x))
+
+    def test_smoke_warning_cannot_be_capacity_pass(self):
+        t=model.load_targets(smoke=True)
+        summary={'errors':[],'counts':[],'trends':[]}
+        result=evidence.verdict(summary,{'passed':True},{'passed':True},
+            {'isolated':True,'warnings':[{'code':'host_swap_activity'}]},t,smoke=True)
+        self.assertEqual(result['measurement_validity']['status'],'fail')
+        self.assertIn('host_swap_activity',result['measurement_validity']['reasons'])
+        self.assertEqual(result['capacity']['status'],'not_applicable')
+
     def test_recovery_requires_continuous_complete_evidence(self):
         t=model.load_targets();rows=[sample(i) for i in range(301)]
         baseline={'httpIdleMax':0,'redisIdleMax':0,'controlP95':{'health':10,'auth':10,'availability':10}}

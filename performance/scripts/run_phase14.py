@@ -25,7 +25,7 @@ from verify_database import parse_verifier_output, DEFAULT_SQL_FILE
 from run_k6 import K6_IMAGE, utc_now
 from performance_evidence import parse_redis_info
 from phase14_model import load_targets, online_plan, segments, background, seat
-from phase14_evidence import aggregate, sha256, verdict, StopGuard, recovery, percentile, timestamp
+from phase14_evidence import aggregate, sha256, verdict, StopGuard, recovery, percentile, timestamp, swap_policy, smoke_policy
 from phase14_sampling import Sampler, LightPostgresSampler, pg_snapshot, pg_delta
 from phase14_verify import verify_run, expiry_fixture, capture_temporary_owners
 
@@ -218,6 +218,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action',choices=['plan','prepare','calibrate','run','campaign'])
     parser.add_argument('--smoke',action='store_true');parser.add_argument('--yes',action='store_true')
+    parser.add_argument('--resume-from',type=Path,help='Read-only smoke campaign checkpoint; retry first incomplete job in a new evidence directory')
     parser.add_argument('--case',default='U1');parser.add_argument('--round',type=int,default=0)
     parser.add_argument('--window',type=int,default=0);parser.add_argument('--path',choices=['formal','temporary'],default='formal')
     parser.add_argument('--session-count',type=int,default=1);parser.add_argument('--shards',type=int,default=1)
@@ -287,14 +288,17 @@ def save_sample(root,sample,pg,redis):
 
 
 def resource_preflight(cal,t):
-    samples=cal.get('idleSamples',[]);errors=[]
+    samples=cal.get('idleSamples',[]);errors=[];warnings=[]
     if len(samples)<2:errors.append('insufficient fresh idle samples')
     for x in samples:
-        for key in ('swapping','oom','restarted','unhealthy','networkExhausted','fdExhausted'):
+        reason,warning=swap_policy(x,t)
+        if reason:errors.append(reason)
+        if warning:warnings.append(warning)
+        for key in ('oom','restarted','unhealthy','networkExhausted','fdExhausted'):
             if x[key]:errors.append(key)
         if x['memoryFraction']>=t['stop']['memoryFraction']:errors.append('SUT memory limit')
         if abs(x['clockSkewMs'])>t['generator']['maxClockSkewMs']:errors.append('clock skew')
-    return {'passed':not errors,'errors':sorted(set(errors)),'samples':len(samples),'formalIsolationEstablished':False}
+    return {'passed':not errors,'errors':sorted(set(errors)),'warnings':warnings,'samples':len(samples),'formalIsolationEstablished':False}
 
 
 class RawProgress:
@@ -316,7 +320,9 @@ class RawProgress:
                     if item['metric']!='phase14_results':continue
                     data=item['data'];bucket=int(timestamp(data['time'])//self.t['stop']['windowSeconds'])
                     pair=self.counts.setdefault(bucket,[0,0]);pair[0]+=data['value']
-                    if data['tags']['result'] in ('system_error','unexpected_contract'):pair[1]+=data['value']
+                    if data['tags']['result'] in ('system_error','unexpected_contract'):
+                        pair[1]+=data['value']
+                        if smoke_policy(self.t) and data['value']>0:self.bad=True
         end=int(now//self.t['stop']['windowSeconds'])-1
         begin=self.last+1 if self.last is not None else min(self.counts,default=end+1)
         for bucket in range(begin,end+1):
@@ -422,11 +428,12 @@ def execute_case(args,t,env):
         stop_reasons += light_summary['errors']
     if not owners_captured and args.case in ('H1','H3') and args.path=='temporary':
         write(root/'temporary-owners.json',capture_temporary_owners(env,spec))
-    return finish_case(env,spec,slices,stop_reasons,samples,cal,before,started)
+    return finish_case(env,spec,slices,stop_reasons,samples,cal,before,started,preflight['warnings']+guard.warnings)
 
 
-def finish_case(env,spec,slices,stop_reasons,samples,cal,before,started):
+def finish_case(env,spec,slices,stop_reasons,samples,cal,before,started,warnings=None):
     root=env.root;run_id=root.name;t=env.t
+    warnings=warnings or [];write(root/'warnings.json',warnings)
     for info in slices:
         folder=root/'shards'/info['shard'];raw=folder/'raw.json'
         if not raw.exists():raise RuntimeError('missing raw shard; see console.log')
@@ -447,7 +454,7 @@ def finish_case(env,spec,slices,stop_reasons,samples,cal,before,started):
     recovered=recovery(samples,controls,cal['baseline'],t,spec['releaseAtMs']/1000+spec['loadSeconds'])
     recovered['mode']=t['mode']
     write(root/'recovery.json',recovered)
-    validity={'isolated':False,'errors':stop_reasons}
+    validity={'isolated':False,'errors':stop_reasons,'warnings':warnings}
     if spec['case']=='H3':
         offsets=[x for x in summary['trends'] if x['metric']=='phase14_start_offset_ms']
         concentrated=bool(offsets) and sum(x['count'] for x in offsets)==t['hotspot']['users'] and all(x['p95']<=t['hotspot']['h3P95OffsetSeconds']*1000 and x['max']<=t['hotspot']['h3MaxOffsetSeconds']*1000 for x in offsets)
@@ -489,7 +496,23 @@ def campaign(args,t,env):
     jobs += [(case,{'control_only':control}) for case in ('L1','L2') for control in (True,False)]
     jobs += [('S1',{})]
     records=[];passed={'U1':[],'U2':[]};controls={}
+    resume=getattr(args,'resume_from',None)
+    if resume:
+        prior=json.loads(resume.read_text(encoding='utf-8'))
+        if prior.get('mode')!='smoke' or prior.get('formalCapacity') is not False:raise ValueError('not a smoke checkpoint')
+        for record in prior['runs']:
+            if not record['functionalSmoke']:break
+            i=len(records)
+            if record['index']!=i or (record['case'],record['arguments'])!=jobs[i]:raise ValueError('checkpoint job differs')
+            old=RESULTS/record['runId']
+            check=json.loads((old/'smoke-check.json').read_text(encoding='utf-8'))
+            manifest=json.loads((old/'manifest.json').read_text(encoding='utf-8'))
+            if not check['passed'] or manifest['targetsSha256']!=t['sourceSha256']:raise ValueError('checkpoint evidence invalid')
+            records.append(record)
+            if record['case'] in passed:passed[record['case']]=[t['burst']['users']]
+            if record['case'] in ('L1','L2') and record['arguments'].get('control_only'):controls[record['case']]=old
     for index,(case,overrides) in enumerate(jobs):
+        if index<len(records):continue
         job=argparse.Namespace(**vars(args));job.case=case
         for key,value in overrides.items():setattr(job,key,value)
         job.passed_u1=passed['U1'];job.passed_u2=passed['U2']
@@ -567,7 +590,8 @@ def execute_expiry(t,env):
     result={'mode':t['mode'],'fixtureCount':t['expiry']['orders'],'samples':samples,'stopReasons':reasons,
             'drainSeconds':None if drained is None else drained-expiry,'remaining':final['pending'],
             'effectiveExpiryPerSecond':final['expired']/elapsed if elapsed else None,'functionalSmoke':functional,
-            'measurement_validity':{'status':'fail','reasons':['local_characterization_only']},
+            'warnings':guard.warnings,
+            'measurement_validity':{'status':'fail','reasons':['local_characterization_only']+sorted({x['code'] for x in guard.warnings})},
             'capacity':{'status':'not_applicable'},'overload_protection':{'status':'not_applicable'}}
     write(root/'expiry.json',result);write(root/'verdict.json',{key:result[key] for key in ('measurement_validity','capacity','overload_protection')})
     write(root/'smoke-check.json',{'passed':functional,'notCapacityEvidence':True})

@@ -153,6 +153,8 @@ class Sampler:
                 'correctnessFailure':False,'restarted':any(x['restartCount'] for x in containers),
                 'oom':any(x['oom'] for x in containers),'unhealthy':any(x['healthy']=='unhealthy' for x in containers),
                 'wrongEnvironment':False,'swapping':self.previous_host is not None and (host_data['swapIn']>self.previous_host['swapIn'] or host_data['swapOut']>self.previous_host['swapOut']),
+                'swapInDelta':host_data['swapIn']-self.previous_host['swapIn'] if self.previous_host else 0,
+                'swapOutDelta':host_data['swapOut']-self.previous_host['swapOut'] if self.previous_host else 0,
                 'networkExhausted':False,'fdExhausted':host_data['fileHandles'][0]>=host_data['fileHandles'][2]*.9,
                 'generatorMemoryFraction':max(gen_memory,default=0),'generatorCpuFraction':max(gen_cpu,default=0),
                 'clockSkewMs':pg['clockSkewMs'],'clockUncertaintyMs':pg['clockUncertaintyMs'],'dropped':0,'memoryFraction':max(sut_memory,default=0),
