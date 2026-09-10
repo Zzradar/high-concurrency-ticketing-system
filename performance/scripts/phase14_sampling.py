@@ -3,6 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 import json
 import re
 import time
+import threading
 from urllib.request import build_opener,ProxyHandler
 from performance_evidence import parse_redis_info
 
@@ -69,6 +70,35 @@ def pg_delta(before,after):
     statements=rows('statements',['queryid']);io=rows('io',['backend_type','object','context'])
     return {'valid':not errors,'errors':errors,'database':differences(before['database'],after['database']),
             'wal':differences(before['wal'],after['wal']),'statements':statements,'io':io}
+
+
+class LightPostgresSampler:
+    """Separate PG activity cadence, independent of slow Docker stats collection."""
+    def __init__(self,env,interval):
+        if interval<=0:raise ValueError('invalid sampling interval')
+        self.env=env;self.interval=interval;self.done=threading.Event();self.samples=[];self.errors=[]
+        self.thread=threading.Thread(target=self._run,name='phase14-pg-activity',daemon=True)
+    def start(self):self.thread.start();return self
+    def _run(self):
+        path=self.env.root/'postgres-light.jsonl';deadline=time.monotonic()
+        try:
+            with path.open('w',encoding='utf-8') as stream:
+                while not self.done.is_set():
+                    begin=time.monotonic();row=postgres(self.env)
+                    row.update(collectionSeconds=time.monotonic()-begin,startLateSeconds=max(0,begin-deadline))
+                    self.samples.append(row);stream.write(json.dumps(row)+'\n');stream.flush()
+                    deadline+=self.interval
+                    # Do not create catch-up bursts if a read exceeds its period.
+                    if deadline<time.monotonic():deadline=time.monotonic()
+                    self.done.wait(max(0,deadline-time.monotonic()))
+        except Exception as error:self.errors.append(type(error).__name__+': '+str(error))
+    def stop(self):
+        self.done.set();self.thread.join(timeout=15)
+        if self.thread.is_alive():self.errors.append('light sampler did not stop')
+        gaps=[b['time']-a['time'] for a,b in zip(self.samples,self.samples[1:])]
+        return {'intervalSeconds':self.interval,'samples':len(self.samples),'errors':self.errors,
+                'maxGapSeconds':max(gaps,default=None),'collectionSeconds':sum(x['collectionSeconds'] for x in self.samples),
+                'scope':'target PostgreSQL client activity only; separate from host and application metrics'}
 
 
 class Sampler:

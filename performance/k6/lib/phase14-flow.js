@@ -5,7 +5,7 @@ import { Counter, Trend } from 'k6/metrics';
 import { loadSessions, loadWorkloadUsers } from './data.js';
 import { mutationHeaders, reservationHeaders, jsonHeaders } from './http.js';
 import { SYSTEM_TAGS } from './config.js';
-import { boundedIndex, classify, group, onceState, randomSeconds, seat, steps } from './phase14-model.js';
+import { boundedIndex, classify, group, onceState, randomSeconds, seat, steps, hotspotTarget } from './phase14-model.js';
 
 export const spec=JSON.parse(open(__ENV.PHASE14_SPEC));
 const t=spec.targets;const sessions=loadSessions();const users=loadWorkloadUsers();
@@ -126,7 +126,7 @@ export function enter() {const m=mapped();const i=nextIndex(m);if(i===null)retur
 export function refresh() {const m=mapped();const next=nextIndex(m);if(next===null)return;run(()=>{const i=next%m.users;availability(identity(m.slice||'main',i),target('main',i));});}
 export function burst() {const m=mapped();const i=nextIndex(m);if(i===null)return;run(()=>purchase(identity('main',i),target('main',i),i,'order',spec.case==='J1'));}
 export function hotspot() {const m=mapped();const i=nextIndex(m);if(i===null)return;run(()=>{
-    const chosen=seat(spec.case==='H3'?0:Math.floor(i/t.hotspot.contendersPerSeat),t,m.sessionCount);
+    const chosen=hotspotTarget(i,t,m.sessionCount,spec.case==='H3');
     const user=identity('main',i);offset.add(Date.now()-spec.releaseAtMs,tags(m.path==='formal'?'reservation':'hold'));
     if(m.path==='formal') {
         started.add(1,tags('reservation'));let response=null,b=null;const begin=Date.now();

@@ -26,7 +26,7 @@ from run_k6 import K6_IMAGE, utc_now
 from performance_evidence import parse_redis_info
 from phase14_model import load_targets, online_plan, segments, background, seat
 from phase14_evidence import aggregate, sha256, verdict, StopGuard, recovery, percentile, timestamp
-from phase14_sampling import Sampler, pg_snapshot, pg_delta
+from phase14_sampling import Sampler, LightPostgresSampler, pg_snapshot, pg_delta
 from phase14_verify import verify_run, expiry_fixture, capture_temporary_owners
 
 COMPOSE=ROOT/'performance/docker-compose.phase14.yml'
@@ -144,8 +144,8 @@ class Environment:
     def compose(self,*args,**kwargs):return self.command(['docker','compose','-p',self.project,'-f',str(COMPOSE),*args],**kwargs)
     def sql(self,query):
         # Pipe sensitive SQL through stdin; commands and query samples omit it.
-        args=['docker','compose','-p',self.project,'-f',str(COMPOSE),'exec','-T','-e','PGAPPNAME=phase14_sampler','postgres','psql','-U','ticketing','-d','ticketing','-v','ON_ERROR_STOP=1','-At','-F','\t']
-        result=subprocess.run(args,input=query.encode(),capture_output=True,env=self.env,cwd=ROOT)
+        args=['docker','compose','-p',self.project,'-f',str(COMPOSE),'exec','-T','-e','PGAPPNAME=phase14_sampler','postgres','psql','-U','ticketing','-d','ticketing','--set=ON_ERROR_STOP=1','-At','-F','\t']
+        result=subprocess.run(args,input=query.encode(),capture_output=True,env=self.env,cwd=ROOT,timeout=10)
         if result.returncode:raise RuntimeError('Phase14 database command failed: '+result.stderr.decode('utf-8','replace')[:800])
         return result.stdout.decode('utf-8').strip()
     def http(self,path,identity=None,*,method='GET',body=None):
@@ -173,13 +173,16 @@ class Environment:
             if manifest['targetsSha256']!=self.t['sourceSha256']:raise ValueError('dataset targets mismatch before reset')
             for name,info in manifest['files'].items():
                 if Path(name).name!=name or sha256(self.data/name)!=info['sha256']:raise ValueError('dataset source corruption before reset')
-        self.compose('down','-v','--remove-orphans')
+        # Preserve containers and volumes under the 2026-09-10 user constraint.
+        # Stop only this already-validated Phase14 project's application clients.
+        self.compose('stop','backend','postgres-exporter','redis-exporter','prometheus','noop')
         self.compose('up','-d','--wait','postgres','redis')
         if snapshot:
             self.compose('exec','-T','postgres','pg_restore','-U','ticketing','-d','ticketing','--clean','--if-exists','--exit-on-error',input_file=snapshot)
         else:
-            self.compose('exec','-T','postgres','psql','-U','ticketing','-d','ticketing','-v','ON_ERROR_STOP=1',input_file=self.data/'dataset.sql')
-        # A new Redis container is empty; verify before warming any identities.
+            self.compose('exec','-T','postgres','psql','-U','ticketing','-d','ticketing','--set=ON_ERROR_STOP=1',input_file=self.data/'dataset.sql')
+        # Redis is dedicated to this validated project; retain the container and clear its state.
+        self.compose('exec','-T','redis','redis-cli','FLUSHALL','SYNC')
         size=self.compose('exec','-T','redis','redis-cli','DBSIZE').stdout.strip()
         if size!=b'0':raise ValueError('Redis is not empty after reset')
         self.compose('up','-d','--wait','backend','postgres-exporter','redis-exporter','prometheus')
@@ -283,6 +286,17 @@ def save_sample(root,sample,pg,redis):
         with (folder/(filename+'.jsonl')).open('a',encoding='utf-8') as f:f.write(json.dumps(value)+'\n')
 
 
+def resource_preflight(cal,t):
+    samples=cal.get('idleSamples',[]);errors=[]
+    if len(samples)<2:errors.append('insufficient fresh idle samples')
+    for x in samples:
+        for key in ('swapping','oom','restarted','unhealthy','networkExhausted','fdExhausted'):
+            if x[key]:errors.append(key)
+        if x['memoryFraction']>=t['stop']['memoryFraction']:errors.append('SUT memory limit')
+        if abs(x['clockSkewMs'])>t['generator']['maxClockSkewMs']:errors.append('clock skew')
+    return {'passed':not errors,'errors':sorted(set(errors)),'samples':len(samples),'formalIsolationEstablished':False}
+
+
 class RawProgress:
     """Tail each shard once; bounded window totals avoid rescanning large raw files."""
     def __init__(self,t):
@@ -323,7 +337,10 @@ def execute_case(args,t,env):
     slices=[{**s,'role':'main'} for s in base_segments]
     if args.case!='G0':slices += [{**s,'shard':str(int(s['shard'])+args.shards),'role':'probe'} for s in base_segments]
     spec['shards']=slices
-    cal=calibration(env);sessions=env.warm(spec)
+    cal=calibration(env)
+    preflight=resource_preflight(cal,t);write(root/'resource-preflight.json',preflight)
+    if not preflight['passed']:raise RuntimeError('resource preflight failed: '+', '.join(preflight['errors']))
+    sessions=env.warm(spec)
     if args.case=='G0':env.compose('up','-d','noop')
     # Isolated sentinel hold for mixed-load display correctness.
     sentinel=seat(t['seatSlices']['control'][0],t)
@@ -342,6 +359,8 @@ def execute_case(args,t,env):
     spec['releaseAtMs']=int((time.time()+t['generator']['releaseLeadSeconds'])*1000)
     write(root/'spec.json',spec)
     shutil.copytree(ROOT/'performance/k6',root/'k6-source')
+    source_compose=root/'compose-k6-source.json'
+    write(source_compose,{'services':{'k6':{'volumes':[{'type':'bind','source':str((root/'k6-source').resolve()),'target':'/scripts','read_only':True}]}}})
     for folder in ('scripts','verification'):
         shutil.copytree(ROOT/'performance'/folder,root/'source'/folder,ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
     original=(ROOT/'performance/baseline/phase14-targets.json').read_bytes();(root/'phase14-targets.json').write_bytes(original)
@@ -354,11 +373,12 @@ def execute_case(args,t,env):
     env.env['LOGIN_PASSWORD']='Ticketing123!' # Existing synthetic fixture hash, never exported into evidence.
     processes=[];logs=[];stop_reasons=[];samples=[];sampler=Sampler(env);guard=StopGuard(t,login_protection=args.case in ('L1','L2'))
     started=time.time();progress=RawProgress(t)
+    light=LightPostgresSampler(env,t['generator']['hotspotSampleSeconds'] if args.case=='H3' else t['generator']['sampleSeconds']).start()
     try:
         for shard_info in slices:
             number=shard_info['shard'];folder=root/'shards'/number;folder.mkdir(parents=True)
             log=(folder/'console.log').open('wb');logs.append(log)
-            args_k6=['docker','compose','-p',env.project,'-f',str(COMPOSE),'run','--no-deps','-v',f'{root.resolve()/"k6-source"}:/scripts:ro','--name',f'{env.project}-k6-{run_id}-{number}',
+            args_k6=['docker','compose','-p',env.project,'-f',str(COMPOSE),'-f',str(source_compose.resolve()),'run','--no-deps','--name',f'{env.project}-k6-{run_id}-{number}',
                      '-e',f'SHARD={number}','-e',f'PHASE14_ROLE={shard_info["role"]}','-e',f'PHASE14_SPEC=/results/{run_id}/spec.json',
                      '-e',f'BASE_URL={"http://noop:8080" if args.case=="G0" else "http://backend:8080"}','-e','LOGIN_PASSWORD','k6','run',
                      '--execution-segment',shard_info['segment'],'--execution-segment-sequence',shard_info['sequence'],
@@ -398,6 +418,8 @@ def execute_case(args,t,env):
                     env.command(['docker','stop','--time','2',name],check=False)
                     process.wait(timeout=30)
         for log in logs:log.close()
+        light_summary=light.stop();write(root/'postgres-light-summary.json',light_summary)
+        stop_reasons += light_summary['errors']
     if not owners_captured and args.case in ('H1','H3') and args.path=='temporary':
         write(root/'temporary-owners.json',capture_temporary_owners(env,spec))
     return finish_case(env,spec,slices,stop_reasons,samples,cal,before,started)

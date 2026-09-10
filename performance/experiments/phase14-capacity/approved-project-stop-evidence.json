@@ -1,0 +1,2637 @@
+{
+  "authorizedProjects": [
+    "phase12-2b-gate",
+    "phase12-approved",
+    "phase12-gate"
+  ],
+  "sourceDirectory": "performance/results/phase14-resource-release-20260910T013449Z",
+  "selectedBefore": [
+    {
+      "id": "2ab3a3db7d440558ef46b959f81a7531d83f109d76a3ab921ea3015ad14d25d7",
+      "name": "/phase12-2b-gate-backend-1",
+      "image": "phase12-2b-backend:7e8ae61",
+      "imageId": "sha256:ccedd16f3f19906e8ff6f80cc8406294ad7b1d431b8e61caa79b6a7e0b3cfee5",
+      "project": "phase12-2b-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation\\gate.metrics.compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-09T07:04:39.825662063Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "8080/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18098"
+          }
+        ]
+      },
+      "portBindings": {
+        "8080/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18098"
+          }
+        ]
+      },
+      "mounts": []
+    },
+    {
+      "id": "867f12a02d682a37709523a24912ebed5c214a53d2ab815fd40e9b9913f277d5",
+      "name": "/phase12-2b-gate-redis-1",
+      "image": "redis:7.4-alpine",
+      "imageId": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "project": "phase12-2b-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation\\gate.simulation.compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-09T07:02:15.232115655Z",
+        "FinishedAt": "2026-09-09T07:02:13.297036754Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "6379/tcp": null
+      },
+      "portBindings": {},
+      "mounts": [
+        {
+          "Type": "tmpfs",
+          "Source": "",
+          "Destination": "/data",
+          "Mode": "",
+          "RW": true,
+          "Propagation": ""
+        }
+      ]
+    },
+    {
+      "id": "fdd364c642fa4a6eec99a34abb06e872542d535c6a5c815104d90be303a04dc5",
+      "name": "/phase12-2b-gate-postgres-1",
+      "image": "postgres:16-alpine",
+      "imageId": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "project": "phase12-2b-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation\\gate.compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-09T06:59:10.506023571Z",
+        "FinishedAt": "2026-09-09T06:40:18.085763257Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "5432/tcp": null
+      },
+      "portBindings": {},
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\migrations\\009_add_buyer_full_refund.sql",
+          "Destination": "/docker-entrypoint-initdb.d/009_add_buyer_full_refund.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\migrations\\001_initial_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/001_initial_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/seeds/001_demo_seed.sql",
+          "Destination": "/docker-entrypoint-initdb.d/010_demo_seed.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\migrations\\005_add_payment_lifecycle.sql",
+          "Destination": "/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\tests\\002_verify_checkout_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/012_verify_checkout_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\tests\\006_verify_buyer_refunds.sql",
+          "Destination": "/docker-entrypoint-initdb.d/016_verify_buyer_refunds.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\migrations\\006_add_user_authentication.sql",
+          "Destination": "/docker-entrypoint-initdb.d/006_add_user_authentication.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/004_verify_auth_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/014_verify_auth_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\migrations\\002_add_reservation_idempotency.sql",
+          "Destination": "/docker-entrypoint-initdb.d/002_add_reservation_idempotency.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/007_add_payment_provider_recovery.sql",
+          "Destination": "/docker-entrypoint-initdb.d/007_add_payment_provider_recovery.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/008_add_reconciliation_leases.sql",
+          "Destination": "/docker-entrypoint-initdb.d/008_add_reconciliation_leases.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/003_add_checkout_sessions.sql",
+          "Destination": "/docker-entrypoint-initdb.d/003_add_checkout_sessions.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\tests\\001_verify_seed.sql",
+          "Destination": "/docker-entrypoint-initdb.d/011_verify_seed.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\tests\\003_verify_payment_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/013_verify_payment_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\migrations\\004_add_checkout_session_revision.sql",
+          "Destination": "/docker-entrypoint-initdb.d/004_add_checkout_session_revision.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\tests\\005_verify_payment_provider_recovery.sql",
+          "Destination": "/docker-entrypoint-initdb.d/015_verify_payment_provider_recovery.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "volume",
+          "Name": "phase12-2b-gate_postgres_data",
+          "Source": "/var/lib/docker/volumes/phase12-2b-gate_postgres_data/_data",
+          "Destination": "/var/lib/postgresql/data",
+          "Driver": "local",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": ""
+        }
+      ]
+    },
+    {
+      "id": "1b33536cbfe7db05294aca697f101f91565d930bcd8dac549ba808c5e14e87ab",
+      "name": "/phase12-2b-gate-fake-stripe-1",
+      "image": "python:3.12-alpine",
+      "imageId": "sha256:b64631e04e4920160c50fbe8d8df828f7f35f06f425cb44aa09bca53e708a35a",
+      "project": "phase12-2b-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation\\gate.compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-09T06:59:10.504849944Z",
+        "FinishedAt": "2026-09-09T06:40:20.835706799Z"
+      },
+      "health": null,
+      "restartCount": 0,
+      "ports": {
+        "18081/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18099"
+          }
+        ]
+      },
+      "portBindings": {
+        "18081/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18099"
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests\\fake_stripe_server.py",
+          "Destination": "/tests/fake_stripe_server.py",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    },
+    {
+      "id": "935d5eb0248e29f674bf2f6725e83c4f111559798e2807a5ebb3fd483efefd6e",
+      "name": "/phase12-approved-backend-1",
+      "image": "phase12-backend:verified",
+      "imageId": "sha256:aeacaca08a6c37364176d153bee71dff012ecc5f794472c93d01abf6c22f2fd9",
+      "project": "phase12-approved",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-approved-compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T16:20:08.56174737Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "8080/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "18096"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "18096"
+          }
+        ]
+      },
+      "portBindings": {
+        "8080/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "18096"
+          }
+        ]
+      },
+      "mounts": []
+    },
+    {
+      "id": "1b8731949d8e5e1a27e3905c678a3b730448697840ca2a4fa76953f7f3221df6",
+      "name": "/phase12-approved-postgres-1",
+      "image": "postgres:16-alpine",
+      "imageId": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "project": "phase12-approved",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-approved-compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T16:06:20.331833288Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "5432/tcp": null
+      },
+      "portBindings": {},
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/seeds/001_demo_seed.sql",
+          "Destination": "/docker-entrypoint-initdb.d/010_demo_seed.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/001_initial_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/001_initial_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/008_add_reconciliation_leases.sql",
+          "Destination": "/docker-entrypoint-initdb.d/008_add_reconciliation_leases.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/003_verify_payment_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/013_verify_payment_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/005_verify_payment_provider_recovery.sql",
+          "Destination": "/docker-entrypoint-initdb.d/015_verify_payment_provider_recovery.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/002_add_reservation_idempotency.sql",
+          "Destination": "/docker-entrypoint-initdb.d/002_add_reservation_idempotency.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/005_add_payment_lifecycle.sql",
+          "Destination": "/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/007_add_payment_provider_recovery.sql",
+          "Destination": "/docker-entrypoint-initdb.d/007_add_payment_provider_recovery.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "volume",
+          "Name": "phase12-approved_phase12_postgres_data",
+          "Source": "/var/lib/docker/volumes/phase12-approved_phase12_postgres_data/_data",
+          "Destination": "/var/lib/postgresql/data",
+          "Driver": "local",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": ""
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/003_add_checkout_sessions.sql",
+          "Destination": "/docker-entrypoint-initdb.d/003_add_checkout_sessions.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/009_add_buyer_full_refund.sql",
+          "Destination": "/docker-entrypoint-initdb.d/009_add_buyer_full_refund.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/001_verify_seed.sql",
+          "Destination": "/docker-entrypoint-initdb.d/011_verify_seed.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/004_verify_auth_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/014_verify_auth_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/002_verify_checkout_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/012_verify_checkout_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/006_verify_buyer_refunds.sql",
+          "Destination": "/docker-entrypoint-initdb.d/016_verify_buyer_refunds.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/004_add_checkout_session_revision.sql",
+          "Destination": "/docker-entrypoint-initdb.d/004_add_checkout_session_revision.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/006_add_user_authentication.sql",
+          "Destination": "/docker-entrypoint-initdb.d/006_add_user_authentication.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    },
+    {
+      "id": "77b4526f2223e62768058f6d8c12118c44fe77b9d8e1c7068d7d5ae3a93dd6b0",
+      "name": "/phase12-approved-redis-1",
+      "image": "redis:7.4-alpine",
+      "imageId": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "project": "phase12-approved",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-approved-compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T16:06:20.302642264Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "6379/tcp": null
+      },
+      "portBindings": {},
+      "mounts": [
+        {
+          "Type": "tmpfs",
+          "Source": "",
+          "Destination": "/data",
+          "Mode": "",
+          "RW": true,
+          "Propagation": ""
+        }
+      ]
+    },
+    {
+      "id": "023ab6a4e1480ececbeb2b2a8c486624657324ed720d10c6c85d9509a4f1aafc",
+      "name": "/phase12-approved-fake-stripe-1",
+      "image": "python:3.12-alpine",
+      "imageId": "sha256:b64631e04e4920160c50fbe8d8df828f7f35f06f425cb44aa09bca53e708a35a",
+      "project": "phase12-approved",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-approved-compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T16:06:20.333394862Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": null,
+      "restartCount": 0,
+      "ports": {
+        "18081/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "18097"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "18097"
+          }
+        ]
+      },
+      "portBindings": {
+        "18081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "18097"
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests\\fake_stripe_server.py",
+          "Destination": "/tests/fake_stripe_server.py",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    },
+    {
+      "id": "422c32c989fba605532a167a7ae3a63015ee2f0f479abf8d617e39eb186ee285",
+      "name": "/phase12-gate-backend-1",
+      "image": "phase12-backend:local",
+      "imageId": "sha256:50649f2cb39fe5775d878db527943c54f51d61cecc924f897d3ef862b36133d8",
+      "project": "phase12-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests\\compose.phase12.yml",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T15:43:57.587004751Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "8080/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "18094"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "18094"
+          }
+        ]
+      },
+      "portBindings": {
+        "8080/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "18094"
+          }
+        ]
+      },
+      "mounts": []
+    },
+    {
+      "id": "c29d7594cfedc0ce57bd7cb7c3bfae3cee8ec1300becdb3983812ca0c8549c6f",
+      "name": "/phase12-gate-postgres-1",
+      "image": "postgres:16-alpine",
+      "imageId": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "project": "phase12-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests\\compose.phase12.yml",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T15:24:46.136599638Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "5432/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "15435"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "15435"
+          }
+        ]
+      },
+      "portBindings": {
+        "5432/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "15435"
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/005_verify_payment_provider_recovery.sql",
+          "Destination": "/docker-entrypoint-initdb.d/015_verify_payment_provider_recovery.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/002_add_reservation_idempotency.sql",
+          "Destination": "/docker-entrypoint-initdb.d/002_add_reservation_idempotency.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/008_add_reconciliation_leases.sql",
+          "Destination": "/docker-entrypoint-initdb.d/008_add_reconciliation_leases.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/002_verify_checkout_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/012_verify_checkout_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/005_add_payment_lifecycle.sql",
+          "Destination": "/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/006_add_user_authentication.sql",
+          "Destination": "/docker-entrypoint-initdb.d/006_add_user_authentication.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/003_verify_payment_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/013_verify_payment_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/004_verify_auth_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/014_verify_auth_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/007_add_payment_provider_recovery.sql",
+          "Destination": "/docker-entrypoint-initdb.d/007_add_payment_provider_recovery.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/006_verify_buyer_refunds.sql",
+          "Destination": "/docker-entrypoint-initdb.d/016_verify_buyer_refunds.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "volume",
+          "Name": "phase12-gate_phase12_postgres_data",
+          "Source": "/var/lib/docker/volumes/phase12-gate_phase12_postgres_data/_data",
+          "Destination": "/var/lib/postgresql/data",
+          "Driver": "local",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": ""
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/seeds/001_demo_seed.sql",
+          "Destination": "/docker-entrypoint-initdb.d/010_demo_seed.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/001_verify_seed.sql",
+          "Destination": "/docker-entrypoint-initdb.d/011_verify_seed.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/001_initial_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/001_initial_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/004_add_checkout_session_revision.sql",
+          "Destination": "/docker-entrypoint-initdb.d/004_add_checkout_session_revision.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/003_add_checkout_sessions.sql",
+          "Destination": "/docker-entrypoint-initdb.d/003_add_checkout_sessions.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/009_add_buyer_full_refund.sql",
+          "Destination": "/docker-entrypoint-initdb.d/009_add_buyer_full_refund.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    },
+    {
+      "id": "b70b3b6e0759c079655bdb1a0c838cb52cc7e789074a8fc5d3e121c3f8098c0f",
+      "name": "/phase12-gate-redis-1",
+      "image": "redis:7.4-alpine",
+      "imageId": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "project": "phase12-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests\\compose.phase12.yml",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T15:17:25.764784602Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "6379/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "16382"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "16382"
+          }
+        ]
+      },
+      "portBindings": {
+        "6379/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "16382"
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Type": "tmpfs",
+          "Source": "",
+          "Destination": "/data",
+          "Mode": "",
+          "RW": true,
+          "Propagation": ""
+        }
+      ]
+    },
+    {
+      "id": "564109383fee7928b83433de0771560ed6b1664d42b7fdd3c5b0d7e154942b89",
+      "name": "/phase12-gate-fake-stripe-1",
+      "image": "python:3.12-alpine",
+      "imageId": "sha256:b64631e04e4920160c50fbe8d8df828f7f35f06f425cb44aa09bca53e708a35a",
+      "project": "phase12-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests\\compose.phase12.yml",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T15:29:26.984869403Z",
+        "FinishedAt": "2026-09-08T15:29:26.74294601Z"
+      },
+      "health": null,
+      "restartCount": 0,
+      "ports": {
+        "18081/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "18085"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "18085"
+          }
+        ]
+      },
+      "portBindings": {
+        "18081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "18085"
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests\\fake_stripe_server.py",
+          "Destination": "/tests/fake_stripe_server.py",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  ],
+  "selectedImmediatelyRevalidated": [
+    {
+      "id": "2ab3a3db7d440558ef46b959f81a7531d83f109d76a3ab921ea3015ad14d25d7",
+      "name": "/phase12-2b-gate-backend-1",
+      "image": "phase12-2b-backend:7e8ae61",
+      "imageId": "sha256:ccedd16f3f19906e8ff6f80cc8406294ad7b1d431b8e61caa79b6a7e0b3cfee5",
+      "project": "phase12-2b-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation\\gate.metrics.compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-09T07:04:39.825662063Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "8080/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18098"
+          }
+        ]
+      },
+      "portBindings": {
+        "8080/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18098"
+          }
+        ]
+      },
+      "mounts": []
+    },
+    {
+      "id": "867f12a02d682a37709523a24912ebed5c214a53d2ab815fd40e9b9913f277d5",
+      "name": "/phase12-2b-gate-redis-1",
+      "image": "redis:7.4-alpine",
+      "imageId": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "project": "phase12-2b-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation\\gate.simulation.compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-09T07:02:15.232115655Z",
+        "FinishedAt": "2026-09-09T07:02:13.297036754Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "6379/tcp": null
+      },
+      "portBindings": {},
+      "mounts": [
+        {
+          "Type": "tmpfs",
+          "Source": "",
+          "Destination": "/data",
+          "Mode": "",
+          "RW": true,
+          "Propagation": ""
+        }
+      ]
+    },
+    {
+      "id": "fdd364c642fa4a6eec99a34abb06e872542d535c6a5c815104d90be303a04dc5",
+      "name": "/phase12-2b-gate-postgres-1",
+      "image": "postgres:16-alpine",
+      "imageId": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "project": "phase12-2b-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation\\gate.compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-09T06:59:10.506023571Z",
+        "FinishedAt": "2026-09-09T06:40:18.085763257Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "5432/tcp": null
+      },
+      "portBindings": {},
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\migrations\\002_add_reservation_idempotency.sql",
+          "Destination": "/docker-entrypoint-initdb.d/002_add_reservation_idempotency.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/007_add_payment_provider_recovery.sql",
+          "Destination": "/docker-entrypoint-initdb.d/007_add_payment_provider_recovery.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/008_add_reconciliation_leases.sql",
+          "Destination": "/docker-entrypoint-initdb.d/008_add_reconciliation_leases.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/003_add_checkout_sessions.sql",
+          "Destination": "/docker-entrypoint-initdb.d/003_add_checkout_sessions.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\tests\\001_verify_seed.sql",
+          "Destination": "/docker-entrypoint-initdb.d/011_verify_seed.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\tests\\003_verify_payment_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/013_verify_payment_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\migrations\\004_add_checkout_session_revision.sql",
+          "Destination": "/docker-entrypoint-initdb.d/004_add_checkout_session_revision.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\tests\\005_verify_payment_provider_recovery.sql",
+          "Destination": "/docker-entrypoint-initdb.d/015_verify_payment_provider_recovery.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "volume",
+          "Name": "phase12-2b-gate_postgres_data",
+          "Source": "/var/lib/docker/volumes/phase12-2b-gate_postgres_data/_data",
+          "Destination": "/var/lib/postgresql/data",
+          "Driver": "local",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": ""
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\migrations\\009_add_buyer_full_refund.sql",
+          "Destination": "/docker-entrypoint-initdb.d/009_add_buyer_full_refund.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\migrations\\001_initial_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/001_initial_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/seeds/001_demo_seed.sql",
+          "Destination": "/docker-entrypoint-initdb.d/010_demo_seed.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\migrations\\005_add_payment_lifecycle.sql",
+          "Destination": "/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\tests\\002_verify_checkout_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/012_verify_checkout_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\tests\\006_verify_buyer_refunds.sql",
+          "Destination": "/docker-entrypoint-initdb.d/016_verify_buyer_refunds.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\db\\migrations\\006_add_user_authentication.sql",
+          "Destination": "/docker-entrypoint-initdb.d/006_add_user_authentication.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/004_verify_auth_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/014_verify_auth_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    },
+    {
+      "id": "1b33536cbfe7db05294aca697f101f91565d930bcd8dac549ba808c5e14e87ab",
+      "name": "/phase12-2b-gate-fake-stripe-1",
+      "image": "python:3.12-alpine",
+      "imageId": "sha256:b64631e04e4920160c50fbe8d8df828f7f35f06f425cb44aa09bca53e708a35a",
+      "project": "phase12-2b-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation\\gate.compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-2b-validation",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-09T06:59:10.504849944Z",
+        "FinishedAt": "2026-09-09T06:40:20.835706799Z"
+      },
+      "health": null,
+      "restartCount": 0,
+      "ports": {
+        "18081/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18099"
+          }
+        ]
+      },
+      "portBindings": {
+        "18081/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18099"
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests\\fake_stripe_server.py",
+          "Destination": "/tests/fake_stripe_server.py",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    },
+    {
+      "id": "935d5eb0248e29f674bf2f6725e83c4f111559798e2807a5ebb3fd483efefd6e",
+      "name": "/phase12-approved-backend-1",
+      "image": "phase12-backend:verified",
+      "imageId": "sha256:aeacaca08a6c37364176d153bee71dff012ecc5f794472c93d01abf6c22f2fd9",
+      "project": "phase12-approved",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-approved-compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T16:20:08.56174737Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "8080/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "18096"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "18096"
+          }
+        ]
+      },
+      "portBindings": {
+        "8080/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "18096"
+          }
+        ]
+      },
+      "mounts": []
+    },
+    {
+      "id": "1b8731949d8e5e1a27e3905c678a3b730448697840ca2a4fa76953f7f3221df6",
+      "name": "/phase12-approved-postgres-1",
+      "image": "postgres:16-alpine",
+      "imageId": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "project": "phase12-approved",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-approved-compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T16:06:20.331833288Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "5432/tcp": null
+      },
+      "portBindings": {},
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "phase12-approved_phase12_postgres_data",
+          "Source": "/var/lib/docker/volumes/phase12-approved_phase12_postgres_data/_data",
+          "Destination": "/var/lib/postgresql/data",
+          "Driver": "local",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": ""
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/003_add_checkout_sessions.sql",
+          "Destination": "/docker-entrypoint-initdb.d/003_add_checkout_sessions.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/009_add_buyer_full_refund.sql",
+          "Destination": "/docker-entrypoint-initdb.d/009_add_buyer_full_refund.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/001_verify_seed.sql",
+          "Destination": "/docker-entrypoint-initdb.d/011_verify_seed.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/004_verify_auth_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/014_verify_auth_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/002_verify_checkout_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/012_verify_checkout_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/006_verify_buyer_refunds.sql",
+          "Destination": "/docker-entrypoint-initdb.d/016_verify_buyer_refunds.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/004_add_checkout_session_revision.sql",
+          "Destination": "/docker-entrypoint-initdb.d/004_add_checkout_session_revision.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/006_add_user_authentication.sql",
+          "Destination": "/docker-entrypoint-initdb.d/006_add_user_authentication.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/seeds/001_demo_seed.sql",
+          "Destination": "/docker-entrypoint-initdb.d/010_demo_seed.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/001_initial_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/001_initial_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/008_add_reconciliation_leases.sql",
+          "Destination": "/docker-entrypoint-initdb.d/008_add_reconciliation_leases.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/003_verify_payment_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/013_verify_payment_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/005_verify_payment_provider_recovery.sql",
+          "Destination": "/docker-entrypoint-initdb.d/015_verify_payment_provider_recovery.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/002_add_reservation_idempotency.sql",
+          "Destination": "/docker-entrypoint-initdb.d/002_add_reservation_idempotency.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/005_add_payment_lifecycle.sql",
+          "Destination": "/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/007_add_payment_provider_recovery.sql",
+          "Destination": "/docker-entrypoint-initdb.d/007_add_payment_provider_recovery.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    },
+    {
+      "id": "77b4526f2223e62768058f6d8c12118c44fe77b9d8e1c7068d7d5ae3a93dd6b0",
+      "name": "/phase12-approved-redis-1",
+      "image": "redis:7.4-alpine",
+      "imageId": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "project": "phase12-approved",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-approved-compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T16:06:20.302642264Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "6379/tcp": null
+      },
+      "portBindings": {},
+      "mounts": [
+        {
+          "Type": "tmpfs",
+          "Source": "",
+          "Destination": "/data",
+          "Mode": "",
+          "RW": true,
+          "Propagation": ""
+        }
+      ]
+    },
+    {
+      "id": "023ab6a4e1480ececbeb2b2a8c486624657324ed720d10c6c85d9509a4f1aafc",
+      "name": "/phase12-approved-fake-stripe-1",
+      "image": "python:3.12-alpine",
+      "imageId": "sha256:b64631e04e4920160c50fbe8d8df828f7f35f06f425cb44aa09bca53e708a35a",
+      "project": "phase12-approved",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build\\phase12-approved-compose.json",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\build",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T16:06:20.333394862Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": null,
+      "restartCount": 0,
+      "ports": {
+        "18081/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "18097"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "18097"
+          }
+        ]
+      },
+      "portBindings": {
+        "18081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "18097"
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests\\fake_stripe_server.py",
+          "Destination": "/tests/fake_stripe_server.py",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    },
+    {
+      "id": "422c32c989fba605532a167a7ae3a63015ee2f0f479abf8d617e39eb186ee285",
+      "name": "/phase12-gate-backend-1",
+      "image": "phase12-backend:local",
+      "imageId": "sha256:50649f2cb39fe5775d878db527943c54f51d61cecc924f897d3ef862b36133d8",
+      "project": "phase12-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests\\compose.phase12.yml",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T15:43:57.587004751Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "8080/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "18094"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "18094"
+          }
+        ]
+      },
+      "portBindings": {
+        "8080/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "18094"
+          }
+        ]
+      },
+      "mounts": []
+    },
+    {
+      "id": "c29d7594cfedc0ce57bd7cb7c3bfae3cee8ec1300becdb3983812ca0c8549c6f",
+      "name": "/phase12-gate-postgres-1",
+      "image": "postgres:16-alpine",
+      "imageId": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "project": "phase12-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests\\compose.phase12.yml",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T15:24:46.136599638Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "5432/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "15435"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "15435"
+          }
+        ]
+      },
+      "portBindings": {
+        "5432/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "15435"
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/002_add_reservation_idempotency.sql",
+          "Destination": "/docker-entrypoint-initdb.d/002_add_reservation_idempotency.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/008_add_reconciliation_leases.sql",
+          "Destination": "/docker-entrypoint-initdb.d/008_add_reconciliation_leases.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/002_verify_checkout_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/012_verify_checkout_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/005_add_payment_lifecycle.sql",
+          "Destination": "/docker-entrypoint-initdb.d/005_add_payment_lifecycle.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/006_add_user_authentication.sql",
+          "Destination": "/docker-entrypoint-initdb.d/006_add_user_authentication.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/003_verify_payment_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/013_verify_payment_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/004_verify_auth_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/014_verify_auth_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/007_add_payment_provider_recovery.sql",
+          "Destination": "/docker-entrypoint-initdb.d/007_add_payment_provider_recovery.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/006_verify_buyer_refunds.sql",
+          "Destination": "/docker-entrypoint-initdb.d/016_verify_buyer_refunds.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "volume",
+          "Name": "phase12-gate_phase12_postgres_data",
+          "Source": "/var/lib/docker/volumes/phase12-gate_phase12_postgres_data/_data",
+          "Destination": "/var/lib/postgresql/data",
+          "Driver": "local",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": ""
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/seeds/001_demo_seed.sql",
+          "Destination": "/docker-entrypoint-initdb.d/010_demo_seed.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/001_verify_seed.sql",
+          "Destination": "/docker-entrypoint-initdb.d/011_verify_seed.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/001_initial_schema.sql",
+          "Destination": "/docker-entrypoint-initdb.d/001_initial_schema.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/004_add_checkout_session_revision.sql",
+          "Destination": "/docker-entrypoint-initdb.d/004_add_checkout_session_revision.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/003_add_checkout_sessions.sql",
+          "Destination": "/docker-entrypoint-initdb.d/003_add_checkout_sessions.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/migrations/009_add_buyer_full_refund.sql",
+          "Destination": "/docker-entrypoint-initdb.d/009_add_buyer_full_refund.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/run/desktop/mnt/host/d/Documents/vscode/高并发订票系统/backend/db/tests/005_verify_payment_provider_recovery.sql",
+          "Destination": "/docker-entrypoint-initdb.d/015_verify_payment_provider_recovery.sql",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    },
+    {
+      "id": "b70b3b6e0759c079655bdb1a0c838cb52cc7e789074a8fc5d3e121c3f8098c0f",
+      "name": "/phase12-gate-redis-1",
+      "image": "redis:7.4-alpine",
+      "imageId": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "project": "phase12-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests\\compose.phase12.yml",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T15:17:25.764784602Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "health": "healthy",
+      "restartCount": 0,
+      "ports": {
+        "6379/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "16382"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "16382"
+          }
+        ]
+      },
+      "portBindings": {
+        "6379/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "16382"
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Type": "tmpfs",
+          "Source": "",
+          "Destination": "/data",
+          "Mode": "",
+          "RW": true,
+          "Propagation": ""
+        }
+      ]
+    },
+    {
+      "id": "564109383fee7928b83433de0771560ed6b1664d42b7fdd3c5b0d7e154942b89",
+      "name": "/phase12-gate-fake-stripe-1",
+      "image": "python:3.12-alpine",
+      "imageId": "sha256:b64631e04e4920160c50fbe8d8df828f7f35f06f425cb44aa09bca53e708a35a",
+      "project": "phase12-gate",
+      "composeFiles": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests\\compose.phase12.yml",
+      "composeWorkingDirectory": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "Dead": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-09-08T15:29:26.984869403Z",
+        "FinishedAt": "2026-09-08T15:29:26.74294601Z"
+      },
+      "health": null,
+      "restartCount": 0,
+      "ports": {
+        "18081/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "18085"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "18085"
+          }
+        ]
+      },
+      "portBindings": {
+        "18081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "18085"
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "D:\\Documents\\vscode\\高并发订票系统\\backend\\tests\\fake_stripe_server.py",
+          "Destination": "/tests/fake_stripe_server.py",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        }
+      ]
+    }
+  ],
+  "volumesBefore": [
+    {
+      "CreatedAt": "2026-09-09T03:44:52Z",
+      "Driver": "local",
+      "Labels": {
+        "com.docker.compose.config-hash": "8a2ee2391374c2639793f4fb51218fda9a9e3bfb83c38fc631394eb347fae561",
+        "com.docker.compose.project": "phase12-2b-gate",
+        "com.docker.compose.version": "5.4.0",
+        "com.docker.compose.volume": "phase12_postgres_data"
+      },
+      "Mountpoint": "/var/lib/docker/volumes/phase12-2b-gate_postgres_data/_data",
+      "Name": "phase12-2b-gate_postgres_data",
+      "Options": null,
+      "Scope": "local"
+    },
+    {
+      "CreatedAt": "2026-09-08T16:06:20Z",
+      "Driver": "local",
+      "Labels": {
+        "com.docker.compose.config-hash": "1cd27674fbb5cd1160cb41582544974023ec181d442ead723c85ba7f0a8bf472",
+        "com.docker.compose.project": "phase12-approved",
+        "com.docker.compose.version": "5.4.0",
+        "com.docker.compose.volume": "phase12_postgres_data"
+      },
+      "Mountpoint": "/var/lib/docker/volumes/phase12-approved_phase12_postgres_data/_data",
+      "Name": "phase12-approved_phase12_postgres_data",
+      "Options": null,
+      "Scope": "local"
+    },
+    {
+      "CreatedAt": "2026-09-08T15:17:25Z",
+      "Driver": "local",
+      "Labels": {
+        "com.docker.compose.config-hash": "4910e044c2b104a74e72e5d8695508d34d32e6184558e99b6b6eaef5fcde31a6",
+        "com.docker.compose.project": "phase12-gate",
+        "com.docker.compose.version": "5.4.0",
+        "com.docker.compose.volume": "phase12_postgres_data"
+      },
+      "Mountpoint": "/var/lib/docker/volumes/phase12-gate_phase12_postgres_data/_data",
+      "Name": "phase12-gate_phase12_postgres_data",
+      "Options": null,
+      "Scope": "local"
+    }
+  ],
+  "volumesAfter": [
+    {
+      "CreatedAt": "2026-09-09T03:44:52Z",
+      "Driver": "local",
+      "Labels": {
+        "com.docker.compose.config-hash": "8a2ee2391374c2639793f4fb51218fda9a9e3bfb83c38fc631394eb347fae561",
+        "com.docker.compose.project": "phase12-2b-gate",
+        "com.docker.compose.version": "5.4.0",
+        "com.docker.compose.volume": "phase12_postgres_data"
+      },
+      "Mountpoint": "/var/lib/docker/volumes/phase12-2b-gate_postgres_data/_data",
+      "Name": "phase12-2b-gate_postgres_data",
+      "Options": null,
+      "Scope": "local"
+    },
+    {
+      "CreatedAt": "2026-09-08T16:06:20Z",
+      "Driver": "local",
+      "Labels": {
+        "com.docker.compose.config-hash": "1cd27674fbb5cd1160cb41582544974023ec181d442ead723c85ba7f0a8bf472",
+        "com.docker.compose.project": "phase12-approved",
+        "com.docker.compose.version": "5.4.0",
+        "com.docker.compose.volume": "phase12_postgres_data"
+      },
+      "Mountpoint": "/var/lib/docker/volumes/phase12-approved_phase12_postgres_data/_data",
+      "Name": "phase12-approved_phase12_postgres_data",
+      "Options": null,
+      "Scope": "local"
+    },
+    {
+      "CreatedAt": "2026-09-08T15:17:25Z",
+      "Driver": "local",
+      "Labels": {
+        "com.docker.compose.config-hash": "4910e044c2b104a74e72e5d8695508d34d32e6184558e99b6b6eaef5fcde31a6",
+        "com.docker.compose.project": "phase12-gate",
+        "com.docker.compose.version": "5.4.0",
+        "com.docker.compose.volume": "phase12_postgres_data"
+      },
+      "Mountpoint": "/var/lib/docker/volumes/phase12-gate_phase12_postgres_data/_data",
+      "Name": "phase12-gate_phase12_postgres_data",
+      "Options": null,
+      "Scope": "local"
+    }
+  ],
+  "hostBefore": {
+    "utc": "2026-09-10T01:34:50.478074+00:00",
+    "monotonic": 924249.765,
+    "MemTotalBytes": 16548249600,
+    "MemFreeBytes": 838053888,
+    "MemAvailableBytes": 12651245568,
+    "SwapCachedBytes": 67801088,
+    "SwapTotalBytes": 4294967296,
+    "SwapFreeBytes": 4083687424,
+    "pswpin": 322791,
+    "pswpout": 537116,
+    "cpuTicks": [
+      13995695,
+      6588,
+      5394682,
+      1178193599,
+      101319,
+      0,
+      2701659,
+      0,
+      0,
+      0
+    ]
+  },
+  "hostAfter": {
+    "utc": "2026-09-10T01:34:55.486566+00:00",
+    "monotonic": 924254.765,
+    "MemTotalBytes": 16548249600,
+    "MemFreeBytes": 1065537536,
+    "MemAvailableBytes": 12851503104,
+    "SwapCachedBytes": 67801088,
+    "SwapTotalBytes": 4294967296,
+    "SwapFreeBytes": 4083687424,
+    "pswpin": 322791,
+    "pswpout": 537116,
+    "cpuTicks": [
+      13996076,
+      6588,
+      5395064,
+      1178200720,
+      101341,
+      0,
+      2701744,
+      0,
+      0,
+      0
+    ]
+  },
+  "checks": {
+    "selectedStopped": true,
+    "volumesRetained": true,
+    "otherContainersUnchanged": true,
+    "comparison": "mount lists normalized by destination/source; all contents still compared"
+  },
+  "windows": [
+    {
+      "window": 1,
+      "seconds": 60.20299999997951,
+      "stable": true,
+      "samples": [
+        {
+          "utc": "2026-09-10T01:37:30.152200+00:00",
+          "monotonic": 924409.437,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1006587904,
+          "MemAvailableBytes": 12797153280,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14002414,
+            6588,
+            5398294,
+            1178436974,
+            101352,
+            0,
+            2703560,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:37:35.356340+00:00",
+          "monotonic": 924414.64,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 996552704,
+          "MemAvailableBytes": 12787273728,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14002596,
+            6588,
+            5398395,
+            1178444962,
+            101352,
+            0,
+            2703613,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:37:40.558602+00:00",
+          "monotonic": 924419.843,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1025380352,
+          "MemAvailableBytes": 12816273408,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14002848,
+            6588,
+            5398513,
+            1178452865,
+            101352,
+            0,
+            2703683,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:37:45.751149+00:00",
+          "monotonic": 924425.031,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1023946752,
+          "MemAvailableBytes": 12814983168,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14003015,
+            6588,
+            5398599,
+            1178460866,
+            101352,
+            0,
+            2703740,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:37:50.953454+00:00",
+          "monotonic": 924430.234,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1039896576,
+          "MemAvailableBytes": 12831080448,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14003239,
+            6588,
+            5398707,
+            1178468803,
+            101353,
+            0,
+            2703802,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:37:56.163426+00:00",
+          "monotonic": 924435.453,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1068785664,
+          "MemAvailableBytes": 12860129280,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14003416,
+            6588,
+            5398804,
+            1178476820,
+            101353,
+            0,
+            2703857,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:38:01.360412+00:00",
+          "monotonic": 924440.64,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1101242368,
+          "MemAvailableBytes": 12892741632,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14003664,
+            6588,
+            5398914,
+            1178484720,
+            101353,
+            0,
+            2703915,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:38:06.561278+00:00",
+          "monotonic": 924445.843,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1083166720,
+          "MemAvailableBytes": 12874809344,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14003817,
+            6588,
+            5398994,
+            1178492738,
+            101353,
+            0,
+            2703964,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:38:11.755940+00:00",
+          "monotonic": 924451.046,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1081053184,
+          "MemAvailableBytes": 12872843264,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14004075,
+            6588,
+            5399108,
+            1178500629,
+            101353,
+            0,
+            2704020,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:38:16.973978+00:00",
+          "monotonic": 924456.265,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1071996928,
+          "MemAvailableBytes": 12863938560,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14004269,
+            6588,
+            5399198,
+            1178508655,
+            101354,
+            0,
+            2704079,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:38:22.179187+00:00",
+          "monotonic": 924461.468,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1079713792,
+          "MemAvailableBytes": 12871798784,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14004554,
+            6588,
+            5399315,
+            1178516533,
+            101354,
+            0,
+            2704142,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:38:27.390566+00:00",
+          "monotonic": 924466.671,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1059209216,
+          "MemAvailableBytes": 12851470336,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14004768,
+            6588,
+            5399413,
+            1178524514,
+            101354,
+            0,
+            2704190,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:38:30.360995+00:00",
+          "monotonic": 924469.64,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1052901376,
+          "MemAvailableBytes": 12845244416,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14004881,
+            6588,
+            5399476,
+            1178529039,
+            101354,
+            0,
+            2704222,
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "window": 2,
+      "seconds": 60.20299999997951,
+      "stable": true,
+      "samples": [
+        {
+          "utc": "2026-09-10T01:38:30.553949+00:00",
+          "monotonic": 924469.843,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1052901376,
+          "MemAvailableBytes": 12845260800,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14004889,
+            6588,
+            5399483,
+            1178529331,
+            101354,
+            0,
+            2704224,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:38:35.755174+00:00",
+          "monotonic": 924475.046,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1054158848,
+          "MemAvailableBytes": 12846665728,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14005078,
+            6588,
+            5399578,
+            1178537319,
+            101355,
+            0,
+            2704274,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:38:40.954007+00:00",
+          "monotonic": 924480.234,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1057312768,
+          "MemAvailableBytes": 12849983488,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14005303,
+            6588,
+            5399705,
+            1178545224,
+            101355,
+            0,
+            2704340,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:38:46.158166+00:00",
+          "monotonic": 924485.437,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1057501184,
+          "MemAvailableBytes": 12850315264,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14005478,
+            6588,
+            5399804,
+            1178553231,
+            101355,
+            0,
+            2704398,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:38:51.384185+00:00",
+          "monotonic": 924490.671,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1081528320,
+          "MemAvailableBytes": 12874506240,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14005725,
+            6588,
+            5399922,
+            1178561169,
+            101355,
+            0,
+            2704469,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:38:56.584193+00:00",
+          "monotonic": 924495.875,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1078710272,
+          "MemAvailableBytes": 12871831552,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14005912,
+            6588,
+            5400011,
+            1178569156,
+            101356,
+            0,
+            2704530,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:39:01.783171+00:00",
+          "monotonic": 924501.062,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1060143104,
+          "MemAvailableBytes": 12853415936,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14006154,
+            6588,
+            5400123,
+            1178577062,
+            101356,
+            0,
+            2704599,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:39:07.018190+00:00",
+          "monotonic": 924506.296,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1039765504,
+          "MemAvailableBytes": 12833189888,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14006348,
+            6588,
+            5400228,
+            1178585100,
+            101356,
+            0,
+            2704659,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:39:12.229415+00:00",
+          "monotonic": 924511.515,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1025486848,
+          "MemAvailableBytes": 12819058688,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14006629,
+            6588,
+            5400357,
+            1178592982,
+            101356,
+            0,
+            2704716,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:39:17.459805+00:00",
+          "monotonic": 924516.75,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1031372800,
+          "MemAvailableBytes": 12825141248,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14006834,
+            6588,
+            5400461,
+            1178600987,
+            101357,
+            0,
+            2704765,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:39:22.681279+00:00",
+          "monotonic": 924521.968,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1034354688,
+          "MemAvailableBytes": 12828274688,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14007037,
+            6588,
+            5400568,
+            1178608947,
+            101357,
+            0,
+            2704824,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:39:27.894257+00:00",
+          "monotonic": 924527.187,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1042030592,
+          "MemAvailableBytes": 12836106240,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14007262,
+            6588,
+            5400672,
+            1178616899,
+            101357,
+            0,
+            2704881,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "utc": "2026-09-10T01:39:30.757425+00:00",
+          "monotonic": 924530.046,
+          "MemTotalBytes": 16548249600,
+          "MemFreeBytes": 1047306240,
+          "MemAvailableBytes": 12841455616,
+          "SwapCachedBytes": 67801088,
+          "SwapTotalBytes": 4294967296,
+          "SwapFreeBytes": 4083687424,
+          "pswpin": 322791,
+          "pswpout": 537116,
+          "cpuTicks": [
+            14007346,
+            6588,
+            5400734,
+            1178621308,
+            101357,
+            0,
+            2704912,
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "gate": {
+    "passed": true,
+    "windows": [
+      {
+        "window": 1,
+        "stable": true,
+        "seconds": 60.20299999997951
+      },
+      {
+        "window": 2,
+        "stable": true,
+        "seconds": 60.20299999997951
+      }
+    ],
+    "next": "resource preflight then G0; local characterization only"
+  },
+  "operations": [
+    {
+      "at": "2026-09-10T01:34:50.699519+00:00",
+      "argv": [
+        "docker",
+        "stop",
+        "2ab3a3db7d440558ef46b959f81a7531d83f109d76a3ab921ea3015ad14d25d7",
+        "867f12a02d682a37709523a24912ebed5c214a53d2ab815fd40e9b9913f277d5",
+        "fdd364c642fa4a6eec99a34abb06e872542d535c6a5c815104d90be303a04dc5",
+        "1b33536cbfe7db05294aca697f101f91565d930bcd8dac549ba808c5e14e87ab",
+        "935d5eb0248e29f674bf2f6725e83c4f111559798e2807a5ebb3fd483efefd6e",
+        "1b8731949d8e5e1a27e3905c678a3b730448697840ca2a4fa76953f7f3221df6",
+        "77b4526f2223e62768058f6d8c12118c44fe77b9d8e1c7068d7d5ae3a93dd6b0",
+        "023ab6a4e1480ececbeb2b2a8c486624657324ed720d10c6c85d9509a4f1aafc",
+        "422c32c989fba605532a167a7ae3a63015ee2f0f479abf8d617e39eb186ee285",
+        "c29d7594cfedc0ce57bd7cb7c3bfae3cee8ec1300becdb3983812ca0c8549c6f",
+        "b70b3b6e0759c079655bdb1a0c838cb52cc7e789074a8fc5d3e121c3f8098c0f",
+        "564109383fee7928b83433de0771560ed6b1664d42b7fdd3c5b0d7e154942b89"
+      ]
+    }
+  ]
+}

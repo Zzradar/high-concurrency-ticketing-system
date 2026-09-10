@@ -3,6 +3,8 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+import threading
+import time
 import unittest
 from unittest.mock import Mock, patch
 
@@ -10,7 +12,7 @@ ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'performance/scripts'))
 import run_phase14 as runner
 from phase14_verify import capture_temporary_owners
-from phase14_sampling import pg_delta
+from phase14_sampling import pg_delta, LightPostgresSampler
 from phase14_model import load_targets, online_plan
 
 
@@ -21,6 +23,44 @@ def compose_model():
 
 
 class RunnerTests(unittest.TestCase):
+    def test_light_postgres_sampling_has_independent_cadence_and_stops(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            env=Mock(root=Path(tmp));ready=threading.Event();calls=[]
+            def read(_):
+                calls.append(1)
+                if len(calls)>=2:ready.set()
+                return {'time':time.time(),'activeWaits':0,'lockWaits':0}
+            with patch('phase14_sampling.postgres',side_effect=read):
+                sampler=LightPostgresSampler(env,.01).start()
+                self.assertTrue(ready.wait(2));result=sampler.stop()
+            self.assertEqual(result['intervalSeconds'],.01);self.assertGreaterEqual(result['samples'],2)
+            self.assertEqual(result['errors'],[]);self.assertFalse(sampler.thread.is_alive())
+            self.assertEqual(len((Path(tmp)/'postgres-light.jsonl').read_text().splitlines()),result['samples'])
+
+    def test_light_postgres_read_failure_is_reported(self):
+        with tempfile.TemporaryDirectory() as tmp, patch('phase14_sampling.postgres',side_effect=RuntimeError('read failed')):
+            sampler=LightPostgresSampler(Mock(root=Path(tmp)),.01).start();sampler.thread.join(timeout=2)
+            result=sampler.stop();self.assertTrue(result['errors']);self.assertEqual(result['samples'],0)
+
+    def test_resource_preflight_rejects_new_swap_before_load(self):
+        sample={k:False for k in ('swapping','oom','restarted','unhealthy','networkExhausted','fdExhausted')}
+        sample.update(memoryFraction=.1,clockSkewMs=0)
+        cal={'idleSamples':[dict(sample),dict(sample)]};t=load_targets(smoke=True)
+        self.assertTrue(runner.resource_preflight(cal,t)['passed'])
+        cal['idleSamples'][1]['swapping']=True
+        self.assertFalse(runner.resource_preflight(cal,t)['passed'])
+        self.assertFalse(runner.resource_preflight({'idleSamples':[]},t)['passed'])
+
+    def test_reset_retains_containers_and_volumes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            env=runner.Environment(load_targets(smoke=True),tmp);env.validate=Mock();env.http=Mock()
+            env.compose=Mock(return_value=Mock(stdout=b'0'))
+            env.reset(yes=True)
+            calls=[c.args for c in env.compose.call_args_list]
+            self.assertTrue(any(c[:2]==('stop','backend') for c in calls))
+            self.assertIn(('exec','-T','redis','redis-cli','FLUSHALL','SYNC'),calls)
+            self.assertFalse(any(x in ('down','rm','prune','-v','--volumes') for c in calls for x in c))
+
     def test_login_background_control_thresholds(self):
         with tempfile.TemporaryDirectory() as tmp:
             roots=[Path(tmp)/name for name in ('control','login')];t=load_targets(smoke=True)

@@ -98,7 +98,10 @@ def seat(index, t, *, session_count=None):
 
 def hotspot(index, t, *, session_count=1, single=False):
     if not 0 <= index < t['hotspot']['users']: raise ValueError('hotspot user exhausted')
-    return seat(0 if single else index//t['hotspot']['contendersPerSeat'],t,session_count=session_count)
+    target=0 if single else index//t['hotspot']['contendersPerSeat']
+    if not single and t.get('mode')=='smoke' and t['hotspot']['seats']<session_count:
+        target*=session_count//t['hotspot']['seats']
+    return seat(target,t,session_count=session_count)
 
 
 def segments(count, t):

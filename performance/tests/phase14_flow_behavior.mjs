@@ -6,6 +6,7 @@ const targets=JSON.parse(fs.readFileSync(0,'utf8'));
 const root=path.resolve('performance/k6/lib');
 const source=fs.readFileSync(path.join(root,'phase14-model.js'),'utf8');
 const model=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+assert.equal(model.hotspotTarget(10,targets,20).sessionId,'perf-session-002-001');
 assert.deepEqual(Object.fromEntries(['browse','hold','order'].map(g=>[g,Array.from({length:20},(_,i)=>model.group(i,targets)).filter(x=>x===g).length])),{browse:12,hold:5,order:3});
 for (const [status,body,expected,result] of [[200,{id:1},200,'business_success'],[409,{code:'SEAT_CONFLICT'},201,'business_conflict'],[503,{code:'AUTH_BUSY'},200,'capacity_rejection'],[503,{code:'OTHER'},200,'system_error'],[0,null,200,'system_error'],[200,null,200,'system_error'],[200,{},200,'unexpected_contract']]) {
     assert.equal(model.classify(status,body,expected,x=>x.id===1,['SEAT_CONFLICT']),result);

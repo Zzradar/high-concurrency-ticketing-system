@@ -15,6 +15,10 @@ import generate_dataset as data
 
 
 class Phase14ModelTests(unittest.TestCase):
+    def test_small_h2_scope_reaches_both_activities(self):
+        t=model.load_targets(smoke=True)
+        targets=collections.Counter(model.hotspot(i,t,session_count=20)['sessionId'] for i in range(20))
+        self.assertEqual(targets,{'perf-session-001-001':10,'perf-session-002-001':10})
     def test_frozen_shapes_and_smoke_are_separate(self):
         t=model.load_targets(); s=model.load_targets(smoke=True)
         self.assertEqual(t['dataset']['activeAuthSessions'],100000)

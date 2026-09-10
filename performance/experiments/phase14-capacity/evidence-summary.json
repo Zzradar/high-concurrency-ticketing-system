@@ -4853,6 +4853,2179 @@
         "p99": 2.98,
         "max": 3.0
       }
+    },
+    {
+      "runId": "phase14-smoke-g0-20260910T014114Z-a26cab",
+      "case": "G0",
+      "mode": "smoke",
+      "roundIndex": 0,
+      "windowIndex": 0,
+      "path": "formal",
+      "sessionCount": 1,
+      "verdict": {
+        "measurement_validity": {
+          "status": "fail",
+          "reasons": [
+            "local_characterization_only",
+            "smoke input is not formal capacity"
+          ]
+        },
+        "capacity": {
+          "status": "not_applicable",
+          "badResults": [],
+          "latencyFailures": []
+        },
+        "overload_protection": {
+          "status": "not_applicable",
+          "reason": "not an overload experiment"
+        }
+      },
+      "functionalCheck": {
+        "passed": true,
+        "notCapacityEvidence": true
+      },
+      "correctness": {
+        "passed": true,
+        "global": {
+          "accepted_payment_mismatch": 0,
+          "active_reservation_seat_mismatch": 0,
+          "confirmed_state_mismatch": 0,
+          "effective_seat_overlap": 0,
+          "held_seat_owner_mismatch": 0,
+          "multiple_processing_attempts": 0,
+          "multiple_refunds": 0,
+          "order_amount_mismatch": 0,
+          "order_paid_at_mismatch": 0,
+          "order_reservation_status_mismatch": 0,
+          "refund_order_or_amount_mismatch": 0,
+          "sold_state_mismatch": 0,
+          "terminal_reservation_still_holds": 0,
+          "unaccepted_success_refund_mismatch": 0
+        },
+        "errors": []
+      },
+      "recovery": {
+        "passed": false,
+        "errors": [
+          "queues not drained continuously",
+          "inflight not recovered",
+          "postgres not recovered",
+          "control recovery: health",
+          "control recovery: auth",
+          "control recovery: availability",
+          "memory growth/window"
+        ],
+        "observedSeconds": 2.123964309692383,
+        "mode": "smoke"
+      },
+      "resourcePreflight": {
+        "passed": true,
+        "errors": [],
+        "samples": 2,
+        "formalIsolationEstablished": false
+      },
+      "delivery": {
+        "main": {
+          "planned": 20,
+          "started": 20.0,
+          "completed": 20.0,
+          "interrupted": 0.0
+        }
+      },
+      "dropped": 0,
+      "deliveryErrors": [],
+      "stopReasons": [],
+      "stepCounts": [
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "health",
+            "business_success"
+          ],
+          "count": 20.0
+        }
+      ],
+      "latencies": [
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "health",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 1.0,
+          "p95": 2.1000000000000014,
+          "p99": 3.6199999999999974,
+          "max": 4.0
+        }
+      ]
+    },
+    {
+      "runId": "phase14-smoke-u1-20260910T014150Z-ea4415",
+      "case": "U1",
+      "mode": "smoke",
+      "roundIndex": 0,
+      "windowIndex": 0,
+      "path": "formal",
+      "sessionCount": 1,
+      "verdict": {
+        "measurement_validity": {
+          "status": "fail",
+          "reasons": [
+            "local_characterization_only",
+            "smoke input is not formal capacity"
+          ]
+        },
+        "capacity": {
+          "status": "not_applicable",
+          "badResults": [],
+          "latencyFailures": []
+        },
+        "overload_protection": {
+          "status": "not_applicable",
+          "reason": "not an overload experiment"
+        }
+      },
+      "functionalCheck": {
+        "passed": true,
+        "notCapacityEvidence": true
+      },
+      "correctness": {
+        "passed": true,
+        "global": {
+          "accepted_payment_mismatch": 0,
+          "active_reservation_seat_mismatch": 0,
+          "confirmed_state_mismatch": 0,
+          "effective_seat_overlap": 0,
+          "held_seat_owner_mismatch": 0,
+          "multiple_processing_attempts": 0,
+          "multiple_refunds": 0,
+          "order_amount_mismatch": 0,
+          "order_paid_at_mismatch": 0,
+          "order_reservation_status_mismatch": 0,
+          "refund_order_or_amount_mismatch": 0,
+          "sold_state_mismatch": 0,
+          "terminal_reservation_still_holds": 0,
+          "unaccepted_success_refund_mismatch": 0
+        },
+        "errors": []
+      },
+      "recovery": {
+        "passed": false,
+        "errors": [
+          "queues not drained continuously",
+          "inflight not recovered",
+          "postgres not recovered",
+          "control recovery: health",
+          "control recovery: auth",
+          "control recovery: availability",
+          "memory growth/window"
+        ],
+        "observedSeconds": 5.200895547866821,
+        "mode": "smoke"
+      },
+      "resourcePreflight": {
+        "passed": true,
+        "errors": [],
+        "samples": 3,
+        "formalIsolationEstablished": false
+      },
+      "delivery": {
+        "main": {
+          "planned": null,
+          "started": 59.0,
+          "completed": 59.0,
+          "interrupted": 0.0
+        },
+        "control_health": {
+          "planned": 24,
+          "started": 24.0,
+          "completed": 24.0,
+          "interrupted": 0.0
+        },
+        "control_auth": {
+          "planned": 24,
+          "started": 24.0,
+          "completed": 24.0,
+          "interrupted": 0.0
+        },
+        "control_availability": {
+          "planned": 24,
+          "started": 24.0,
+          "completed": 24.0,
+          "interrupted": 0.0
+        },
+        "payment": {
+          "planned": 12,
+          "started": 12.0,
+          "completed": 12.0,
+          "interrupted": 0.0
+        }
+      },
+      "dropped": 0,
+      "deliveryErrors": [],
+      "stopReasons": [],
+      "stepCounts": [
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "control_auth",
+            "auth",
+            "business_success"
+          ],
+          "count": 24.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "control_availability",
+            "availability",
+            "business_success"
+          ],
+          "count": 24.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "control_health",
+            "health",
+            "business_success"
+          ],
+          "count": 24.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "abandon",
+            "business_success"
+          ],
+          "count": 5.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "adjust",
+            "business_success"
+          ],
+          "count": 8.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "auth",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "availability",
+            "business_success"
+          ],
+          "count": 71.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "confirm",
+            "business_success"
+          ],
+          "count": 3.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "event",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "hold",
+            "business_success"
+          ],
+          "count": 8.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "journey",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "layout",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "order",
+            "business_success"
+          ],
+          "count": 3.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "page",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "session",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "adjust",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "confirm",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "hold",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "journey",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "order",
+            "business_success"
+          ],
+          "count": 24.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "payment_poll",
+            "business_success"
+          ],
+          "count": 52.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "payment_start",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "payment_terminal",
+            "business_success"
+          ],
+          "count": 12.0
+        }
+      ],
+      "latencies": [
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "control_auth",
+            "auth",
+            "business_success"
+          ],
+          "count": 24,
+          "p50": 4.0,
+          "p95": 5.0,
+          "p99": 5.77,
+          "max": 6.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "control_availability",
+            "availability",
+            "business_success"
+          ],
+          "count": 24,
+          "p50": 2.0,
+          "p95": 3.0,
+          "p99": 3.0,
+          "max": 3.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "control_health",
+            "health",
+            "business_success"
+          ],
+          "count": 24,
+          "p50": 1.0,
+          "p95": 2.0,
+          "p99": 2.0,
+          "max": 2.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "abandon",
+            "business_success"
+          ],
+          "count": 5,
+          "p50": 3.0,
+          "p95": 4.8,
+          "p99": 4.96,
+          "max": 5.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "adjust",
+            "business_success"
+          ],
+          "count": 8,
+          "p50": 5.5,
+          "p95": 7.949999999999998,
+          "p99": 8.79,
+          "max": 9.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "auth",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 2.0,
+          "p95": 4.000000000000014,
+          "p99": 19.199999999999974,
+          "max": 23.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "availability",
+            "business_success"
+          ],
+          "count": 71,
+          "p50": 2.0,
+          "p95": 3.0,
+          "p99": 3.0,
+          "max": 3.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "confirm",
+            "business_success"
+          ],
+          "count": 3,
+          "p50": 9.0,
+          "p95": 12.6,
+          "p99": 12.92,
+          "max": 13.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "event",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 0.884297,
+          "p95": 1.7311097,
+          "p99": 1.74796194,
+          "max": 1.752175
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "hold",
+            "business_success"
+          ],
+          "count": 8,
+          "p50": 5.0,
+          "p95": 6.0,
+          "p99": 6.0,
+          "max": 6.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "journey",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 12.308888101950288,
+          "p95": 30.536576608195904,
+          "p99": 36.042570612207044,
+          "max": 37.419069113209844
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "layout",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 1.3578815,
+          "p95": 2.2832876,
+          "p99": 2.36694232,
+          "max": 2.387856
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "order",
+            "business_success"
+          ],
+          "count": 3,
+          "p50": 3.0,
+          "p95": 3.9,
+          "p99": 3.98,
+          "max": 4.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "page",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 4.5,
+          "p95": 6.0,
+          "p99": 6.0,
+          "max": 6.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "session",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 2.0,
+          "p95": 3.0,
+          "p99": 3.0,
+          "max": 3.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "adjust",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 4.5,
+          "p95": 5.0,
+          "p99": 5.0,
+          "max": 5.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "confirm",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 11.5,
+          "p95": 14.45,
+          "p99": 14.89,
+          "max": 15.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "hold",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 7.0,
+          "p95": 9.0,
+          "p99": 9.0,
+          "max": 9.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "journey",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 26.0,
+          "p95": 29.9,
+          "p99": 30.78,
+          "max": 31.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "order",
+            "business_success"
+          ],
+          "count": 24,
+          "p50": 2.5,
+          "p95": 3.0,
+          "p99": 3.7699999999999996,
+          "max": 4.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "payment_poll",
+            "business_success"
+          ],
+          "count": 52,
+          "p50": 2.0,
+          "p95": 2.4499999999999957,
+          "p99": 3.0,
+          "max": 3.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "payment_start",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 6.5,
+          "p95": 8.0,
+          "p99": 8.0,
+          "max": 8.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "payment_terminal",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 4047.0,
+          "p95": 6050.25,
+          "p99": 6052.45,
+          "max": 6053.0
+        }
+      ]
+    },
+    {
+      "runId": "phase14-smoke-u1-20260910T014235Z-cc30e7",
+      "case": "U1",
+      "mode": "smoke",
+      "roundIndex": 1,
+      "windowIndex": 0,
+      "path": "formal",
+      "sessionCount": 1,
+      "verdict": {
+        "measurement_validity": {
+          "status": "fail",
+          "reasons": [
+            "local_characterization_only",
+            "smoke input is not formal capacity"
+          ]
+        },
+        "capacity": {
+          "status": "not_applicable",
+          "badResults": [],
+          "latencyFailures": []
+        },
+        "overload_protection": {
+          "status": "not_applicable",
+          "reason": "not an overload experiment"
+        }
+      },
+      "functionalCheck": {
+        "passed": true,
+        "notCapacityEvidence": true
+      },
+      "correctness": {
+        "passed": true,
+        "global": {
+          "accepted_payment_mismatch": 0,
+          "active_reservation_seat_mismatch": 0,
+          "confirmed_state_mismatch": 0,
+          "effective_seat_overlap": 0,
+          "held_seat_owner_mismatch": 0,
+          "multiple_processing_attempts": 0,
+          "multiple_refunds": 0,
+          "order_amount_mismatch": 0,
+          "order_paid_at_mismatch": 0,
+          "order_reservation_status_mismatch": 0,
+          "refund_order_or_amount_mismatch": 0,
+          "sold_state_mismatch": 0,
+          "terminal_reservation_still_holds": 0,
+          "unaccepted_success_refund_mismatch": 0
+        },
+        "errors": []
+      },
+      "recovery": {
+        "passed": false,
+        "errors": [
+          "queues not drained continuously",
+          "inflight not recovered",
+          "postgres not recovered",
+          "control recovery: health",
+          "control recovery: auth",
+          "control recovery: availability",
+          "memory growth/window"
+        ],
+        "observedSeconds": 9.401705741882324,
+        "mode": "smoke"
+      },
+      "resourcePreflight": {
+        "passed": true,
+        "errors": [],
+        "samples": 2,
+        "formalIsolationEstablished": false
+      },
+      "delivery": {
+        "main": {
+          "planned": null,
+          "started": 58.0,
+          "completed": 58.0,
+          "interrupted": 0.0
+        },
+        "control_health": {
+          "planned": 24,
+          "started": 24.0,
+          "completed": 24.0,
+          "interrupted": 0.0
+        },
+        "control_auth": {
+          "planned": 24,
+          "started": 24.0,
+          "completed": 24.0,
+          "interrupted": 0.0
+        },
+        "control_availability": {
+          "planned": 24,
+          "started": 24.0,
+          "completed": 24.0,
+          "interrupted": 0.0
+        },
+        "payment": {
+          "planned": 12,
+          "started": 12.0,
+          "completed": 12.0,
+          "interrupted": 0.0
+        }
+      },
+      "dropped": 0,
+      "deliveryErrors": [],
+      "stopReasons": [],
+      "stepCounts": [
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "control_auth",
+            "auth",
+            "business_success"
+          ],
+          "count": 24.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "control_availability",
+            "availability",
+            "business_success"
+          ],
+          "count": 24.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "control_health",
+            "health",
+            "business_success"
+          ],
+          "count": 24.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "abandon",
+            "business_success"
+          ],
+          "count": 5.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "adjust",
+            "business_success"
+          ],
+          "count": 8.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "auth",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "availability",
+            "business_success"
+          ],
+          "count": 70.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "confirm",
+            "business_success"
+          ],
+          "count": 3.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "event",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "hold",
+            "business_success"
+          ],
+          "count": 8.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "journey",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "layout",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "order",
+            "business_success"
+          ],
+          "count": 3.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "page",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "main",
+            "session",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "adjust",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "confirm",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "hold",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "journey",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "order",
+            "business_success"
+          ],
+          "count": 24.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "payment_poll",
+            "business_success"
+          ],
+          "count": 56.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "payment_start",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "payment_terminal",
+            "business_success"
+          ],
+          "count": 12.0
+        }
+      ],
+      "latencies": [
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "control_auth",
+            "auth",
+            "business_success"
+          ],
+          "count": 24,
+          "p50": 3.0,
+          "p95": 6.0,
+          "p99": 6.77,
+          "max": 7.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "control_availability",
+            "availability",
+            "business_success"
+          ],
+          "count": 24,
+          "p50": 2.0,
+          "p95": 3.0,
+          "p99": 3.7699999999999996,
+          "max": 4.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "control_health",
+            "health",
+            "business_success"
+          ],
+          "count": 24,
+          "p50": 1.0,
+          "p95": 2.0,
+          "p99": 2.7699999999999996,
+          "max": 3.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "abandon",
+            "business_success"
+          ],
+          "count": 5,
+          "p50": 4.0,
+          "p95": 4.0,
+          "p99": 4.0,
+          "max": 4.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "adjust",
+            "business_success"
+          ],
+          "count": 8,
+          "p50": 5.0,
+          "p95": 6.0,
+          "p99": 6.0,
+          "max": 6.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "auth",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 2.0,
+          "p95": 5.3000000000000185,
+          "p99": 25.059999999999967,
+          "max": 30.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "availability",
+            "business_success"
+          ],
+          "count": 70,
+          "p50": 2.0,
+          "p95": 3.0,
+          "p99": 3.3100000000000023,
+          "max": 4.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "confirm",
+            "business_success"
+          ],
+          "count": 3,
+          "p50": 10.0,
+          "p95": 10.0,
+          "p99": 10.0,
+          "max": 10.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "event",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 0.9506129999999999,
+          "p95": 1.92222655,
+          "p99": 2.08865971,
+          "max": 2.130268
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "hold",
+            "business_success"
+          ],
+          "count": 8,
+          "p50": 5.0,
+          "p95": 7.0,
+          "p99": 7.0,
+          "max": 7.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "journey",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 12.695101282559335,
+          "p95": 30.766376895271257,
+          "p99": 46.517825732640894,
+          "max": 50.45568794198334
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "layout",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 1.445566,
+          "p95": 2.512355,
+          "p99": 2.6080238,
+          "max": 2.631941
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "order",
+            "business_success"
+          ],
+          "count": 3,
+          "p50": 2.0,
+          "p95": 2.0,
+          "p99": 2.0,
+          "max": 2.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "page",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 4.5,
+          "p95": 7.050000000000001,
+          "p99": 7.809999999999999,
+          "max": 8.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "main",
+            "session",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 1.0,
+          "p95": 3.0500000000000007,
+          "p99": 3.8099999999999987,
+          "max": 4.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "adjust",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 4.0,
+          "p95": 6.0,
+          "p99": 6.0,
+          "max": 6.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "confirm",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 11.0,
+          "p95": 16.0,
+          "p99": 16.0,
+          "max": 16.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "hold",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 6.0,
+          "p95": 9.349999999999998,
+          "p99": 10.670000000000002,
+          "max": 11.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "journey",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 25.0,
+          "p95": 35.349999999999994,
+          "p99": 36.67,
+          "max": 37.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "order",
+            "business_success"
+          ],
+          "count": 24,
+          "p50": 2.0,
+          "p95": 4.0,
+          "p99": 4.77,
+          "max": 5.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "payment_poll",
+            "business_success"
+          ],
+          "count": 56,
+          "p50": 2.0,
+          "p95": 3.0,
+          "p99": 3.0,
+          "max": 3.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "payment_start",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 6.5,
+          "p95": 8.899999999999999,
+          "p99": 9.780000000000001,
+          "max": 10.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "payment_terminal",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 4553.0,
+          "p95": 6045.9,
+          "p99": 6046.78,
+          "max": 6047.0
+        }
+      ]
+    },
+    {
+      "runId": "phase14-smoke-u2-20260910T014323Z-c168c4",
+      "case": "U2",
+      "mode": "smoke",
+      "roundIndex": 0,
+      "windowIndex": 0,
+      "path": "formal",
+      "sessionCount": 1,
+      "verdict": {
+        "measurement_validity": {
+          "status": "fail",
+          "reasons": [
+            "local_characterization_only",
+            "smoke input is not formal capacity"
+          ]
+        },
+        "capacity": {
+          "status": "not_applicable",
+          "badResults": [],
+          "latencyFailures": []
+        },
+        "overload_protection": {
+          "status": "not_applicable",
+          "reason": "not an overload experiment"
+        }
+      },
+      "functionalCheck": {
+        "passed": true,
+        "notCapacityEvidence": true
+      },
+      "correctness": {
+        "passed": true,
+        "global": {
+          "accepted_payment_mismatch": 0,
+          "active_reservation_seat_mismatch": 0,
+          "confirmed_state_mismatch": 0,
+          "effective_seat_overlap": 0,
+          "held_seat_owner_mismatch": 0,
+          "multiple_processing_attempts": 0,
+          "multiple_refunds": 0,
+          "order_amount_mismatch": 0,
+          "order_paid_at_mismatch": 0,
+          "order_reservation_status_mismatch": 0,
+          "refund_order_or_amount_mismatch": 0,
+          "sold_state_mismatch": 0,
+          "terminal_reservation_still_holds": 0,
+          "unaccepted_success_refund_mismatch": 0
+        },
+        "errors": []
+      },
+      "recovery": {
+        "passed": false,
+        "errors": [
+          "queues not drained continuously",
+          "inflight not recovered",
+          "postgres not recovered",
+          "control recovery: health",
+          "control recovery: auth",
+          "control recovery: availability",
+          "memory growth/window"
+        ],
+        "observedSeconds": 7.328889846801758,
+        "mode": "smoke"
+      },
+      "resourcePreflight": {
+        "passed": true,
+        "errors": [],
+        "samples": 2,
+        "formalIsolationEstablished": false
+      },
+      "delivery": {
+        "enter_0": {
+          "planned": 20,
+          "started": 20.0,
+          "completed": 20.0,
+          "interrupted": 0.0
+        },
+        "refresh_0": {
+          "planned": 10,
+          "started": 10.0,
+          "completed": 10.0,
+          "interrupted": 0.0
+        },
+        "refresh_1": {
+          "planned": 40,
+          "started": 40.0,
+          "completed": 40.0,
+          "interrupted": 0.0
+        },
+        "control_health": {
+          "planned": 24,
+          "started": 24.0,
+          "completed": 24.0,
+          "interrupted": 0.0
+        },
+        "control_auth": {
+          "planned": 24,
+          "started": 24.0,
+          "completed": 24.0,
+          "interrupted": 0.0
+        },
+        "control_availability": {
+          "planned": 24,
+          "started": 24.0,
+          "completed": 24.0,
+          "interrupted": 0.0
+        },
+        "payment": {
+          "planned": 12,
+          "started": 12.0,
+          "completed": 12.0,
+          "interrupted": 0.0
+        }
+      },
+      "dropped": 0,
+      "deliveryErrors": [],
+      "stopReasons": [],
+      "stepCounts": [
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "control_auth",
+            "auth",
+            "business_success"
+          ],
+          "count": 24.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "control_availability",
+            "availability",
+            "business_success"
+          ],
+          "count": 24.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "control_health",
+            "health",
+            "business_success"
+          ],
+          "count": 24.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "enter_0",
+            "abandon",
+            "business_success"
+          ],
+          "count": 5.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "enter_0",
+            "adjust",
+            "business_success"
+          ],
+          "count": 8.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "enter_0",
+            "auth",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "enter_0",
+            "availability",
+            "business_success"
+          ],
+          "count": 32.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "enter_0",
+            "confirm",
+            "business_success"
+          ],
+          "count": 3.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "enter_0",
+            "event",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "enter_0",
+            "hold",
+            "business_success"
+          ],
+          "count": 8.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "enter_0",
+            "journey",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "enter_0",
+            "layout",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "enter_0",
+            "order",
+            "business_success"
+          ],
+          "count": 3.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "enter_0",
+            "page",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "enter_0",
+            "session",
+            "business_success"
+          ],
+          "count": 20.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "adjust",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "confirm",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "hold",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "journey",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "order",
+            "business_success"
+          ],
+          "count": 24.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "payment_poll",
+            "business_success"
+          ],
+          "count": 50.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "payment_start",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "payment",
+            "payment_terminal",
+            "business_success"
+          ],
+          "count": 12.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "refresh_0",
+            "availability",
+            "business_success"
+          ],
+          "count": 10.0
+        },
+        {
+          "metric": "phase14_results",
+          "tags": [
+            "refresh_1",
+            "availability",
+            "business_success"
+          ],
+          "count": 40.0
+        }
+      ],
+      "latencies": [
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "control_auth",
+            "auth",
+            "business_success"
+          ],
+          "count": 24,
+          "p50": 4.0,
+          "p95": 6.0,
+          "p99": 7.539999999999999,
+          "max": 8.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "control_availability",
+            "availability",
+            "business_success"
+          ],
+          "count": 24,
+          "p50": 2.0,
+          "p95": 3.0,
+          "p99": 4.539999999999999,
+          "max": 5.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "control_health",
+            "health",
+            "business_success"
+          ],
+          "count": 24,
+          "p50": 1.0,
+          "p95": 2.0,
+          "p99": 4.309999999999999,
+          "max": 5.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "enter_0",
+            "abandon",
+            "business_success"
+          ],
+          "count": 5,
+          "p50": 4.0,
+          "p95": 4.8,
+          "p99": 4.96,
+          "max": 5.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "enter_0",
+            "adjust",
+            "business_success"
+          ],
+          "count": 8,
+          "p50": 5.0,
+          "p95": 7.299999999999999,
+          "p99": 7.859999999999999,
+          "max": 8.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "enter_0",
+            "auth",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 2.0,
+          "p95": 5.6000000000000085,
+          "p99": 14.719999999999985,
+          "max": 17.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "enter_0",
+            "availability",
+            "business_success"
+          ],
+          "count": 32,
+          "p50": 1.749212,
+          "p95": 3.0,
+          "p99": 3.0,
+          "max": 3.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "enter_0",
+            "confirm",
+            "business_success"
+          ],
+          "count": 3,
+          "p50": 9.0,
+          "p95": 11.7,
+          "p99": 11.94,
+          "max": 12.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "enter_0",
+            "event",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 0.8712505,
+          "p95": 1.6485868500000003,
+          "p99": 1.8917845699999996,
+          "max": 1.952584
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "enter_0",
+            "hold",
+            "business_success"
+          ],
+          "count": 8,
+          "p50": 5.5,
+          "p95": 7.6499999999999995,
+          "p99": 7.93,
+          "max": 8.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "enter_0",
+            "journey",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 12.168353771790862,
+          "p95": 31.143743821512917,
+          "p99": 42.15879938771946,
+          "max": 44.912563279271126
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "enter_0",
+            "layout",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 1.412495,
+          "p95": 2.4778584500000003,
+          "p99": 2.4948892899999997,
+          "max": 2.499147
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "enter_0",
+            "order",
+            "business_success"
+          ],
+          "count": 3,
+          "p50": 3.0,
+          "p95": 3.0,
+          "p99": 3.0,
+          "max": 3.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "enter_0",
+            "page",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 4.0,
+          "p95": 7.150000000000002,
+          "p99": 9.429999999999996,
+          "max": 10.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "enter_0",
+            "session",
+            "business_success"
+          ],
+          "count": 20,
+          "p50": 1.0,
+          "p95": 3.0,
+          "p99": 3.0,
+          "max": 3.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "adjust",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 4.0,
+          "p95": 5.449999999999999,
+          "p99": 5.890000000000001,
+          "max": 6.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "confirm",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 11.0,
+          "p95": 15.899999999999999,
+          "p99": 16.78,
+          "max": 17.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "hold",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 6.0,
+          "p95": 9.349999999999998,
+          "p99": 10.670000000000002,
+          "max": 11.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "journey",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 25.0,
+          "p95": 33.14999999999999,
+          "p99": 36.230000000000004,
+          "max": 37.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "order",
+            "business_success"
+          ],
+          "count": 24,
+          "p50": 2.5,
+          "p95": 3.0,
+          "p99": 3.7699999999999996,
+          "max": 4.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "payment_poll",
+            "business_success"
+          ],
+          "count": 50,
+          "p50": 2.0,
+          "p95": 3.0,
+          "p99": 4.529999999999994,
+          "max": 6.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "payment_start",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 6.0,
+          "p95": 8.799999999999997,
+          "p99": 10.560000000000002,
+          "max": 11.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "payment",
+            "payment_terminal",
+            "business_success"
+          ],
+          "count": 12,
+          "p50": 4039.5,
+          "p95": 6059.55,
+          "p99": 6067.91,
+          "max": 6070.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "refresh_0",
+            "availability",
+            "business_success"
+          ],
+          "count": 10,
+          "p50": 2.0,
+          "p95": 3.0,
+          "p99": 3.0,
+          "max": 3.0
+        },
+        {
+          "metric": "phase14_duration_ms",
+          "tags": [
+            "refresh_1",
+            "availability",
+            "business_success"
+          ],
+          "count": 40,
+          "p50": 2.0,
+          "p95": 3.0,
+          "p99": 3.6099999999999994,
+          "max": 4.0
+        }
+      ]
+    },
+    {
+      "runId": "phase14-smoke-u2-20260910T014409Z-495ad3",
+      "case": "U2",
+      "mode": "smoke",
+      "roundIndex": 1,
+      "windowIndex": 0,
+      "path": "formal",
+      "sessionCount": 1,
+      "verdict": {
+        "measurement_validity": {
+          "status": "fail",
+          "reasons": [
+            "enter_0: planned != started",
+            "enter_0: missing/interrupted iterations",
+            "refresh_0: planned != started",
+            "refresh_0: missing/interrupted iterations",
+            "refresh_1: planned != started",
+            "refresh_1: missing/interrupted iterations",
+            "control_health: planned != started",
+            "control_health: missing/interrupted iterations",
+            "control_auth: planned != started",
+            "control_auth: missing/interrupted iterations",
+            "control_availability: planned != started",
+            "control_availability: missing/interrupted iterations",
+            "payment: planned != started",
+            "payment: missing/interrupted iterations",
+            "invalid generator/host: swapping",
+            "k6 exit 105",
+            "k6 exit 137",
+            "k6 exit 105",
+            "k6 exit 105",
+            "missing request evidence",
+            "local_characterization_only",
+            "smoke input is not formal capacity"
+          ]
+        },
+        "capacity": {
+          "status": "not_applicable",
+          "badResults": [],
+          "latencyFailures": []
+        },
+        "overload_protection": {
+          "status": "not_applicable",
+          "reason": "not an overload experiment"
+        }
+      },
+      "functionalCheck": {
+        "passed": false,
+        "notCapacityEvidence": true
+      },
+      "correctness": {
+        "passed": true,
+        "global": {
+          "accepted_payment_mismatch": 0,
+          "active_reservation_seat_mismatch": 0,
+          "confirmed_state_mismatch": 0,
+          "effective_seat_overlap": 0,
+          "held_seat_owner_mismatch": 0,
+          "multiple_processing_attempts": 0,
+          "multiple_refunds": 0,
+          "order_amount_mismatch": 0,
+          "order_paid_at_mismatch": 0,
+          "order_reservation_status_mismatch": 0,
+          "refund_order_or_amount_mismatch": 0,
+          "sold_state_mismatch": 0,
+          "terminal_reservation_still_holds": 0,
+          "unaccepted_success_refund_mismatch": 0
+        },
+        "errors": []
+      },
+      "recovery": {
+        "passed": false,
+        "errors": [
+          "queues not drained continuously",
+          "inflight not recovered",
+          "postgres not recovered",
+          "control recovery: health",
+          "control recovery: auth",
+          "control recovery: availability",
+          "memory growth/window"
+        ],
+        "observedSeconds": -10.86246919631958,
+        "mode": "smoke"
+      },
+      "resourcePreflight": {
+        "passed": true,
+        "errors": [],
+        "samples": 3,
+        "formalIsolationEstablished": false
+      },
+      "delivery": {
+        "enter_0": {
+          "planned": 20,
+          "started": 0,
+          "completed": 0,
+          "interrupted": 0
+        },
+        "refresh_0": {
+          "planned": 10,
+          "started": 0,
+          "completed": 0,
+          "interrupted": 0
+        },
+        "refresh_1": {
+          "planned": 40,
+          "started": 0,
+          "completed": 0,
+          "interrupted": 0
+        },
+        "control_health": {
+          "planned": 24,
+          "started": 0,
+          "completed": 0,
+          "interrupted": 0
+        },
+        "control_auth": {
+          "planned": 24,
+          "started": 0,
+          "completed": 0,
+          "interrupted": 0
+        },
+        "control_availability": {
+          "planned": 24,
+          "started": 0,
+          "completed": 0,
+          "interrupted": 0
+        },
+        "payment": {
+          "planned": 12,
+          "started": 0,
+          "completed": 0,
+          "interrupted": 0
+        }
+      },
+      "dropped": 0,
+      "deliveryErrors": [
+        "enter_0: planned != started",
+        "enter_0: missing/interrupted iterations",
+        "refresh_0: planned != started",
+        "refresh_0: missing/interrupted iterations",
+        "refresh_1: planned != started",
+        "refresh_1: missing/interrupted iterations",
+        "control_health: planned != started",
+        "control_health: missing/interrupted iterations",
+        "control_auth: planned != started",
+        "control_auth: missing/interrupted iterations",
+        "control_availability: planned != started",
+        "control_availability: missing/interrupted iterations",
+        "payment: planned != started",
+        "payment: missing/interrupted iterations"
+      ],
+      "stopReasons": [
+        "invalid generator/host: swapping",
+        "k6 exit 105",
+        "k6 exit 137",
+        "k6 exit 105",
+        "k6 exit 105"
+      ],
+      "stepCounts": [],
+      "latencies": []
     }
   ],
   "generation": {
@@ -4992,11 +7165,29 @@
     }
   },
   "stop": {
-    "runId": "phase14-smoke-u1-20260910T001313Z-90e143",
-    "swapInBefore": 322787,
-    "swapInAfter": 322791,
+    "runId": "phase14-smoke-u2-20260910T014409Z-495ad3",
+    "swapInBefore": 322791,
+    "swapInAfter": 322803,
     "swapOutBefore": 537116,
     "swapOutAfter": 537116,
-    "reason": "shared Docker Desktop VM swapped; no automatic changes to other projects"
+    "secondsBeforeRelease": 4.86246919631958,
+    "reason": "Swap-in grew after successful authorized resource release and G0; stop rule retained; no further load retries."
+  },
+  "previousStops": [
+    {
+      "runId": "phase14-smoke-u1-20260910T001313Z-90e143",
+      "swapInBefore": 322787,
+      "swapInAfter": 322791,
+      "swapOutBefore": 537116,
+      "swapOutAfter": 537116,
+      "reason": "shared Docker Desktop VM swapped; no automatic changes to other projects"
+    }
+  ],
+  "authorizedResourceRelease": {
+    "evidence": "approved-project-stop-evidence.json",
+    "stoppedContainers": 12,
+    "volumesRetained": 3,
+    "otherContainersUnchanged": true,
+    "twoFreshWindowsPassed": true
   }
 }

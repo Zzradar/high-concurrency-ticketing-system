@@ -41,7 +41,7 @@ python -X utf8 performance/scripts/run_phase14.py prepare --yes
 python -X utf8 performance/scripts/run_phase14.py calibrate --yes
 ```
 
-`--yes` 仅允许已验证的 Phase14 专属项目/卷操作。运行器拒绝其他项目、外部卷/网络、未知 bind mount、错误目标配置与损坏快照。每轮恢复完整快照并检查 Redis DBSIZE=0；不是仅清业务行。正式 campaign 在当前没有隔离证据的实现中拒绝运行，不能通过改报告字段放行。
+`--yes` 仅允许已验证的 Phase14 专属项目/卷操作。运行器拒绝其他项目、外部卷/网络、未知 bind mount、错误目标配置与损坏快照。每轮在保留卷的前提下恢复完整快照、清空专属 Redis 并检查 DBSIZE=0；不是仅清业务行。正式 campaign 在当前没有隔离证据的实现中拒绝运行，不能通过改报告字段放行。
 
 ## 关键语义与观测边界
 
@@ -59,7 +59,7 @@ PostgreSQL 活动等待过滤目标库、应用名、client backend 和 active �
 
 ## 测试与兼容调整
 
-128 项 performance Python 测试通过，包括 Node 执行真实 Phase14 JS 模块的 HTTP/时间模拟测试，覆盖分组、一次分支、同 checkout 恢复、登录 Cookie jar、支付 deadline、分类守恒和标签。C++ 观察对象覆盖重复/并发完成、空/错/超时、销毁与异常路径；标准 Dockerfile 构建及 CTest 30/30 通过。
+138 项 performance Python 测试通过，包括 Node 执行真实 Phase14 JS 模块的 HTTP/时间模拟测试，覆盖分组、一次分支、同 checkout 恢复、登录 Cookie jar、支付 deadline、分类守恒和标签。C++ 观察对象覆盖重复/并发完成、空/错/超时、销毁与异常路径；标准 Dockerfile 构建及 CTest 30/30 通过。
 
 对旧测试仅作一处兼容更新：`performance/tests/test_k6_framework.py` 的 sleep 允许列表增加 `phase14-flow.js`。原 Phase10 开放单接口负载的无 sleep 断言全部保留；Phase14 的闭合思考、刷新和支付轮询另有行为测试。
 
@@ -74,3 +74,9 @@ PostgreSQL 活动等待过滤目标库、应用名、client backend 和 active �
 - [Google SRE 监控](https://sre.google/sre-book/monitoring-distributed-systems/)：延迟、流量、错误和饱和度联合解释。
 - [Hi.Events k6](https://github.com/HiEventsDev/Hi.Events/blob/develop/misc/k6/README.md)、[pretix scaling](https://docs.pretix.eu/self-hosting/scaling/) 与 [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo/blob/main/src/loadgenerator/locustfile.py)：参考旅程/带权行为，不借用其吞吐数字。
 - [Stripe rate limits](https://docs.stripe.com/rate-limits)：本轮不向真实 Stripe 施压。模拟支付与真实渠道容量不能互相替代。
+
+## 2026-09-10 获准停止旧项目后的更新
+
+三个项目的 12 个容器经精确标签再次核验后仅用 docker stop 停止；3 个卷保留、其他容器内容和状态不变。宿主空闲后的两个新 60 秒窗口无换页增长，随后资源预检、G0、两轮 U1 和首轮 U2 功能预演通过。第二轮 U2 释放前再次出现 pswpin +12，按停止规则中止，没有继续压力运行。详见阶段报告及停止审计。
+
+新增 `phase14_stop_approved_projects.py` 及测试，提供精确项目停止、原始/归一化状态核验、空闲与两窗口观察。Phase14 reset 保留容器和卷，源码挂载使用 Compose 合并文件；不执行 down/rm/prune/-v。H2 smoke 跨活动映射、资源预检和独立轻量 PG 采样已有离线测试；剩余端到端验证与采样开销仍未完成。

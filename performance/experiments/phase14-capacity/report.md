@@ -2,7 +2,7 @@
 
 **本地特征不构成万人正式容量证明。** 当前按冻结的宿主交换停止条件暂停；不得把下表 smoke 或百万注册数据规模写成万人容量通过。
 
-## 最近一次批次停止
+## 首次批次停止（历史）
 
 `phase14-smoke-u1-20260910T001313Z-90e143` 在第二轮 U1 检测到宿主 VM `pswpin: 322787 → 322791`，`pswpout: 537116 → 537116`。该轮数据库全局不变量全为 0、dropped=0；仍判测量无效并停止后续场景。运行器只停止本 Run ID 的 k6，未操作其他项目。
 
@@ -45,8 +45,8 @@
 
 ## 尚未完成
 
-- U2、O1、H1 正式预订与重复、H2、H3、L1/L2（含完全同速对照）、S1 的完整缩小矩阵未运行。J1 只执行过首档；U1 第二轮最新批次因交换停止。
-- G0 已执行缩小 no-op 调度，但正式规模 no-op 和有/无采样的开销对照未完成。H3 200 ms 轻量采样及开销证明未实现。
+- U2 第二轮未通过；O1、H1 正式预订与重复、H2、H3、L1/L2（含完全同速对照）、S1 的完整缩小矩阵未运行。J1 只执行过首档；U1 两轮在获准释放资源后的续跑中均通过功能预演。
+- G0 已执行缩小 no-op 调度，但正式规模 no-op 和有/无采样的开销对照未完成。H3 200 ms 轻量采样的新代码仅有单元测试，实际采样与开销证明未完成。
 - 本次真实浏览器少量页面请求图校准、被观测接入触及的全部后端集成回归、真实等待/idle ClientRead exporter 故障夹具验证未运行。
 - login 背景对照汇总、Redis 热点 owner/TTL 运行核对等新增分支尚未取得端到端证据；最终规范门禁未全通过。
 - 正式隔离环境未建立，正式 U1/U2 万人及 S1 30/60 分钟容量场景未运行。
@@ -55,7 +55,33 @@ Phase14 未修改前端，沿用合入主分支前端门禁；本阶段不包含
 
 ## 工程检查
 
-- Python performance 回归：128/128，1.003 秒；日志 `performance/results/phase14-engineering/python-tests-checkpoint-final.log`。
+- Python performance 回归：138/138，1.080 秒；日志 `performance/results/phase14-engineering/python-tests-approved-stop-final.log`。
 - 既有 metrics 源码契约：4/4，0.008 秒；Phase14 契约：3/3，0.134 秒。
 - 标准 Dockerfile 构建成功，CTest 30/30，测试段 0.96 秒；日志 `performance/results/phase14-engineering/backend-build-first.log`。
 - `git diff --check` 通过；前端文件未改动；未 push。
+
+## 获准释放资源后的续跑（2026-09-10）
+
+用户明确批准停止三个旧项目，要求精确标签、仅 stop、保留卷、核验其他容器，并在空闲后观察两个新的 60 秒窗口。已按该约束执行。完整容器 ID、名称、镜像、状态、端口、挂载与 Compose 配置路径见 [停止审计证据](approved-project-stop-evidence.json)。
+
+- 仅一次 `docker stop`，参数为再次 inspect 确認后的 12 个精确 ID；三项目标签完全匹配。三个命名数据卷保留，其他容器状态、端口及挂载内容不变。未停止宿主 Stripe CLI、Vite 或其他进程。
+- 首次复核因 Docker 返回挂载数组排序不同而中止；保留首次日志，按 Destination/Source 排序后严格比较全部字段，确认无内容变化。随后只执行只读复核与观察，没有再次 stop。
+- 停止前/后 VM MemAvailable 分别为 12651245568 / 12851503104 bytes；SwapTotal 为 4294967296 bytes，SwapFree 均为 4083687424 bytes；pswpin/pswpout 均为 322791/537116。
+- 空闲判据为连续 30 秒 CPU idle+iowait 占比至少 90%。之后两个独立窗口各 60.203 秒，pswpin 始终为 322791，pswpout 始终为 537116。窗口内每次采样均核对，不借用停止前计数。
+- Phase14 恢复入口改用本项目应用客户端 stop、原卷内完整 pg_restore、专属 Redis FLUSHALL，再启动本项目客户端。k6 只读源码挂载改为 Compose 合并配置。续跑命令没有 down/rm/prune 或 -v。
+
+| Run ID | 场景/轮次 | 资源预检 | 功能 smoke | dropped | DB 一致性 |
+|---|---|---|---|---|---|
+| phase14-smoke-g0-20260910T014114Z-a26cab | G0 / 1 | True | True | 0 | True |
+| phase14-smoke-u1-20260910T014150Z-ea4415 | U1 / 1 | True | True | 0 | True |
+| phase14-smoke-u1-20260910T014235Z-cc30e7 | U1 / 2 | True | True | 0 | True |
+| phase14-smoke-u2-20260910T014323Z-c168c4 | U2 / 1 | True | True | 0 | True |
+| phase14-smoke-u2-20260910T014409Z-495ad3 | U2 / 2 | True | False | 0 | True |
+
+上述轮次的 measurement_validity 均为 fail（本地 smoke），capacity 均为 not_applicable，overload_protection 均为 not_applicable。不能把功能预演成功提升成正式容量通过。
+
+**最新停止：第二轮 U2 在统一释放前约 4.862 秒，pswpin 从 322791 增至 322803，pswpout 仍为 537116。** 运行器立即停止该轮 k6，后续矩阵、集成回归和压力观测未继续。数据仍一致，但主要计划没有全部送达，该轮失败；不能因为交换发生在释放前就静默放宽已冻结停止规则。此前两个空闲窗口通过，不能保证后续无换页。
+
+停止时 SUT 最大内存占限额约 5.61%，压力机最大内存约 1.82%，压力机 CPU 约 0.125%。只能确认宿主交换读取增长，尚不能据此诊断后端瓶颈或断定关闭更多旧项目就能解决。
+
+本次另外补充了 H2 小 profile 跨两个活动映射、独立 PostgreSQL 1s/200ms 轻量采样与停止/错误处理单元测试；这些新增分支仍待实际运行验证，采样开销对照未完成。全部 performance 离线回归 138/138（1.080 秒）；backend 无新改动，沿用已记录的 CTest/观测契约结果。

@@ -29,6 +29,11 @@ export function classify(status, body, expected, valid, conflictCodes=[]) {
     if(status!==expected)return 'unexpected_contract';
     try {return valid(body)?'business_success':'unexpected_contract';} catch(_){return 'unexpected_contract';}
 }
+export function hotspotTarget(index,targets,count,single=false) {
+    let target=single?0:Math.floor(index/targets.hotspot.contendersPerSeat);
+    if(!single&&targets.mode==='smoke'&&targets.hotspot.seats<count)target*=Math.floor(count/targets.hotspot.seats);
+    return seat(target,targets,count);
+}
 export function onceState() {
     let used=false;
     return {claim(){if(used)return false;used=true;return true;}};
