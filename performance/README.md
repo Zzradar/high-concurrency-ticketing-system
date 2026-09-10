@@ -154,3 +154,7 @@ python performance/scripts/render_baseline_report.py `
 ```
 
 报告区分 confirmed stable、highest tested、first observed unstable 和未测试边界。当前结果只适用于报告中记录的单机 Docker Desktop / WSL2 环境，不是生产 SLO 或最大容量声明；Phase 10B 条目均为尚未实施的受控实验候选。
+# Phase14 阶段进度
+
+Phase14 尚未完成验收；最近缩小批次因宿主 VM 交换触发冻结停止条件。
+运行入口、边界与剩余工作见 [实施记录](../docs/phase14_implementation.md)，实际数据生成、认证预检及已执行场景见 [阶段报告](experiments/phase14-capacity/report.md)。**本地特征不构成万人正式容量证明。**
