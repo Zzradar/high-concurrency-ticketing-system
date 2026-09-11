@@ -1978,7 +1978,49 @@
   "plannedScheduleSecondsUpperBound": 20813,
   "costs": "not requested",
   "shutdown": {
-    "status": "pending"
+    "root": "/srv/phase14/repo/performance/results/phase14-formal-shutdown-20260911T144230Z-e2464d",
+    "at": 1789137759.2952268,
+    "status": "complete",
+    "containersPreserved": true,
+    "imagesPreserved": true,
+    "volumesPreserved": true,
+    "evidencePreserved": true,
+    "roles": {
+      "sut": {
+        "project": "phase14-formal-sut",
+        "containers": 6,
+        "running": 0,
+        "volumes": [
+          "phase14-formal-sut_postgres",
+          "phase14-formal-sut_prometheus"
+        ]
+      },
+      "load": {
+        "project": "phase14-formal-load",
+        "containers": 898,
+        "running": 0,
+        "volumes": []
+      }
+    },
+    "sshCleanup": {
+      "status": "complete",
+      "at": 1789137833.0997646,
+      "dedicatedPrivateKeyRemoved": true,
+      "dedicatedPublicFileRemoved": true,
+      "dedicatedKnownHostsRemoved": true,
+      "dedicatedConfigBlockRemoved": true,
+      "sutRejectedRemovedAuthorization": true,
+      "otherSshConfigurationPreserved": true
+    },
+    "tests": {
+      "linux": 199,
+      "passed": true
+    },
+    "serviceInterval": {
+      "firstContainerCreated": "2026-09-11T10:44:31.514170698Z",
+      "lastServiceStopped": "2026-09-11T14:42:35.831783664Z",
+      "allStopped": true
+    }
   },
   "analysisInputSha256": {
     "qualification-report-data.json": "4034d436a5c1b5ae2b8f76bfb8cc6df9e19808de98792e048fb79ea81b432267",
@@ -1986,5 +2028,10 @@
     "formal-report-data.json": "012816cd6d76b1c4a69adde7aa09226444a87995e9957ad021331ebad0eec287",
     "final-audit-data.json": "60bfbb9749333475cf583ccba61bd038c56256cc7e251f64cea07f5198ddf758",
     "http-report-data.json": "d91e70e5bafa832c9675571938b76fc98f5cde8d010f96294bfa2693efbb8d71"
+  },
+  "deliveryTests": {
+    "windows": 199,
+    "linux": 199,
+    "passed": true
   }
 }

@@ -30,6 +30,12 @@ class FinalDeliveryTests(unittest.TestCase):
         self.assertEqual(len(r['initialization']['ready']),7)
         self.assertEqual(len(r['initialization']['shards']),8)
         self.assertLess(r['delivery']['main']['completed'],r['delivery']['main']['started'])
+        cleanup=self.result['shutdown']
+        self.assertEqual(cleanup['status'],'complete')
+        self.assertTrue(all(cleanup[k] for k in ('containersPreserved','imagesPreserved','volumesPreserved','evidencePreserved')))
+        self.assertTrue(all(x['running']==0 for x in cleanup['roles'].values()))
+        self.assertTrue(cleanup['sshCleanup']['dedicatedPrivateKeyRemoved'])
+        self.assertTrue(cleanup['sshCleanup']['sutRejectedRemovedAuthorization'])
 
     def test_functional_smoke_keeps_valid_reset_and_http_metric_order(self):
         rows=self.result['smoke']['runs']
