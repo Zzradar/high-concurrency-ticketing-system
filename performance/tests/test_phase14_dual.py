@@ -24,6 +24,28 @@ def config():
 
 
 class ConfigTests(unittest.TestCase):
+    def test_stats_exit_race_requires_confirmed_exact_exited_shard(self):
+        from phase14_dual_sampling import probe_host
+        for exits in (True,False):
+            item=container();item.update(HostConfig={'NanoCpus':4000000000,'Memory':1000},RestartCount=0)
+            item['State'].update(Status='running',Running=True,OOMKilled=False)
+            item['Config']['Labels']['com.docker.compose.service']='k6'
+            fresh=copy.deepcopy(item)
+            if exits:fresh['State'].update(Status='exited',Running=False)
+            inspected=[]
+            def command(argv,**kwargs):
+                if 'ps' in argv:return b'owned-id\n'
+                if 'inspect' in argv:
+                    inspected.append(1);return json.dumps([item if len(inspected)==1 else fresh]).encode()
+                return b'{"memory_stats":{}}'
+            with patch('subprocess.check_output',side_effect=command),patch('phase14_dual_sampling.HOST_PROGRAM','d={"time":1}'):
+                if exits:
+                    result=probe_host('load','phase14-formal-load',True)
+                    self.assertEqual(result['stats'],[])
+                    self.assertEqual(result['containers'][0]['state'],'exited')
+                else:
+                    with self.assertRaises(KeyError):probe_host('load','phase14-formal-load',True)
+
     def test_noop_can_keep_frozen_g0_connections_open(self):
         import re
         conf=(ROOT/'performance/phase14/noop.conf').read_text()

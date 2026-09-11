@@ -72,10 +72,22 @@ def probe_host(role,project,detailed):
             # Engine's one-shot API avoids Docker CLI's two-cycle stats wait.
             # Only an existing local Unix socket is used; no daemon port is opened.
             url='http://localhost/v1.52/containers/'+item['Id']+'/stats?stream=false&one-shot=true'
-            value=json.loads(subprocess.check_output([*prefix,'curl','--fail','--silent','--show-error','--max-time','5',
-                              '--unix-socket','/var/run/docker.sock',url],timeout=8))
-            memory=value['memory_stats'];usage=memory['usage']-memory.get('stats',{}).get('inactive_file',0)
-            cs=value['cpu_stats'];c={'total':cs['cpu_usage']['total_usage'],'system':cs.get('system_cpu_usage',0),'cores':cs['online_cpus']}
+            try:
+                value=json.loads(subprocess.check_output([*prefix,'curl','--fail','--silent','--show-error','--max-time','5',
+                                  '--unix-socket','/var/run/docker.sock',url],timeout=8))
+                memory=value['memory_stats'];usage=memory['usage']-memory.get('stats',{}).get('inactive_file',0)
+                cs=value['cpu_stats'];c={'total':cs['cpu_usage']['total_usage'],'system':cs.get('system_cpu_usage',0),'cores':cs['online_cpus']}
+            except (KeyError,subprocess.CalledProcessError):
+                # A k6 shard can finish between inspect and stats. Confirm its
+                # exact identity and new state; never suppress a live failure.
+                fresh=json.loads(docker('inspect',item['Id']))[0]
+                verify_container(fresh,project,SUT_SERVICES if role=='sut' else LOAD_SERVICES)
+                if (fresh['Id']==item['Id'] and role=='load' and
+                    fresh['Config']['Labels']['com.docker.compose.service']=='k6' and
+                    fresh['State']['Status']=='exited' and not fresh['State']['Running']):
+                    item.update(fresh)
+                    continue
+                raise
             cpu[item['Id']]=c
             stats.append({'Name':item['Name'].lstrip('/'),'Id':item['Id'],'MemPerc':str(100*usage/memory['limit'])+'%',
                           'CPUPerc':'0%','read':value['read'],'cpuCounters':c,'memoryStats':memory,'networkStats':value.get('networks',{})})
