@@ -66,6 +66,30 @@ class ReadModelTest(unittest.TestCase):
         self.assertEqual(self.redis('SCARD',self.prefix+':zone:Z0:seats'),1000)
         self.assertNotEqual(self.read('Z0')[3],'0-0')
 
+    def test_large_versions_do_not_round_through_lua_double(self):
+        self.init()
+        self.assertEqual(self.apply('0','SOLD','9007199254740993'),['APPLIED'])
+        self.assertEqual(self.apply('0','AVAILABLE','9007199254740992'),['STALE_OR_DUPLICATE'])
+        self.assertEqual(self.redis('HGET',self.prefix+':formal','0'),'SOLD|9007199254740993')
+
+    def test_numeric_summary_corruption_cannot_fail_after_original_hold_write(self):
+        self.init()
+        self.redis('HSET',self.prefix+':zone:A:summary','available','99999999999999999999999')
+        self.assertEqual(self.hold('Ensure',[0,1],'C1',1,300),1)
+        self.assertEqual(self.redis('GET',self.raw(0)),'C1|1')
+        self.assertEqual(self.redis('GET',self.raw(1)),'C1|1')
+        self.assertEqual(self.redis('EXISTS',self.prefix+':meta'),0)
+
+    def test_owner_change_emits_even_when_public_stays_held(self):
+        self.redis('SET',self.raw(0),'C1|1','PX',2000)
+        self.init();initial=self.read();cursor=initial[3]
+        self.assertIn('C1',initial)
+        time.sleep(2.1)
+        self.assertEqual(self.hold('Ensure',[0],'C2',2,300),1)
+        result=self.read('A','g1',cursor)
+        self.assertEqual(result[-3:],['0','AVAILABLE','C2'])
+        self.assertEqual(self.redis('HGET',self.prefix+':zone:A:summary','held'),'1')
+
     def test_stale_initializer_cannot_publish(self):
         self.redis('SET',self.prefix+':init-lock','replacement','PX',15000)
         self.assertEqual(self.init(),['STALE_INIT'])

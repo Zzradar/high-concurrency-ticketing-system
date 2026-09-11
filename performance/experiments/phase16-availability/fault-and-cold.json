@@ -1,0 +1,42 @@
+{
+  "cold": {
+    "requests": 48,
+    "concurrency": 24,
+    "elapsedSeconds": 0.3912484999746084,
+    "fullPgQueries": 1,
+    "redisCpuBefore": "# CPU\nused_cpu_sys:0.681036\nused_cpu_user:4.494693\nused_cpu_sys_children:0.005631\nused_cpu_user_children:0.013567\nused_cpu_sys_main_thread:0.676444\nused_cpu_user_main_thread:4.495626",
+    "redisCpuAfter": "# CPU\nused_cpu_sys:0.682038\nused_cpu_user:4.853769\nused_cpu_sys_children:0.010399\nused_cpu_user_children:0.018335\nused_cpu_sys_main_thread:0.677915\nused_cpu_user_main_thread:4.854211",
+    "redisCommandsBefore": "# Commandstats\ncmdstat_time:calls=240,usec=137,usec_per_call=0.57,rejected_calls=0,failed_calls=0\ncmdstat_rpush:calls=8,usec=30,usec_per_call=3.75,rejected_calls=0,failed_calls=0\ncmdstat_scard:calls=500,usec=84,usec_per_call=0.17,rejected_calls=0,failed_calls=0\ncmdstat_zrem:calls=2,usec=5,usec_per_call=2.50,rejected_calls=0,failed_calls=0\ncmdstat_exists:calls=119,usec=39,usec_per_call=0.33,rejected_calls=0,failed_calls=0\ncmdstat_mget:calls=2,usec=343,usec_per_call=171.50,rejected_calls=0,failed_calls=0\ncmdstat_hgetall:calls=1,usec=52,usec_per_call=52.00,rejected_calls=0,failed_calls=0\ncmdstat_lrange:calls=363,usec=474,usec_per_call=1.31,rejected_calls=0,failed_calls=0\ncmdstat_type:calls=9779,usec=2774,usec_per_call=0.28,rejected_calls=0,failed_calls=0\ncmdstat_smembers:calls=70,usec=7068,usec_per_call=100.97,rejected_calls=0,failed_calls=0\ncmdstat_eval:calls=401,usec=381346,usec_per_call=950.99,rejected_calls=0,failed_calls=0\ncmdstat_hset:calls=10134,usec=7195,usec_per_call=0.71,rejected_calls=0,failed_calls=0\ncmdstat_hincrby:calls=10132,usec=3381,usec_per_call=0.33,rejected_calls=0,failed_calls=0\ncmdstat_xadd:calls=14,usec=156,usec_per_call=11.14,rejected_calls=0,failed_calls=0\ncmdstat_zrangebyscore:calls=119,usec=227,usec_per_call=1.91,rejected_calls=0,failed_calls=0\ncmdstat_sadd:calls=5060,usec=1781,usec_per_call=0.35,rejected_calls=0,failed_calls=0\ncmdstat_xrevrange:calls=70,usec=468,usec_per_call=6.69,rejected_calls=0,failed_calls=0\ncmdstat_hget:calls=302589,usec=53176,usec_per_call=0.18,rejected_calls=0,failed_calls=0\ncmdstat_info:calls=6,usec=264,usec_per_call=44.00,rejected_calls=0,failed_calls=0\ncmdstat_sismember:calls=49430,usec=8087,usec_per_call=0.16,rejected_calls=0,failed_calls=0\ncmdstat_zadd:calls=2,usec=48,usec_per_call=24.00,rejected_calls=0,failed_calls=0\ncmdstat_xlen:calls=1,usec=6,usec_per_call=6.00,rejected_calls=0,failed_calls=0\ncmdstat_hello:calls=11,usec=103,usec_per_call=9.36,rejected_calls=0,failed_calls=0\ncmdstat_hdel:calls=2,usec=27,usec_per_call=13.50,rejected_calls=0,failed_calls=0\ncmdstat_get:calls=10170,usec=1081,usec_per_call=0.11,rejected_calls=0,failed_calls=0\ncmdstat_pttl:calls=5064,usec=366,usec_per_call=0.07,rejected_calls=0,failed_calls=0\ncmdstat_del:calls=33,usec=65,usec_per_call=1.97,rejected_calls=0,failed_calls=0\ncmdstat_xrange:calls=96,usec=499,usec_per_call=5.20,rejected_calls=0,failed_calls=0\ncmdstat_zcount:calls=119,usec=97,usec_per_call=0.82,rejected_calls=0,failed_calls=0\ncmdstat_set:calls=52,usec=405,usec_per_call=7.79,rejected_calls=0,failed_calls=0",
+    "redisCommandsAfter": "# Commandstats\ncmdstat_time:calls=337,usec=186,usec_per_call=0.55,rejected_calls=0,failed_calls=0\ncmdstat_rpush:calls=13,usec=38,usec_per_call=2.92,rejected_calls=0,failed_calls=0\ncmdstat_scard:calls=980,usec=173,usec_per_call=0.18,rejected_calls=0,failed_calls=0\ncmdstat_zrem:calls=2,usec=5,usec_per_call=2.50,rejected_calls=0,failed_calls=0\ncmdstat_exists:calls=167,usec=51,usec_per_call=0.31,rejected_calls=0,failed_calls=0\ncmdstat_mget:calls=2,usec=343,usec_per_call=171.50,rejected_calls=0,failed_calls=0\ncmdstat_hgetall:calls=1,usec=52,usec_per_call=52.00,rejected_calls=0,failed_calls=0\ncmdstat_lrange:calls=508,usec=629,usec_per_call=1.24,rejected_calls=0,failed_calls=0\ncmdstat_type:calls=17153,usec=4136,usec_per_call=0.24,rejected_calls=0,failed_calls=0\ncmdstat_smembers:calls=118,usec=13781,usec_per_call=116.79,rejected_calls=0,failed_calls=0\ncmdstat_eval:calls=567,usec=730835,usec_per_call=1288.95,rejected_calls=0,failed_calls=0\ncmdstat_hset:calls=20140,usec=13478,usec_per_call=0.67,rejected_calls=0,failed_calls=0\ncmdstat_hincrby:calls=20132,usec=6609,usec_per_call=0.33,rejected_calls=0,failed_calls=0\ncmdstat_xadd:calls=19,usec=182,usec_per_call=9.58,rejected_calls=0,failed_calls=0\ncmdstat_zrangebyscore:calls=167,usec=255,usec_per_call=1.53,rejected_calls=0,failed_calls=0\ncmdstat_sadd:calls=10060,usec=3573,usec_per_call=0.36,rejected_calls=0,failed_calls=0\ncmdstat_xrevrange:calls=118,usec=711,usec_per_call=6.03,rejected_calls=0,failed_calls=0\ncmdstat_hget:calls=593660,usec=104239,usec_per_call=0.18,rejected_calls=0,failed_calls=0\ncmdstat_info:calls=8,usec=372,usec_per_call=46.50,rejected_calls=0,failed_calls=0\ncmdstat_sismember:calls=97430,usec=15821,usec_per_call=0.16,rejected_calls=0,failed_calls=0\ncmdstat_zadd:calls=2,usec=48,usec_per_call=24.00,rejected_calls=0,failed_calls=0\ncmdstat_xlen:calls=1,usec=6,usec_per_call=6.00,rejected_calls=0,failed_calls=0\ncmdstat_hello:calls=13,usec=122,usec_per_call=9.38,rejected_calls=0,failed_calls=0\ncmdstat_hdel:calls=2,usec=27,usec_per_call=13.50,rejected_calls=0,failed_calls=0\ncmdstat_get:calls=20171,usec=1948,usec_per_call=0.10,rejected_calls=0,failed_calls=0\ncmdstat_pttl:calls=10064,usec=736,usec_per_call=0.07,rejected_calls=0,failed_calls=0\ncmdstat_del:calls=50,usec=839,usec_per_call=16.78,rejected_calls=0,failed_calls=0\ncmdstat_xrange:calls=96,usec=499,usec_per_call=5.20,rejected_calls=0,failed_calls=0\ncmdstat_zcount:calls=167,usec=116,usec_per_call=0.69,rejected_calls=0,failed_calls=0\ncmdstat_set:calls=74,usec=450,usec_per_call=6.08,rejected_calls=0,failed_calls=0",
+    "pgStatements": [
+      {
+        "calls": 5,
+        "mean_exec_time": 2.3885265999999996,
+        "total_exec_time": 11.942632999999999
+      }
+    ]
+  },
+  "projectorCrash": {
+    "exitCode": 86,
+    "outboxDrained": true,
+    "duplicateBusinessChanges": 0
+  },
+  "initCrash": {
+    "exitCode": 87,
+    "rebuilt": true,
+    "generationChanged": true
+  },
+  "redisOutage": {
+    "degradedFormalSnapshot": true,
+    "eventPreserved": true,
+    "recovered": true
+  },
+  "redisFlush": {
+    "generationReset": true,
+    "pgSnapshotRecovered": true
+  },
+  "pgRollback": {
+    "inventoryPreserved": true,
+    "outboxRows": 0
+  }
+}

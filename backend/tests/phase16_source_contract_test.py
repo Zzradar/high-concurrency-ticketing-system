@@ -13,6 +13,12 @@ class Phase16Contract(unittest.TestCase):
             self.assertEqual(len(holds),1)
             self.assertEqual(holds[0]['number_of_connections'],2)
             self.assertEqual(config['db_clients'][0]['number_of_connections'],4)
+    def test_all_fresh_database_stacks_install_phase16_before_seed(self):
+        for path in [ROOT/'docker-compose.yml',ROOT/'tests/compose.phase11.yml',ROOT/'tests/compose.phase12.yml',ROOT/'../performance/docker-compose.performance.yml']:
+            text=path.read_text(encoding='utf-8')
+            self.assertIn('010_add_seat_availability_read_model.sql',text)
+            self.assertLess(text.index('010_add_seat_availability_read_model.sql'),text.index('010_demo_seed.sql'))
+
     def test_worker_lease_and_atomic_model_boundaries(self):
         worker=(ROOT/'src/workers/SeatAvailabilityProjectionWorker.cpp').read_text(encoding='utf-8')
         self.assertIn('FOR UPDATE SKIP LOCKED',worker)

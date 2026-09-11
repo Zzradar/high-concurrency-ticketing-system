@@ -1,0 +1,78 @@
+
+         /\      Grafana   /‾‾/
+    /\  /  \     |\  __   /  /
+   /  \/    \    | |/ /  /   ‾‾\
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/
+
+
+     execution: local
+        script: /evidence/availability.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 100 max VUs, 50s max duration (incl. graceful stop):
+              * availability: 200.00 iterations/s for 20s (maxVUs: 100, gracefulStop: 30s)
+
+
+running (01.0s), 001/100 VUs, 189 complete and 0 interrupted iterations
+availability   [   5% ] 001/100 VUs  00.9s/20s  200.00 iters/s
+
+running (02.0s), 001/100 VUs, 389 complete and 0 interrupted iterations
+availability   [  10% ] 001/100 VUs  01.9s/20s  200.00 iters/s
+
+running (03.0s), 001/100 VUs, 589 complete and 0 interrupted iterations
+availability   [  15% ] 001/100 VUs  02.9s/20s  200.00 iters/s
+
+running (04.0s), 001/100 VUs, 789 complete and 0 interrupted iterations
+availability   [  20% ] 001/100 VUs  03.9s/20s  200.00 iters/s
+
+running (05.0s), 001/100 VUs, 989 complete and 0 interrupted iterations
+availability   [  25% ] 001/100 VUs  04.9s/20s  200.00 iters/s
+
+running (06.0s), 001/100 VUs, 1189 complete and 0 interrupted iterations
+availability   [  30% ] 001/100 VUs  05.9s/20s  200.00 iters/s
+
+running (07.0s), 000/100 VUs, 1390 complete and 0 interrupted iterations
+availability   [  35% ] 000/100 VUs  06.9s/20s  200.00 iters/s
+
+running (08.0s), 001/100 VUs, 1589 complete and 0 interrupted iterations
+availability   [  40% ] 001/100 VUs  07.9s/20s  200.00 iters/s
+
+running (09.0s), 001/100 VUs, 1789 complete and 0 interrupted iterations
+availability   [  45% ] 001/100 VUs  08.9s/20s  200.00 iters/s
+
+running (10.0s), 000/100 VUs, 1990 complete and 0 interrupted iterations
+availability   [  50% ] 000/100 VUs  09.9s/20s  200.00 iters/s
+
+running (11.0s), 001/100 VUs, 2189 complete and 0 interrupted iterations
+availability   [  55% ] 001/100 VUs  10.9s/20s  200.00 iters/s
+
+running (12.0s), 000/100 VUs, 2390 complete and 0 interrupted iterations
+availability   [  60% ] 000/100 VUs  11.9s/20s  200.00 iters/s
+
+running (13.0s), 001/100 VUs, 2589 complete and 0 interrupted iterations
+availability   [  65% ] 001/100 VUs  12.9s/20s  200.00 iters/s
+
+running (14.0s), 000/100 VUs, 2790 complete and 0 interrupted iterations
+availability   [  70% ] 000/100 VUs  13.9s/20s  200.00 iters/s
+
+running (15.0s), 000/100 VUs, 2990 complete and 0 interrupted iterations
+availability   [  75% ] 000/100 VUs  14.9s/20s  200.00 iters/s
+
+running (16.0s), 001/100 VUs, 3189 complete and 0 interrupted iterations
+availability   [  80% ] 001/100 VUs  15.9s/20s  200.00 iters/s
+
+running (17.0s), 001/100 VUs, 3389 complete and 0 interrupted iterations
+availability   [  85% ] 001/100 VUs  16.9s/20s  200.00 iters/s
+
+running (18.0s), 001/100 VUs, 3589 complete and 0 interrupted iterations
+availability   [  90% ] 001/100 VUs  17.9s/20s  200.00 iters/s
+
+running (19.0s), 000/100 VUs, 3790 complete and 0 interrupted iterations
+availability   [  95% ] 000/100 VUs  18.9s/20s  200.00 iters/s
+
+running (20.0s), 001/100 VUs, 3989 complete and 0 interrupted iterations
+availability   [ 100% ] 001/100 VUs  19.9s/20s  200.00 iters/s
+
+running (20.0s), 000/100 VUs, 4001 complete and 0 interrupted iterations
+availability ✓ [ 100% ] 000/100 VUs  20s  200.00 iters/s

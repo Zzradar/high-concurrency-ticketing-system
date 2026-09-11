@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "degradedSnapshot": true,
+  "confirmHttpStatus": 200,
+  "formalStatus": "HELD",
+  "outboxPreserved": true,
+  "recoveredAndReleased": true
+}

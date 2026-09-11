@@ -67,6 +67,25 @@ class AvailabilityApiTest(unittest.TestCase):
                 _,body=self.get(zone=self.zone,client=client,checkoutSessionId=checkout['id'])
                 self.assertEqual(next(s['status'] for s in body['seats'] if s['id']==seat),expected)
                 self.assertNotIn('userId',json.dumps(body));self.assertNotIn(checkout['id'],json.dumps(body))
+            # A valid cached relationship for another session/user must not grant ownership.
+            def cache(*args):
+                result=subprocess.run(['docker','exec','phase16-api-redis','redis-cli','--json',*map(str,args)],capture_output=True,text=True,encoding='utf-8')
+                self.assertEqual(result.returncode,0,result.stderr)
+                return json.loads(result.stdout)
+            key='ticketing:checkout-owner:{'+checkout['id']+'}'
+            for mapping in ({'userId':users[0],'sessionId':'other-session'},{'userId':users[1],'sessionId':SESSION}):
+                cache('SET',key,json.dumps(mapping),'EX',600)
+                _,response=self.get(zone=self.zone,client=a,checkoutSessionId=checkout['id'])
+                self.assertEqual(next(s['status'] for s in response['seats'] if s['id']==seat),'HELD')
+            # GET wrong-type is a real Redis cache-command failure: fall back to PG and refill.
+            cache('DEL',key);cache('HSET',key,'wrong','type')
+            _,response=self.get(zone=self.zone,client=a,checkoutSessionId=checkout['id'])
+            self.assertEqual(next(s['status'] for s in response['seats'] if s['id']==seat),'AVAILABLE')
+            self.assertEqual(json.loads(cache('GET',key)),{'userId':users[0],'sessionId':SESSION})
+            # Current owner requesting a different actual session never gets own context.
+            _,otherLayout,_=anonymous_request('/sessions/perf-session-phase16/seat-layout')
+            status,cross=self.get(session='perf-session-phase16',zone=otherLayout['seats'][0]['zone'],client=a,checkoutSessionId=checkout['id'])
+            self.assertEqual(status,200);self.assertNotIn(checkout['id'],json.dumps(cross))
             # A repeated owned request must use the cache, without another ownership lookup.
             before=int(sql("SELECT COALESCE(sum(calls),0) FROM pg_stat_statements WHERE query ILIKE '%FROM checkout_sessions%' AND query ILIKE '%user_id%';"))
             for _ in range(3):self.get(zone=self.zone,client=a,checkoutSessionId=checkout['id'])
@@ -77,6 +96,45 @@ class AvailabilityApiTest(unittest.TestCase):
             self.assertEqual(status,200)
         _,released=self.get(zone=self.zone,generation=delta['generation'],since=delta['cursor'])
         self.assertIn({'id':seat,'status':'AVAILABLE'},released['changes'])
+
+    def test_initialization_wait_timeout_and_corruption_rebuild(self):
+        def redis(*args):
+            result=subprocess.run(['docker','exec','phase16-api-redis','redis-cli','--json',*map(str,args)],capture_output=True,text=True,encoding='utf-8')
+            self.assertEqual(result.returncode,0,result.stderr)
+            return json.loads(result.stdout)
+        prefix='ticketing:seat-availability:{'+SESSION+'}'
+        redis('DEL',prefix+':meta')
+        redis('SET',prefix+':init-lock','test-other-initializer','PX',5000)
+        try:
+            started=time.monotonic();status,body=self.get(zone=self.zone)
+            self.assertEqual((status,body['code']),(503,'SEAT_AVAILABILITY_INITIALIZING'))
+            self.assertLess(time.monotonic()-started,3)
+        finally:redis('DEL',prefix+':init-lock')
+        _,before=self.get(zone=self.zone)
+        summary=prefix+':zone:'+self.zone+':summary'
+        redis('DEL',summary);redis('SET',summary,'invalid')
+        status,after=self.get(zone=self.zone,generation=before['generation'],since=before['cursor'])
+        self.assertEqual(status,200);self.assertTrue(after['reset']);self.assertFalse(after['degraded'])
+        self.assertNotEqual(before['generation'],after['generation'])
+
+    def test_delta_dedup_pagination_and_bounded_trim(self):
+        def redis(*args):
+            result=subprocess.run(['docker','exec','phase16-api-redis','redis-cli','--json',*map(str,args)],capture_output=True,text=True,encoding='utf-8')
+            self.assertEqual(result.returncode,0,result.stderr)
+            return json.loads(result.stdout)
+        _,snap=self.get(zone=self.zone)
+        stream='ticketing:seat-availability:{'+SESSION+'}:zone:'+self.zone+':changes'
+        seat=snap['seats'][0]
+        append="for i=1,tonumber(ARGV[1]) do redis.call('XADD',KEYS[1],'MAXLEN','~',10000,'*','kind','change','seatId',ARGV[2]) end return redis.call('XLEN',KEYS[1])"
+        redis('EVAL',append,1,stream,1002,seat['id'])
+        _,first=self.get(zone=self.zone,generation=snap['generation'],since=snap['cursor'])
+        self.assertTrue(first['hasMore']);self.assertEqual(first['changes'],[seat])
+        _,second=self.get(zone=self.zone,generation=first['generation'],since=first['cursor'])
+        self.assertFalse(second['hasMore']);self.assertEqual(second['changes'],[seat])
+        length=redis('EVAL',append,1,stream,12000,seat['id'])
+        self.assertLessEqual(length,10100)
+        _,reset=self.get(zone=self.zone,generation=snap['generation'],since=snap['cursor'])
+        self.assertTrue(reset['reset']);self.assertEqual(reset['seats'],snap['seats'])
 
     def test_warm_delta_does_not_fetch_inventory(self):
         _,snap=self.get(zone=self.zone)

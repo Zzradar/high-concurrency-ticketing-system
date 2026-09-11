@@ -370,7 +370,8 @@ onBeforeUnmount(() => {
   pollingGeneration += 1
   window.removeEventListener('focus', handleFocus)
 })
-watch(() => route.params.sessionId, () => { checkout.value = null; selectedSeatIds.value = []; void load() })
+watch(() => authState.currentUser.value?.id, () => { void refreshSeats() })
+watch(() => route.params.sessionId, () => { pollingGeneration++; checkout.value = null; selectedSeatIds.value = []; void load() })
 </script>
 
 <template>

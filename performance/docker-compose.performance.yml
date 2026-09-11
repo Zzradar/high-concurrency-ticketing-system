@@ -30,6 +30,7 @@ services:
       - ../backend/db/migrations/007_add_payment_provider_recovery.sql:/docker-entrypoint-initdb.d/007_add_payment_provider_recovery.sql:ro
       - ../backend/db/migrations/008_add_reconciliation_leases.sql:/docker-entrypoint-initdb.d/008_add_reconciliation_leases.sql:ro
       - ../backend/db/migrations/009_add_buyer_full_refund.sql:/docker-entrypoint-initdb.d/009_add_buyer_full_refund.sql:ro
+      - ../backend/db/migrations/010_add_seat_availability_read_model.sql:/docker-entrypoint-initdb.d/010_add_seat_availability_read_model.sql:ro
       - ../backend/db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/010_demo_seed.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ticketing -d ticketing"]

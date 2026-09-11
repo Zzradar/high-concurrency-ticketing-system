@@ -1,0 +1,48 @@
+[
+  {
+    "name": "ctest",
+    "exitCode": 0,
+    "elapsedSeconds": 8.952999999979511
+  },
+  {
+    "name": "vitest",
+    "exitCode": 0,
+    "elapsedSeconds": 4.765000000130385,
+    "testsPassed": 188
+  },
+  {
+    "name": "frontend-build",
+    "exitCode": 0,
+    "elapsedSeconds": 4.75
+  },
+  {
+    "name": "migration",
+    "exitCode": 0,
+    "elapsedSeconds": 17.67200000002049
+  },
+  {
+    "name": "redis",
+    "exitCode": 0,
+    "elapsedSeconds": 36.32799999997951
+  },
+  {
+    "name": "refund-verifier",
+    "exitCode": 0,
+    "elapsedSeconds": 1.25
+  },
+  {
+    "name": "api",
+    "exitCode": 0,
+    "elapsedSeconds": 5.765000000130385
+  },
+  {
+    "name": "verifier",
+    "exitCode": 0,
+    "elapsedSeconds": 7.75
+  },
+  {
+    "name": "performance-unit",
+    "exitCode": 0,
+    "elapsedSeconds": 4.859000000171363
+  }
+]

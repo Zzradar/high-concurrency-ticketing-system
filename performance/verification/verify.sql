@@ -112,6 +112,17 @@ WITH checks AS (
     WHERE ticket_order.user_id LIKE 'perf-user-%'
       AND ((ticket_order.status = 'PAID' AND ticket_order.paid_at IS NULL)
            OR (ticket_order.status <> 'PAID' AND ticket_order.paid_at IS NOT NULL))
+      AND NOT (
+          ticket_order.status = 'CANCELLED' AND ticket_order.refunded_at IS NOT NULL
+          AND EXISTS (
+              SELECT 1 FROM refunds refund JOIN payment_attempts accepted
+                ON accepted.id = refund.payment_attempt_id AND accepted.order_id = ticket_order.id
+              WHERE refund.order_id = ticket_order.id AND refund.source = 'BUYER'
+                AND refund.status = 'SUCCEEDED' AND refund.amount = ticket_order.total_amount
+                AND refund.currency = accepted.currency AND accepted.status = 'SUCCEEDED'
+                AND accepted.accepted_at IS NOT NULL
+          )
+      )
 
     UNION ALL
     SELECT 'order_amount_mismatch', count(*)
@@ -142,6 +153,16 @@ WITH checks AS (
       AND attempt.status = 'SUCCEEDED'
       AND attempt.accepted_at IS NOT NULL
       AND (ticket_order.status <> 'PAID' OR reservation.status <> 'CONFIRMED')
+      AND NOT (
+          ticket_order.status = 'CANCELLED' AND reservation.status = 'CANCELLED'
+          AND ticket_order.refunded_at IS NOT NULL
+          AND EXISTS (
+              SELECT 1 FROM refunds refund
+              WHERE refund.order_id = ticket_order.id AND refund.payment_attempt_id = attempt.id
+                AND refund.source = 'BUYER' AND refund.status = 'SUCCEEDED'
+                AND refund.amount = ticket_order.total_amount AND refund.currency = attempt.currency
+          )
+      )
 
     UNION ALL
     SELECT 'unaccepted_success_refund_mismatch', count(*)

@@ -36,6 +36,14 @@ describe('Phase16 page synchronization', () => {
     await vi.advanceTimersByTimeAsync(20)
     expect(spy).toHaveBeenCalledTimes(before+1)
   })
+  it('requests a fresh Snapshot immediately when authentication changes', async () => {
+    const spy=await open()
+    await vi.advanceTimersByTimeAsync(2100)
+    expect(spy.mock.calls.at(-1)![2]?.since).toBeDefined()
+    vi.spyOn(ticketApi,'me').mockResolvedValue({id:'phase16-auth-change',displayName:'Reader',username:'reader'})
+    const refresh=authState.refreshMe();await vi.advanceTimersByTimeAsync(20);await refresh
+    expect(spy.mock.calls.at(-1)![2]).toEqual({zone:expect.any(String)})
+  })
   it('immediately drains hasMore and advances only to each returned cursor', async () => {
     const spy=await open()
     const first=await spy.mock.results[0]!.value as SeatAvailabilitySyncResponse

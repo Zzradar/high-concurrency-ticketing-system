@@ -1,0 +1,79 @@
+
+         /\      Grafana   /‾‾/
+    /\  /  \     |\  __   /  /
+   /  \/    \    | |/ /  /   ‾‾\
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/
+
+
+     execution: local
+        script: /evidence/availability.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 100 max VUs, 50s max duration (incl. graceful stop):
+              * availability: 200.00 iterations/s for 20s (maxVUs: 30-100, gracefulStop: 30s)
+
+
+running (01.0s), 005/030 VUs, 186 complete and 0 interrupted iterations
+availability   [   5% ] 005/030 VUs  01.0s/20s  200.00 iters/s
+
+running (02.0s), 005/030 VUs, 386 complete and 0 interrupted iterations
+availability   [  10% ] 005/030 VUs  02.0s/20s  200.00 iters/s
+
+running (03.0s), 006/030 VUs, 585 complete and 0 interrupted iterations
+availability   [  15% ] 006/030 VUs  03.0s/20s  200.00 iters/s
+
+running (04.0s), 012/030 VUs, 779 complete and 0 interrupted iterations
+availability   [  20% ] 012/030 VUs  04.0s/20s  200.00 iters/s
+
+running (05.0s), 031/039 VUs, 947 complete and 0 interrupted iterations
+availability   [  25% ] 031/039 VUs  05.0s/20s  200.00 iters/s
+
+running (06.0s), 043/043 VUs, 1126 complete and 0 interrupted iterations
+availability   [  30% ] 043/043 VUs  06.0s/20s  200.00 iters/s
+
+running (07.0s), 005/047 VUs, 1358 complete and 0 interrupted iterations
+availability   [  35% ] 005/047 VUs  07.0s/20s  200.00 iters/s
+
+running (08.0s), 007/047 VUs, 1556 complete and 0 interrupted iterations
+availability   [  40% ] 007/047 VUs  08.0s/20s  200.00 iters/s
+
+running (09.0s), 005/047 VUs, 1758 complete and 0 interrupted iterations
+availability   [  45% ] 005/047 VUs  09.0s/20s  200.00 iters/s
+
+running (10.0s), 005/047 VUs, 1958 complete and 0 interrupted iterations
+availability   [  50% ] 005/047 VUs  10.0s/20s  200.00 iters/s
+
+running (11.0s), 006/047 VUs, 2157 complete and 0 interrupted iterations
+availability   [  55% ] 006/047 VUs  11.0s/20s  200.00 iters/s
+
+running (12.0s), 006/047 VUs, 2357 complete and 0 interrupted iterations
+availability   [  60% ] 006/047 VUs  12.0s/20s  200.00 iters/s
+
+running (13.0s), 006/047 VUs, 2557 complete and 0 interrupted iterations
+availability   [  65% ] 006/047 VUs  13.0s/20s  200.00 iters/s
+
+running (14.0s), 008/047 VUs, 2755 complete and 0 interrupted iterations
+availability   [  70% ] 008/047 VUs  14.0s/20s  200.00 iters/s
+
+running (15.0s), 009/047 VUs, 2954 complete and 0 interrupted iterations
+availability   [  75% ] 009/047 VUs  15.0s/20s  200.00 iters/s
+
+running (16.0s), 006/047 VUs, 3156 complete and 0 interrupted iterations
+availability   [  80% ] 006/047 VUs  16.0s/20s  200.00 iters/s
+
+running (17.0s), 005/047 VUs, 3358 complete and 0 interrupted iterations
+availability   [  85% ] 005/047 VUs  17.0s/20s  200.00 iters/s
+
+running (18.0s), 006/047 VUs, 3557 complete and 0 interrupted iterations
+availability   [  90% ] 006/047 VUs  18.0s/20s  200.00 iters/s
+
+running (19.0s), 005/047 VUs, 3758 complete and 0 interrupted iterations
+availability   [  95% ] 005/047 VUs  19.0s/20s  200.00 iters/s
+
+running (20.0s), 005/047 VUs, 3958 complete and 0 interrupted iterations
+availability   [ 100% ] 005/047 VUs  20.0s/20s  200.00 iters/s
+
+running (20.1s), 000/047 VUs, 3973 complete and 0 interrupted iterations
+availability ✓ [ 100% ] 000/047 VUs  20s  200.00 iters/s
+time="2026-09-11T16:51:13Z" level=error msg="thresholds on metrics 'checks, dropped_iterations, http_req_failed, phase16_system_errors' have been crossed"

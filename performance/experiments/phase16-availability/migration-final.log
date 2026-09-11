@@ -1,0 +1,10 @@
+test_claim_skip_locked_and_stale_lease_ack (__main__.MigrationTest) ... ok
+test_constraints_and_outbox_failure_roll_back_inventory (__main__.MigrationTest) ... ok
+test_defaults_and_existing_schema (__main__.MigrationTest) ... ok
+test_lifecycle_noop_and_exact_events (__main__.MigrationTest) ... ok
+test_multi_seat_and_rollback (__main__.MigrationTest) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 17.511s
+
+OK
