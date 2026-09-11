@@ -24,6 +24,26 @@ def config():
 
 
 class ConfigTests(unittest.TestCase):
+    def test_statement_reset_archives_before_mutation_and_scopes_database(self):
+        with tempfile.TemporaryDirectory() as folder:
+            env=Mock(root=Path(folder))
+            def reset(query):
+                self.assertEqual(json.loads((env.root/'postgres-statements-before-reset.json').read_text()),{'old':123})
+                env.inspect_role.assert_called_once_with('sut')
+                self.assertIn('datname=current_database()',query)
+                self.assertNotIn('pg_stat_statements_reset()',query)
+            env.sql.side_effect=reset
+            with patch('phase14_sampling.pg_snapshot',side_effect=[{'old':123},{'new':0}]):
+                DualEnvironment.reset_statement_statistics(env)
+            self.assertEqual(json.loads((env.root/'postgres-statements-after-reset.json').read_text()),{'new':0})
+
+    def test_statement_reset_cannot_run_if_archive_fails(self):
+        with tempfile.TemporaryDirectory() as folder:
+            env=Mock(root=Path(folder))
+            with patch('phase14_sampling.pg_snapshot',return_value={}),patch('phase14_dual.write',side_effect=OSError('disk')):
+                with self.assertRaises(OSError):DualEnvironment.reset_statement_statistics(env)
+            env.sql.assert_not_called()
+
     def test_compose_history_flag_is_scoped_through_sudo(self):
         with tempfile.TemporaryDirectory() as folder:
             executor=LoadExecutor(Topology(config()),Path(folder)/'commands.jsonl')

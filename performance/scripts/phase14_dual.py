@@ -180,8 +180,18 @@ class DualEnvironment(Environment):
         self.compose('exec','-T','redis','redis-cli','FLUSHALL','SYNC')
         if self.compose('exec','-T','redis','redis-cli','DBSIZE').stdout.strip()!=b'0': raise RuntimeError('Redis reset failed')
         write(self.root/'reset.json',{'snapshotSha256':sha256(snapshot) if snapshot else None,'before':before,'after':after,'baseline':json.loads(baseline.read_text()),'redisDbsize':0,'passed':True})
+        self.reset_statement_statistics()
         self.compose('up','-d','--wait','backend','postgres-exporter','redis-exporter','prometheus')
         self.http('/health')
+
+    def reset_statement_statistics(self):
+        # Restore creates new relation OIDs. Preserve old counters before clearing
+        # this dedicated database's entries, while application clients are stopped.
+        from phase14_sampling import pg_snapshot
+        self.inspect_role('sut')
+        write(self.root/'postgres-statements-before-reset.json',pg_snapshot(self))
+        self.sql("SELECT pg_stat_statements_reset(0,(SELECT oid FROM pg_database WHERE datname=current_database()),0);")
+        write(self.root/'postgres-statements-after-reset.json',pg_snapshot(self))
 
     def prometheus(self, path):
         url='http://127.0.0.1:'+str(self.t['environment']['prometheusPort'])+path
