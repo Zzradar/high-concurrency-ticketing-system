@@ -1,3 +1,4 @@
+import { summarizeSeatZones } from '../utils/seatMap'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import SeatSelectionView from './SeatSelectionView.vue'
@@ -23,7 +24,10 @@ function mountView(overrides: Record<string, unknown> = {}) {
     props: {
       event,
       session,
-      seats,
+      seats: seats.filter(s => s.zone === seats[0]!.zone),
+      seatLayout: seats,
+      activeZone: seats[0]!.zone,
+      zoneSummaries: summarizeSeatZones(seats),
       selectedSeats: [seats[0]!, seats[2]!],
       selectedSeatIds: ['A1', 'B1'],
       checkoutSession: null,
@@ -55,7 +59,6 @@ describe('SeatSelectionView zone browsing', () => {
     expect(wrapper.find('.seat-status-summary').text()).toContain('已售1')
     expect(wrapper.find('.seat-status-summary').text()).toContain('已选2 / 6')
     expect(wrapper.findAll('.zone-browser button').map((button) => button.text())).toEqual([
-      '全部可选 2 · 共 4',
       '星光区可选 1 · 共 2',
       '看台 A 区可选 1 · 共 2',
     ])
@@ -67,6 +70,8 @@ describe('SeatSelectionView zone browsing', () => {
     seatGrid.element.scrollLeft = 280
     const standZone = wrapper.findAll('.zone-browser button').find((button) => button.text().includes('看台 A 区'))!
     await standZone.trigger('click')
+    expect(wrapper.emitted('changeZone')).toEqual([['看台 A 区']])
+    await wrapper.setProps({activeZone:'看台 A 区',seats:seats.filter(s => s.zone === '看台 A 区')})
 
     expect(seatGrid.element.scrollLeft).toBe(0)
     expect(wrapper.findAll('.seat-item')).toHaveLength(2)
@@ -81,7 +86,7 @@ describe('SeatSelectionView zone browsing', () => {
       editingDisabled: true,
       availabilityWarning: '座位状态暂未刷新，请稍后重试。',
     })
-    expect(wrapper.findAll('.seat-item')).toHaveLength(4)
+    expect(wrapper.findAll('.seat-item')).toHaveLength(2)
     expect(wrapper.text()).toContain('已保留当前座位图')
     expect(wrapper.get('.seat-map-panel').classes()).toContain('is-editing-disabled')
     expect(wrapper.get('button[aria-label="正在刷新座位状态"]').attributes('disabled')).toBeDefined()

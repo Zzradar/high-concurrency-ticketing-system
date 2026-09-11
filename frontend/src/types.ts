@@ -211,3 +211,35 @@ export interface UserNotification {
   createdAt: string
   readAt?: string
 }
+
+export interface SeatZoneAvailabilitySummary {
+  zone: string
+  total: number
+  available: number
+  held: number
+  sold: number
+}
+export interface SeatAvailabilitySyncOptions {
+  zone: string
+  generation?: string
+  since?: string
+}
+interface SeatAvailabilitySyncBase {
+  sessionId: string
+  zone: string
+  generation: string | null
+  cursor: string | null
+  reset: boolean
+  degraded: boolean
+  hasMore: boolean
+  zones: SeatZoneAvailabilitySummary[]
+}
+export interface SeatAvailabilitySnapshotResponse extends SeatAvailabilitySyncBase {
+  mode: 'snapshot'
+  seats: SeatAvailability[]
+}
+export interface SeatAvailabilityDeltaResponse extends SeatAvailabilitySyncBase {
+  mode: 'delta'
+  changes: SeatAvailability[]
+}
+export type SeatAvailabilitySyncResponse = SeatAvailabilitySnapshotResponse | SeatAvailabilityDeltaResponse
