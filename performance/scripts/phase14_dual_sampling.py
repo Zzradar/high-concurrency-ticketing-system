@@ -126,11 +126,21 @@ def containers(env, role, detailed=True):
 class DualSampler:
     def __init__(self, env, *, load_only=False, detailed=True):
         self.env=env;self.load_only=load_only;self.previous={};self.previous_requests=None;self.detailed=detailed
+        self.sample_started=None
+
+    def begin_sample(self):
+        # Use the same frozen cadence in G0, calibration and business runs.
+        # Preserve real late timestamps; do not manufacture catch-up samples.
+        if self.sample_started is not None:
+            delay=self.sample_started+self.env.t['generator']['sampleSeconds']-time.monotonic()
+            if delay>0:time.sleep(delay)
+        self.sample_started=time.monotonic()
+        return self.sample_started
 
     def sample(self):
         from phase14_sampling import metrics, postgres_clock_sample
         from performance_evidence import parse_redis_info
-        env=self.env;start=time.monotonic();now=time.time()
+        env=self.env;start=self.begin_sample();now=time.time()
         roles=['load'] if self.load_only else ['sut','load']
         hosts={};rows={};stats={}
         with ThreadPoolExecutor(max_workers=7) as pool:

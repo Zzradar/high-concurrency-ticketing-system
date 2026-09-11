@@ -24,6 +24,14 @@ def config():
 
 
 class ConfigTests(unittest.TestCase):
+    def test_sampling_cadence_is_identical_and_never_catches_up(self):
+        from phase14_dual_sampling import DualSampler
+        for load_only,detailed in ((False,True),(True,False),(True,True)):
+            sampler=DualSampler(Mock(t={'generator':{'sampleSeconds':1}}),load_only=load_only,detailed=detailed)
+            with patch('phase14_dual_sampling.time.monotonic',side_effect=[0,.35,1,2.5,2.5]),patch('phase14_dual_sampling.time.sleep') as sleep:
+                self.assertEqual([sampler.begin_sample() for _ in range(3)],[0,1,2.5])
+                sleep.assert_called_once_with(.65)
+
     def test_stats_exit_race_requires_confirmed_exact_exited_shard(self):
         from phase14_dual_sampling import probe_host
         for exits in (True,False):
