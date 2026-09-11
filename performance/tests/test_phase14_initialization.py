@@ -12,6 +12,22 @@ from phase14_initialization import Initialization
 
 
 class InitializationTests(unittest.TestCase):
+    def test_smoke_registers_all_processes_before_waiting_but_requires_readiness(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);deadline=time.time()*1000+5000
+            with Initialization(root,'run',['0','1'],deadline,lambda:time.sleep(.001),serial=False) as init:
+                for shard in ('0','1'):
+                    path=root/(shard+'.log');path.write_text('PHASE14_INIT_READY|run|'+shard+'|')
+                    init.register(Mock(poll=Mock(return_value=None)),Mock(name=str(path)),shard)
+                    init.pending[-1][1].name=str(path)
+                self.assertEqual(init.ready,[])
+                init.finish()
+                self.assertEqual(len(init.ready),2)
+            record=json.loads((root/'initialization.json').read_text())
+            self.assertEqual(record['mode'],'concurrent_smoke_initialization')
+            self.assertEqual(record['releaseAtMs'],deadline)
+            self.assertEqual(record['status'],'pass')
+
     def test_readiness_preserves_order_release_and_safety_observation(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);observed=threading.Event()

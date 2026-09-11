@@ -425,8 +425,6 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
                 page=env.http('/sessions/'+chosen['sessionId']+'/'+endpoint)
                 if len(page['seats'])!=t['dataset']['seatsPerSession']:raise ValueError('O1 page fixture mismatch')
     before=pg_snapshot(env);write(root/'postgres-before.json',before)
-    spec['releaseAtMs']=int((time.time()+t['generator']['releaseLeadSeconds'])*1000)
-    write(root/'spec.json',spec)
     shutil.copytree(ROOT/'performance/k6',root/'k6-source')
     source_compose=root/'compose-k6-source.json'
     write(source_compose,{'services':{'k6':{'volumes':[{'type':'bind','source':str((root/'k6-source').resolve()),'target':'/scripts','read_only':True}]}}})
@@ -437,12 +435,15 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
     shutil.copyfile(env.data/'dataset-manifest.json',root/'dataset-manifest.json')
     git_head=env.command(['git','rev-parse','HEAD']).stdout.decode().strip();dirty=env.command(['git','status','--short']).stdout.decode()
     env.command(['git','diff','HEAD','--binary'],output_file=root/'worktree.patch')
-    write(root/'manifest.json',{'version':1,'runId':run_id,'gitHead':git_head,'worktree':dirty,'mode':t['mode'],'shards':slices,'targetsSha256':t['sourceSha256'],'snapshotSha256':sha256(snapshot),'start':utc_now(),'releaseAtMs':spec['releaseAtMs'],'idempotencyNamespace':spec['idempotencyNamespace']})
     write(root/'environment.json',{'target':'SUT-private' if getattr(env,'dual',False) is True else env.base,'project':env.project,'k6Image':K6_IMAGE,'isolation':'dual' if getattr(env,'dual',False) is True else 'local_characterization_only','calibrationLimitations':cal['limitations']})
     env.env['LOGIN_PASSWORD']='Ticketing123!' # Existing synthetic fixture hash, never exported into evidence.
     processes=[];logs=[];stop_reasons=[];samples=[];sampler=Sampler(env);guard=StopGuard(t,login_protection=args.case in ('L1','L2'))
     started=time.time();progress=RawProgress(t)
     light=LightPostgresSampler(env,t['generator']['hotspotSampleSeconds'] if args.case=='H3' else t['generator']['sampleSeconds']).start()
+    started=time.time()
+    spec['releaseAtMs']=int((started+t['generator']['releaseLeadSeconds'])*1000)
+    write(root/'spec.json',spec)
+    write(root/'manifest.json',{'version':1,'runId':run_id,'gitHead':git_head,'worktree':dirty,'mode':t['mode'],'shards':slices,'targetsSha256':t['sourceSha256'],'snapshotSha256':sha256(snapshot),'start':utc_now(),'releaseAtMs':spec['releaseAtMs'],'idempotencyNamespace':spec['idempotencyNamespace']})
     def observe_initialization():
         x,pg,rd,_=sampler.sample();samples.append(x);save_sample(root,x,pg,rd)
         bad,dropped=progress.read(root);x['dropped']=dropped;stop_reasons.extend(guard.sample(x))
@@ -450,7 +451,7 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
         if stop_reasons:raise RuntimeError('initialization safety stop')
     try:
         from phase14_initialization import Initialization
-        initialize=(Initialization(root,run_id,[s['shard'] for s in slices],spec['releaseAtMs'],observe_initialization)
+        initialize=(Initialization(root,run_id,[s['shard'] for s in slices],spec['releaseAtMs'],observe_initialization,serial=t['mode']=='formal')
                     if getattr(env,'dual',False) is True else nullcontext())
         with initialize as initialization:
             for shard_info in slices:
@@ -463,10 +464,11 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
                          '--out',f'json=/results/{run_id}/shards/{number}/raw.json',f'workloads/{spec["workload"]}.js']
                 if getattr(env,'dual',False) is True:
                     processes.append(env.start_generator(args_k6,log))
-                    initialization.wait(processes[-1],log,number)
+                    initialization.register(processes[-1],log,number)
                 else:
                     with (root/'commands.jsonl').open('a',encoding='utf-8') as f:f.write(json.dumps({'at':utc_now(),'argv':args_k6})+'\n')
                     processes.append(subprocess.Popen(args_k6,stdout=log,stderr=subprocess.STDOUT,env=env.env,cwd=ROOT))
+            if initialization is not None:initialization.finish()
         deadline=started+t['generator']['releaseLeadSeconds']+spec['loadSeconds']+t['recovery']['observeSeconds']+t['probes']['paymentDeadlineSeconds']+max(t['behavior']['refreshSeconds'])+t['generator']['scheduler_delivery_guard_seconds']+30
         while any(p.poll() is None for p in processes):
             x,pg,rd,raw=sampler.sample();samples.append(x);save_sample(root,x,pg,rd)

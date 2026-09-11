@@ -206,7 +206,7 @@ def g0_leg(args,t,env, *, detailed=True):
         if errors:raise RuntimeError('G0 initialization safety stop')
     try:
         from phase14_initialization import Initialization
-        with Initialization(env.root,env.root.name,[s['shard'] for s in spec['shards']],spec['releaseAtMs'],observe_initialization) as initialization:
+        with Initialization(env.root,env.root.name,[s['shard'] for s in spec['shards']],spec['releaseAtMs'],observe_initialization,serial=t['mode']=='formal') as initialization:
             for shard in spec['shards']:
                 number=shard['shard'];folder=env.root/'shards'/number;folder.mkdir(parents=True)
                 log=(folder/'console.log').open('wb');logs.append(log)
@@ -215,7 +215,8 @@ def g0_leg(args,t,env, *, detailed=True):
                       '-e','BASE_URL=http://noop:8080','k6','run','--execution-segment',shard['segment'],'--execution-segment-sequence',shard['sequence'],
                       '--out','json=/results/'+env.root.name+'/shards/'+number+'/raw.json','workloads/phase14-online.js']
                 processes.append(env.start_generator(argv,log))
-                initialization.wait(processes[-1],log,number)
+                initialization.register(processes[-1],log,number)
+            initialization.finish()
         while any(p.poll() is None for p in processes):
             x,pg,rd,_=sampler.sample();samples.append(x);save_sample(env.root,x,pg,rd)
             bad,dropped=progress.read(env.root);x['dropped']=dropped;errors+=guard.sample(x)

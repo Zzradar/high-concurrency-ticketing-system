@@ -6,10 +6,11 @@ import time
 
 
 class Initialization:
-    def __init__(self, root, run_id, shards, release_at_ms, observe):
+    def __init__(self, root, run_id, shards, release_at_ms, observe, *, serial=True):
         self.root=Path(root);self.run_id=run_id;self.shards=[str(s) for s in shards]
         self.release_at_ms=release_at_ms;self.observe=observe
         self.stop=threading.Event();self.error=None;self.ready=[]
+        self.serial=serial;self.pending=[]
         self.thread=threading.Thread(target=self.watch,name='phase14-initialization-sampler',daemon=True)
 
     def watch(self):
@@ -20,6 +21,13 @@ class Initialization:
 
     def __enter__(self):
         self.thread.start();return self
+
+    def register(self, process, log, shard):
+        if self.serial:self.wait(process,log,shard)
+        else:self.pending.append((process,log,shard))
+
+    def finish(self):
+        for process,log,shard in self.pending:self.wait(process,log,shard)
 
     def wait(self, process, log, shard):
         shard=str(shard)
@@ -42,7 +50,7 @@ class Initialization:
         failure=error or self.error
         if self.thread.is_alive():failure=RuntimeError('initialization sampler did not stop')
         if not failure and len(self.ready)!=len(self.shards):failure=RuntimeError('incomplete initialization')
-        record={'mode':'serial_initialization','runId':self.run_id,'shards':self.shards,
+        record={'mode':'serial_initialization' if self.serial else 'concurrent_smoke_initialization','runId':self.run_id,'shards':self.shards,
                 'releaseAtMs':self.release_at_ms,'ready':self.ready,'safetySampling':True,
                 'status':'fail' if failure else 'pass','error':str(failure) if failure else None}
         (self.root/'initialization.json').write_text(json.dumps(record,indent=2)+'\n')
