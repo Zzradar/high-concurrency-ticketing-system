@@ -1,0 +1,912 @@
+{
+  "scope": "Phase14核心正式矩阵",
+  "conclusion": "Load 万人初始化修复通过；核心正式 U1 因 SUT 后端文件描述符耗尽而测量无效，后续场景未运行；不构成正式业务容量证明",
+  "measuredCommit": "9006ee822e557255e244364495fbe251a1a25b18",
+  "measuredTree": "fece6ef68aa28d03987d35d09abfc2c8b4487752",
+  "targetsSha256": "653bbcf69399ef14f822e2ff4235332384062743072b93e3763632673a5b35b8",
+  "method1": {
+    "used": true,
+    "status": "initialization_qualified",
+    "coldRuns": [
+      {
+        "runId": "phase14-formal-cold-init-20260911T154039Z-f692e4",
+        "status": "pass",
+        "readySeconds": 16.966665771484376,
+        "mainVUs": 10000,
+        "probeVUs": 384,
+        "httpRequests": 0,
+        "mainStarted": 0,
+        "paymentStarted": 0,
+        "databaseUnchanged": true,
+        "loadCpuPeak": 0.6423751686909581,
+        "loadMemoryPeak": 0.40410379560654974,
+        "swap": false
+      },
+      {
+        "runId": "phase14-formal-cold-init-20260911T154129Z-f4ef0e",
+        "status": "pass",
+        "readySeconds": 17.09413720703125,
+        "mainVUs": 10000,
+        "probeVUs": 384,
+        "httpRequests": 0,
+        "mainStarted": 0,
+        "paymentStarted": 0,
+        "databaseUnchanged": true,
+        "loadCpuPeak": 0.6657534246575343,
+        "loadMemoryPeak": 0.4034733676595129,
+        "swap": false
+      }
+    ],
+    "faultFixture": {
+      "runId": "phase14-smoke-cold-init-20260911T153914Z-04672f",
+      "status": "pass",
+      "delaySeconds": 31,
+      "httpRequests": 0,
+      "mainStarted": 0,
+      "paymentStarted": 0,
+      "databaseUnchanged": true
+    }
+  },
+  "method2": {
+    "used": false,
+    "reason": "方法一连续两次通过；新问题是 SUT 进程 FD 限额，触发安全收尾，不属于剩余 Load 初始化瓶颈"
+  },
+  "validation": {
+    "implementationWindowsTests": 207,
+    "implementationLinuxTests": 207,
+    "linuxComposeConfigPassed": true,
+    "productionCodeChanged": false,
+    "frozenTargetsChanged": false
+  },
+  "g0": {
+    "runId": "phase14-formal-run-20260911T154259Z-1bdd48",
+    "status": "pass",
+    "legs": 4,
+    "overhead": {
+      "passed": true,
+      "limit": 0.05,
+      "latencyGrowthFractions": {
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "constantWatchdog": "host /proc and container identity/state remain enabled in both legs",
+      "legs": [
+        {
+          "sampling": false,
+          "runId": "phase14-formal-g0-20260911T154259Z-5f7ae7",
+          "p95": 1.0,
+          "p99": 1.0
+        },
+        {
+          "sampling": true,
+          "runId": "phase14-formal-g0-20260911T154416Z-05d3a3",
+          "p95": 1.0,
+          "p99": 1.0
+        },
+        {
+          "sampling": true,
+          "runId": "phase14-formal-g0-20260911T154534Z-e91b29",
+          "p95": 1.0,
+          "p99": 1.0
+        },
+        {
+          "sampling": false,
+          "runId": "phase14-formal-g0-20260911T154652Z-237fbe",
+          "p95": 1.0,
+          "p99": 1.0
+        }
+      ]
+    }
+  },
+  "smoke": {
+    "runId": "phase14-smoke-campaign-20260911T154821Z-7afd20",
+    "status": "pass",
+    "passed": 25,
+    "total": 25
+  },
+  "qualification": {
+    "runId": "phase14-formal-qualify-20260911T162841Z-910b33",
+    "status": "pass",
+    "errors": [],
+    "maxHostOffsetMs": 0.09441375732421875,
+    "maxDatabaseOffsetMs": 0.4889965057373047
+  },
+  "manifest": {
+    "root": "/srv/phase14/repo/performance/results/phase14-formal-launch-20260911T162855Z-15ee7a",
+    "argv": [
+      "python3",
+      "-u",
+      "performance/scripts/run_phase14.py",
+      "campaign",
+      "--shards",
+      "4",
+      "--qualification",
+      "/srv/phase14/repo/performance/results/phase14-formal-qualify-20260911T162841Z-910b33/qualification.json",
+      "--formal-approved",
+      "--core",
+      "--deadline-at",
+      "1789154810.5539405",
+      "--topology-config",
+      "/srv/phase14/runtime/dual-host.json",
+      "--yes"
+    ],
+    "dataCounts": {
+      "users": 1000000,
+      "authSessions": 100000,
+      "events": 2,
+      "sessions": 20,
+      "seats": 100000
+    },
+    "images": {
+      "sut": [
+        {
+          "service": "redis-exporter",
+          "id": "f83d5d2d0a59e1b1f721b04d83f947293424ab47a6e5d6102517ad82ce4a97ea",
+          "image": "sha256:fed773ffd2bb2eac706e0ed9cc2fff41651193ee4977e2a4f6919658ad2313f4",
+          "state": "running",
+          "nanoCpus": 0,
+          "memoryLimit": 134217728
+        },
+        {
+          "service": "postgres-exporter",
+          "id": "a7f839bd907158fbe960c7c1344baa703129b0407c0ed7411a214e1d90305d98",
+          "image": "sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e",
+          "state": "running",
+          "nanoCpus": 0,
+          "memoryLimit": 134217728
+        },
+        {
+          "service": "backend",
+          "id": "4dd7d70c18e4bbf80086597048e99108b365c40a2f627c0869cba10b3b7b9908",
+          "image": "sha256:c099a97fea4f60a7e3d26139770a552cb2a91304526978d5c65daab7df01b00c",
+          "state": "running",
+          "nanoCpus": 4000000000,
+          "memoryLimit": 2147483648
+        },
+        {
+          "service": "prometheus",
+          "id": "f40940e9e4aaafd08090753ff35df5453221948f00e937c1dfa529691ba1ec96",
+          "image": "sha256:e906cef998316bbe319f98711e1b4d8613ad37e14b08ff831d7036e77b7464f9",
+          "state": "running",
+          "nanoCpus": 0,
+          "memoryLimit": 536870912
+        },
+        {
+          "service": "postgres",
+          "id": "08bfec9cbc5576d12cf894aea779a342dbf9156429123119683607adb79c2c73",
+          "image": "sha256:075f7ba66bc9b3ce7d6b8b635208ff61cd7cf1a67d71ec530eec5d7ae0cbe571",
+          "state": "running",
+          "nanoCpus": 2000000000,
+          "memoryLimit": 1073741824
+        },
+        {
+          "service": "redis",
+          "id": "6403c41fe583846c23148e178d578583117376675f4d42a1be16fff961d6d23a",
+          "image": "sha256:1db42ccef14898aa29bae778452d567534b59c107129cbc1163fb552de184d3c",
+          "state": "running",
+          "nanoCpus": 1000000000,
+          "memoryLimit": 536870912
+        }
+      ],
+      "load": [],
+      "loadTags": [
+        {
+          "tag": "grafana/k6:2.2.0",
+          "id": "sha256:a070982921f37e1b891f8ed9fb2b507520c83228614c14640f7e28f635f4281b",
+          "platform": "linux/amd64",
+          "configSha256": "102ed91386312a4dc58daf866c2d5a7a24ad2fce54be2905bf7969fb99fff549"
+        },
+        {
+          "tag": "nginx:1.28-alpine",
+          "id": "sha256:0dcc88822d45581e65ae329f8be769762bf628d3b2bb7d2a077d4aa5c98b30e3",
+          "platform": "linux/amd64",
+          "configSha256": "39a190a1b7d1fd889b49e3d43130a1c64b4be083a670fd5c2fbc16c3676a8194"
+        }
+      ]
+    },
+    "generatorLimits": {
+      "cpus": 4,
+      "mem_limit": "2147483648"
+    },
+    "scheduledSecondsUpperBound": 9280
+  },
+  "campaign": {
+    "runId": "phase14-formal-campaign-20260911T162913Z-43fabf",
+    "status": "completed_with_stops",
+    "runs": [
+      {
+        "index": 0,
+        "case": "U1",
+        "arguments": {
+          "round": 0
+        },
+        "status": "invalid_measurement",
+        "runId": "phase14-formal-u1-20260911T162929Z-f5cc8a",
+        "root": "/srv/phase14/repo/performance/results/phase14-formal-u1-20260911T162929Z-f5cc8a"
+      },
+      {
+        "index": 1,
+        "case": "U2",
+        "arguments": {
+          "round": 0
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 2,
+        "case": "O1",
+        "arguments": {
+          "window": 0
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 3,
+        "case": "O1",
+        "arguments": {
+          "window": 1
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 4,
+        "case": "O1",
+        "arguments": {
+          "window": 2
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 5,
+        "case": "H1",
+        "arguments": {
+          "path": "temporary",
+          "repeat": 0
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 6,
+        "case": "H1",
+        "arguments": {
+          "path": "formal",
+          "repeat": 0
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 7,
+        "case": "H3",
+        "arguments": {
+          "path": "formal"
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 8,
+        "case": "L2",
+        "arguments": {
+          "control_only": true
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 9,
+        "case": "L2",
+        "arguments": {
+          "control_only": false
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      }
+    ]
+  },
+  "u1Diagnostic": {
+    "u1RunId": "phase14-formal-u1-20260911T162929Z-f5cc8a",
+    "initializationReadySeconds": 17.59147314453125,
+    "observedRequestSpanSeconds": 8.582934141159058,
+    "businessReleaseAt": 1789144646.725,
+    "lastHttpPointAt": 1789144655.307934,
+    "admittedMainUsers": 178,
+    "sumMainShardPeakVUs": 166,
+    "httpRequestsByScenario": {
+      "main": 1772,
+      "control_health": 18,
+      "control_auth": 18,
+      "payment": 151,
+      "control_availability": 18
+    },
+    "httpStatusCounts": {
+      "200": 1890,
+      "201": 43,
+      "0": 27,
+      "202": 17
+    },
+    "httpLatencyMs": {
+      "all": {
+        "count": 1977,
+        "p50": 1.327292,
+        "p95": 43.42540279999999,
+        "p99": 54.386194960000005,
+        "max": 70.478114
+      },
+      "main": {
+        "count": 1772,
+        "p50": 1.1060685000000001,
+        "p95": 44.22127134999996,
+        "p99": 54.92874543999999,
+        "max": 70.478114
+      },
+      "probes": {
+        "count": 205,
+        "p50": 2.514507,
+        "p95": 38.307358400000005,
+        "p99": 44.72353764000002,
+        "max": 49.825878
+      }
+    },
+    "observedFragmentRps": 230.34080973770838,
+    "mainFragmentRps": 206.45620377097586,
+    "businessClassificationCounts": {
+      "business_success": 2360.0,
+      "system_error": 52.0,
+      "unexpected_contract": 1.0
+    },
+    "delivery": {
+      "main": {
+        "planned": null,
+        "started": 178.0,
+        "completed": 0,
+        "interrupted": 178.0
+      },
+      "control_health": {
+        "planned": 4080,
+        "started": 18.0,
+        "completed": 18.0,
+        "interrupted": 0.0
+      },
+      "control_auth": {
+        "planned": 4080,
+        "started": 18.0,
+        "completed": 18.0,
+        "interrupted": 0.0
+      },
+      "control_availability": {
+        "planned": 4080,
+        "started": 18.0,
+        "completed": 18.0,
+        "interrupted": 0.0
+      },
+      "payment": {
+        "planned": 3480,
+        "started": 18.0,
+        "completed": 10.0,
+        "interrupted": 8.0
+      }
+    },
+    "dropped": 0,
+    "stopReasons": [
+      "RemoteDisconnected: Remote end closed connection without response"
+    ],
+    "resources": {
+      "initializationAndBusiness": {
+        "loadHost": {
+          "cpuPeak": 0.6654088050314465,
+          "memoryPeak": 0.53183751860242,
+          "diskFreeMinimumBytes": 44210835456,
+          "networkError": false
+        },
+        "sutHost": {
+          "cpuPeak": 0.4444444444444444,
+          "memoryPeak": 0.0800767919305223,
+          "diskFreeMinimumBytes": 94821711872,
+          "networkError": false
+        },
+        "oom": false,
+        "restarted": false,
+        "swapping": false,
+        "fdExhausted": false,
+        "networkExhausted": false,
+        "transactionWaitersPeak": 0.0,
+        "transactionOldestSecondsPeak": 0,
+        "pgLockWaitsPeak": 0,
+        "pgBlockingPeak": 0,
+        "hashQueueFractionPeak": 0.0,
+        "seatQueueFractionPeak": 0.0,
+        "sampleCount": 68
+      },
+      "business": {
+        "loadHost": {
+          "cpuPeak": 0.4563106796116505,
+          "memoryPeak": 0.53183751860242,
+          "diskFreeMinimumBytes": 44210835456,
+          "networkError": false
+        },
+        "sutHost": {
+          "cpuPeak": 0.4444444444444444,
+          "memoryPeak": 0.0800767919305223,
+          "diskFreeMinimumBytes": 94821711872,
+          "networkError": false
+        },
+        "oom": false,
+        "restarted": false,
+        "swapping": false,
+        "fdExhausted": false,
+        "networkExhausted": false,
+        "transactionWaitersPeak": 0.0,
+        "transactionOldestSecondsPeak": 0,
+        "pgLockWaitsPeak": 0,
+        "pgBlockingPeak": 0,
+        "hashQueueFractionPeak": 0.0,
+        "seatQueueFractionPeak": 0.0,
+        "sampleCount": 8
+      }
+    },
+    "redis": {
+      "used_memoryPeak": 8603136.0,
+      "connected_clientsPeak": 5.0,
+      "blocked_clientsPeak": 0.0,
+      "instantaneous_ops_per_secPeak": 472.0,
+      "keyspace_hitsDelta": 1239,
+      "keyspace_missesDelta": 995059,
+      "rejected_connectionsDelta": 0,
+      "evicted_keysDelta": 0,
+      "total_error_repliesDelta": 0,
+      "hitFraction": 0.0012436038213466253,
+      "latencyUsecLast": {
+        "latency_percentiles_usec_get": {
+          "p50": 1.003,
+          "p99": 5.023,
+          "p99.9": 10.047
+        },
+        "latency_percentiles_usec_mget": {
+          "p50": 14.015,
+          "p99": 1277.951,
+          "p99.9": 1392.639
+        },
+        "latency_percentiles_usec_command|info": {
+          "p50": 2.007,
+          "p99": 3.007,
+          "p99.9": 10.047
+        },
+        "latency_percentiles_usec_set": {
+          "p50": 3.007,
+          "p99": 10.047,
+          "p99.9": 19.071
+        },
+        "latency_percentiles_usec_client|setname": {
+          "p50": 2.007,
+          "p99": 5.023,
+          "p99.9": 12.031
+        },
+        "latency_percentiles_usec_del": {
+          "p50": 2.007,
+          "p99": 3.007,
+          "p99.9": 5.023
+        },
+        "latency_percentiles_usec_ttl": {
+          "p50": 0.001,
+          "p99": 1.003,
+          "p99.9": 1.003
+        },
+        "latency_percentiles_usec_flushall": {
+          "p50": 132.095,
+          "p99": 753.663,
+          "p99.9": 753.663
+        },
+        "latency_percentiles_usec_info": {
+          "p50": 245.759,
+          "p99": 425.983,
+          "p99.9": 843.775
+        },
+        "latency_percentiles_usec_slowlog|get": {
+          "p50": 1.003,
+          "p99": 2.007,
+          "p99.9": 5.023
+        },
+        "latency_percentiles_usec_slowlog|len": {
+          "p50": 1.003,
+          "p99": 2.007,
+          "p99.9": 5.023
+        },
+        "latency_percentiles_usec_dbsize": {
+          "p50": 1.003,
+          "p99": 2.007,
+          "p99.9": 2.007
+        },
+        "latency_percentiles_usec_ping": {
+          "p50": 1.003,
+          "p99": 5.023,
+          "p99.9": 10.047
+        },
+        "latency_percentiles_usec_latency|histogram": {
+          "p50": 189.439,
+          "p99": 415.743,
+          "p99.9": 471.039
+        },
+        "latency_percentiles_usec_latency|latest": {
+          "p50": 1.003,
+          "p99": 3.007,
+          "p99.9": 10.047
+        },
+        "latency_percentiles_usec_config|get": {
+          "p50": 192.511,
+          "p99": 280.575,
+          "p99.9": 309.247
+        },
+        "latency_percentiles_usec_expire": {
+          "p50": 2.007,
+          "p99": 4.015,
+          "p99.9": 17.023
+        },
+        "latency_percentiles_usec_eval": {
+          "p50": 90.111,
+          "p99": 6094.847,
+          "p99.9": 6782.975
+        }
+      }
+    },
+    "postgres": {
+      "valid": true,
+      "database": {
+        "numbackends": 0,
+        "xact_commit": 6111,
+        "xact_rollback": 0,
+        "blks_read": 180,
+        "blks_hit": 1248467,
+        "tup_returned": 3941401,
+        "tup_fetched": 2927639,
+        "tup_inserted": 251,
+        "tup_updated": 233,
+        "tup_deleted": 27,
+        "conflicts": 0,
+        "temp_files": 0,
+        "temp_bytes": 0,
+        "deadlocks": 0,
+        "blk_read_time": 1.04300000000012,
+        "blk_write_time": 0.5320000000001528,
+        "session_time": 817495.7330000103,
+        "active_time": 7177.6389999999665,
+        "idle_in_transaction_time": 88.66600000000017,
+        "sessions": 185,
+        "sessions_abandoned": 0,
+        "sessions_fatal": 0,
+        "sessions_killed": 0
+      },
+      "wal": {
+        "wal_records": 3557,
+        "wal_fpi": 0,
+        "wal_bytes": 323470,
+        "wal_buffers_full": 0,
+        "wal_write": 264,
+        "wal_sync": 263,
+        "wal_write_time": 0,
+        "wal_sync_time": 0
+      },
+      "topStatements": [
+        {
+          "identity": {
+            "queryid": -5667562274415862786
+          },
+          "delta": {
+            "calls": 166,
+            "total_exec_time": 1652.835376,
+            "rows": 830000,
+            "shared_blks_hit": 283600,
+            "shared_blks_read": 0,
+            "temp_blks_written": 0
+          }
+        },
+        {
+          "identity": {
+            "queryid": 8324569262540313481
+          },
+          "delta": {
+            "calls": 229,
+            "total_exec_time": 1598.0027530000002,
+            "rows": 1145000,
+            "shared_blks_hit": 377013,
+            "shared_blks_read": 0,
+            "temp_blks_written": 0
+          }
+        },
+        {
+          "identity": {
+            "queryid": -7390902673174426915
+          },
+          "delta": {
+            "calls": 73,
+            "total_exec_time": 575.5759100000005,
+            "rows": 1168,
+            "shared_blks_hit": 119501,
+            "shared_blks_read": 0,
+            "temp_blks_written": 0
+          }
+        },
+        {
+          "identity": {
+            "queryid": 4801247561337901310
+          },
+          "delta": {
+            "calls": 166,
+            "total_exec_time": 551.803423,
+            "rows": 166,
+            "shared_blks_hit": 273544,
+            "shared_blks_read": 84,
+            "temp_blks_written": 0
+          }
+        },
+        {
+          "identity": {
+            "queryid": 8207445343163765616
+          },
+          "delta": {
+            "calls": 292,
+            "total_exec_time": 225.50568600000156,
+            "rows": 292,
+            "shared_blks_hit": 1022,
+            "shared_blks_read": 0,
+            "temp_blks_written": 0
+          }
+        }
+      ],
+      "connectionsBefore": 6,
+      "connectionsAfter": 6
+    },
+    "originalCorrectness": {
+      "passed": false,
+      "global": {
+        "accepted_payment_mismatch": 0,
+        "active_reservation_seat_mismatch": 0,
+        "confirmed_state_mismatch": 0,
+        "effective_seat_overlap": 0,
+        "held_seat_owner_mismatch": 0,
+        "multiple_processing_attempts": 0,
+        "multiple_refunds": 0,
+        "order_amount_mismatch": 0,
+        "order_paid_at_mismatch": 0,
+        "order_reservation_status_mismatch": 0,
+        "refund_order_or_amount_mismatch": 0,
+        "sold_state_mismatch": 0,
+        "terminal_reservation_still_holds": 0,
+        "unaccepted_success_refund_mismatch": 0
+      },
+      "errors": [
+        "payment terminal reconciliation failed"
+      ],
+      "scoped": {
+        "mainOrders": {
+          "orders": 2,
+          "users": 2,
+          "reservations": 2,
+          "wrong_seat_count": 0
+        },
+        "checkoutOwnership": {
+          "mismatch": 0
+        },
+        "loginSessions": {
+          "sessions": 0,
+          "users": 0,
+          "uniqueDigests": 0
+        },
+        "paymentTerminal": {
+          "orders": 17,
+          "paid": 16,
+          "invalid": 1
+        }
+      }
+    },
+    "finalCorrectness": {
+      "passed": false,
+      "global": {
+        "accepted_payment_mismatch": 0,
+        "active_reservation_seat_mismatch": 0,
+        "confirmed_state_mismatch": 0,
+        "effective_seat_overlap": 0,
+        "held_seat_owner_mismatch": 0,
+        "multiple_processing_attempts": 0,
+        "multiple_refunds": 0,
+        "order_amount_mismatch": 0,
+        "order_paid_at_mismatch": 0,
+        "order_reservation_status_mismatch": 0,
+        "refund_order_or_amount_mismatch": 0,
+        "sold_state_mismatch": 0,
+        "terminal_reservation_still_holds": 0,
+        "unaccepted_success_refund_mismatch": 0
+      },
+      "errors": [
+        "payment terminal reconciliation failed"
+      ],
+      "scoped": {
+        "mainOrders": {
+          "orders": 2,
+          "users": 2,
+          "reservations": 2,
+          "wrong_seat_count": 0
+        },
+        "checkoutOwnership": {
+          "mismatch": 0
+        },
+        "loginSessions": {
+          "sessions": 0,
+          "users": 0,
+          "uniqueDigests": 0
+        },
+        "paymentTerminal": {
+          "orders": 17,
+          "paid": 17,
+          "invalid": 0
+        }
+      }
+    },
+    "paymentTerminalLog": {
+      "success": 9,
+      "unexpectedContract": 1,
+      "interrupted": 8
+    },
+    "http2xxFraction": 0.9863429438543247,
+    "httpNoResponseFraction": 0.013657056145675266,
+    "formalThroughput": null,
+    "formalBusinessFailureRate": null
+  },
+  "fdEvidence": {
+    "softLimit": 1024,
+    "hardLimit": 524288,
+    "containerUlimits": null,
+    "postStopFdCount": 429,
+    "error": "Too many open files (errno=24)",
+    "firstLogUtc": "2026-09-11T16:37:34.743836Z",
+    "hostLevelFdGuardTriggered": false
+  },
+  "excludedFromCorePlan": [
+    {
+      "case": "U1",
+      "arguments": {
+        "round": 1
+      }
+    },
+    {
+      "case": "U2",
+      "arguments": {
+        "round": 1
+      }
+    },
+    {
+      "case": "J1",
+      "arguments": {
+        "window": 0
+      }
+    },
+    {
+      "case": "J1",
+      "arguments": {
+        "window": 1
+      }
+    },
+    {
+      "case": "J1",
+      "arguments": {
+        "window": 2
+      }
+    },
+    {
+      "case": "E1",
+      "arguments": {}
+    },
+    {
+      "case": "H1",
+      "arguments": {
+        "path": "temporary",
+        "repeat": 1
+      }
+    },
+    {
+      "case": "H1",
+      "arguments": {
+        "path": "formal",
+        "repeat": 1
+      }
+    },
+    {
+      "case": "H2",
+      "arguments": {
+        "session_count": 10
+      }
+    },
+    {
+      "case": "H2",
+      "arguments": {
+        "session_count": 20
+      }
+    },
+    {
+      "case": "H3",
+      "arguments": {
+        "path": "temporary"
+      }
+    },
+    {
+      "case": "L1",
+      "arguments": {
+        "control_only": true
+      }
+    },
+    {
+      "case": "L1",
+      "arguments": {
+        "control_only": false
+      }
+    },
+    {
+      "case": "S1",
+      "arguments": {}
+    }
+  ],
+  "cleanup": {
+    "status": "pass",
+    "completedAt": 1789145083.2051942,
+    "services": {
+      "status": "pass",
+      "startedAt": 1789141010.5539405,
+      "stoppedAt": 1789144981.9043615,
+      "elapsedSeconds": 3971.350421190262,
+      "containers": {
+        "load": {
+          "containersPreserved": 1057,
+          "running": 0,
+          "oomContainers": 0,
+          "restartedContainers": 0
+        },
+        "sut": {
+          "containersPreserved": 6,
+          "running": 0,
+          "oomContainers": 0,
+          "restartedContainers": 0
+        }
+      },
+      "volumes": {
+        "load": [],
+        "sut": [
+          "phase14-formal-sut_postgres",
+          "phase14-formal-sut_prometheus"
+        ]
+      },
+      "imagesPreserved": true,
+      "historicalEvidencePreserved": true,
+      "reason": "SUT backend process exhausted its 1024 soft open-file limit; safety stop",
+      "root": "/srv/phase14/repo/performance/results/phase14-formal-core-shutdown-20260911T164240Z-e64444"
+    },
+    "ssh": {
+      "sut": {
+        "removedAuthorizations": 1,
+        "otherLinesPreserved": 1
+      },
+      "load": {
+        "finishedAt": 1789145056.6983306,
+        "negativeAuthenticationCheck": true,
+        "removedDedicatedFiles": [
+          "phase14_sut_ed25519",
+          "phase14_sut_ed25519.pub",
+          "phase14_known_hosts"
+        ],
+        "removedConfigBlock": true,
+        "remainingPrivateKey": false
+      }
+    }
+  },
+  "evidence": {
+    "serverRoot": "/srv/phase14/repo/performance/results",
+    "localRoot": "performance/results/phase14-core-analysis",
+    "archiveSha256": "13d773cd89ee9df938f86846290eca3000a09fa49aec5c3f9cd4bb868cca435b",
+    "filesCollected": 358,
+    "privateKeyCollected": false
+  }
+}
