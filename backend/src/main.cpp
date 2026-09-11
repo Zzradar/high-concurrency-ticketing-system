@@ -1,3 +1,4 @@
+#include "workers/SeatAvailabilityProjectionWorker.h"
 #include "workers/OrderExpiryWorker.h"
 #include "workers/PaymentReconciliationWorker.h"
 #include "services/CheckoutSessionService.h"
@@ -150,6 +151,8 @@ int main(int argc, char *argv[])
             computeCapacity.isNull() ? 16 : computeCapacity.asUInt(),
             ticketing::PerformanceMetrics::seatMapComputeObserver());
         ticketing::SeatService::configureComputeExecutor(seatMapCompute);
+        ticketing::SeatAvailabilityReadModel::configure(seatMapCompute);
+        auto availabilityWorker = std::make_shared<ticketing::SeatAvailabilityProjectionWorker>(ticketing::SeatAvailabilityConfig::load());
         ComputeShutdown computeShutdown{seatMapCompute};
         const auto [batchSize, intervalSeconds] =
             loadOrderExpiryWorkerConfig();
@@ -164,10 +167,11 @@ int main(int argc, char *argv[])
         auto checkoutReconciliation =
             std::make_shared<ticketing::CheckoutSessionService>();
         drogon::app().registerBeginningAdvice(
-            [expiryWorker,
+            [availabilityWorker, expiryWorker,
              checkoutReconciliation,
              paymentWorker,
              checkoutReconciliationBatchSize] {
+                availabilityWorker->start();
                 expiryWorker->start();
                 paymentWorker->start();
                 checkoutReconciliation->reconcileSubmitting(

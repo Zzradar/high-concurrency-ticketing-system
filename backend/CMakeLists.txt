@@ -261,3 +261,32 @@ if(BUILD_TESTING AND TICKETING_PHASE16_EXTERNAL_TESTS)
     add_test(NAME phase16_migration COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase16_migration_test.py")
     set_tests_properties(phase16_migration PROPERTIES RUN_SERIAL TRUE LABELS integration)
 endif()
+
+# Compile Lua source into the binary; no runtime working-directory dependency.
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated/availability")
+set(PHASE16_SCRIPT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/generated/availability/AvailabilityScripts.h")
+file(WRITE "${PHASE16_SCRIPT_HEADER}" "#pragma once\n#include <string_view>\nnamespace ticketing::availability_scripts {\n")
+foreach(script common init apply expire read hold)
+    set(script_path "${CMAKE_CURRENT_SOURCE_DIR}/src/availability/${script}.lua")
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${script_path}")
+    file(READ "${script_path}" script_text)
+    file(APPEND "${PHASE16_SCRIPT_HEADER}" "inline constexpr std::string_view ${script} = R\"p16lua(${script_text})p16lua\";\n")
+endforeach()
+file(APPEND "${PHASE16_SCRIPT_HEADER}" "}\n")
+target_include_directories(ticketing_backend PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
+target_sources(ticketing_backend PRIVATE
+    src/services/CheckoutOwnershipCache.cpp
+    src/services/SeatAvailabilityReadModel.cpp
+    src/workers/SeatAvailabilityProjectionWorker.cpp)
+if(BUILD_TESTING AND TICKETING_PHASE16_EXTERNAL_TESTS)
+    add_test(NAME phase16_read_model COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase16_read_model_test.py")
+    set_tests_properties(phase16_read_model PROPERTIES RUN_SERIAL TRUE LABELS integration)
+endif()
+
+if(BUILD_TESTING)
+    add_test(NAME phase16_source_contract COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase16_source_contract_test.py")
+endif()
+if(BUILD_TESTING AND TICKETING_PHASE16_EXTERNAL_TESTS)
+    add_test(NAME phase16_api COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase16_api_test.py")
+    set_tests_properties(phase16_api PROPERTIES RUN_SERIAL TRUE LABELS integration)
+endif()

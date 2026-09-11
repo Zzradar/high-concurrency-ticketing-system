@@ -1,3 +1,4 @@
+#include "services/SeatAvailabilityReadModel.h"
 #include "observability/Phase14Metrics.h"
 #include "services/SeatHoldService.h"
 #include "observability/PerformanceMetrics.h"
@@ -128,12 +129,14 @@ std::string arguments(std::initializer_list<std::string> values)
 
 template <typename Success, typename Error>
 void executeWithKeys(
-    std::string_view script,
+    std::string_view originalScript,
     const std::vector<std::string> &keys,
     const std::string &arguments,
     Success &&success,
     Error &&error)
 {
+    static const std::string wrapped = ticketing::SeatAvailabilityReadModel::wrapHold(originalScript);
+    const std::string_view script{wrapped};
     auto client = drogon::app().getRedisClient("seat_holds");
     std::string command = "EVAL %b " + std::to_string(keys.size());
     for (std::size_t index = 0; index < keys.size(); ++index)

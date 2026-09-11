@@ -45,6 +45,7 @@ class PerformanceMetrics final
     static void refundConflict(std::string_view reason);
     static void refundFailure(std::string_view stage);
     static void refundAge(double seconds);
+    static void availability(std::string_view operation, std::string_view result, double seconds = 0, double seats = 0);
     static void setRefundStatusCount(std::string_view status, double value);
 };
 }  // namespace ticketing

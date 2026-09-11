@@ -57,6 +57,31 @@
       "config": {
         "path": "/metrics",
         "collectors": [
+{
+  "name": "ticketing_availability_events_total",
+  "help": "Availability operations by bounded result",
+  "type": "counter",
+  "labels": [
+    "operation",
+    "outcome"
+  ]
+},
+{
+  "name": "ticketing_availability_duration_seconds",
+  "help": "Availability operation duration",
+  "type": "histogram",
+  "labels": [
+    "operation"
+  ]
+},
+{
+  "name": "ticketing_availability_returned_seats",
+  "help": "Seats returned or expired per operation",
+  "type": "histogram",
+  "labels": [
+    "operation"
+  ]
+},
           {
             "name": "ticketing_seat_map_compute_queue_depth",
             "help": "Seat map tasks waiting in the bounded compute queue",
@@ -353,6 +378,19 @@
     }
   ],
   "custom_config": {
+    "seat_availability_read_model": {
+      "init_lock_seconds": 15,
+      "init_wait_milliseconds": 1000,
+      "stream_maxlen": 10000,
+      "delta_scan_limit": 1000,
+      "expiry_cleanup_batch": 512,
+      "checkout_owner_cache_ttl_seconds": 600
+    },
+    "seat_availability_projection": {
+      "batch_size": 100,
+      "interval_seconds": 0.5,
+      "lease_seconds": 5
+    },
     "seat_map_compute_workers": 4,
     "seat_map_compute_queue_capacity": 16,
     "order_expiry_worker": {
