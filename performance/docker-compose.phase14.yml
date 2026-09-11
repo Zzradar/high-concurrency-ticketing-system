@@ -5,6 +5,8 @@ services:
     profiles: [load]
     cpus: 2
     mem_limit: 128m
+    ulimits:
+      nofile: {soft: 16384, hard: 16384}
     volumes: ["./phase14/noop.conf:/etc/nginx/nginx.conf:ro"]
   postgres:
     image: postgres:16-alpine

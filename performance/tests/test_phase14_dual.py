@@ -24,6 +24,18 @@ def config():
 
 
 class ConfigTests(unittest.TestCase):
+    def test_noop_can_keep_frozen_g0_connections_open(self):
+        import re
+        conf=(ROOT/'performance/phase14/noop.conf').read_text()
+        needed=load_targets()['burst']['users']+16
+        for directive in ('worker_rlimit_nofile','worker_connections'):
+            self.assertGreater(int(re.search(directive+r'\s+(\d+)',conf).group(1)),needed)
+        compose=(ROOT/'performance/docker-compose.phase14.yml').read_text().split('  postgres:')[0]
+        limits=re.search(r'nofile: \{soft: (\d+), hard: (\d+)\}',compose)
+        self.assertIsNotNone(limits)
+        self.assertGreaterEqual(int(limits.group(1)),needed)
+        self.assertGreaterEqual(int(limits.group(2)),int(limits.group(1)))
+
     def test_host_clock_times_established_pipe_not_constructor(self):
         import queue
         from phase14_topology import HostClock
