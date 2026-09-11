@@ -4,6 +4,8 @@ import os
 import subprocess
 import unittest
 import uuid
+from concurrent.futures import ThreadPoolExecutor
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -69,6 +71,23 @@ class MigrationTest(unittest.TestCase):
         self.sql(self.prefix + "UPDATE seat_availability_outbox SET formal_status='INVALID';", False)
         self.sql(self.prefix + "UPDATE seat_availability_outbox SET formal_version=-1;", False)
         self.sql(self.prefix + "UPDATE seat_availability_outbox SET lease_token='orphan';", False)
+
+    def test_claim_skip_locked_and_stale_lease_ack(self):
+        self.sql(self.prefix + "INSERT INTO seat_availability_outbox(session_id,session_seat_id,formal_status,formal_version) SELECT 'lease-session','lease-seat-'||i,'AVAILABLE',0 FROM generate_series(1,4) i;")
+        worker=(ROOT/'src/workers/SeatAvailabilityProjectionWorker.cpp').read_text(encoding='utf-8')
+        claim=re.search(r'R"SQL\((.*?)\)SQL"',worker,re.S).group(1)
+        self.assertIn('LIMIT $1::integer',claim)
+        def take(token):
+            statement=claim.replace('$1::integer','2').replace('$2',"'"+token+"'").replace('$3::double precision','5')
+            self.sql(self.prefix+'BEGIN;'+statement+";SELECT pg_sleep(0.2);COMMIT;")
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            list(pool.map(take,['worker-a','worker-b']))
+        self.assertEqual(self.sql(self.prefix+"SELECT lease_token||'|'||count(*) FROM seat_availability_outbox GROUP BY lease_token ORDER BY lease_token;"),'worker-a|2\nworker-b|2')
+        self.sql(self.prefix+"UPDATE seat_availability_outbox SET lease_until=now()-interval '1 second';")
+        take('replacement')
+        before=self.sql(self.prefix+"SELECT count(*) FROM seat_availability_outbox WHERE lease_token='replacement';")
+        self.sql(self.prefix+"DELETE FROM seat_availability_outbox WHERE id IN (SELECT id FROM seat_availability_outbox WHERE lease_token='replacement') AND lease_token='worker-a';")
+        self.assertEqual(self.sql(self.prefix+"SELECT count(*) FROM seat_availability_outbox WHERE lease_token='replacement';"),before)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

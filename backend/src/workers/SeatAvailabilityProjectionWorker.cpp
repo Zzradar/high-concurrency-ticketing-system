@@ -65,7 +65,7 @@ void SeatAvailabilityProjectionWorker::run()
         WITH candidates AS (
             SELECT id FROM seat_availability_outbox
             WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP
-            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1
+            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer
         )
         UPDATE seat_availability_outbox event
         SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval '1 second')
