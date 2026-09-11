@@ -170,6 +170,9 @@ def preflight(env):
 
 
 def qualification_guard(args, env, *, immediate=True):
+    if getattr(args,'delta_qualification',None):
+        from phase14_fd import delta_guard
+        return delta_guard(args,env,immediate=immediate)
     if not getattr(env,'dual',False) or not args.yes or not args.formal_approved or not args.qualification:
         raise ValueError('formal requires dual, --yes, --qualification and --formal-approved')
     q=json.loads(args.qualification.read_text())
@@ -400,6 +403,7 @@ def dual_main(args,t):
         print(json.dumps(core_plan(t) if getattr(args,'core',False) and t['mode']=='formal' else plan(t,smoke=t['mode']=='smoke'),ensure_ascii=False,indent=2));return 0
     env=DualEnvironment(t,Path(topology.values['resultRoot'])/run_id(args.action,t['mode']),topology)
     env.deadline_at=getattr(args,'deadline_at',None)
+    env.fd_resume=bool(getattr(args,'delta_qualification',None))
     if args.action=='init-only':
         from phase14_core import init_pair
         if not getattr(args,'core',False):raise ValueError('init-only requires core policy')

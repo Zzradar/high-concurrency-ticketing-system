@@ -35,6 +35,7 @@ class DualEnvironment(Environment):
         self.models = {}
         self.created = time.time()
         self.generators = {}
+        self.fd_resume = False
 
     def command(self, args, **kwargs):
         # Legacy observational Docker calls refer to the SUT, never Load.
@@ -71,6 +72,9 @@ class DualEnvironment(Environment):
                 ports = model['services'][service].get('ports', [])
                 if len(ports)!=1 or ports[0].get('host_ip')!=address or int(ports[0]['published'])!=port:
                     raise ValueError('unsafe service binding')
+        if role == 'sut' and self.fd_resume:
+            from phase14_fd import apply_override
+            model = apply_override(self, model)
         payload = json.dumps(model).encode()
         program = "import os,pathlib,sys;os.umask(0o077);p=pathlib.Path(sys.argv[1]);p.parent.mkdir(mode=0o700,exist_ok=True);p.write_bytes(sys.stdin.buffer.read());p.chmod(0o600)"
         executor.run(['python3','-c',program,self.role_file(role)], input=payload)
@@ -200,6 +204,7 @@ class DualEnvironment(Environment):
     def child(self, root):
         child=DualEnvironment(self.t,root,self.topology)
         child.deadline_at=getattr(self,'deadline_at',None)
+        child.fd_resume=self.fd_resume
         return child
 
     def start_generator(self, argv, log):

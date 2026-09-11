@@ -59,7 +59,7 @@ def probe_host(role,project,detailed):
     from phase14_topology import verify_container,SUT_SERVICES,LOAD_SERVICES
     if role not in ('sut','load') or not re.fullmatch(r'phase14-[a-z0-9-]+-'+role,project):raise ValueError('invalid probe role')
     prefix=['sudo','-n'] if role=='load' else []
-    def docker(*args):return subprocess.check_output([*prefix,'docker',*args],timeout=15)
+    def docker(*args):return subprocess.check_output([*prefix,'docker',*args],timeout=15,stderr=subprocess.STDOUT)
     begin=time.monotonic()
     # Historical Load shards are retained as evidence, not polled forever.
     # SUT includes stopped services so an unexpected service exit is visible.
@@ -96,6 +96,10 @@ def probe_host(role,project,detailed):
     namespace={}
     exec(HOST_PROGRAM.replace('print(json.dumps(d))',''),namespace)
     host=namespace['d'];host['collectionSeconds']=time.monotonic()-begin;host['containerCpu']=cpu
+    if role=='sut':
+        from phase14_fd import process_sample
+        backend=[x for x in items if x['Config']['Labels']['com.docker.compose.service']=='backend' and x['State']['Running']]
+        host['backendFd']=process_sample(backend[0],docker) if len(backend)==1 else None
     return {'host':host,'containers':safe_containers(items),'stats':stats}
 
 
@@ -104,6 +108,10 @@ def role_sample(env,role,previous,detailed):
     args=['python3','/srv/phase14/repo/performance/scripts/phase14_dual_sampling.py','--probe',role,project]
     if detailed:args.append('--detailed')
     payload=json.loads(getattr(env,role).run(args,timeout=30).stdout)
+    if role=='sut' and payload['host'].get('backendFd'):
+        # Persist before /metrics is awaited: EMFILE can break that HTTP endpoint.
+        with (env.root/'backend-fd.jsonl').open('a') as output:
+            output.write(json.dumps({'time':payload['host']['time'],**payload['host']['backendFd']})+'\n')
     for row in payload['stats']:
         old=(previous or {}).get('containerCpu',{}).get(row['Id']);current=row['cpuCounters']
         if old:
@@ -129,6 +137,8 @@ class DualSampler:
     def __init__(self, env, *, load_only=False, detailed=True):
         self.env=env;self.load_only=load_only;self.previous={};self.previous_requests=None;self.detailed=detailed
         self.sample_started=None
+        from phase14_fd import FdGuard
+        self.fd_guard=FdGuard()
 
     def begin_sample(self):
         # Use the same frozen cadence in G0, calibration and business runs.
@@ -188,6 +198,11 @@ class DualSampler:
            'pgLockWaits':pg.get('lockWaits',0),'pgIdleTransaction':pg.get('idleTransaction',0),'pgIdleAborted':pg.get('idleAborted',0),'pgBlocking':0}
         x['hashQueueFraction']=x['hashQueue']/config['authentication']['password_hash_queue_capacity']
         x['seatQueueFraction']=x['seatQueue']/config['seat_map_compute_queue_capacity']
+        if not self.load_only and getattr(env,'fd_resume',False):
+            fd=hosts['sut'].get('backendFd')
+            if fd is None:raise RuntimeError('backend FD observation missing')
+            x['backendFd']=fd
+            x['fdExhausted']=x['fdExhausted'] or self.fd_guard.sample(fd)
         if x['pgLockWaits']:
             x['blocking']=json.loads(env.sql("SELECT COALESCE(json_agg(row_to_json(x)),'[]') FROM (SELECT pid,pg_blocking_pids(pid) AS blockers FROM pg_stat_activity WHERE application_name='ticketing_backend_phase14' AND state='active' AND wait_event_type='Lock') x;"))
             x['pgBlocking']=len(x['blocking'])

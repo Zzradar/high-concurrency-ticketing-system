@@ -269,6 +269,7 @@ def main():
     parser.add_argument('--deadline-at',type=float,help='Absolute UTC stop time; core runs require this')
     parser.add_argument('--topology-config',type=Path)
     parser.add_argument('--qualification',type=Path)
+    parser.add_argument('--delta-qualification',type=Path,help='Explicit original qualification plus FD-only delta record')
     parser.add_argument('--formal-approved',action='store_true')
     parser.add_argument('--g0-evidence',type=Path)
     parser.add_argument('--smoke-evidence',type=Path)
