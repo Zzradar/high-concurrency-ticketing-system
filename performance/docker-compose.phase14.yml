@@ -40,6 +40,10 @@ services:
       retries: 30
   backend:
     image: phase14-backend:local
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
     command: ["./ticketing_backend", "config/config.phase14.json"]
     environment:
       TICKETING_PAYMENT_PROVIDER: simulation

@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+import re
 from unittest.mock import Mock
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -54,6 +55,15 @@ class FdTests(unittest.TestCase):
         from phase14_core import core_plan
         from phase14_model import load_targets
         self.assertEqual(core_plan(load_targets()), json.loads((ROOT/'docs/phase14_core_plan.json').read_text()))
+
+    def test_standard_compose_preserves_measured_backend_limit_only(self):
+        text = (ROOT/'performance/docker-compose.phase14.yml').read_text()
+        backend = re.search(r'^  backend:\n(.*?)(?=^  [a-z])', text, re.M | re.S)[1]
+        self.assertIn('    ulimits:\n      nofile:\n        soft: 65535\n        hard: 65535\n', backend)
+        services = dict(re.findall(r'^  ([a-z][a-z-]*):\n(.*?)(?=^  [a-z]|^volumes:|\Z)', text, re.M | re.S))
+        self.assertEqual({name for name, value in services.items() if '    ulimits:' in value}, {'backend', 'noop'})
+        self.assertIn('nofile: {soft: 16384, hard: 16384}', services['noop'])
+        self.assertEqual(OVERRIDE['services']['backend']['ulimits']['nofile'], {'soft': 65535, 'hard': 65535})
 
 
 if __name__ == '__main__': unittest.main()
