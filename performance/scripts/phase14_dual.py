@@ -197,9 +197,14 @@ class DualEnvironment(Environment):
         url='http://127.0.0.1:'+str(self.t['environment']['prometheusPort'])+path
         return json.loads(self.sut.run(['curl','--fail','--silent','--show-error','--max-time','20',url]).stdout)
 
-    def child(self, root): return DualEnvironment(self.t,root,self.topology)
+    def child(self, root):
+        child=DualEnvironment(self.t,root,self.topology)
+        child.deadline_at=getattr(self,'deadline_at',None)
+        return child
 
     def start_generator(self, argv, log):
+        if getattr(self,'deadline_at',None) and time.time()>=self.deadline_at:
+            raise RuntimeError('core wall-clock deadline; generator launch forbidden')
         # Adapt the existing frozen workload invocation, not its business input.
         argv=list(argv);argv[argv.index('-p')+1]=self.load_project
         first=argv.index('-f');argv[first+1]=self.role_file('load')
@@ -218,7 +223,7 @@ class DualEnvironment(Environment):
         return self.load.popen([*prefix,*argv],stdout=log,stderr=subprocess.STDOUT,env=self.env)
 
     def stop_generators(self, names=None):
-        stopped=[]
+        stopped=[];running=[]
         for name in names or self.generators:
             if name not in self.generators: raise ValueError('not a registered run shard')
             expected=self.generators[name]
@@ -227,8 +232,10 @@ class DualEnvironment(Environment):
             item=json.loads(result.stdout)[0]
             identity=verify_container(item,self.load_project,{'k6'},run_id=self.root.name,name=name,
                                       image=expected['image'],created_after=expected['createdAfter'])
-            if item['State']['Running']:self.docker('load','stop','--time','2',identity)
+            if item['State']['Running']:running.append(identity)
             stopped.append(identity)
+        # Docker stops this verified set concurrently, within the abort guard.
+        if running:self.docker('load','stop','--time','2',*running)
         with (self.root/'stop-evidence.jsonl').open('a') as out:
             out.write(json.dumps({'runId':self.root.name,'project':self.load_project,'verifiedIds':stopped,'at':time.time()})+'\n')
         return stopped

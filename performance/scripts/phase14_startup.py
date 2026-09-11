@@ -51,6 +51,7 @@ def warm_background(env,spec):
                 with (root/'samples.jsonl').open('a') as stream:stream.write(json.dumps(sample)+'\n')
                 errors+=guard.sample(sample)
                 if time.time()-begin>3600:errors.append('startup deadline')
+                if getattr(env,'deadline_at',None) and time.time()>=env.deadline_at:errors.append('core wall-clock deadline')
                 if errors:break
         finally:
             if getattr(env,'dual',False) is True:env.stop_generators([name])

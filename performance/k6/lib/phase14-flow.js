@@ -14,12 +14,12 @@ if(!Number.isInteger(Number(shard))||Number(shard)<0||Number(shard)>=t.generator
 const probeRole=__ENV.PHASE14_ROLE==='probe';
 const selectedScenarios=Object.fromEntries(Object.entries(spec.scenarios).filter(([name])=>
     (name.startsWith('control_')||name==='payment')===probeRole));
-export const options={systemTags:SYSTEM_TAGS,scenarios:selectedScenarios,discardResponseBodies:false,summaryTrendStats:['p(50)','p(95)','p(99)','max']};
+export const options={...(spec.generatorPolicy?{setupTimeout:'120s'}:{}),systemTags:SYSTEM_TAGS,scenarios:selectedScenarios,discardResponseBodies:false,summaryTrendStats:['p(50)','p(95)','p(99)','max']};
 const started=new Counter('phase14_started');const outcomes=new Counter('phase14_results');
 const duration=new Trend('phase14_duration_ms',true);const iterStarted=new Counter('phase14_iterations_started');
 const iterCompleted=new Counter('phase14_iterations_completed');const offset=new Trend('phase14_start_offset_ms',true);
 const entered=new Counter('phase14_users_entered');const boundary=new Counter('phase14_scheduler_boundary');
-const state=onceState();let onlineIndex=null;let sequence=0;
+const state=onceState();let onlineIndex=null;let sequence=0;let paymentDeadlineMs=null;
 
 function tags(step,result=null) {
     if(!steps.includes(step))throw new Error('unbounded step');
@@ -29,9 +29,11 @@ function record(step,result,ms) { outcomes.add(1,tags(step,result));duration.add
 function request(method,path,name,step,identity,body,expected,valid,conflicts=[]) {
     started.add(1,tags(step));let response=null;let parsed=null;const begin=Date.now();
     try {
+        const remaining=paymentDeadlineMs===null?t.probes.paymentDeadlineSeconds*1000:paymentDeadlineMs-Date.now();
+        if(remaining<=0)throw new Error('payment hard deadline exhausted');
         response=http.request(method,base+path,body===null?null:JSON.stringify(body),{
             headers:identity?mutationHeaders(identity):jsonHeaders({Origin:'http://performance.local'}),
-            tags:{name,...tags(step)},timeout:`${t.probes.paymentDeadlineSeconds}s`,
+            tags:{name,...tags(step)},timeout:paymentDeadlineMs===null?`${t.probes.paymentDeadlineSeconds}s`:`${Math.max(1,Math.floor(paymentDeadlineMs-Date.now()))}ms`,
         });
         parsed=response.json();
     } catch(_) {}
@@ -46,8 +48,15 @@ function target(slice,index){
     return seat(boundedIndex(slot,t.seatSlices[slice]),t);
 }
 function waitRelease(){const seconds=(spec.releaseAtMs-Date.now())/1000;if(seconds>0)sleep(seconds);}
-export function setup(){console.log(`PHASE14_INIT_READY|${spec.runId}|${shard}|`);waitRelease();return {};}
-async function run(fn){waitRelease();iterStarted.add(1,{shard});try{await fn();iterCompleted.add(1,{shard});}catch(error){throw error;}}
+export function setup(){
+    if(spec.initializationDelayShard===shard)sleep(spec.initializationDelaySeconds);
+    console.log(`PHASE14_INIT_READY|${spec.runId}|${shard}|`);
+    if(spec.initializationDeadlineAtMs&&Date.now()>=spec.initializationDeadlineAtMs)exec.test.abort('initialization deadline exceeded');
+    waitRelease();
+    if(spec.initOnly)exec.test.abort('init-only: business release forbidden');
+    return {};
+}
+async function run(fn){if(spec.initOnly)exec.test.abort('init-only: business forbidden');waitRelease();iterStarted.add(1,{shard});try{await fn();iterCompleted.add(1,{shard});}catch(error){throw error;}}
 function mapped(){return spec.mapping[exec.scenario.name];}
 function nextIndex(m){const i=exec.scenario.iterationInTest;if(i>=m.count){boundary.add(1,{shard});return null;}return i+(m.offset||0);}
 function auth(user,step='auth'){return request('GET','/auth/me','GET /auth/me',step,user,null,200,b=>b.id===user.userId);}
@@ -174,6 +183,7 @@ export function control() {const m=mapped();const next=nextIndex(m);if(next===nu
 });}
 export function payment() {const m=mapped();const i=nextIndex(m);if(i===null)return;return run(async()=>{
     const begin=Date.now();
+    if(spec.generatorPolicy)paymentDeadlineMs=begin+t.probes.paymentDeadlineSeconds*1000;
     const user=identity('payment',i);const chosen=target('payment',i);const order=await purchase(user,chosen,i,'order',false);
     started.add(1,tags('payment_terminal'));let ok=false;
     try{
@@ -181,7 +191,7 @@ export function payment() {const m=mapped();const i=nextIndex(m);if(i===null)ret
         const paid=request('POST',`/orders/${order.id}/pay`,'POST /orders/{orderId}/pay','payment_start',user,null,202,b=>b.paymentAttempt&&b.paymentAttempt.status==='PROCESSING');
         if(!paid.ok)return;const attempt=paid.body.paymentAttempt.id;
         while(Date.now()-begin<t.probes.paymentDeadlineSeconds*1000){
-            sleep(t.probes.pollSeconds);
+            sleep(spec.generatorPolicy?Math.min(t.probes.pollSeconds,Math.max(0,(paymentDeadlineMs-Date.now())/1000)):t.probes.pollSeconds);
             const poll=request('GET',`/payment-attempts/${attempt}`,'GET /payment-attempts/{id}','payment_poll',user,null,200,b=>b.id===attempt&&b.orderId===order.id);
             if(!poll.ok)return;
             if(poll.body.status==='SUCCEEDED'&&poll.body.acceptedAt){
@@ -189,7 +199,7 @@ export function payment() {const m=mapped();const i=nextIndex(m);if(i===null)ret
                 ok=terminal.ok&&Date.now()-begin<=t.probes.paymentDeadlineSeconds*1000;return;
             }
         }
-    }finally{record('payment_terminal',ok?'business_success':'unexpected_contract',Date.now()-begin);}
+    }finally{record('payment_terminal',ok?'business_success':'unexpected_contract',Date.now()-begin);paymentDeadlineMs=null;}
 });}
 export function handleSummary(data){return {[`/results/${spec.runId}/shards/${shard}/summary.json`]:JSON.stringify(data),stdout:`Phase14 shard ${shard} summary saved\n`};}
 

@@ -262,7 +262,11 @@ class Environment:
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['plan','prepare','calibrate','run','campaign','qualify','preflight'])
+    parser.add_argument('action',choices=['plan','prepare','calibrate','run','campaign','qualify','preflight','init-only'])
+    parser.add_argument('--core',action='store_true',help='Use authorized core generator policy; formal campaign selects only ten core jobs')
+    parser.add_argument('--init-evidence',type=Path)
+    parser.add_argument('--init-delay-last',type=float,default=0)
+    parser.add_argument('--deadline-at',type=float,help='Absolute UTC stop time; core runs require this')
     parser.add_argument('--topology-config',type=Path)
     parser.add_argument('--qualification',type=Path)
     parser.add_argument('--formal-approved',action='store_true')
@@ -277,7 +281,7 @@ def main():
     if args.topology_config:
         from phase14_campaign import dual_main
         return dual_main(args,t)
-    if args.action in ('qualify','preflight'):raise ValueError('dual topology required')
+    if args.action in ('qualify','preflight','init-only'):raise ValueError('dual topology required')
     run_id='phase14-'+t['mode']+'-'+args.case.lower()+'-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'-'+secrets.token_hex(3)
     if args.action=='plan' or not args.yes:
         print(json.dumps({'mode':t['mode'],'targetsSha256':t['sourceSha256'],'segments':segments(args.shards,t),'onlinePlan':online_plan(t),'action':args.action,'dryRun':True},indent=2));return 0
@@ -393,6 +397,9 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
         from phase14_campaign import run_g0
         return run_g0(args,t,env)
     if args.case=='E1':return execute_expiry(t,env)
+    if getattr(args,'core',False) and spec_factory is build_spec:
+        from phase14_core import core_spec
+        spec_factory=core_spec
     root=env.root;run_id=root.name;snapshot=env.data/'base.dump'
     if not snapshot.is_file():raise ValueError('prepare the matching dataset snapshot first')
     spec=spec_factory(t,args.case,run_id,round_index=args.round,window_index=args.window,path=args.path,session_count=args.session_count,
@@ -402,6 +409,9 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
     env.reset(yes=True,snapshot=snapshot)
     slices=[{**s,'role':'main'} for s in base_segments]
     if args.case!='G0':slices += [{**s,'shard':str(int(s['shard'])+args.shards),'role':'probe'} for s in base_segments]
+    if getattr(args,'core',False):
+        from phase14_core import units
+        slices=units(args.shards,t,args.case)
     spec['shards']=slices
     cal=calibration(env)
     preflight=resource_preflight(cal,t);write(root/'resource-preflight.json',preflight)
@@ -442,16 +452,20 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
     light=LightPostgresSampler(env,t['generator']['hotspotSampleSeconds'] if args.case=='H3' else t['generator']['sampleSeconds']).start()
     started=time.time()
     spec['releaseAtMs']=int((started+t['generator']['releaseLeadSeconds'])*1000)
+    if getattr(args,'core',False):
+        from phase14_core import arm
+        arm(spec,started)
     write(root/'spec.json',spec)
     write(root/'manifest.json',{'version':1,'runId':run_id,'gitHead':git_head,'worktree':dirty,'mode':t['mode'],'shards':slices,'targetsSha256':t['sourceSha256'],'snapshotSha256':sha256(snapshot),'start':utc_now(),'releaseAtMs':spec['releaseAtMs'],'idempotencyNamespace':spec['idempotencyNamespace']})
     def observe_initialization():
+        if getattr(args,'deadline_at',None) and time.time()>=args.deadline_at:raise RuntimeError('core wall-clock deadline')
         x,pg,rd,_=sampler.sample();samples.append(x);save_sample(root,x,pg,rd)
         bad,dropped=progress.read(root);x['dropped']=dropped;stop_reasons.extend(guard.sample(x))
         if bad:stop_reasons.append('error stop window')
         if stop_reasons:raise RuntimeError('initialization safety stop')
     try:
         from phase14_initialization import Initialization
-        initialize=(Initialization(root,run_id,[s['shard'] for s in slices],spec['releaseAtMs'],observe_initialization,serial=t['mode']=='formal')
+        initialize=(Initialization(root,run_id,[s['shard'] for s in slices],spec['releaseAtMs'],observe_initialization,serial=t['mode']=='formal',deadline_at_ms=spec.get('initializationDeadlineAtMs'),abort=env.stop_generators if getattr(args,'core',False) else None)
                     if getattr(env,'dual',False) is True else nullcontext())
         with initialize as initialization:
             for shard_info in slices:
@@ -469,8 +483,10 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
                     with (root/'commands.jsonl').open('a',encoding='utf-8') as f:f.write(json.dumps({'at':utc_now(),'argv':args_k6})+'\n')
                     processes.append(subprocess.Popen(args_k6,stdout=log,stderr=subprocess.STDOUT,env=env.env,cwd=ROOT))
             if initialization is not None:initialization.finish()
-        deadline=started+t['generator']['releaseLeadSeconds']+spec['loadSeconds']+t['recovery']['observeSeconds']+t['probes']['paymentDeadlineSeconds']+max(t['behavior']['refreshSeconds'])+t['generator']['scheduler_delivery_guard_seconds']+30
+        deadline=spec['releaseAtMs']/1000+spec['loadSeconds']+t['recovery']['observeSeconds']+t['probes']['paymentDeadlineSeconds']+max(t['behavior']['refreshSeconds'])+t['generator']['scheduler_delivery_guard_seconds']+30
         while any(p.poll() is None for p in processes):
+            if getattr(args,'deadline_at',None) and time.time()>=args.deadline_at:
+                stop_reasons.append('core wall-clock deadline');break
             x,pg,rd,raw=sampler.sample();samples.append(x);save_sample(root,x,pg,rd)
             if time.time()>=sentinel_refresh:
                 hold=env.http('/checkout-sessions/'+hold['id']+'/seats',owner,method='PUT',body={'seatIds':[sentinel['sessionSeatId']],'expectedRevision':hold['revision']})

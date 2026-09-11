@@ -14,13 +14,13 @@ for (const [status,body,expected,result] of [[200,{id:1},200,'business_success']
 assert.throws(()=>model.boundedIndex(2,[0,2]));
 const once=model.onceState();assert(once.claim());assert(!once.claim());
 
-async function harness({fn='burst',index=0,failConfirm=false,failLogin=false,neverPay=false,kind='J1',role='main',releaseAtMs=100000}={}) {
+async function harness({fn='burst',index=0,failConfirm=false,failLogin=false,neverPay=false,kind='J1',role='main',releaseAtMs=100000,overrides={},expectAbort=false}={}) {
     let clock=100000,jarUser=null;const requests=[],points=[],sleeps=[],events=[];
     const users=Array.from({length:targets.dataset.activeAuthSessions},(_,i)=>({userId:'user-'+i,sessionToken:'session-'+i,csrfToken:'csrf-'+i}));
     const loginUsers=Array.from({length:20},(_,i)=>({userId:'login-'+i,username:'login-'+i}));
-    const execution={scenario:{name:'main',iterationInTest:index},vu:{idInTest:index+1}};
+    const execution={scenario:{name:'main',iterationInTest:index},vu:{idInTest:index+1},test:{abort:message=>{throw new Error('ABORT:'+message);}}};
     const spec={targets,case:kind,releaseAtMs,runId:'phase14-test',idempotencyNamespace:'phase14-test',
-        scenarios:{main:{},control_auth:{},payment:{}},mapping:{main:{count:20,users:20,path:'formal',sessionCount:1}}};
+        scenarios:{main:{},control_auth:{},payment:{}},mapping:{main:{count:20,users:20,path:'formal',sessionCount:1}},...overrides};
     let checkout=null,paid=false;
     function respond(method,url,body,params) {
         clock+=2;body=body===null||body===undefined?null:typeof body==='string'?JSON.parse(body):body;
@@ -56,11 +56,13 @@ async function harness({fn='burst',index=0,failConfirm=false,failLogin=false,nev
         const m=mocks[name]?new vm.SyntheticModule(Object.keys(mocks[name]),function(){for(const [k,v] of Object.entries(mocks[name]))this.setExport(k,v);},{context}):new vm.SourceTextModule(fs.readFileSync(path.join(root,name),'utf8'),{context});
         cache.set(name,m);await m.link(link);return m;
     }
-    const flow=await link('./phase14-flow.js');await flow.evaluate();await flow.namespace[fn]();
-    if(fn==='online'){execution.vu.idInTest=999;await flow.namespace.online();}
+    const flow=await link('./phase14-flow.js');await flow.evaluate();let aborted=false;
+    try{await flow.namespace[fn]();}catch(error){if(!expectAbort||!error.message.startsWith('ABORT:'))throw error;aborted=true;}
+    assert.equal(aborted,expectAbort);
+    if(fn==='online'&&!aborted){execution.vu.idInTest=999;await flow.namespace.online();}
     const starts=points.filter(x=>x.metric==='phase14_started');
     for(const step of new Set(starts.map(x=>x.tags.step)))assert.equal(starts.filter(x=>x.tags.step===step).length,points.filter(x=>x.metric==='phase14_results'&&x.tags.step===step).length);
-    return {requests,points,sleeps,events,options:flow.namespace.options};
+    return {requests,points,sleeps,events,options:flow.namespace.options,clock,aborted};
 }
 const initialized=await harness({fn:'setup',releaseAtMs:105000});
 assert.deepEqual(initialized.events,[['log','PHASE14_INIT_READY|phase14-test|0|']]);
@@ -125,3 +127,10 @@ for(const shards of [1,2]){
   }
   assert.equal(new Set(seen).size,20);
 }
+
+const late=await harness({fn:'setup',releaseAtMs:160000,overrides:{generatorPolicy:{},initializationDeadlineAtMs:130000,initializationDelayShard:'0',initializationDelaySeconds:31},expectAbort:true});
+assert.equal(late.requests.length,0);assert.equal(late.points.length,0);assert.equal(late.clock,131000);
+const noBusiness=await harness({fn:'online',overrides:{initOnly:true},expectAbort:true});
+assert.equal(noBusiness.requests.length,0);assert.equal(noBusiness.points.length,0);
+const boundedPayment=await harness({fn:'payment',neverPay:true,overrides:{generatorPolicy:{}}});
+assert(boundedPayment.clock<=130005);assert(boundedPayment.requests.every(x=>/ms$/.test(x.params.timeout)));

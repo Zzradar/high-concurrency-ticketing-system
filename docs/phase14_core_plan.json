@@ -1,0 +1,2014 @@
+{
+  "version": 1,
+  "scope": "Phase14 core formal matrix",
+  "targetsSha256": "653bbcf69399ef14f822e2ff4235332384062743072b93e3763632673a5b35b8",
+  "jobs": [
+    {
+      "index": 0,
+      "case": "U1",
+      "arguments": {
+        "round": 0
+      },
+      "businessSecondsUpperBound": 1740,
+      "reset": true,
+      "scenarios": {
+        "main": {
+          "executor": "ramping-vus",
+          "exec": "online",
+          "startVUs": 0,
+          "stages": [
+            {
+              "target": 2500,
+              "duration": "120s"
+            },
+            {
+              "target": 2500,
+              "duration": "300s"
+            },
+            {
+              "target": 5000,
+              "duration": "120s"
+            },
+            {
+              "target": 5000,
+              "duration": "300s"
+            },
+            {
+              "target": 10000,
+              "duration": "300s"
+            },
+            {
+              "target": 10000,
+              "duration": "600s"
+            }
+          ],
+          "gracefulRampDown": "120s",
+          "gracefulStop": "120s"
+        },
+        "control_health": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "2041s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_auth": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "2041s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_availability": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "2041s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "payment": {
+          "executor": "constant-arrival-rate",
+          "exec": "payment",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "1741s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        }
+      },
+      "logicalPlan": {
+        "main": null,
+        "control_health": 4080,
+        "control_auth": 4080,
+        "control_availability": 4080,
+        "payment": 3480
+      },
+      "startupPlan": {
+        "users": 10000,
+        "requests": 100000,
+        "steps": {
+          "startup_auth": 20000,
+          "startup_notifications": 20000,
+          "startup_session": 10000,
+          "startup_event": 10000,
+          "startup_layout": 10000,
+          "startup_availability": 10000,
+          "startup_checkouts": 10000,
+          "startup_orders": 10000
+        }
+      },
+      "slices": {
+        "main": [
+          0,
+          10000
+        ],
+        "calibration": [
+          10000,
+          11000
+        ],
+        "control": [
+          11000,
+          12000
+        ],
+        "payment": [
+          12000,
+          22000
+        ],
+        "expiry": [
+          22000,
+          32000
+        ],
+        "background": [
+          32000,
+          42000
+        ],
+        "backgroundHold": [
+          42000,
+          52000
+        ],
+        "backgroundOrder": [
+          52000,
+          62000
+        ],
+        "login": [
+          100000,
+          110000
+        ]
+      },
+      "seatSlices": {
+        "main": [
+          0,
+          40000
+        ],
+        "payment": [
+          40000,
+          50000
+        ],
+        "expiry": [
+          50000,
+          60000
+        ],
+        "backgroundHold": [
+          60000,
+          70000
+        ],
+        "backgroundOrder": [
+          70000,
+          80000
+        ],
+        "control": [
+          80000,
+          81000
+        ]
+      },
+      "generatorPolicy": {
+        "version": "phase14-core-method-1",
+        "globalProbe": true,
+        "probeBudget": {
+          "control_health": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_auth": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_availability": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "payment": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          }
+        },
+        "readinessSeconds": 30,
+        "abortGuardSeconds": 30
+      }
+    },
+    {
+      "index": 1,
+      "case": "U2",
+      "arguments": {
+        "round": 0
+      },
+      "businessSecondsUpperBound": 1740,
+      "reset": true,
+      "scenarios": {
+        "enter_0": {
+          "executor": "constant-arrival-rate",
+          "exec": "enter",
+          "rate": 125,
+          "timeUnit": "6s",
+          "duration": "121s",
+          "startTime": "0s",
+          "preAllocatedVUs": 2516,
+          "gracefulStop": "120s"
+        },
+        "refresh_0": {
+          "executor": "ramping-arrival-rate",
+          "exec": "refresh",
+          "startRate": 0,
+          "timeUnit": "60s",
+          "preAllocatedVUs": 500,
+          "stages": [
+            {
+              "target": 2500,
+              "duration": "120s"
+            },
+            {
+              "target": 2500,
+              "duration": "1s"
+            }
+          ],
+          "startTime": "0s",
+          "gracefulStop": "120s"
+        },
+        "refresh_1": {
+          "executor": "ramping-arrival-rate",
+          "exec": "refresh",
+          "startRate": 2500,
+          "timeUnit": "60s",
+          "preAllocatedVUs": 500,
+          "stages": [
+            {
+              "target": 2500,
+              "duration": "300s"
+            },
+            {
+              "target": 2500,
+              "duration": "1s"
+            }
+          ],
+          "startTime": "120s",
+          "gracefulStop": "120s"
+        },
+        "enter_2": {
+          "executor": "constant-arrival-rate",
+          "exec": "enter",
+          "rate": 125,
+          "timeUnit": "6s",
+          "duration": "121s",
+          "startTime": "420s",
+          "preAllocatedVUs": 2516,
+          "gracefulStop": "120s"
+        },
+        "refresh_2": {
+          "executor": "ramping-arrival-rate",
+          "exec": "refresh",
+          "startRate": 2500,
+          "timeUnit": "60s",
+          "preAllocatedVUs": 1000,
+          "stages": [
+            {
+              "target": 5000,
+              "duration": "120s"
+            },
+            {
+              "target": 5000,
+              "duration": "1s"
+            }
+          ],
+          "startTime": "420s",
+          "gracefulStop": "120s"
+        },
+        "refresh_3": {
+          "executor": "ramping-arrival-rate",
+          "exec": "refresh",
+          "startRate": 5000,
+          "timeUnit": "60s",
+          "preAllocatedVUs": 1000,
+          "stages": [
+            {
+              "target": 5000,
+              "duration": "300s"
+            },
+            {
+              "target": 5000,
+              "duration": "1s"
+            }
+          ],
+          "startTime": "540s",
+          "gracefulStop": "120s"
+        },
+        "enter_4": {
+          "executor": "constant-arrival-rate",
+          "exec": "enter",
+          "rate": 50,
+          "timeUnit": "3s",
+          "duration": "301s",
+          "startTime": "840s",
+          "preAllocatedVUs": 5016,
+          "gracefulStop": "120s"
+        },
+        "refresh_4": {
+          "executor": "ramping-arrival-rate",
+          "exec": "refresh",
+          "startRate": 5000,
+          "timeUnit": "60s",
+          "preAllocatedVUs": 2000,
+          "stages": [
+            {
+              "target": 10000,
+              "duration": "300s"
+            },
+            {
+              "target": 10000,
+              "duration": "1s"
+            }
+          ],
+          "startTime": "840s",
+          "gracefulStop": "120s"
+        },
+        "refresh_5": {
+          "executor": "ramping-arrival-rate",
+          "exec": "refresh",
+          "startRate": 10000,
+          "timeUnit": "60s",
+          "preAllocatedVUs": 2000,
+          "stages": [
+            {
+              "target": 10000,
+              "duration": "600s"
+            },
+            {
+              "target": 10000,
+              "duration": "1s"
+            }
+          ],
+          "startTime": "1140s",
+          "gracefulStop": "120s"
+        },
+        "control_health": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "2041s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_auth": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "2041s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_availability": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "2041s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "payment": {
+          "executor": "constant-arrival-rate",
+          "exec": "payment",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "1741s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        }
+      },
+      "logicalPlan": {
+        "enter_0": 2500,
+        "refresh_0": 2500,
+        "refresh_1": 12500,
+        "enter_2": 2500,
+        "refresh_2": 7500,
+        "refresh_3": 25000,
+        "enter_4": 5000,
+        "refresh_4": 37500,
+        "refresh_5": 100000,
+        "control_health": 4080,
+        "control_auth": 4080,
+        "control_availability": 4080,
+        "payment": 3480
+      },
+      "startupPlan": {
+        "users": 10000,
+        "requests": 100000,
+        "steps": {
+          "startup_auth": 20000,
+          "startup_notifications": 20000,
+          "startup_session": 10000,
+          "startup_event": 10000,
+          "startup_layout": 10000,
+          "startup_availability": 10000,
+          "startup_checkouts": 10000,
+          "startup_orders": 10000
+        }
+      },
+      "slices": {
+        "main": [
+          0,
+          10000
+        ],
+        "calibration": [
+          10000,
+          11000
+        ],
+        "control": [
+          11000,
+          12000
+        ],
+        "payment": [
+          12000,
+          22000
+        ],
+        "expiry": [
+          22000,
+          32000
+        ],
+        "background": [
+          32000,
+          42000
+        ],
+        "backgroundHold": [
+          42000,
+          52000
+        ],
+        "backgroundOrder": [
+          52000,
+          62000
+        ],
+        "login": [
+          100000,
+          110000
+        ]
+      },
+      "seatSlices": {
+        "main": [
+          0,
+          40000
+        ],
+        "payment": [
+          40000,
+          50000
+        ],
+        "expiry": [
+          50000,
+          60000
+        ],
+        "backgroundHold": [
+          60000,
+          70000
+        ],
+        "backgroundOrder": [
+          70000,
+          80000
+        ],
+        "control": [
+          80000,
+          81000
+        ]
+      },
+      "generatorPolicy": {
+        "version": "phase14-core-method-1",
+        "globalProbe": true,
+        "probeBudget": {
+          "control_health": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_auth": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_availability": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "payment": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          }
+        },
+        "readinessSeconds": 30,
+        "abortGuardSeconds": 30
+      }
+    },
+    {
+      "index": 2,
+      "case": "O1",
+      "arguments": {
+        "window": 0
+      },
+      "businessSecondsUpperBound": 60,
+      "reset": true,
+      "scenarios": {
+        "main": {
+          "executor": "constant-arrival-rate",
+          "exec": "burst",
+          "rate": 500,
+          "timeUnit": "3s",
+          "duration": "61s",
+          "startTime": "0s",
+          "preAllocatedVUs": 10016,
+          "gracefulStop": "120s"
+        },
+        "control_health": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "361s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_auth": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "361s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_availability": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "361s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "payment": {
+          "executor": "constant-arrival-rate",
+          "exec": "payment",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "61s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        }
+      },
+      "logicalPlan": {
+        "main": 10000,
+        "control_health": 720,
+        "control_auth": 720,
+        "control_availability": 720,
+        "payment": 120
+      },
+      "startupPlan": {
+        "users": 0,
+        "requests": 0,
+        "steps": {
+          "startup_auth": 0,
+          "startup_notifications": 0,
+          "startup_session": 0,
+          "startup_event": 0,
+          "startup_layout": 0,
+          "startup_availability": 0,
+          "startup_checkouts": 0,
+          "startup_orders": 0
+        }
+      },
+      "slices": {
+        "main": [
+          0,
+          10000
+        ],
+        "calibration": [
+          10000,
+          11000
+        ],
+        "control": [
+          11000,
+          12000
+        ],
+        "payment": [
+          12000,
+          22000
+        ],
+        "expiry": [
+          22000,
+          32000
+        ],
+        "background": [
+          32000,
+          42000
+        ],
+        "backgroundHold": [
+          42000,
+          52000
+        ],
+        "backgroundOrder": [
+          52000,
+          62000
+        ],
+        "login": [
+          100000,
+          110000
+        ]
+      },
+      "seatSlices": {
+        "main": [
+          0,
+          40000
+        ],
+        "payment": [
+          40000,
+          50000
+        ],
+        "expiry": [
+          50000,
+          60000
+        ],
+        "backgroundHold": [
+          60000,
+          70000
+        ],
+        "backgroundOrder": [
+          70000,
+          80000
+        ],
+        "control": [
+          80000,
+          81000
+        ]
+      },
+      "generatorPolicy": {
+        "version": "phase14-core-method-1",
+        "globalProbe": true,
+        "probeBudget": {
+          "control_health": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_auth": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_availability": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "payment": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          }
+        },
+        "readinessSeconds": 30,
+        "abortGuardSeconds": 30
+      }
+    },
+    {
+      "index": 3,
+      "case": "O1",
+      "arguments": {
+        "window": 1
+      },
+      "businessSecondsUpperBound": 30,
+      "reset": true,
+      "scenarios": {
+        "main": {
+          "executor": "constant-arrival-rate",
+          "exec": "burst",
+          "rate": 1000,
+          "timeUnit": "3s",
+          "duration": "31s",
+          "startTime": "0s",
+          "preAllocatedVUs": 10016,
+          "gracefulStop": "120s"
+        },
+        "control_health": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "331s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_auth": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "331s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_availability": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "331s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "payment": {
+          "executor": "constant-arrival-rate",
+          "exec": "payment",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "31s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        }
+      },
+      "logicalPlan": {
+        "main": 10000,
+        "control_health": 660,
+        "control_auth": 660,
+        "control_availability": 660,
+        "payment": 60
+      },
+      "startupPlan": {
+        "users": 0,
+        "requests": 0,
+        "steps": {
+          "startup_auth": 0,
+          "startup_notifications": 0,
+          "startup_session": 0,
+          "startup_event": 0,
+          "startup_layout": 0,
+          "startup_availability": 0,
+          "startup_checkouts": 0,
+          "startup_orders": 0
+        }
+      },
+      "slices": {
+        "main": [
+          0,
+          10000
+        ],
+        "calibration": [
+          10000,
+          11000
+        ],
+        "control": [
+          11000,
+          12000
+        ],
+        "payment": [
+          12000,
+          22000
+        ],
+        "expiry": [
+          22000,
+          32000
+        ],
+        "background": [
+          32000,
+          42000
+        ],
+        "backgroundHold": [
+          42000,
+          52000
+        ],
+        "backgroundOrder": [
+          52000,
+          62000
+        ],
+        "login": [
+          100000,
+          110000
+        ]
+      },
+      "seatSlices": {
+        "main": [
+          0,
+          40000
+        ],
+        "payment": [
+          40000,
+          50000
+        ],
+        "expiry": [
+          50000,
+          60000
+        ],
+        "backgroundHold": [
+          60000,
+          70000
+        ],
+        "backgroundOrder": [
+          70000,
+          80000
+        ],
+        "control": [
+          80000,
+          81000
+        ]
+      },
+      "generatorPolicy": {
+        "version": "phase14-core-method-1",
+        "globalProbe": true,
+        "probeBudget": {
+          "control_health": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_auth": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_availability": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "payment": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          }
+        },
+        "readinessSeconds": 30,
+        "abortGuardSeconds": 30
+      }
+    },
+    {
+      "index": 4,
+      "case": "O1",
+      "arguments": {
+        "window": 2
+      },
+      "businessSecondsUpperBound": 10,
+      "reset": true,
+      "scenarios": {
+        "main": {
+          "executor": "constant-arrival-rate",
+          "exec": "burst",
+          "rate": 1000,
+          "timeUnit": "1s",
+          "duration": "11s",
+          "startTime": "0s",
+          "preAllocatedVUs": 10016,
+          "gracefulStop": "120s"
+        },
+        "control_health": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "311s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_auth": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "311s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_availability": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "311s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "payment": {
+          "executor": "constant-arrival-rate",
+          "exec": "payment",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "11s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        }
+      },
+      "logicalPlan": {
+        "main": 10000,
+        "control_health": 620,
+        "control_auth": 620,
+        "control_availability": 620,
+        "payment": 20
+      },
+      "startupPlan": {
+        "users": 0,
+        "requests": 0,
+        "steps": {
+          "startup_auth": 0,
+          "startup_notifications": 0,
+          "startup_session": 0,
+          "startup_event": 0,
+          "startup_layout": 0,
+          "startup_availability": 0,
+          "startup_checkouts": 0,
+          "startup_orders": 0
+        }
+      },
+      "slices": {
+        "main": [
+          0,
+          10000
+        ],
+        "calibration": [
+          10000,
+          11000
+        ],
+        "control": [
+          11000,
+          12000
+        ],
+        "payment": [
+          12000,
+          22000
+        ],
+        "expiry": [
+          22000,
+          32000
+        ],
+        "background": [
+          32000,
+          42000
+        ],
+        "backgroundHold": [
+          42000,
+          52000
+        ],
+        "backgroundOrder": [
+          52000,
+          62000
+        ],
+        "login": [
+          100000,
+          110000
+        ]
+      },
+      "seatSlices": {
+        "main": [
+          0,
+          40000
+        ],
+        "payment": [
+          40000,
+          50000
+        ],
+        "expiry": [
+          50000,
+          60000
+        ],
+        "backgroundHold": [
+          60000,
+          70000
+        ],
+        "backgroundOrder": [
+          70000,
+          80000
+        ],
+        "control": [
+          80000,
+          81000
+        ]
+      },
+      "generatorPolicy": {
+        "version": "phase14-core-method-1",
+        "globalProbe": true,
+        "probeBudget": {
+          "control_health": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_auth": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_availability": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "payment": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          }
+        },
+        "readinessSeconds": 30,
+        "abortGuardSeconds": 30
+      }
+    },
+    {
+      "index": 5,
+      "case": "H1",
+      "arguments": {
+        "path": "temporary",
+        "repeat": 0
+      },
+      "businessSecondsUpperBound": 10,
+      "reset": true,
+      "scenarios": {
+        "main": {
+          "executor": "constant-arrival-rate",
+          "exec": "hotspot",
+          "rate": 1000,
+          "timeUnit": "1s",
+          "duration": "11s",
+          "startTime": "0s",
+          "preAllocatedVUs": 10016,
+          "gracefulStop": "120s"
+        },
+        "control_health": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "311s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_auth": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "311s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_availability": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "311s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        }
+      },
+      "logicalPlan": {
+        "main": 10000,
+        "control_health": 620,
+        "control_auth": 620,
+        "control_availability": 620
+      },
+      "startupPlan": {
+        "users": 0,
+        "requests": 0,
+        "steps": {
+          "startup_auth": 0,
+          "startup_notifications": 0,
+          "startup_session": 0,
+          "startup_event": 0,
+          "startup_layout": 0,
+          "startup_availability": 0,
+          "startup_checkouts": 0,
+          "startup_orders": 0
+        }
+      },
+      "slices": {
+        "main": [
+          0,
+          10000
+        ],
+        "calibration": [
+          10000,
+          11000
+        ],
+        "control": [
+          11000,
+          12000
+        ],
+        "payment": [
+          12000,
+          22000
+        ],
+        "expiry": [
+          22000,
+          32000
+        ],
+        "background": [
+          32000,
+          42000
+        ],
+        "backgroundHold": [
+          42000,
+          52000
+        ],
+        "backgroundOrder": [
+          52000,
+          62000
+        ],
+        "login": [
+          100000,
+          110000
+        ]
+      },
+      "seatSlices": {
+        "main": [
+          0,
+          40000
+        ],
+        "payment": [
+          40000,
+          50000
+        ],
+        "expiry": [
+          50000,
+          60000
+        ],
+        "backgroundHold": [
+          60000,
+          70000
+        ],
+        "backgroundOrder": [
+          70000,
+          80000
+        ],
+        "control": [
+          80000,
+          81000
+        ]
+      },
+      "generatorPolicy": {
+        "version": "phase14-core-method-1",
+        "globalProbe": true,
+        "probeBudget": {
+          "control_health": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_auth": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_availability": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "payment": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          }
+        },
+        "readinessSeconds": 30,
+        "abortGuardSeconds": 30
+      }
+    },
+    {
+      "index": 6,
+      "case": "H1",
+      "arguments": {
+        "path": "formal",
+        "repeat": 0
+      },
+      "businessSecondsUpperBound": 10,
+      "reset": true,
+      "scenarios": {
+        "main": {
+          "executor": "constant-arrival-rate",
+          "exec": "hotspot",
+          "rate": 1000,
+          "timeUnit": "1s",
+          "duration": "11s",
+          "startTime": "0s",
+          "preAllocatedVUs": 10016,
+          "gracefulStop": "120s"
+        },
+        "control_health": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "311s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_auth": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "311s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_availability": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "311s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        }
+      },
+      "logicalPlan": {
+        "main": 10000,
+        "control_health": 620,
+        "control_auth": 620,
+        "control_availability": 620
+      },
+      "startupPlan": {
+        "users": 0,
+        "requests": 0,
+        "steps": {
+          "startup_auth": 0,
+          "startup_notifications": 0,
+          "startup_session": 0,
+          "startup_event": 0,
+          "startup_layout": 0,
+          "startup_availability": 0,
+          "startup_checkouts": 0,
+          "startup_orders": 0
+        }
+      },
+      "slices": {
+        "main": [
+          0,
+          10000
+        ],
+        "calibration": [
+          10000,
+          11000
+        ],
+        "control": [
+          11000,
+          12000
+        ],
+        "payment": [
+          12000,
+          22000
+        ],
+        "expiry": [
+          22000,
+          32000
+        ],
+        "background": [
+          32000,
+          42000
+        ],
+        "backgroundHold": [
+          42000,
+          52000
+        ],
+        "backgroundOrder": [
+          52000,
+          62000
+        ],
+        "login": [
+          100000,
+          110000
+        ]
+      },
+      "seatSlices": {
+        "main": [
+          0,
+          40000
+        ],
+        "payment": [
+          40000,
+          50000
+        ],
+        "expiry": [
+          50000,
+          60000
+        ],
+        "backgroundHold": [
+          60000,
+          70000
+        ],
+        "backgroundOrder": [
+          70000,
+          80000
+        ],
+        "control": [
+          80000,
+          81000
+        ]
+      },
+      "generatorPolicy": {
+        "version": "phase14-core-method-1",
+        "globalProbe": true,
+        "probeBudget": {
+          "control_health": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_auth": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_availability": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "payment": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          }
+        },
+        "readinessSeconds": 30,
+        "abortGuardSeconds": 30
+      }
+    },
+    {
+      "index": 7,
+      "case": "H3",
+      "arguments": {
+        "path": "formal"
+      },
+      "businessSecondsUpperBound": 10,
+      "reset": true,
+      "scenarios": {
+        "main": {
+          "executor": "per-vu-iterations",
+          "exec": "hotspot",
+          "vus": 10000,
+          "iterations": 1,
+          "maxDuration": "120s",
+          "gracefulStop": "120s"
+        },
+        "control_health": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "311s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_auth": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "311s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_availability": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "311s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        }
+      },
+      "logicalPlan": {
+        "main": 10000,
+        "control_health": 620,
+        "control_auth": 620,
+        "control_availability": 620
+      },
+      "startupPlan": {
+        "users": 0,
+        "requests": 0,
+        "steps": {
+          "startup_auth": 0,
+          "startup_notifications": 0,
+          "startup_session": 0,
+          "startup_event": 0,
+          "startup_layout": 0,
+          "startup_availability": 0,
+          "startup_checkouts": 0,
+          "startup_orders": 0
+        }
+      },
+      "slices": {
+        "main": [
+          0,
+          10000
+        ],
+        "calibration": [
+          10000,
+          11000
+        ],
+        "control": [
+          11000,
+          12000
+        ],
+        "payment": [
+          12000,
+          22000
+        ],
+        "expiry": [
+          22000,
+          32000
+        ],
+        "background": [
+          32000,
+          42000
+        ],
+        "backgroundHold": [
+          42000,
+          52000
+        ],
+        "backgroundOrder": [
+          52000,
+          62000
+        ],
+        "login": [
+          100000,
+          110000
+        ]
+      },
+      "seatSlices": {
+        "main": [
+          0,
+          40000
+        ],
+        "payment": [
+          40000,
+          50000
+        ],
+        "expiry": [
+          50000,
+          60000
+        ],
+        "backgroundHold": [
+          60000,
+          70000
+        ],
+        "backgroundOrder": [
+          70000,
+          80000
+        ],
+        "control": [
+          80000,
+          81000
+        ]
+      },
+      "generatorPolicy": {
+        "version": "phase14-core-method-1",
+        "globalProbe": true,
+        "probeBudget": {
+          "control_health": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_auth": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_availability": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "payment": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          }
+        },
+        "readinessSeconds": 30,
+        "abortGuardSeconds": 30
+      }
+    },
+    {
+      "index": 8,
+      "case": "L2",
+      "arguments": {
+        "control_only": true
+      },
+      "businessSecondsUpperBound": 430,
+      "reset": true,
+      "scenarios": {
+        "background_refresh": {
+          "executor": "constant-arrival-rate",
+          "exec": "refresh",
+          "rate": 500,
+          "timeUnit": "3s",
+          "duration": "431s",
+          "startTime": "0s",
+          "preAllocatedVUs": 10016,
+          "gracefulStop": "120s"
+        },
+        "background_hold": {
+          "executor": "constant-arrival-rate",
+          "exec": "backgroundHold",
+          "rate": 125,
+          "timeUnit": "24s",
+          "duration": "431s",
+          "startTime": "0s",
+          "preAllocatedVUs": 2256,
+          "gracefulStop": "120s"
+        },
+        "background_order": {
+          "executor": "constant-arrival-rate",
+          "exec": "backgroundOrder",
+          "rate": 25,
+          "timeUnit": "8s",
+          "duration": "431s",
+          "startTime": "0s",
+          "preAllocatedVUs": 1360,
+          "gracefulStop": "120s"
+        },
+        "control_health": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "731s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_auth": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "731s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_availability": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "731s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "payment": {
+          "executor": "constant-arrival-rate",
+          "exec": "payment",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "431s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        }
+      },
+      "logicalPlan": {
+        "background_refresh": 71667,
+        "background_hold": 2240,
+        "background_order": 1344,
+        "control_health": 1460,
+        "control_auth": 1460,
+        "control_availability": 1460,
+        "payment": 860
+      },
+      "startupPlan": {
+        "users": 0,
+        "requests": 0,
+        "steps": {
+          "startup_auth": 0,
+          "startup_notifications": 0,
+          "startup_session": 0,
+          "startup_event": 0,
+          "startup_layout": 0,
+          "startup_availability": 0,
+          "startup_checkouts": 0,
+          "startup_orders": 0
+        }
+      },
+      "slices": {
+        "main": [
+          0,
+          10000
+        ],
+        "calibration": [
+          10000,
+          11000
+        ],
+        "control": [
+          11000,
+          12000
+        ],
+        "payment": [
+          12000,
+          22000
+        ],
+        "expiry": [
+          22000,
+          32000
+        ],
+        "background": [
+          32000,
+          42000
+        ],
+        "backgroundHold": [
+          42000,
+          52000
+        ],
+        "backgroundOrder": [
+          52000,
+          62000
+        ],
+        "login": [
+          100000,
+          110000
+        ]
+      },
+      "seatSlices": {
+        "main": [
+          0,
+          40000
+        ],
+        "payment": [
+          40000,
+          50000
+        ],
+        "expiry": [
+          50000,
+          60000
+        ],
+        "backgroundHold": [
+          60000,
+          70000
+        ],
+        "backgroundOrder": [
+          70000,
+          80000
+        ],
+        "control": [
+          80000,
+          81000
+        ]
+      },
+      "generatorPolicy": {
+        "version": "phase14-core-method-1",
+        "globalProbe": true,
+        "probeBudget": {
+          "control_health": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_auth": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_availability": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "payment": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          }
+        },
+        "readinessSeconds": 30,
+        "abortGuardSeconds": 30
+      }
+    },
+    {
+      "index": 9,
+      "case": "L2",
+      "arguments": {
+        "control_only": false
+      },
+      "businessSecondsUpperBound": 430,
+      "reset": true,
+      "scenarios": {
+        "background_refresh": {
+          "executor": "constant-arrival-rate",
+          "exec": "refresh",
+          "rate": 500,
+          "timeUnit": "3s",
+          "duration": "431s",
+          "startTime": "0s",
+          "preAllocatedVUs": 10016,
+          "gracefulStop": "120s"
+        },
+        "background_hold": {
+          "executor": "constant-arrival-rate",
+          "exec": "backgroundHold",
+          "rate": 125,
+          "timeUnit": "24s",
+          "duration": "431s",
+          "startTime": "0s",
+          "preAllocatedVUs": 2256,
+          "gracefulStop": "120s"
+        },
+        "background_order": {
+          "executor": "constant-arrival-rate",
+          "exec": "backgroundOrder",
+          "rate": 25,
+          "timeUnit": "8s",
+          "duration": "431s",
+          "startTime": "0s",
+          "preAllocatedVUs": 1360,
+          "gracefulStop": "120s"
+        },
+        "login": {
+          "executor": "constant-arrival-rate",
+          "exec": "login",
+          "rate": 1000,
+          "timeUnit": "1s",
+          "duration": "11s",
+          "startTime": "120s",
+          "preAllocatedVUs": 10016,
+          "gracefulStop": "120s"
+        },
+        "control_health": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "731s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_auth": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "731s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "control_availability": {
+          "executor": "constant-arrival-rate",
+          "exec": "control",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "731s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        },
+        "payment": {
+          "executor": "constant-arrival-rate",
+          "exec": "payment",
+          "rate": 2,
+          "timeUnit": "1s",
+          "duration": "431s",
+          "startTime": "0s",
+          "preAllocatedVUs": 96,
+          "gracefulStop": "120s",
+          "maxVUs": 96
+        }
+      },
+      "logicalPlan": {
+        "background_refresh": 71667,
+        "background_hold": 2240,
+        "background_order": 1344,
+        "login": 10000,
+        "control_health": 1460,
+        "control_auth": 1460,
+        "control_availability": 1460,
+        "payment": 860
+      },
+      "startupPlan": {
+        "users": 0,
+        "requests": 0,
+        "steps": {
+          "startup_auth": 0,
+          "startup_notifications": 0,
+          "startup_session": 0,
+          "startup_event": 0,
+          "startup_layout": 0,
+          "startup_availability": 0,
+          "startup_checkouts": 0,
+          "startup_orders": 0
+        }
+      },
+      "slices": {
+        "main": [
+          0,
+          10000
+        ],
+        "calibration": [
+          10000,
+          11000
+        ],
+        "control": [
+          11000,
+          12000
+        ],
+        "payment": [
+          12000,
+          22000
+        ],
+        "expiry": [
+          22000,
+          32000
+        ],
+        "background": [
+          32000,
+          42000
+        ],
+        "backgroundHold": [
+          42000,
+          52000
+        ],
+        "backgroundOrder": [
+          52000,
+          62000
+        ],
+        "login": [
+          100000,
+          110000
+        ]
+      },
+      "seatSlices": {
+        "main": [
+          0,
+          40000
+        ],
+        "payment": [
+          40000,
+          50000
+        ],
+        "expiry": [
+          50000,
+          60000
+        ],
+        "backgroundHold": [
+          60000,
+          70000
+        ],
+        "backgroundOrder": [
+          70000,
+          80000
+        ],
+        "control": [
+          80000,
+          81000
+        ]
+      },
+      "generatorPolicy": {
+        "version": "phase14-core-method-1",
+        "globalProbe": true,
+        "probeBudget": {
+          "control_health": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_auth": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "control_availability": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          },
+          "payment": {
+            "rate": 2,
+            "hardDeadlineSeconds": 30,
+            "marginFraction": 0.5,
+            "preAllocatedVUs": 96
+          }
+        },
+        "readinessSeconds": 30,
+        "abortGuardSeconds": 30
+      }
+    }
+  ],
+  "businessSecondsUpperBound": 4470,
+  "scheduledSecondsUpperBound": 9280,
+  "additionalTime": "reset, calibration, warmup, aggregation; four-hour external wall deadline still applies"
+}

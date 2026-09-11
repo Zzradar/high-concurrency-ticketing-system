@@ -173,6 +173,10 @@ def qualification_guard(args, env, *, immediate=True):
     if not getattr(env,'dual',False) or not args.yes or not args.formal_approved or not args.qualification:
         raise ValueError('formal requires dual, --yes, --qualification and --formal-approved')
     q=json.loads(args.qualification.read_text())
+    if getattr(args,'core',False):
+        from phase14_core import POLICY_VERSION,verify_init_evidence
+        if q.get('generatorPolicy')!=POLICY_VERSION:raise ValueError('core generator qualification missing')
+        verify_init_evidence(q['initQualification']['root'],env)
     if q.get('status')!='pass' or q.get('topologyMode')!='dual':raise ValueError('qualification did not pass')
     if q.get('shards')!=args.shards:raise ValueError('generator shard topology changed')
     if time.time()-q['createdAt']>env.t['environment']['retentionDays']*86400:raise ValueError('qualification expired')
@@ -195,6 +199,9 @@ def g0_leg(args,t,env, *, detailed=True):
     env.compose_role('load','up','-d','noop')
     spec=build_spec(t,'G0',env.root.name);spec['shards']=segments(args.shards,t)
     spec['releaseAtMs']=int((time.time()+t['generator']['releaseLeadSeconds'])*1000)
+    if getattr(args,'core',False):
+        from phase14_core import arm
+        arm(spec)
     write(env.root/'spec.json',spec)
     # Shared frozen G0 workload consumes only the Load-side synthetic input files.
     processes=[];logs=[];errors=[];samples=[];guard=StopGuard(t);sampler=DualSampler(env,load_only=True,detailed=detailed)
@@ -206,7 +213,7 @@ def g0_leg(args,t,env, *, detailed=True):
         if errors:raise RuntimeError('G0 initialization safety stop')
     try:
         from phase14_initialization import Initialization
-        with Initialization(env.root,env.root.name,[s['shard'] for s in spec['shards']],spec['releaseAtMs'],observe_initialization,serial=t['mode']=='formal') as initialization:
+        with Initialization(env.root,env.root.name,[s['shard'] for s in spec['shards']],spec['releaseAtMs'],observe_initialization,serial=t['mode']=='formal',deadline_at_ms=spec.get('initializationDeadlineAtMs'),abort=env.stop_generators if getattr(args,'core',False) else None) as initialization:
             for shard in spec['shards']:
                 number=shard['shard'];folder=env.root/'shards'/number;folder.mkdir(parents=True)
                 log=(folder/'console.log').open('wb');logs.append(log)
@@ -221,7 +228,7 @@ def g0_leg(args,t,env, *, detailed=True):
             x,pg,rd,_=sampler.sample();samples.append(x);save_sample(env.root,x,pg,rd)
             bad,dropped=progress.read(env.root);x['dropped']=dropped;errors+=guard.sample(x)
             if bad:errors.append('G0 system error')
-            if time.time()-start>t['generator']['releaseLeadSeconds']+spec['loadSeconds']+t['probes']['paymentDeadlineSeconds']+max(t['behavior']['refreshSeconds'])+60:errors.append('G0 deadline')
+            if time.time()-spec['releaseAtMs']/1000>spec['loadSeconds']+t['probes']['paymentDeadlineSeconds']+max(t['behavior']['refreshSeconds'])+60:errors.append('G0 deadline')
             if errors:break
             time.sleep(max(0,t['generator']['sampleSeconds']-x['collectionSeconds']))
     except Exception as error:
@@ -289,6 +296,9 @@ def run_g0(args,t,env):
             'shards':args.shards,
             'longestScenarioDiskBudgetBytes':disk_budget,
             'gitHead':env.load.run(['git','rev-parse','HEAD']).stdout.decode().strip()}
+    if getattr(args,'core',False):
+        from phase14_core import POLICY_VERSION
+        result['generatorPolicy']=POLICY_VERSION
     write(env.root/'g0.json',result)
     return 1 if errors else 0
 
@@ -320,6 +330,13 @@ def qualify(args,env):
             'fingerprint':checks['fingerprint'],'preflight':checks,'plan':plan(env.t),
             'g0':{'root':str(args.g0_evidence),'runId':g0.get('runId'),'hashes':evidence_hashes(args.g0_evidence) if args.g0_evidence else {}},
             'smoke':{'root':str(args.smoke_evidence),'runId':smoke.get('runId'),'hashes':evidence_hashes(args.smoke_evidence) if args.smoke_evidence else {}}}
+    if getattr(args,'core',False):
+        from phase14_core import POLICY_VERSION,verify_init_evidence
+        result['generatorPolicy']=POLICY_VERSION
+        if g0.get('generatorPolicy')!=POLICY_VERSION or smoke.get('generatorPolicy')!=POLICY_VERSION:
+            errors.append('G0/smoke generator policy differs');result['status']='fail'
+        try:result['initQualification']=verify_init_evidence(args.init_evidence,env)
+        except Exception as error:errors.append('core init qualification: '+str(error));result['status']='fail'
     write(env.root/'qualification.json',result)
     return 0 if not errors else 1
 
@@ -332,6 +349,9 @@ def campaign(args,t,env):
     identity={'mode':t['mode'],'gitHead':env.load.run(['git','rev-parse','HEAD']).stdout.decode().strip(),
               'shards':args.shards,
               'targetsSha256':t['sourceSha256'],'qualificationSha256':sha256(args.qualification) if q else None}
+    if getattr(args,'core',False):
+        from phase14_core import POLICY_VERSION
+        identity['generatorPolicy']=POLICY_VERSION
     if args.resume_from:
         old=json.loads(args.resume_from.read_text())
         if any(old.get(k)!=v for k,v in identity.items()):raise ValueError('checkpoint identity mismatch')
@@ -376,12 +396,22 @@ def dual_main(args,t):
     from run_phase14 import calibration,execute_case
     topology=Topology.read(args.topology_config,t)
     if args.action=='plan' or not args.yes:
-        print(json.dumps(plan(t,smoke=t['mode']=='smoke'),ensure_ascii=False,indent=2));return 0
+        from phase14_core import core_plan
+        print(json.dumps(core_plan(t) if getattr(args,'core',False) and t['mode']=='formal' else plan(t,smoke=t['mode']=='smoke'),ensure_ascii=False,indent=2));return 0
     env=DualEnvironment(t,Path(topology.values['resultRoot'])/run_id(args.action,t['mode']),topology)
+    env.deadline_at=getattr(args,'deadline_at',None)
+    if args.action=='init-only':
+        from phase14_core import init_pair
+        if not getattr(args,'core',False):raise ValueError('init-only requires core policy')
+        return init_pair(args,t,env)
     if args.action=='prepare':env.prepare();return 0
     if args.action=='preflight':return 0 if preflight(env)['passed'] else 1
     if args.action=='qualify':return qualify(args,env)
     if args.action=='calibrate':env.reset(yes=True,snapshot=env.data/'base.dump');calibration(env);return 0
-    if args.action=='campaign':return campaign(args,t,env)
+    if args.action=='campaign':
+        if getattr(args,'core',False) and t['mode']=='formal':
+            from phase14_core import campaign as core_campaign
+            return core_campaign(args,t,env)
+        return campaign(args,t,env)
     if t['mode']=='formal' and args.case!='G0':qualification_guard(args,env)
     return execute_case(args,t,env)
