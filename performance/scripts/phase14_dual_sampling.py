@@ -65,11 +65,24 @@ def probe_host(role,project,detailed):
     items=json.loads(docker('inspect',*ids)) if ids else []
     for item in items:verify_container(item,project,SUT_SERVICES if role=='sut' else LOAD_SERVICES)
     active=[x['Id'] for x in items if x['State']['Running']]
-    raw=docker('stats','--no-stream','--format','{{json .}}',*active).decode() if active and detailed else ''
+    stats=[];cpu={}
+    if detailed:
+        for item in items:
+            if item['Id'] not in active:continue
+            # Engine's one-shot API avoids Docker CLI's two-cycle stats wait.
+            # Only an existing local Unix socket is used; no daemon port is opened.
+            url='http://localhost/v1.52/containers/'+item['Id']+'/stats?stream=false&one-shot=true'
+            value=json.loads(subprocess.check_output([*prefix,'curl','--fail','--silent','--show-error','--max-time','5',
+                              '--unix-socket','/var/run/docker.sock',url],timeout=8))
+            memory=value['memory_stats'];usage=memory['usage']-memory.get('stats',{}).get('inactive_file',0)
+            cs=value['cpu_stats'];c={'total':cs['cpu_usage']['total_usage'],'system':cs.get('system_cpu_usage',0),'cores':cs['online_cpus']}
+            cpu[item['Id']]=c
+            stats.append({'Name':item['Name'].lstrip('/'),'Id':item['Id'],'MemPerc':str(100*usage/memory['limit'])+'%',
+                          'CPUPerc':'0%','read':value['read'],'cpuCounters':c,'memoryStats':memory,'networkStats':value.get('networks',{})})
     namespace={}
     exec(HOST_PROGRAM.replace('print(json.dumps(d))',''),namespace)
-    host=namespace['d'];host['collectionSeconds']=time.monotonic()-begin
-    return {'host':host,'containers':safe_containers(items),'stats':[json.loads(line) for line in raw.splitlines() if line.strip()]}
+    host=namespace['d'];host['collectionSeconds']=time.monotonic()-begin;host['containerCpu']=cpu
+    return {'host':host,'containers':safe_containers(items),'stats':stats}
 
 
 def role_sample(env,role,previous,detailed):
@@ -77,6 +90,12 @@ def role_sample(env,role,previous,detailed):
     args=['python3','/srv/phase14/repo/performance/scripts/phase14_dual_sampling.py','--probe',role,project]
     if detailed:args.append('--detailed')
     payload=json.loads(getattr(env,role).run(args,timeout=30).stdout)
+    for row in payload['stats']:
+        old=(previous or {}).get('containerCpu',{}).get(row['Id']);current=row['cpuCounters']
+        if old:
+            elapsed=current['system']-old['system'];used=current['total']-old['total']
+            if elapsed<=0 or used<0:raise RuntimeError('container CPU counters invalid')
+            row['CPUPerc']=str(100*used/elapsed*current['cores'])+'%'
     return host_delta(payload['host'],previous),payload['containers'],payload['stats']
 
 

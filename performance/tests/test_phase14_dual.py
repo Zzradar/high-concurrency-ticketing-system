@@ -43,6 +43,25 @@ class ConfigTests(unittest.TestCase):
         env.sut.run.assert_called_once();env.load.run.assert_not_called();env.compose.assert_not_called()
         self.assertIn('--probe',env.sut.run.call_args.args[0])
 
+    def test_single_cycle_engine_stats_do_not_use_blocking_cli(self):
+        from phase14_dual_sampling import probe_host
+        item=container();item.update(HostConfig={'NanoCpus':4000000000,'Memory':1000},RestartCount=0)
+        item['State'].update(Status='running',OOMKilled=False)
+        calls=[]
+        def command(argv,**kwargs):
+            calls.append(argv)
+            if 'ps' in argv:return b'owned-id\n'
+            if 'inspect' in argv:return json.dumps([item]).encode()
+            self.assertIn('curl',argv);self.assertIn('--unix-socket',argv)
+            self.assertTrue(argv[-1].endswith('stats?stream=false&one-shot=true'))
+            return json.dumps({'memory_stats':{'usage':100,'limit':1000,'stats':{'inactive_file':10}},
+                               'cpu_stats':{'cpu_usage':{'total_usage':10},'system_cpu_usage':100,'online_cpus':8},'read':'now'}).encode()
+        with patch('subprocess.check_output',side_effect=command),patch('phase14_dual_sampling.HOST_PROGRAM','d={"time":1}'):
+            result=probe_host('load','phase14-formal-load',True)
+        self.assertEqual(result['stats'][0]['MemPerc'],'9.0%')
+        self.assertFalse(any('stats' in argv for argv in calls))
+        self.assertTrue(all(argv[:2]==['sudo','-n'] for argv in calls))
+
     def test_valid_public_configuration_has_no_address(self):
         t=Topology.parse(config(),load_targets())
         text=json.dumps(t.public())
@@ -157,8 +176,8 @@ class QualificationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path=Path(tmp)/'qualification.json'
             base={k:'frozen' for k in ('git','targets','image','data','snapshot','topology')}
-            write={'status':'pass','topologyMode':'dual','createdAt':__import__('time').time(),'fingerprint':base}
-            path.write_text(json.dumps(write));args=argparse.Namespace(yes=True,formal_approved=True,qualification=path)
+            write={'status':'pass','topologyMode':'dual','createdAt':__import__('time').time(),'fingerprint':base,'shards':4}
+            path.write_text(json.dumps(write));args=argparse.Namespace(yes=True,formal_approved=True,qualification=path,shards=4)
             env=Mock(dual=True,t=load_targets())
             for key in base:
                 changed={**base,key:'changed'}
@@ -195,7 +214,7 @@ class QualificationTests(unittest.TestCase):
             (child.root/'g0.json').write_text(json.dumps({'errors':['generator memory'],'longestScenarioDiskBudgetBytes':100}))
             env.load.run.return_value.stdout=b'commit'
             with patch('phase14_campaign.g0_leg',return_value=1) as leg:
-                self.assertEqual(run_g0(Mock(),load_targets(),env),1)
+                self.assertEqual(run_g0(argparse.Namespace(shards=4),load_targets(),env),1)
                 leg.assert_called_once()
             for method in (env.sut.run,env.reset,env.sql,env.http,env.validate):method.assert_not_called()
 

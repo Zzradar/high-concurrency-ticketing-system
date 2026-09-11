@@ -174,6 +174,7 @@ def qualification_guard(args, env, *, immediate=True):
         raise ValueError('formal requires dual, --yes, --qualification and --formal-approved')
     q=json.loads(args.qualification.read_text())
     if q.get('status')!='pass' or q.get('topologyMode')!='dual':raise ValueError('qualification did not pass')
+    if q.get('shards')!=args.shards:raise ValueError('generator shard topology changed')
     if time.time()-q['createdAt']>env.t['environment']['retentionDays']*86400:raise ValueError('qualification expired')
     if q['fingerprint']!=current_fingerprint(env):raise ValueError('qualification fingerprint mismatch')
     for name in ('g0','smoke'):
@@ -276,6 +277,7 @@ def run_g0(args,t,env):
     if not overhead['passed']:errors.append('sampling overhead qualification failed or incomplete')
     result={'status':'fail' if errors else 'pass','case':'G0','mode':'formal','topologyMode':'dual','runId':env.root.name,
             'errors':sorted(set(errors)),'sutTouched':False,'legs':children,'targetsSha256':t['sourceSha256'],
+            'shards':args.shards,
             'longestScenarioDiskBudgetBytes':disk_budget,
             'gitHead':env.load.run(['git','rev-parse','HEAD']).stdout.decode().strip()}
     write(env.root/'g0.json',result)
@@ -288,6 +290,7 @@ def qualify(args,env):
         g0=json.loads((args.g0_evidence/'g0.json').read_text())
         smoke=json.loads((args.smoke_evidence/'campaign.json').read_text())
         if g0.get('status')!='pass' or g0.get('mode')!='formal' or g0.get('sutTouched') is not False:errors.append('formal Load G0 missing')
+        if g0.get('shards')!=args.shards or smoke.get('shards')!=args.shards:errors.append('qualification shard count mismatch')
         overhead=json.loads((args.g0_evidence/'sampling-overhead.json').read_text())
         if overhead.get('passed') is not True or overhead.get('limit')!=env.t['generator']['maxSamplingOverheadFraction']:errors.append('sampling overhead failed')
         if smoke.get('mode')!='smoke' or smoke.get('status')!='pass' or len(smoke.get('runs',[]))!=len(jobs(load_targets(smoke=True),smoke=True)):errors.append('complete smoke missing')
@@ -303,6 +306,7 @@ def qualify(args,env):
         if g0.get('targetsSha256')!=env.t['sourceSha256'] or smoke.get('targetsSha256')!=env.t['sourceSha256']:errors.append('G0/smoke targets mismatch')
     except (OSError,ValueError,TypeError,AttributeError,KeyError):errors.append('required qualification evidence absent')
     result={'status':'pass' if not errors else 'fail','errors':errors,'createdAt':time.time(),'topologyMode':'dual',
+            'shards':args.shards,
             'longestScenarioDiskBudgetBytes':g0.get('longestScenarioDiskBudgetBytes'),
             'fingerprint':checks['fingerprint'],'preflight':checks,'plan':plan(env.t),
             'g0':{'root':str(args.g0_evidence),'runId':g0.get('runId'),'hashes':evidence_hashes(args.g0_evidence) if args.g0_evidence else {}},
@@ -317,6 +321,7 @@ def campaign(args,t,env):
     if not smoke:q=qualification_guard(args,env)
     ledger=[];controls={};passed={'U1':[],'U2':[]}
     identity={'mode':t['mode'],'gitHead':env.load.run(['git','rev-parse','HEAD']).stdout.decode().strip(),
+              'shards':args.shards,
               'targetsSha256':t['sourceSha256'],'qualificationSha256':sha256(args.qualification) if q else None}
     if args.resume_from:
         old=json.loads(args.resume_from.read_text())
