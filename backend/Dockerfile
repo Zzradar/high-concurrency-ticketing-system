@@ -1,9 +1,16 @@
 FROM ubuntu:24.04 AS build
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG UBUNTU_MIRROR=""
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+RUN set -- \
+    && if [ -n "$UBUNTU_MIRROR" ]; then \
+        test -f /etc/apt/sources.list.d/ubuntu.sources \
+        && sed -i -E "s#https?://(archive|security)\.ubuntu\.com/ubuntu/?#${UBUNTU_MIRROR%/}#g" /etc/apt/sources.list.d/ubuntu.sources \
+        && set -- -o Acquire::http::Proxy=DIRECT -o Acquire::https::Proxy=DIRECT; \
+    fi \
+    && apt-get "$@" update \
+    && apt-get "$@" install -y --no-install-recommends \
         build-essential \
         ca-certificates \
         cmake \
@@ -18,6 +25,11 @@ RUN apt-get update \
         python3 \
         uuid-dev \
         zlib1g-dev \
+    && test -s /etc/ssl/certs/ca-certificates.crt \
+    && case "$UBUNTU_MIRROR" in \
+        http://*) mirror_pattern=$(printf '%s' "${UBUNTU_MIRROR%/}" | sed 's/[][\\.^$*#]/\\&/g') \
+            && sed -i "s#${mirror_pattern}#https://${UBUNTU_MIRROR#http://}#g" /etc/apt/sources.list.d/ubuntu.sources ;; \
+    esac \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /src
@@ -34,9 +46,16 @@ RUN cmake -S . -B build \
 FROM ubuntu:24.04 AS runtime
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG UBUNTU_MIRROR=""
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+RUN set -- \
+    && if [ -n "$UBUNTU_MIRROR" ]; then \
+        test -f /etc/apt/sources.list.d/ubuntu.sources \
+        && sed -i -E "s#https?://(archive|security)\.ubuntu\.com/ubuntu/?#${UBUNTU_MIRROR%/}#g" /etc/apt/sources.list.d/ubuntu.sources \
+        && set -- -o Acquire::http::Proxy=DIRECT -o Acquire::https::Proxy=DIRECT; \
+    fi \
+    && apt-get "$@" update \
+    && apt-get "$@" install -y --no-install-recommends \
         ca-certificates \
         curl \
         libbrotli1 \
@@ -48,6 +67,11 @@ RUN apt-get update \
         libssl3t64 \
         libuuid1 \
         zlib1g \
+    && test -s /etc/ssl/certs/ca-certificates.crt \
+    && case "$UBUNTU_MIRROR" in \
+        http://*) mirror_pattern=$(printf '%s' "${UBUNTU_MIRROR%/}" | sed 's/[][\\.^$*#]/\\&/g') \
+            && sed -i "s#${mirror_pattern}#https://${UBUNTU_MIRROR#http://}#g" /etc/apt/sources.list.d/ubuntu.sources ;; \
+    esac \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
