@@ -61,7 +61,9 @@ def probe_host(role,project,detailed):
     prefix=['sudo','-n'] if role=='load' else []
     def docker(*args):return subprocess.check_output([*prefix,'docker',*args],timeout=15)
     begin=time.monotonic()
-    ids=docker('ps','-aq','--filter','label=com.docker.compose.project='+project).decode().split()
+    # Historical Load shards are retained as evidence, not polled forever.
+    # SUT includes stopped services so an unexpected service exit is visible.
+    ids=docker('ps','-q' if role=='load' else '-aq','--filter','label=com.docker.compose.project='+project).decode().split()
     items=json.loads(docker('inspect',*ids)) if ids else []
     for item in items:verify_container(item,project,SUT_SERVICES if role=='sut' else LOAD_SERVICES)
     active=[x['Id'] for x in items if x['State']['Running']]

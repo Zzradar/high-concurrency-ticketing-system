@@ -24,6 +24,17 @@ def config():
 
 
 class ConfigTests(unittest.TestCase):
+    def test_load_probe_excludes_history_but_sut_keeps_stopped_services(self):
+        from phase14_dual_sampling import probe_host
+        for role,selector in [('load','-q'),('sut','-aq')]:
+            with patch('subprocess.check_output',return_value=b'') as command,patch('phase14_dual_sampling.HOST_PROGRAM','d={"time":1}'):
+                result=probe_host(role,'phase14-formal-'+role,True)
+                self.assertEqual(result['containers'],[])
+                argv=command.call_args.args[0]
+                self.assertIn(selector,argv)
+                self.assertIn('label=com.docker.compose.project=phase14-formal-'+role,argv)
+                command.assert_called_once()
+
     def test_sampling_cadence_is_identical_and_never_catches_up(self):
         from phase14_dual_sampling import DualSampler
         for load_only,detailed in ((False,True),(True,False),(True,True)):
