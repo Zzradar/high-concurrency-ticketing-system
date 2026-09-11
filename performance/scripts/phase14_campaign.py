@@ -108,11 +108,10 @@ def clock_check(env):
         text=getattr(env,role).run(['timedatectl','show','-p','Timezone','-p','NTPSynchronized','-p','TimeUSec']).stdout.decode()
         info[role]=dict(line.split('=',1) for line in text.splitlines() if '=' in line)
         info[role]['syncServices']={service:getattr(env,role).run(['systemctl','is-active',service],check=False).stdout.decode().strip() for service in ('systemd-timesyncd','chrony')}
-    host=[]
-    for _ in range(5):
-        start=time.time();value=float(env.sut.run(['date','+%s.%N']).stdout);end=time.time()
-        host.append({'remoteUtcSeconds':value,'loadStartUtcSeconds':start,'loadEndUtcSeconds':end,
-                     'offsetMs':(value-(start+end)/2)*1000,'uncertaintyMs':(end-start)*500})
+    from phase14_topology import HostClock
+    clock=HostClock(env.sut)
+    try:host=[clock.sample() for _ in range(5)]
+    finally:clock.close()
     pg=[postgres_clock_sample(env) for _ in range(5)]
     limit=env.t['generator']['maxClockSkewMs']
     passed=all(v['NTPSynchronized']=='yes' and 'active' in v['syncServices'].values() for v in info.values()) and all(abs(x['offsetMs'])<=limit for x in host) and all(abs(x['clockSkewMs'])<=limit for x in pg)

@@ -24,6 +24,25 @@ def config():
 
 
 class ConfigTests(unittest.TestCase):
+    def test_host_clock_times_established_pipe_not_constructor(self):
+        import queue
+        from phase14_topology import HostClock
+        clock=HostClock.__new__(HostClock);clock.process=Mock();clock.lines=queue.Queue();clock.lines.put('10.002')
+        with patch('phase14_topology.time.time',side_effect=[10,10.004]):row=clock.sample()
+        self.assertAlmostEqual(row['offsetMs'],0);self.assertAlmostEqual(row['uncertaintyMs'],2)
+        self.assertEqual(row['transport'],'established_ssh_pipe')
+        clock.process.stdin.write.assert_called_once_with('time\n')
+
+    def test_role_probe_uses_one_executor_call_and_host_namespace(self):
+        from phase14_dual_sampling import role_sample
+        env=Mock(project='phase14-formal-sut',load_project='phase14-formal-load')
+        host={'memoryAvailableBytes':50,'memoryTotalBytes':100,'swapIn':0,'swapOut':0,'time':1}
+        env.sut.run.return_value.stdout=json.dumps({'host':host,'containers':[{'service':'backend'}],'stats':[]}).encode()
+        h,c,s=role_sample(env,'sut',None,True)
+        self.assertEqual(h['memoryFraction'],.5);self.assertEqual(c,[{'service':'backend'}]);self.assertEqual(s,[])
+        env.sut.run.assert_called_once();env.load.run.assert_not_called();env.compose.assert_not_called()
+        self.assertIn('--probe',env.sut.run.call_args.args[0])
+
     def test_valid_public_configuration_has_no_address(self):
         t=Topology.parse(config(),load_targets())
         text=json.dumps(t.public())

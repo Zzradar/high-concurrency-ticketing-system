@@ -26,6 +26,10 @@ def host_sample(executor, previous=None):
     start=time.monotonic()
     x=json.loads(executor.run(['python3','-c',HOST_PROGRAM],timeout=15).stdout)
     x['collectionSeconds']=time.monotonic()-start
+    return host_delta(x,previous)
+
+
+def host_delta(x,previous=None):
     x['memoryFraction']=1-x['memoryAvailableBytes']/x['memoryTotalBytes']
     for key in ('swapIn','swapOut'): x[key+'Delta']=x[key]-previous[key] if previous else 0
     x['cpuFraction']=0; x['networkErrors']=False
@@ -39,6 +43,41 @@ def host_sample(executor, previous=None):
         x['networkBytesPerSecond']={k:{'receive':max(0,v[0]-previous['interfaces'].get(k,v)[0])/seconds,
                                      'transmit':max(0,v[8]-previous['interfaces'].get(k,v)[8])/seconds} for k,v in x['interfaces'].items()}
     return x
+
+
+def safe_containers(items):
+    return [{'id':x['Id'],'name':x['Name'].lstrip('/'),'service':x['Config']['Labels']['com.docker.compose.service'],
+             'runId':x['Config']['Labels'].get('ticketing.phase14.run'),'state':x['State']['Status'],
+             'healthy':x['State'].get('Health',{}).get('Status','not_applicable'),'oom':x['State']['OOMKilled'],
+             'restartCount':x['RestartCount'],'image':x['Image'],'nanoCpus':x['HostConfig']['NanoCpus'],
+             'memoryLimit':x['HostConfig']['Memory']} for x in items]
+
+
+def probe_host(role,project,detailed):
+    """One on-host process per sample amortizes SSH setup across all observations."""
+    import subprocess,re
+    from phase14_topology import verify_container,SUT_SERVICES,LOAD_SERVICES
+    if role not in ('sut','load') or not re.fullmatch(r'phase14-[a-z0-9-]+-'+role,project):raise ValueError('invalid probe role')
+    prefix=['sudo','-n'] if role=='load' else []
+    def docker(*args):return subprocess.check_output([*prefix,'docker',*args],timeout=15)
+    begin=time.monotonic()
+    ids=docker('ps','-aq','--filter','label=com.docker.compose.project='+project).decode().split()
+    items=json.loads(docker('inspect',*ids)) if ids else []
+    for item in items:verify_container(item,project,SUT_SERVICES if role=='sut' else LOAD_SERVICES)
+    active=[x['Id'] for x in items if x['State']['Running']]
+    raw=docker('stats','--no-stream','--format','{{json .}}',*active).decode() if active and detailed else ''
+    namespace={}
+    exec(HOST_PROGRAM.replace('print(json.dumps(d))',''),namespace)
+    host=namespace['d'];host['collectionSeconds']=time.monotonic()-begin
+    return {'host':host,'containers':safe_containers(items),'stats':[json.loads(line) for line in raw.splitlines() if line.strip()]}
+
+
+def role_sample(env,role,previous,detailed):
+    project=env.project if role=='sut' else env.load_project
+    args=['python3','/srv/phase14/repo/performance/scripts/phase14_dual_sampling.py','--probe',role,project]
+    if detailed:args.append('--detailed')
+    payload=json.loads(getattr(env,role).run(args,timeout=30).stdout)
+    return host_delta(payload['host'],previous),payload['containers'],payload['stats']
 
 
 def containers(env, role, detailed=True):
@@ -64,12 +103,11 @@ class DualSampler:
         roles=['load'] if self.load_only else ['sut','load']
         hosts={};rows={};stats={}
         with ThreadPoolExecutor(max_workers=7) as pool:
-            h={r:pool.submit(host_sample,getattr(env,r),self.previous.get(r)) for r in roles}
-            c={r:pool.submit(containers,env,r,self.detailed) for r in roles}
+            h={r:pool.submit(role_sample,env,r,self.previous.get(r),self.detailed) for r in roles}
             if not self.load_only:
                 a=pool.submit(metrics,env);p=pool.submit(postgres_clock_sample,env)
                 d=pool.submit(env.compose,'exec','-T','redis','redis-cli','--raw','INFO','all')
-            for r in roles: hosts[r]=h[r].result();rows[r],stats[r]=c[r].result()
+            for r in roles: hosts[r],rows[r],stats[r]=h[r].result()
             if not self.load_only: m,raw=a.result();pg=p.result();rd=parse_redis_info(d.result().stdout.decode())
             else:m,raw,pg,rd={},'',{},{}
         self.previous=hosts
@@ -112,3 +150,10 @@ class DualSampler:
             x['pgBlocking']=len(x['blocking'])
         self.previous_requests=requests
         return x,pg,rd,raw
+
+
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser();parser.add_argument('--probe',choices=['sut','load'],required=True)
+    parser.add_argument('project');parser.add_argument('--detailed',action='store_true');args=parser.parse_args()
+    print(json.dumps(probe_host(args.probe,args.project,args.detailed)))

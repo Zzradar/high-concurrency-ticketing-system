@@ -11,6 +11,8 @@ from pathlib import Path, PurePosixPath
 import re
 import shlex
 import subprocess
+import queue
+import threading
 import time
 from urllib.parse import urlsplit
 
@@ -143,6 +145,38 @@ class LoadExecutor(Executor):
 
 class SutExecutor(Executor):
     def __init__(self, topology, log): super().__init__('sut', topology, log)
+
+
+class HostClock:
+    """Establish SSH before timing midpoint samples; terminate only this pipe."""
+    def __init__(self, executor):
+        program="import sys,time;print('ready',flush=True)\nfor line in sys.stdin:\n if line.strip()=='quit':break\n print(time.time(),flush=True)"
+        self.process=executor.popen(['python3','-u','-c',program],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,encoding='utf-8')
+        self.lines=queue.Queue()
+        def read():
+            for line in self.process.stdout:self.lines.put(line.strip())
+            self.lines.put(None)
+        self.reader=threading.Thread(target=read,daemon=True);self.reader.start()
+        if self.lines.get(timeout=10)!='ready':self.close();raise RuntimeError('host clock handshake failed')
+
+    def sample(self):
+        start=time.time();self.process.stdin.write('time\n');self.process.stdin.flush()
+        raw=self.lines.get(timeout=10);end=time.time()
+        if raw is None:raise RuntimeError('host clock stream ended')
+        value=float(raw)
+        return {'remoteUtcSeconds':value,'loadStartUtcSeconds':start,'loadEndUtcSeconds':end,
+                'offsetMs':(value-(start+end)/2)*1000,'uncertaintyMs':(end-start)*500,
+                'transport':'established_ssh_pipe'}
+
+    def close(self):
+        try:
+            if self.process.poll() is None:
+                self.process.stdin.write('quit\n');self.process.stdin.flush();self.process.wait(timeout=5)
+        except (OSError,subprocess.TimeoutExpired):
+            self.process.terminate();self.process.wait(timeout=5)
+        finally:
+            self.reader.join(timeout=2)
+            for stream in (self.process.stdin,self.process.stdout,self.process.stderr):stream.close()
 
 
 def verify_container(item, project, services, *, run_id=None, name=None, image=None, created_after=None):
