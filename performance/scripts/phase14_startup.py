@@ -44,7 +44,7 @@ def warm_background(env,spec):
           'k6','run','--out',f'json=/results/{env.root.name}/background-startup/shards/0/raw.json','workloads/phase14-startup.js']
     write(root/'command.json',argv);sampler=Sampler(env);guard=StopGuard(t);errors=[];begin=time.time()
     with (folder/'console.log').open('wb') as log:
-        proc=subprocess.Popen(argv,stdout=log,stderr=subprocess.STDOUT,env=env.env,cwd=ROOT)
+        proc=env.start_generator(argv,log) if getattr(env,'dual',False) is True else subprocess.Popen(argv,stdout=log,stderr=subprocess.STDOUT,env=env.env,cwd=ROOT)
         try:
             while proc.poll() is None:
                 sample,_,_,_=sampler.sample()
@@ -53,6 +53,7 @@ def warm_background(env,spec):
                 if time.time()-begin>3600:errors.append('startup deadline')
                 if errors:break
         finally:
+            if getattr(env,'dual',False) is True:env.stop_generators([name])
             if proc.poll() is None:
                 inspected=json.loads(env.command(['docker','inspect',name]).stdout)[0]
                 if inspected['Config']['Labels'].get('com.docker.compose.project')!=env.project:raise ValueError('startup ownership mismatch')

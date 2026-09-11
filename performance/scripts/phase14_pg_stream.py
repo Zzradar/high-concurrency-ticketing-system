@@ -8,11 +8,7 @@ import threading
 class ActivityConnection:
     def __init__(self,env):
         self.env=env;self.lines=queue.Queue();self.pid=None;self.birth=None
-        compose=Path(__file__).resolve().parents[1]/'docker-compose.phase14.yml'
-        self.process=subprocess.Popen(['docker','compose','-p',env.project,'-f',str(compose),
-            'exec','-T','-e','PGAPPNAME=phase14_sampler','postgres','psql','-U','ticketing','-d','ticketing','-qAt',
-            '--set=ON_ERROR_STOP=1'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
-            text=True,encoding='utf-8',env=env.env)
+        self.process=env.psql_popen()
         self.reader=threading.Thread(target=self._read,daemon=True);self.reader.start()
         try:
             info=json.loads(self.sql("SET default_transaction_read_only=on; SET statement_timeout='5s'; SELECT json_build_object('pid',pg_backend_pid(),'birth',backend_start) FROM pg_stat_activity WHERE pid=pg_backend_pid();"))

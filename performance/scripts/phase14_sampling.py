@@ -141,6 +141,11 @@ def scoped_containers(containers,seen_generators):
 
 
 class Sampler:
+    def __new__(cls,env):
+        if getattr(env,'dual',False) is True:
+            from phase14_dual_sampling import DualSampler
+            return DualSampler(env)
+        return super().__new__(cls)
     def __init__(self,env):self.env=env;self.previous_requests=None;self.previous_host=None;self.last_blocking=0;self.seen_generators=set()
     def sample(self):
         env=self.env;now=time.time();start=time.monotonic()

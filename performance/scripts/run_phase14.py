@@ -182,6 +182,11 @@ class Environment:
         if check and result.returncode:raise RuntimeError(f'command failed ({result.returncode}): {args[:3]}: '+result.stderr.decode('utf-8','replace')[:1000])
         return result
     def compose(self,*args,**kwargs):return self.command(['docker','compose','-p',self.project,'-f',str(COMPOSE),*args],**kwargs)
+    def psql_popen(self):
+        return subprocess.Popen(['docker','compose','-p',self.project,'-f',str(COMPOSE),
+            'exec','-T','-e','PGAPPNAME=phase14_sampler','postgres','psql','-U','ticketing','-d','ticketing','-qAt',
+            '--set=ON_ERROR_STOP=1'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
+            text=True,encoding='utf-8',env=self.env)
     def sql(self,query):
         # Pipe sensitive SQL through stdin; commands and query samples omit it.
         args=['docker','compose','-p',self.project,'-f',str(COMPOSE),'exec','-T','-e','PGAPPNAME=phase14_sampler','postgres','psql','-U','ticketing','-d','ticketing','--set=ON_ERROR_STOP=1','-At','-F','\t']
@@ -256,13 +261,22 @@ class Environment:
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=['plan','prepare','calibrate','run','campaign'])
+    parser.add_argument('action',choices=['plan','prepare','calibrate','run','campaign','qualify','preflight'])
+    parser.add_argument('--topology-config',type=Path)
+    parser.add_argument('--qualification',type=Path)
+    parser.add_argument('--formal-approved',action='store_true')
+    parser.add_argument('--g0-evidence',type=Path)
+    parser.add_argument('--smoke-evidence',type=Path)
     parser.add_argument('--smoke',action='store_true');parser.add_argument('--yes',action='store_true')
     parser.add_argument('--resume-from',type=Path,help='Read-only smoke campaign checkpoint; retry first incomplete job in a new evidence directory')
     parser.add_argument('--case',default='U1');parser.add_argument('--round',type=int,default=0)
     parser.add_argument('--window',type=int,default=0);parser.add_argument('--path',choices=['formal','temporary'],default='formal')
     parser.add_argument('--session-count',type=int,default=1);parser.add_argument('--shards',type=int,default=1)
     args=parser.parse_args();t=load_targets(smoke=args.smoke)
+    if args.topology_config:
+        from phase14_campaign import dual_main
+        return dual_main(args,t)
+    if args.action in ('qualify','preflight'):raise ValueError('dual topology required')
     run_id='phase14-'+t['mode']+'-'+args.case.lower()+'-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'-'+secrets.token_hex(3)
     if args.action=='plan' or not args.yes:
         print(json.dumps({'mode':t['mode'],'targetsSha256':t['sourceSha256'],'segments':segments(args.shards,t),'onlinePlan':online_plan(t),'action':args.action,'dryRun':True},indent=2));return 0
@@ -317,6 +331,8 @@ def calibration(env):
               'controlP95':{step:percentile(values,.95) for step,values in control_durations.items()}}
     result={'auth':rows,'idleSamples':samples,'baseline':baseline,'controlDurationsMs':control_durations,'formalReady':False,
             'limitations':['single shared Docker Desktop host; CPU isolation and physical network capacity not established']}
+    if getattr(env,'dual',False) is True:
+        result.update(formalReady=True,limitations=[])
     write(env.root/'calibration.json',result)
     return result
 
@@ -338,7 +354,7 @@ def resource_preflight(cal,t):
             if x[key]:errors.append(key)
         if x['memoryFraction']>=t['stop']['memoryFraction']:errors.append('SUT memory limit')
         if abs(x['clockSkewMs'])>t['generator']['maxClockSkewMs']:errors.append('clock skew')
-    return {'passed':not errors,'errors':sorted(set(errors)),'warnings':warnings,'samples':len(samples),'formalIsolationEstablished':False}
+    return {'passed':not errors,'errors':sorted(set(errors)),'warnings':warnings,'samples':len(samples),'formalIsolationEstablished':cal.get('formalReady',False)}
 
 
 class RawProgress:
@@ -372,6 +388,9 @@ class RawProgress:
 
 
 def execute_case(args,t,env,*,spec_factory=build_spec):
+    if getattr(env,'dual',False) is True and args.case=='G0':
+        from phase14_campaign import run_g0
+        return run_g0(args,t,env)
     if args.case=='E1':return execute_expiry(t,env)
     root=env.root;run_id=root.name;snapshot=env.data/'base.dump'
     if not snapshot.is_file():raise ValueError('prepare the matching dataset snapshot first')
@@ -418,7 +437,7 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
     git_head=env.command(['git','rev-parse','HEAD']).stdout.decode().strip();dirty=env.command(['git','status','--short']).stdout.decode()
     env.command(['git','diff','HEAD','--binary'],output_file=root/'worktree.patch')
     write(root/'manifest.json',{'version':1,'runId':run_id,'gitHead':git_head,'worktree':dirty,'mode':t['mode'],'shards':slices,'targetsSha256':t['sourceSha256'],'snapshotSha256':sha256(snapshot),'start':utc_now(),'releaseAtMs':spec['releaseAtMs'],'idempotencyNamespace':spec['idempotencyNamespace']})
-    write(root/'environment.json',{'target':env.base,'project':env.project,'k6Image':K6_IMAGE,'isolation':'local_characterization_only','calibrationLimitations':cal['limitations']})
+    write(root/'environment.json',{'target':'SUT-private' if getattr(env,'dual',False) is True else env.base,'project':env.project,'k6Image':K6_IMAGE,'isolation':'dual' if getattr(env,'dual',False) is True else 'local_characterization_only','calibrationLimitations':cal['limitations']})
     env.env['LOGIN_PASSWORD']='Ticketing123!' # Existing synthetic fixture hash, never exported into evidence.
     processes=[];logs=[];stop_reasons=[];samples=[];sampler=Sampler(env);guard=StopGuard(t,login_protection=args.case in ('L1','L2'))
     started=time.time();progress=RawProgress(t)
@@ -432,8 +451,11 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
                      '-e',f'BASE_URL={"http://noop:8080" if args.case=="G0" else "http://backend:8080"}','-e','LOGIN_PASSWORD','k6','run',
                      '--execution-segment',shard_info['segment'],'--execution-segment-sequence',shard_info['sequence'],
                      '--out',f'json=/results/{run_id}/shards/{number}/raw.json',f'workloads/{spec["workload"]}.js']
-            with (root/'commands.jsonl').open('a',encoding='utf-8') as f:f.write(json.dumps({'at':utc_now(),'argv':args_k6})+'\n')
-            processes.append(subprocess.Popen(args_k6,stdout=log,stderr=subprocess.STDOUT,env=env.env,cwd=ROOT))
+            if getattr(env,'dual',False) is True:
+                processes.append(env.start_generator(args_k6,log))
+            else:
+                with (root/'commands.jsonl').open('a',encoding='utf-8') as f:f.write(json.dumps({'at':utc_now(),'argv':args_k6})+'\n')
+                processes.append(subprocess.Popen(args_k6,stdout=log,stderr=subprocess.STDOUT,env=env.env,cwd=ROOT))
         deadline=started+t['generator']['releaseLeadSeconds']+spec['loadSeconds']+t['recovery']['observeSeconds']+t['probes']['paymentDeadlineSeconds']+max(t['behavior']['refreshSeconds'])+t['generator']['scheduler_delivery_guard_seconds']+30
         while any(p.poll() is None for p in processes):
             x,pg,rd,raw=sampler.sample();samples.append(x);save_sample(root,x,pg,rd)
@@ -447,7 +469,9 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
             if bad:stop_reasons.append('error stop window')
             if time.time()>deadline:stop_reasons.append('run deadline exceeded')
             if stop_reasons:break
-        if stop_reasons:
+        if stop_reasons and getattr(env,'dual',False) is True:
+            env.stop_generators()
+        elif stop_reasons:
             names=[f'{env.project}-k6-{run_id}-{s["shard"]}' for s in slices]
             for name in names:
                 inspected=json.loads(env.command(['docker','inspect',name]).stdout)[0]
@@ -459,7 +483,12 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
     except Exception as error:
         stop_reasons.append(type(error).__name__+': '+str(error))
     finally:
+        if getattr(env,'dual',False) is True:
+            env.stop_generators()
         for info,process in zip(slices,processes):
+            if getattr(env,'dual',False) is True:
+                process.wait(timeout=30)
+                continue
             if process.poll() is None:
                 name=f'{env.project}-k6-{run_id}-{info["shard"]}'
                 inspected=env.command(['docker','inspect',name],check=False)
@@ -502,7 +531,11 @@ def finish_case(env,spec,slices,stop_reasons,samples,cal,before,started,warnings
     recovered=recovery(samples,controls,cal['baseline'],t,spec['releaseAtMs']/1000+spec['loadSeconds'])
     recovered['mode']=t['mode']
     write(root/'recovery.json',{'status':'not_applicable','diagnostic':recovered} if t['mode']=='smoke' else recovered)
-    validity={'isolated':False,'errors':stop_reasons,'warnings':warnings}
+    validity={'isolated':getattr(env,'dual',False) is True,'errors':stop_reasons,'warnings':warnings}
+    if getattr(env,'dual',False) is True:
+        from phase14_campaign import sample_errors
+        validity['errors'] += sample_errors(samples,t)
+        if not pg_delta(before,after)['valid']:validity['errors'] += ['PostgreSQL delta invalid']
     if spec['case']=='H3':
         offsets=[x for x in summary['trends'] if x['metric']=='phase14_start_offset_ms']
         concentrated=bool(offsets) and sum(x['count'] for x in offsets)==t['hotspot']['users'] and all(x['p95']<=t['hotspot']['h3P95OffsetSeconds']*1000 and x['max']<=t['hotspot']['h3MaxOffsetSeconds']*1000 for x in offsets)
@@ -513,7 +546,8 @@ def finish_case(env,spec,slices,stop_reasons,samples,cal,before,started,warnings
     collect_prometheus(env,started,time.time())
     functional=not validity['errors'] and not summary['errors'] and correctness['passed'] and not any(x['metric']=='phase14_results' and x['tags'][2] in ('system_error','unexpected_contract') and x['count'] for x in summary['counts'])
     write(root/'smoke-check.json',{'passed':functional,'notCapacityEvidence':True})
-    (root/'report.md').write_text(f'# Phase14 {spec["case"]} {t["mode"]}\n\n本地特征不构成万人正式容量证明。\n\nFunctional smoke: {functional}\n\n```json\n'+json.dumps({'businessWindowSeconds':spec['loadSeconds'],'nonBusinessDeliverySchedule':spec['deliverySchedule'],'delivery':summary['delivery'],'dropped':summary['dropped'],'verdict':result,'correctness':correctness['passed']},ensure_ascii=False,indent=2)+'\n```\n',encoding='utf-8')
+    statement='双机测量；容量结论仅以本轮有效性和业务判定为准。' if getattr(env,'dual',False) is True and t['mode']=='formal' else '本次仅为功能预演，不构成万人正式容量证明。'
+    (root/'report.md').write_text(f'# Phase14 {spec["case"]} {t["mode"]}\n\n{statement}\n\nFunctional smoke: {functional}\n\n```json\n'+json.dumps({'businessWindowSeconds':spec['loadSeconds'],'nonBusinessDeliverySchedule':spec['deliverySchedule'],'delivery':summary['delivery'],'dropped':summary['dropped'],'verdict':result,'correctness':correctness['passed']},ensure_ascii=False,indent=2)+'\n```\n',encoding='utf-8')
     print(json.dumps({'runId':run_id,'functionalSmoke':functional,'correctness':correctness['passed'],'stopReasons':stop_reasons,'deliveryErrors':summary['errors']},ensure_ascii=False))
     return 0 if functional else 1
 
@@ -525,7 +559,9 @@ def collect_prometheus(env,start,end):
     for expression in ('ticketing_db_transaction_acquire_in_flight','ticketing_flow_requests_in_flight','ticketing_redis_operations_in_flight','ticketing_main_event_loop_lag_seconds','pg_order_expiry_pending'):
         url=f'http://127.0.0.1:{env.t["environment"]["prometheusPort"]}/api/v1/query_range?'+urlencode({**query,'query':expression})
         try:
-            with build_opener(ProxyHandler({})).open(url,timeout=20) as response:payload=json.load(response)
+            if getattr(env,'dual',False) is True:payload=env.prometheus('/api/v1/query_range?'+urlencode({**query,'query':expression}))
+            else:
+                with build_opener(ProxyHandler({})).open(url,timeout=20) as response:payload=json.load(response)
         except OSError as error:payload={'status':'not_available','reason':str(error)}
         records.append({**query,'expression':expression,'response':payload})
     write(env.root/'prometheus-queries.json',records)
@@ -641,7 +677,7 @@ def execute_expiry(t,env):
     write(root/'correctness.json',checks)
     after=pg_snapshot(env);write(root/'postgres-after.json',after);write(root/'postgres-delta.json',pg_delta(before,after))
     final=samples[-1];elapsed=max(final['time']-expiry,0)
-    functional=checks['passed'] and not reasons and final['pending']==0
+    functional=checks['passed'] and not reasons and (final['pending']==0 or (getattr(env,'dual',False) is True and t['mode']=='formal'))
     result={'mode':t['mode'],'fixtureCount':t['expiry']['orders'],'samples':samples,'stopReasons':reasons,
             'drainSeconds':None if drained is None else drained-expiry,'remaining':final['pending'],
             'effectiveExpiryPerSecond':final['expired']/elapsed if elapsed else None,'functionalSmoke':functional,
@@ -649,6 +685,11 @@ def execute_expiry(t,env):
             'measurement_validity':{'status':'fail','reasons':['local_characterization_only']+sorted({x['code'] for x in guard.warnings})},
             'capacity':{'status':'not_applicable'},'overload_protection':{'status':'not_applicable'}}
     write(root/'expiry.json',result);write(root/'verdict.json',{key:result[key] for key in ('measurement_validity','capacity','overload_protection')})
+    if getattr(env,'dual',False) is True:
+        result['measurement_validity']={'status':'pass' if not reasons else 'fail','reasons':reasons}
+        result['characterization']={'status':'complete' if functional else 'fail','remaining':final['pending']}
+        write(root/'expiry.json',result);write(root/'verdict.json',{key:result[key] for key in ('measurement_validity','capacity','overload_protection','characterization')})
+        collect_prometheus(env,expiry-t['expiry']['futureSeconds'],time.time())
     write(root/'smoke-check.json',{'passed':functional,'notCapacityEvidence':True})
     write(root/'manifest.json',{'runId':root.name,'case':'E1','mode':t['mode'],'snapshotSha256':sha256(snapshot),'targetsSha256':t['sourceSha256'],'expiryUtcSeconds':expiry})
     print(json.dumps({'runId':root.name,'functionalSmoke':functional,'drainSeconds':result['drainSeconds'],'remaining':result['remaining'],'stopReasons':reasons}))
