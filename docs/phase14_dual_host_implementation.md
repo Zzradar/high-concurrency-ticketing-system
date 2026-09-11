@@ -108,12 +108,12 @@ E1只是现状刻画。最长观察后仍存在合法待回收订单时，报告
 python3 performance/scripts/run_phase14.py plan --topology-config /srv/phase14/runtime/dual-host.json
 python3 performance/scripts/run_phase14.py prepare --topology-config /srv/phase14/runtime/dual-host.json --yes
 python3 performance/scripts/run_phase14.py calibrate --topology-config /srv/phase14/runtime/dual-host.json --yes
-python3 performance/scripts/run_phase14.py run --case G0 --topology-config /srv/phase14/runtime/dual-host.json --yes
+python3 performance/scripts/run_phase14.py run --case G0 --shards 4 --topology-config /srv/phase14/runtime/dual-host.json --yes
 python3 performance/scripts/run_phase14.py prepare --smoke --topology-config /srv/phase14/runtime/dual-host.json --yes
-python3 performance/scripts/run_phase14.py campaign --smoke --topology-config /srv/phase14/runtime/dual-host.json --yes
+python3 performance/scripts/run_phase14.py campaign --smoke --shards 4 --topology-config /srv/phase14/runtime/dual-host.json --yes
 # 用本次输出的G0和Smoke目录生成资格，再使用该资格文件：
-python3 performance/scripts/run_phase14.py qualify --topology-config /srv/phase14/runtime/dual-host.json --g0-evidence "$G0_ROOT" --smoke-evidence "$SMOKE_ROOT" --yes
-python3 performance/scripts/run_phase14.py campaign --topology-config /srv/phase14/runtime/dual-host.json --qualification "$QUALIFICATION" --formal-approved --yes
+python3 performance/scripts/run_phase14.py qualify --shards 4 --topology-config /srv/phase14/runtime/dual-host.json --g0-evidence "$G0_ROOT" --smoke-evidence "$SMOKE_ROOT" --yes
+python3 performance/scripts/run_phase14.py campaign --shards 4 --topology-config /srv/phase14/runtime/dual-host.json --qualification "$QUALIFICATION" --formal-approved --yes
 ```
 
 Load的performance/results/<运行编号>/保存spec.json（精确执行参数）、manifest.json（不可变输入清单）、shards/*/raw.json.gz（压缩原始点）及SHA-256（内容校验指纹）、global-summary.json（全局统计）、samples/（两机资源和数据库/Redis）、postgres-before/after/delta.json（数据库增量）、prometheus-queries.json（时序查询）、correctness.json（数据核验）、verdict.json（三层判定）、reset.json（恢复证据）、stop-evidence.jsonl（停止记录）、report.md（报告）。G0另有g0.json、sampling-overhead.json及独立子运行。批次保留plan.json、campaign.json与只追加checkpoint.jsonl（检查点日志），资格保留qualification.json。

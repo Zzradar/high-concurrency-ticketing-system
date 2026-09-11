@@ -1,0 +1,1990 @@
+{
+  "schemaVersion": 1,
+  "completion": "stopped_under_measurement_guard",
+  "testedCommit": "59d56981a43acdefeb6cdf0b2b8e822037940df1",
+  "testedTree": "e889da3d48d26bcbc8f525fc2f65eb69663cb627",
+  "targetsSha256": "653bbcf69399ef14f822e2ff4235332384062743072b93e3763632673a5b35b8",
+  "tests": {
+    "windows": 195,
+    "linux": 195,
+    "passed": true
+  },
+  "qualification": {
+    "status": "pass",
+    "root": "/srv/phase14/repo/performance/results/phase14-formal-qualify-20260911T142019Z-39cc2f",
+    "clock": {
+      "passed": true,
+      "maxClockSkewMs": 100,
+      "hosts": {
+        "sut": {
+          "Timezone": "Asia/Shanghai",
+          "NTPSynchronized": "yes",
+          "TimeUSec": "Fri 2026-09-11 22:20:25 CST",
+          "syncServices": {
+            "systemd-timesyncd": "inactive",
+            "chrony": "active"
+          }
+        },
+        "load": {
+          "Timezone": "Asia/Shanghai",
+          "NTPSynchronized": "yes",
+          "TimeUSec": "Fri 2026-09-11 22:20:25 CST",
+          "syncServices": {
+            "systemd-timesyncd": "inactive",
+            "chrony": "active"
+          }
+        }
+      },
+      "hostMidpointSamples": [
+        {
+          "remoteUtcSeconds": 1789136426.1131492,
+          "loadStartUtcSeconds": 1789136426.1128097,
+          "loadEndUtcSeconds": 1789136426.112946,
+          "offsetMs": 0.2713203430175781,
+          "uncertaintyMs": 0.06818771362304688,
+          "transport": "established_ssh_pipe"
+        },
+        {
+          "remoteUtcSeconds": 1789136426.1132605,
+          "loadStartUtcSeconds": 1789136426.112952,
+          "loadEndUtcSeconds": 1789136426.11306,
+          "offsetMs": 0.2543926239013672,
+          "uncertaintyMs": 0.054001808166503906,
+          "transport": "established_ssh_pipe"
+        },
+        {
+          "remoteUtcSeconds": 1789136426.113367,
+          "loadStartUtcSeconds": 1789136426.113063,
+          "loadEndUtcSeconds": 1789136426.1131516,
+          "offsetMs": 0.2598762512207031,
+          "uncertaintyMs": 0.044226646423339844,
+          "transport": "established_ssh_pipe"
+        },
+        {
+          "remoteUtcSeconds": 1789136426.1134565,
+          "loadStartUtcSeconds": 1789136426.1131532,
+          "loadEndUtcSeconds": 1789136426.113244,
+          "offsetMs": 0.25773048400878906,
+          "uncertaintyMs": 0.045418739318847656,
+          "transport": "established_ssh_pipe"
+        },
+        {
+          "remoteUtcSeconds": 1789136426.1135519,
+          "loadStartUtcSeconds": 1789136426.113246,
+          "loadEndUtcSeconds": 1789136426.1133344,
+          "offsetMs": 0.26154518127441406,
+          "uncertaintyMs": 0.044226646423339844,
+          "transport": "established_ssh_pipe"
+        }
+      ],
+      "establishedDatabaseSamples": [
+        {
+          "time": 1789136426.433788,
+          "activeWaits": 0,
+          "lockWaits": 0,
+          "idleTransaction": 0,
+          "idleAborted": 0,
+          "clockSkewMs": 0.8323192596435547,
+          "clockUncertaintyMs": 0.859379768371582,
+          "clockTransport": "established_read_only_psql",
+          "clockConnectionPid": 119004,
+          "clockConnectionClosed": true
+        },
+        {
+          "time": 1789136426.757769,
+          "activeWaits": 0,
+          "lockWaits": 0,
+          "idleTransaction": 0,
+          "idleAborted": 0,
+          "clockSkewMs": 0.8273124694824219,
+          "clockUncertaintyMs": 0.8428096771240234,
+          "clockTransport": "established_read_only_psql",
+          "clockConnectionPid": 119011,
+          "clockConnectionClosed": true
+        },
+        {
+          "time": 1789136427.085707,
+          "activeWaits": 0,
+          "lockWaits": 0,
+          "idleTransaction": 0,
+          "idleAborted": 0,
+          "clockSkewMs": 0.8161067962646484,
+          "clockUncertaintyMs": 0.8298158645629883,
+          "clockTransport": "established_read_only_psql",
+          "clockConnectionPid": 119018,
+          "clockConnectionClosed": true
+        },
+        {
+          "time": 1789136427.411399,
+          "activeWaits": 0,
+          "lockWaits": 0,
+          "idleTransaction": 0,
+          "idleAborted": 0,
+          "clockSkewMs": 0.8687973022460938,
+          "clockUncertaintyMs": 0.8851289749145508,
+          "clockTransport": "established_read_only_psql",
+          "clockConnectionPid": 119026,
+          "clockConnectionClosed": true
+        },
+        {
+          "time": 1789136427.733413,
+          "activeWaits": 0,
+          "lockWaits": 0,
+          "idleTransaction": 0,
+          "idleAborted": 0,
+          "clockSkewMs": 0.8456707000732422,
+          "clockUncertaintyMs": 0.8765459060668945,
+          "clockTransport": "established_read_only_psql",
+          "clockConnectionPid": 119040,
+          "clockConnectionClosed": true
+        }
+      ]
+    },
+    "prometheusJobs": [
+      {
+        "job": "backend",
+        "health": "up"
+      },
+      {
+        "job": "postgres",
+        "health": "up"
+      },
+      {
+        "job": "redis",
+        "health": "up"
+      }
+    ]
+  },
+  "g0": {
+    "status": "pass",
+    "case": "G0",
+    "mode": "formal",
+    "topologyMode": "dual",
+    "runId": "phase14-formal-run-20260911T134816Z-31b53a",
+    "errors": [],
+    "sutTouched": false,
+    "targetsSha256": "653bbcf69399ef14f822e2ff4235332384062743072b93e3763632673a5b35b8",
+    "shards": 4,
+    "longestScenarioDiskBudgetBytes": 26009040960.0,
+    "gitHead": "59d56981a43acdefeb6cdf0b2b8e822037940df1",
+    "legs": [
+      "/srv/phase14/repo/performance/results/phase14-formal-g0-20260911T134816Z-9308e7",
+      "/srv/phase14/repo/performance/results/phase14-formal-g0-20260911T134902Z-9a41e0",
+      "/srv/phase14/repo/performance/results/phase14-formal-g0-20260911T134948Z-802e63",
+      "/srv/phase14/repo/performance/results/phase14-formal-g0-20260911T135037Z-c99359"
+    ],
+    "overhead": {
+      "passed": true,
+      "limit": 0.05,
+      "latencyGrowthFractions": {
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "constantWatchdog": "host /proc and container identity/state remain enabled in both legs",
+      "legs": [
+        {
+          "sampling": false,
+          "runId": "phase14-formal-g0-20260911T134816Z-9308e7",
+          "p95": 1.0,
+          "p99": 1.0
+        },
+        {
+          "sampling": true,
+          "runId": "phase14-formal-g0-20260911T134902Z-9a41e0",
+          "p95": 1.0,
+          "p99": 1.0
+        },
+        {
+          "sampling": true,
+          "runId": "phase14-formal-g0-20260911T134948Z-802e63",
+          "p95": 1.0,
+          "p99": 1.0
+        },
+        {
+          "sampling": false,
+          "runId": "phase14-formal-g0-20260911T135037Z-c99359",
+          "p95": 1.0,
+          "p99": 1.0
+        }
+      ]
+    }
+  },
+  "smoke": {
+    "campaign": "phase14-smoke-campaign-20260911T135124Z-ee5a9a",
+    "status": "pass",
+    "runs": [
+      {
+        "runId": "phase14-smoke-g0-20260911T135124Z-3639e6",
+        "case": "G0",
+        "arguments": {},
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-g0-20260911T135124Z-3639e6",
+        "http": {
+          "requests": 20,
+          "observedHttpSpanSeconds": 0.9490799903869629,
+          "observedRps": 21.07303936715125,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 20,
+          "httpDurationMs": {
+            "p50": 0.111111,
+            "p95": 0.20848595000000003,
+            "p99": 0.22859478999999996
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 20.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": null,
+        "reset": null,
+        "businessWindows": null
+      },
+      {
+        "runId": "phase14-smoke-u1-20260911T135138Z-b8d3d1",
+        "case": "U1",
+        "arguments": {
+          "round": 0
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-u1-20260911T135138Z-b8d3d1",
+        "http": {
+          "requests": 480,
+          "observedHttpSpanSeconds": 11.50160002708435,
+          "observedRps": 41.7333239609863,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 480,
+          "httpDurationMs": {
+            "p50": 1.0198385,
+            "p95": 4.262522549999992,
+            "p99": 8.345893429999993
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 564.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 6,
+            "completedIterationsPerSecond": 9.666666666666666
+          },
+          "control_health": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "payment": {
+            "seconds": 6.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-u1-20260911T135238Z-82294f",
+        "case": "U1",
+        "arguments": {
+          "round": 1
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-u1-20260911T135238Z-82294f",
+        "http": {
+          "requests": 471,
+          "observedHttpSpanSeconds": 11.523991107940674,
+          "observedRps": 40.871256805765384,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 471,
+          "httpDurationMs": {
+            "p50": 1.025401,
+            "p95": 4.5098025,
+            "p99": 7.848589700000004
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 555.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 6,
+            "completedIterationsPerSecond": 9.666666666666666
+          },
+          "control_health": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "payment": {
+            "seconds": 6.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-u2-20260911T135337Z-685bc6",
+        "case": "U2",
+        "arguments": {
+          "round": 0
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-u2-20260911T135337Z-685bc6",
+        "http": {
+          "requests": 486,
+          "observedHttpSpanSeconds": 11.502919912338257,
+          "observedRps": 42.250142025131105,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 486,
+          "httpDurationMs": {
+            "p50": 1.0097265000000002,
+            "p95": 3.84781,
+            "p99": 7.378163599999995
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 570.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "enter_0": {
+            "seconds": 2.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "refresh_0": {
+            "seconds": 2.0,
+            "completedIterationsPerSecond": 5.0
+          },
+          "refresh_1": {
+            "seconds": 4.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "control_health": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "payment": {
+            "seconds": 6.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-u2-20260911T135437Z-12f8aa",
+        "case": "U2",
+        "arguments": {
+          "round": 1
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-u2-20260911T135437Z-12f8aa",
+        "http": {
+          "requests": 487,
+          "observedHttpSpanSeconds": 11.527933120727539,
+          "observedRps": 42.24521385575708,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 487,
+          "httpDurationMs": {
+            "p50": 1.009729,
+            "p95": 4.504914199999999,
+            "p99": 7.330028959999996
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 571.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "enter_0": {
+            "seconds": 2.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "refresh_0": {
+            "seconds": 2.0,
+            "completedIterationsPerSecond": 5.0
+          },
+          "refresh_1": {
+            "seconds": 4.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "control_health": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "payment": {
+            "seconds": 6.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-j1-20260911T135537Z-d7e77b",
+        "case": "J1",
+        "arguments": {
+          "window": 0
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-j1-20260911T135537Z-d7e77b",
+        "http": {
+          "requests": 475,
+          "observedHttpSpanSeconds": 11.501308917999268,
+          "observedRps": 41.299647143347016,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 475,
+          "httpDurationMs": {
+            "p50": 1.158027,
+            "p95": 5.4157323,
+            "p99": 10.232502719999982
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 559.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 6.0,
+            "completedIterationsPerSecond": 3.3333333333333335
+          },
+          "control_health": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "payment": {
+            "seconds": 6.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-j1-20260911T135639Z-ec3e90",
+        "case": "J1",
+        "arguments": {
+          "window": 1
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-j1-20260911T135639Z-ec3e90",
+        "http": {
+          "requests": 394,
+          "observedHttpSpanSeconds": 8.502077102661133,
+          "observedRps": 46.34161690637677,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 394,
+          "httpDurationMs": {
+            "p50": 1.2613690000000002,
+            "p95": 5.752017,
+            "p99": 7.743947329999995
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 466.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 3.0,
+            "completedIterationsPerSecond": 6.666666666666667
+          },
+          "control_health": {
+            "seconds": 9.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 9.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 9.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "payment": {
+            "seconds": 3.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-j1-20260911T135735Z-ecf231",
+        "case": "J1",
+        "arguments": {
+          "window": 2
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-j1-20260911T135735Z-ecf231",
+        "http": {
+          "requests": 342,
+          "observedHttpSpanSeconds": 6.501703977584839,
+          "observedRps": 52.601595086314795,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 342,
+          "httpDurationMs": {
+            "p50": 1.1966415000000001,
+            "p95": 5.3762747,
+            "p99": 7.521547099999998
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 406.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 1.0,
+            "completedIterationsPerSecond": 20.0
+          },
+          "control_health": {
+            "seconds": 7.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 7.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 7.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "payment": {
+            "seconds": 1.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-o1-20260911T135831Z-80c5a9",
+        "case": "O1",
+        "arguments": {
+          "window": 0
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-o1-20260911T135831Z-80c5a9",
+        "http": {
+          "requests": 281,
+          "observedHttpSpanSeconds": 11.525497913360596,
+          "observedRps": 24.380725423954047,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 281,
+          "httpDurationMs": {
+            "p50": 1.49414,
+            "p95": 6.564044,
+            "p99": 8.971876999999981
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 325.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 6.0,
+            "completedIterationsPerSecond": 3.3333333333333335
+          },
+          "control_health": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "payment": {
+            "seconds": 6.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-o1-20260911T135934Z-3718ce",
+        "case": "O1",
+        "arguments": {
+          "window": 1
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-o1-20260911T135934Z-3718ce",
+        "http": {
+          "requests": 192,
+          "observedHttpSpanSeconds": 8.501434087753296,
+          "observedRps": 22.584424935621715,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 192,
+          "httpDurationMs": {
+            "p50": 1.6848035000000001,
+            "p95": 5.757087599999999,
+            "p99": 10.667880320000002
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 224.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 3.0,
+            "completedIterationsPerSecond": 6.666666666666667
+          },
+          "control_health": {
+            "seconds": 9.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 9.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 9.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "payment": {
+            "seconds": 3.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-o1-20260911T140034Z-dbbee1",
+        "case": "O1",
+        "arguments": {
+          "window": 2
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-o1-20260911T140034Z-dbbee1",
+        "http": {
+          "requests": 145,
+          "observedHttpSpanSeconds": 6.545392990112305,
+          "observedRps": 22.15298611084804,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 145,
+          "httpDurationMs": {
+            "p50": 1.693041,
+            "p95": 5.9694544,
+            "p99": 9.739906400000002
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 169.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 1.0,
+            "completedIterationsPerSecond": 20.0
+          },
+          "control_health": {
+            "seconds": 7.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 7.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 7.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "payment": {
+            "seconds": 1.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-e1-20260911T140131Z-745803",
+        "case": "E1",
+        "arguments": {},
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-e1-20260911T140131Z-745803",
+        "http": {
+          "requests": 0,
+          "observedHttpSpanSeconds": null,
+          "observedRps": null,
+          "httpSuccessRate": null,
+          "httpFailureSamples": 0,
+          "httpDurationMs": {
+            "p50": null,
+            "p95": null,
+            "p99": null
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {},
+        "dropped": null,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": null
+      },
+      {
+        "runId": "phase14-smoke-h1-20260911T140212Z-08e8d5",
+        "case": "H1",
+        "arguments": {
+          "path": "temporary",
+          "repeat": 0
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-h1-20260911T140212Z-08e8d5",
+        "http": {
+          "requests": 68,
+          "observedHttpSpanSeconds": 7.5026750564575195,
+          "observedRps": 9.063433973656196,
+          "httpSuccessRate": 0.7352941176470589,
+          "httpFailureSamples": 68,
+          "httpDurationMs": {
+            "p50": 1.249883,
+            "p95": 4.460660899999997,
+            "p99": 5.765422949999998
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 50.0,
+          "business_conflict": 18.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 2.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "control_health": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-h1-20260911T140309Z-6ef567",
+        "case": "H1",
+        "arguments": {
+          "path": "temporary",
+          "repeat": 1
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-h1-20260911T140309Z-6ef567",
+        "http": {
+          "requests": 68,
+          "observedHttpSpanSeconds": 7.501654863357544,
+          "observedRps": 9.06466656206108,
+          "httpSuccessRate": 0.7352941176470589,
+          "httpFailureSamples": 68,
+          "httpDurationMs": {
+            "p50": 1.2036069999999999,
+            "p95": 3.1932711499999997,
+            "p99": 4.985803879999997
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 50.0,
+          "business_conflict": 18.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 2.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "control_health": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-h1-20260911T140404Z-243477",
+        "case": "H1",
+        "arguments": {
+          "path": "formal",
+          "repeat": 0
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-h1-20260911T140404Z-243477",
+        "http": {
+          "requests": 68,
+          "observedHttpSpanSeconds": 7.501574993133545,
+          "observedRps": 9.064763074720014,
+          "httpSuccessRate": 0.7352941176470589,
+          "httpFailureSamples": 68,
+          "httpDurationMs": {
+            "p50": 1.589067,
+            "p95": 4.706061649999999,
+            "p99": 7.692807969999994
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 50.0,
+          "business_conflict": 18.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 2.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "control_health": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-h1-20260911T140501Z-404fb9",
+        "case": "H1",
+        "arguments": {
+          "path": "formal",
+          "repeat": 1
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-h1-20260911T140501Z-404fb9",
+        "http": {
+          "requests": 68,
+          "observedHttpSpanSeconds": 7.5017619132995605,
+          "observedRps": 9.064537209511494,
+          "httpSuccessRate": 0.7352941176470589,
+          "httpFailureSamples": 68,
+          "httpDurationMs": {
+            "p50": 1.562042,
+            "p95": 5.632242249999997,
+            "p99": 7.265408109999997
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 50.0,
+          "business_conflict": 18.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 2.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "control_health": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-h2-20260911T140559Z-5e544b",
+        "case": "H2",
+        "arguments": {
+          "session_count": 10
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-h2-20260911T140559Z-5e544b",
+        "http": {
+          "requests": 68,
+          "observedHttpSpanSeconds": 7.502392053604126,
+          "observedRps": 9.063775861637756,
+          "httpSuccessRate": 0.7352941176470589,
+          "httpFailureSamples": 68,
+          "httpDurationMs": {
+            "p50": 1.4460250000000001,
+            "p95": 3.8521732999999996,
+            "p99": 7.196578549999986
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 50.0,
+          "business_conflict": 18.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 2.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "control_health": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-h2-20260911T140654Z-3f24a2",
+        "case": "H2",
+        "arguments": {
+          "session_count": 20
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-h2-20260911T140654Z-3f24a2",
+        "http": {
+          "requests": 68,
+          "observedHttpSpanSeconds": 7.501014947891235,
+          "observedRps": 9.065439873455642,
+          "httpSuccessRate": 0.7352941176470589,
+          "httpFailureSamples": 68,
+          "httpDurationMs": {
+            "p50": 1.4326175,
+            "p95": 4.88467285,
+            "p99": 6.3804907499999945
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 50.0,
+          "business_conflict": 18.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 2.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "control_health": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-h3-20260911T140750Z-548110",
+        "case": "H3",
+        "arguments": {
+          "path": "temporary"
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-h3-20260911T140750Z-548110",
+        "http": {
+          "requests": 68,
+          "observedHttpSpanSeconds": 7.49870491027832,
+          "observedRps": 9.068232556637053,
+          "httpSuccessRate": 0.7205882352941176,
+          "httpFailureSamples": 68,
+          "httpDurationMs": {
+            "p50": 1.6812425,
+            "p95": 8.0751224,
+            "p99": 8.245183710000001
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 49.0,
+          "business_conflict": 19.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 2,
+            "completedIterationsPerSecond": 10.0
+          },
+          "control_health": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-h3-20260911T140847Z-4c33f2",
+        "case": "H3",
+        "arguments": {
+          "path": "formal"
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-h3-20260911T140847Z-4c33f2",
+        "http": {
+          "requests": 68,
+          "observedHttpSpanSeconds": 7.500741958618164,
+          "observedRps": 9.065769809861237,
+          "httpSuccessRate": 0.7205882352941176,
+          "httpFailureSamples": 68,
+          "httpDurationMs": {
+            "p50": 1.5377355,
+            "p95": 16.4493977,
+            "p99": 17.469040989999996
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 49.0,
+          "business_conflict": 19.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 2,
+            "completedIterationsPerSecond": 10.0
+          },
+          "control_health": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 8.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-l1-20260911T140943Z-bb728d",
+        "case": "L1",
+        "arguments": {
+          "control_only": true
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-l1-20260911T140943Z-bb728d",
+        "http": {
+          "requests": 863,
+          "observedHttpSpanSeconds": 21.501187086105347,
+          "observedRps": 40.1373187696085,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 863,
+          "httpDurationMs": {
+            "p50": 1.350528,
+            "p95": 4.656913,
+            "p99": 6.770485999999998
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 991.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "background_refresh": {
+            "seconds": 16.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "background_hold": {
+            "seconds": 16.0,
+            "completedIterationsPerSecond": 2.5
+          },
+          "background_order": {
+            "seconds": 16.0,
+            "completedIterationsPerSecond": 1.5
+          },
+          "control_health": {
+            "seconds": 22.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 22.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 22.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "payment": {
+            "seconds": 16.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-l1-20260911T141058Z-5eae13",
+        "case": "L1",
+        "arguments": {
+          "control_only": false
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-l1-20260911T141058Z-5eae13",
+        "http": {
+          "requests": 885,
+          "observedHttpSpanSeconds": 21.52870512008667,
+          "observedRps": 41.107906632725395,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 885,
+          "httpDurationMs": {
+            "p50": 1.46878,
+            "p95": 5.927763599999993,
+            "p99": 108.95586456
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 1013.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "background_refresh": {
+            "seconds": 16.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "background_hold": {
+            "seconds": 16.0,
+            "completedIterationsPerSecond": 2.5
+          },
+          "background_order": {
+            "seconds": 16.0,
+            "completedIterationsPerSecond": 1.5
+          },
+          "login": {
+            "seconds": 6.0,
+            "completedIterationsPerSecond": 3.3333333333333335
+          },
+          "control_health": {
+            "seconds": 22.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 22.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 22.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "payment": {
+            "seconds": 16.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-l2-20260911T141210Z-478924",
+        "case": "L2",
+        "arguments": {
+          "control_only": true
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-l2-20260911T141210Z-478924",
+        "http": {
+          "requests": 638,
+          "observedHttpSpanSeconds": 17.522279977798462,
+          "observedRps": 36.410786770236264,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 638,
+          "httpDurationMs": {
+            "p50": 1.385684,
+            "p95": 4.9999524499999985,
+            "p99": 7.085178459999999
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 734.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "background_refresh": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "background_hold": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.5
+          },
+          "background_order": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 1.5
+          },
+          "control_health": {
+            "seconds": 18.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 18.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 18.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "payment": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-l2-20260911T141321Z-4a8260",
+        "case": "L2",
+        "arguments": {
+          "control_only": false
+        },
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-l2-20260911T141321Z-4a8260",
+        "http": {
+          "requests": 685,
+          "observedHttpSpanSeconds": 17.500774145126343,
+          "observedRps": 39.141125662190234,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 685,
+          "httpDurationMs": {
+            "p50": 1.427504,
+            "p95": 6.163131799999997,
+            "p99": 112.41444659999996
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 781.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "background_refresh": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "background_hold": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.5
+          },
+          "background_order": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 1.5
+          },
+          "login": {
+            "seconds": 2.0,
+            "completedIterationsPerSecond": 10.0
+          },
+          "control_health": {
+            "seconds": 18.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 18.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 18.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "payment": {
+            "seconds": 12.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      },
+      {
+        "runId": "phase14-smoke-s1-20260911T141430Z-b322b7",
+        "case": "S1",
+        "arguments": {},
+        "passed": true,
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-s1-20260911T141430Z-b322b7",
+        "http": {
+          "requests": 458,
+          "observedHttpSpanSeconds": 17.50277805328369,
+          "observedRps": 26.167274623817487,
+          "httpSuccessRate": 1.0,
+          "httpFailureSamples": 458,
+          "httpDurationMs": {
+            "p50": 1.796173,
+            "p95": 19.0958419,
+            "p99": 23.26276752
+          },
+          "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+        },
+        "stepResultsIncludingJourneys": {
+          "business_success": 518.0
+        },
+        "dropped": 0,
+        "postgresDeltaValid": true,
+        "reset": {
+          "passed": true,
+          "redisDbsize": 0,
+          "snapshotSha256": "28b6ea1344538e4fbd2ac901fc5adaae57197685046ac2040b65ac70027fb417",
+          "fingerprint": "d51db61c6c814075909661a30e20bdd9b458615c2ecb04db36e36418f563abf7"
+        },
+        "businessWindows": {
+          "main": {
+            "seconds": 12,
+            "completedIterationsPerSecond": 10.916666666666666
+          },
+          "control_health": {
+            "seconds": 18.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_auth": {
+            "seconds": 18.0,
+            "completedIterationsPerSecond": 2.0
+          },
+          "control_availability": {
+            "seconds": 18.0,
+            "completedIterationsPerSecond": 2.0
+          }
+        }
+      }
+    ]
+  },
+  "formal": {
+    "campaign": "phase14-formal-campaign-20260911T142045Z-ae28a5",
+    "status": "invalid_measurement",
+    "validCapacityRuns": 0,
+    "capacityConclusion": "unavailable",
+    "runId": "phase14-formal-u1-20260911T142059Z-221cb5",
+    "initialization": {
+      "mode": "serial_initialization",
+      "runId": "phase14-formal-u1-20260911T142059Z-221cb5",
+      "shards": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "releaseAtMs": 1789136900952,
+      "ready": [
+        {
+          "shard": "0",
+          "readyAtMs": 1789136874441.0864
+        },
+        {
+          "shard": "1",
+          "readyAtMs": 1789136878038.2886
+        },
+        {
+          "shard": "2",
+          "readyAtMs": 1789136881595.6338
+        },
+        {
+          "shard": "3",
+          "readyAtMs": 1789136885195.16
+        },
+        {
+          "shard": "4",
+          "readyAtMs": 1789136889356.3691
+        },
+        {
+          "shard": "5",
+          "readyAtMs": 1789136893711.0884
+        },
+        {
+          "shard": "6",
+          "readyAtMs": 1789136897910.0352
+        }
+      ],
+      "safetySampling": true,
+      "status": "fail",
+      "error": "initialization missed frozen release point"
+    },
+    "httpDiagnosticOnly": {
+      "requests": 804,
+      "observedHttpSpanSeconds": 9.997672080993652,
+      "observedRps": 80.4187208268679,
+      "httpSuccessRate": 1.0,
+      "httpFailureSamples": 804,
+      "httpDurationMs": {
+        "p50": 1.069995,
+        "p95": 39.580076999999996,
+        "p99": 47.68727611000004
+      },
+      "scope": "all HTTP requests including expected contention; first-to-last request span; invalid formal run remains diagnostic only"
+    },
+    "delivery": {
+      "main": {
+        "planned": null,
+        "started": 60.0,
+        "completed": 0,
+        "interrupted": 60.0
+      },
+      "control_health": {
+        "planned": 4080,
+        "started": 18.0,
+        "completed": 18.0,
+        "interrupted": 0.0
+      },
+      "control_auth": {
+        "planned": 4080,
+        "started": 18.0,
+        "completed": 18.0,
+        "interrupted": 0.0
+      },
+      "control_availability": {
+        "planned": 4080,
+        "started": 18.0,
+        "completed": 18.0,
+        "interrupted": 0.0
+      },
+      "payment": {
+        "planned": 3480,
+        "started": 18.0,
+        "completed": 8.0,
+        "interrupted": 10.0
+      }
+    },
+    "dropped": 0,
+    "stopReasons": [
+      "RuntimeError: initialization missed frozen release point"
+    ],
+    "originalCorrectness": {
+      "passed": false,
+      "global": {
+        "accepted_payment_mismatch": 0,
+        "active_reservation_seat_mismatch": 0,
+        "confirmed_state_mismatch": 0,
+        "effective_seat_overlap": 0,
+        "held_seat_owner_mismatch": 0,
+        "multiple_processing_attempts": 0,
+        "multiple_refunds": 0,
+        "order_amount_mismatch": 0,
+        "order_paid_at_mismatch": 0,
+        "order_reservation_status_mismatch": 0,
+        "refund_order_or_amount_mismatch": 0,
+        "sold_state_mismatch": 0,
+        "terminal_reservation_still_holds": 0,
+        "unaccepted_success_refund_mismatch": 0
+      },
+      "errors": [
+        "payment terminal reconciliation failed"
+      ],
+      "scoped": {
+        "mainOrders": {
+          "orders": 0,
+          "users": 0,
+          "reservations": 0,
+          "wrong_seat_count": 0
+        },
+        "checkoutOwnership": {
+          "mismatch": 0
+        },
+        "loginSessions": {
+          "sessions": 0,
+          "users": 0,
+          "uniqueDigests": 0
+        },
+        "paymentTerminal": {
+          "orders": 18,
+          "paid": 17,
+          "invalid": 1
+        }
+      }
+    },
+    "finalAudit": {
+      "passed": false,
+      "global": {
+        "accepted_payment_mismatch": 0,
+        "active_reservation_seat_mismatch": 0,
+        "confirmed_state_mismatch": 0,
+        "effective_seat_overlap": 0,
+        "held_seat_owner_mismatch": 0,
+        "multiple_processing_attempts": 0,
+        "multiple_refunds": 0,
+        "order_amount_mismatch": 0,
+        "order_paid_at_mismatch": 0,
+        "order_reservation_status_mismatch": 0,
+        "refund_order_or_amount_mismatch": 0,
+        "sold_state_mismatch": 0,
+        "terminal_reservation_still_holds": 0,
+        "unaccepted_success_refund_mismatch": 0
+      },
+      "errors": [
+        "payment terminal reconciliation failed"
+      ],
+      "scoped": {
+        "mainOrders": {
+          "orders": 0,
+          "users": 0,
+          "reservations": 0,
+          "wrong_seat_count": 0
+        },
+        "checkoutOwnership": {
+          "mismatch": 0
+        },
+        "loginSessions": {
+          "sessions": 0,
+          "users": 0,
+          "uniqueDigests": 0
+        },
+        "paymentTerminal": {
+          "orders": 18,
+          "paid": 18,
+          "invalid": 0
+        }
+      }
+    },
+    "resourcePeaksDuringInitialization": {
+      "loadHostCpuFraction": 0.636241610738255,
+      "loadHostMemoryFraction": 0.7965413043066887,
+      "generatorCpuFraction": 0.9985040791100124,
+      "generatorMemoryFraction": 0.8500423431396484,
+      "sutHostCpuFraction": 0.22566371681415928,
+      "swapping": false
+    },
+    "matrix": [
+      {
+        "index": 0,
+        "case": "U1",
+        "arguments": {
+          "round": 0
+        },
+        "status": "invalid_measurement"
+      },
+      {
+        "index": 1,
+        "case": "U1",
+        "arguments": {
+          "round": 1
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 2,
+        "case": "U2",
+        "arguments": {
+          "round": 0
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 3,
+        "case": "U2",
+        "arguments": {
+          "round": 1
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 4,
+        "case": "J1",
+        "arguments": {
+          "window": 0
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 5,
+        "case": "J1",
+        "arguments": {
+          "window": 1
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 6,
+        "case": "J1",
+        "arguments": {
+          "window": 2
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 7,
+        "case": "O1",
+        "arguments": {
+          "window": 0
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 8,
+        "case": "O1",
+        "arguments": {
+          "window": 1
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 9,
+        "case": "O1",
+        "arguments": {
+          "window": 2
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 10,
+        "case": "E1",
+        "arguments": {},
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 11,
+        "case": "H1",
+        "arguments": {
+          "path": "temporary",
+          "repeat": 0
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 12,
+        "case": "H1",
+        "arguments": {
+          "path": "temporary",
+          "repeat": 1
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 13,
+        "case": "H1",
+        "arguments": {
+          "path": "formal",
+          "repeat": 0
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 14,
+        "case": "H1",
+        "arguments": {
+          "path": "formal",
+          "repeat": 1
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 15,
+        "case": "H2",
+        "arguments": {
+          "session_count": 10
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 16,
+        "case": "H2",
+        "arguments": {
+          "session_count": 20
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 17,
+        "case": "H3",
+        "arguments": {
+          "path": "temporary"
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 18,
+        "case": "H3",
+        "arguments": {
+          "path": "formal"
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 19,
+        "case": "L1",
+        "arguments": {
+          "control_only": true
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 20,
+        "case": "L1",
+        "arguments": {
+          "control_only": false
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 21,
+        "case": "L2",
+        "arguments": {
+          "control_only": true
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 22,
+        "case": "L2",
+        "arguments": {
+          "control_only": false
+        },
+        "status": "not_run_after_stop"
+      },
+      {
+        "index": 23,
+        "case": "S1",
+        "arguments": {},
+        "status": "not_run_after_stop"
+      }
+    ]
+  },
+  "formalCommand": [
+    "python3",
+    "-u",
+    "performance/scripts/run_phase14.py",
+    "campaign",
+    "--shards",
+    "4",
+    "--qualification",
+    "/srv/phase14/repo/performance/results/phase14-formal-qualify-20260911T142019Z-39cc2f/qualification.json",
+    "--formal-approved",
+    "--topology-config",
+    "/srv/phase14/runtime/dual-host.json",
+    "--yes"
+  ],
+  "launchRoot": "/srv/phase14/repo/performance/results/phase14-formal-launch-20260911T142030Z-932811",
+  "plannedBusinessSecondsUpperBound": 10440,
+  "plannedScheduleSecondsUpperBound": 20813,
+  "costs": "not requested",
+  "shutdown": {
+    "status": "pending"
+  },
+  "analysisInputSha256": {
+    "qualification-report-data.json": "4034d436a5c1b5ae2b8f76bfb8cc6df9e19808de98792e048fb79ea81b432267",
+    "smoke-report-data.json": "0be054690f27865555ced739d530b2b79a111f5c34b0795a6b56b5a84a208320",
+    "formal-report-data.json": "012816cd6d76b1c4a69adde7aa09226444a87995e9957ad021331ebad0eec287",
+    "final-audit-data.json": "60bfbb9749333475cf583ccba61bd038c56256cc7e251f64cea07f5198ddf758",
+    "http-report-data.json": "d91e70e5bafa832c9675571938b76fc98f5cde8d010f96294bfa2693efbb8d71"
+  }
+}
