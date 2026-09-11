@@ -1,0 +1,547 @@
+{
+  "measurementCommit": "a169350b5ec61a6f9f077a80e7af7bfeca92d239",
+  "originalSourceCompose": {
+    "path": "performance/docker-compose.phase14.yml",
+    "sha256": "9a483b6422a91b4066c074e990457a42553ba156dda3b22bf23c93484842aa50"
+  },
+  "redaction": "Credentials and SUT private binding redacted; not an executable Compose file",
+  "evidence": {
+    "fd-original-role-compose.json": {
+      "originalSha256": "75f14e990d211f2bb80af9a2242f304a33b4e61628fbb51aae76e87a3e82df36",
+      "redactedContent": {
+        "name": "phase14-formal-sut",
+        "networks": {
+          "default": {
+            "name": "phase14-formal-sut_default",
+            "ipam": {}
+          }
+        },
+        "services": {
+          "backend": {
+            "cpus": 4,
+            "command": [
+              "./ticketing_backend",
+              "config/config.phase14.json"
+            ],
+            "depends_on": {
+              "postgres": {
+                "condition": "service_healthy",
+                "required": true
+              },
+              "redis": {
+                "condition": "service_healthy",
+                "required": true
+              }
+            },
+            "entrypoint": null,
+            "environment": {
+              "TICKETING_PAYMENT_FORCE_OUTCOME": "SUCCESS",
+              "TICKETING_PAYMENT_PROVIDER": "simulation"
+            },
+            "healthcheck": {
+              "test": [
+                "CMD-SHELL",
+                "curl --fail --silent http://127.0.0.1:8080/health >/dev/null"
+              ],
+              "timeout": "2s",
+              "interval": "2s",
+              "retries": 40
+            },
+            "image": "phase14-backend:local",
+            "mem_limit": "2147483648",
+            "networks": {
+              "default": null
+            },
+            "ports": [
+              {
+                "mode": "ingress",
+                "host_ip": "<SUT private address>",
+                "target": 8080,
+                "published": "18414",
+                "protocol": "tcp"
+              }
+            ]
+          },
+          "postgres": {
+            "cpus": 2,
+            "command": [
+              "postgres",
+              "-c",
+              "shared_preload_libraries=pg_stat_statements",
+              "-c",
+              "track_io_timing=on",
+              "-c",
+              "log_lock_waits=on"
+            ],
+            "entrypoint": null,
+            "environment": {
+              "POSTGRES_DB": "ticketing",
+              "POSTGRES_PASSWORD": "<redacted credential>",
+              "POSTGRES_USER": "ticketing"
+            },
+            "healthcheck": {
+              "test": [
+                "CMD-SHELL",
+                "pg_isready -U ticketing -d ticketing"
+              ],
+              "timeout": "2s",
+              "interval": "2s",
+              "retries": 30
+            },
+            "image": "postgres:16-alpine",
+            "mem_limit": "1073741824",
+            "networks": {
+              "default": null
+            },
+            "volumes": [
+              {
+                "type": "volume",
+                "source": "postgres",
+                "target": "/var/lib/postgresql/data",
+                "volume": {}
+              },
+              {
+                "type": "bind",
+                "source": "/srv/phase14/repo/performance/postgres/000_observability.sql",
+                "target": "/docker-entrypoint-initdb.d/000_observability.sql",
+                "read_only": true,
+                "bind": {
+                  "create_host_path": true
+                }
+              },
+              {
+                "type": "bind",
+                "source": "/srv/phase14/repo/backend/db/migrations",
+                "target": "/migrations",
+                "read_only": true,
+                "bind": {
+                  "create_host_path": true
+                }
+              },
+              {
+                "type": "bind",
+                "source": "/srv/phase14/repo/performance/phase14/init.sh",
+                "target": "/docker-entrypoint-initdb.d/010_schema.sh",
+                "read_only": true,
+                "bind": {
+                  "create_host_path": true
+                }
+              }
+            ]
+          },
+          "postgres-exporter": {
+            "command": null,
+            "depends_on": {
+              "postgres": {
+                "condition": "service_healthy",
+                "required": true
+              }
+            },
+            "entrypoint": null,
+            "environment": {
+              "DATA_SOURCE_NAME": "<redacted credential>",
+              "PG_EXPORTER_EXTEND_QUERY_PATH": "/etc/postgres_exporter/queries.yml"
+            },
+            "image": "ghcr.io/prometheus-community/postgres-exporter:v0.20.1",
+            "mem_limit": "134217728",
+            "networks": {
+              "default": null
+            },
+            "volumes": [
+              {
+                "type": "bind",
+                "source": "/srv/phase14/repo/performance/phase14/queries.yml",
+                "target": "/etc/postgres_exporter/queries.yml",
+                "read_only": true,
+                "bind": {
+                  "create_host_path": true
+                }
+              }
+            ]
+          },
+          "prometheus": {
+            "command": [
+              "--config.file=/etc/prometheus/prometheus.yml",
+              "--storage.tsdb.path=/prometheus",
+              "--storage.tsdb.retention.time=7d"
+            ],
+            "entrypoint": null,
+            "image": "prom/prometheus:v3.14.0",
+            "mem_limit": "536870912",
+            "networks": {
+              "default": null
+            },
+            "ports": [
+              {
+                "mode": "ingress",
+                "host_ip": "loopback",
+                "target": 9090,
+                "published": "19414",
+                "protocol": "tcp"
+              }
+            ],
+            "volumes": [
+              {
+                "type": "bind",
+                "source": "/srv/phase14/repo/performance/phase14/prometheus.yml",
+                "target": "/etc/prometheus/prometheus.yml",
+                "read_only": true,
+                "bind": {
+                  "create_host_path": true
+                }
+              },
+              {
+                "type": "volume",
+                "source": "prometheus",
+                "target": "/prometheus",
+                "volume": {}
+              }
+            ]
+          },
+          "redis": {
+            "cpus": 1,
+            "command": [
+              "redis-server",
+              "--save",
+              "",
+              "--appendonly",
+              "no",
+              "--latency-tracking",
+              "yes"
+            ],
+            "entrypoint": null,
+            "healthcheck": {
+              "test": [
+                "CMD",
+                "redis-cli",
+                "ping"
+              ],
+              "timeout": "2s",
+              "interval": "2s",
+              "retries": 30
+            },
+            "image": "redis:7.4-alpine",
+            "mem_limit": "536870912",
+            "networks": {
+              "default": null
+            },
+            "tmpfs": [
+              "/data"
+            ]
+          },
+          "redis-exporter": {
+            "command": null,
+            "depends_on": {
+              "redis": {
+                "condition": "service_healthy",
+                "required": true
+              }
+            },
+            "entrypoint": null,
+            "environment": {
+              "REDIS_ADDR": "redis://redis:6379"
+            },
+            "image": "ghcr.io/oliver006/redis_exporter:v1.89.0",
+            "mem_limit": "134217728",
+            "networks": {
+              "default": null
+            }
+          }
+        },
+        "volumes": {
+          "postgres": {
+            "name": "phase14-formal-sut_postgres",
+            "labels": {
+              "ticketing.phase14": "capacity"
+            }
+          },
+          "prometheus": {
+            "name": "phase14-formal-sut_prometheus",
+            "labels": {
+              "ticketing.phase14": "capacity"
+            }
+          }
+        }
+      }
+    },
+    "fd-override.json": {
+      "originalSha256": "52cd400a0ddda4aee21ecd4c6f5ce8182fe898a575fe17d875f9d731871ce408",
+      "redactedContent": {
+        "services": {
+          "backend": {
+            "ulimits": {
+              "nofile": {
+                "soft": 65535,
+                "hard": 65535
+              }
+            }
+          }
+        }
+      }
+    },
+    "fd-rendered-role-compose.json": {
+      "originalSha256": "45dcbda79b9bd5b1fdc230653eae0b585a44370daab8a00ecc1bdda703cb28a4",
+      "redactedContent": {
+        "name": "phase14-formal-sut",
+        "networks": {
+          "default": {
+            "name": "phase14-formal-sut_default",
+            "ipam": {}
+          }
+        },
+        "services": {
+          "backend": {
+            "cpus": 4,
+            "command": [
+              "./ticketing_backend",
+              "config/config.phase14.json"
+            ],
+            "depends_on": {
+              "postgres": {
+                "condition": "service_healthy",
+                "required": true
+              },
+              "redis": {
+                "condition": "service_healthy",
+                "required": true
+              }
+            },
+            "entrypoint": null,
+            "environment": {
+              "TICKETING_PAYMENT_FORCE_OUTCOME": "SUCCESS",
+              "TICKETING_PAYMENT_PROVIDER": "simulation"
+            },
+            "healthcheck": {
+              "test": [
+                "CMD-SHELL",
+                "curl --fail --silent http://127.0.0.1:8080/health >/dev/null"
+              ],
+              "timeout": "2s",
+              "interval": "2s",
+              "retries": 40
+            },
+            "image": "phase14-backend:local",
+            "mem_limit": "2147483648",
+            "networks": {
+              "default": null
+            },
+            "ports": [
+              {
+                "mode": "ingress",
+                "host_ip": "<SUT private address>",
+                "target": 8080,
+                "published": "18414",
+                "protocol": "tcp"
+              }
+            ],
+            "ulimits": {
+              "nofile": {
+                "soft": 65535,
+                "hard": 65535
+              }
+            }
+          },
+          "postgres": {
+            "cpus": 2,
+            "command": [
+              "postgres",
+              "-c",
+              "shared_preload_libraries=pg_stat_statements",
+              "-c",
+              "track_io_timing=on",
+              "-c",
+              "log_lock_waits=on"
+            ],
+            "entrypoint": null,
+            "environment": {
+              "POSTGRES_DB": "ticketing",
+              "POSTGRES_PASSWORD": "<redacted credential>",
+              "POSTGRES_USER": "ticketing"
+            },
+            "healthcheck": {
+              "test": [
+                "CMD-SHELL",
+                "pg_isready -U ticketing -d ticketing"
+              ],
+              "timeout": "2s",
+              "interval": "2s",
+              "retries": 30
+            },
+            "image": "postgres:16-alpine",
+            "mem_limit": "1073741824",
+            "networks": {
+              "default": null
+            },
+            "volumes": [
+              {
+                "type": "volume",
+                "source": "postgres",
+                "target": "/var/lib/postgresql/data",
+                "volume": {}
+              },
+              {
+                "type": "bind",
+                "source": "/srv/phase14/repo/performance/postgres/000_observability.sql",
+                "target": "/docker-entrypoint-initdb.d/000_observability.sql",
+                "read_only": true,
+                "bind": {
+                  "create_host_path": true
+                }
+              },
+              {
+                "type": "bind",
+                "source": "/srv/phase14/repo/backend/db/migrations",
+                "target": "/migrations",
+                "read_only": true,
+                "bind": {
+                  "create_host_path": true
+                }
+              },
+              {
+                "type": "bind",
+                "source": "/srv/phase14/repo/performance/phase14/init.sh",
+                "target": "/docker-entrypoint-initdb.d/010_schema.sh",
+                "read_only": true,
+                "bind": {
+                  "create_host_path": true
+                }
+              }
+            ]
+          },
+          "postgres-exporter": {
+            "command": null,
+            "depends_on": {
+              "postgres": {
+                "condition": "service_healthy",
+                "required": true
+              }
+            },
+            "entrypoint": null,
+            "environment": {
+              "DATA_SOURCE_NAME": "<redacted credential>",
+              "PG_EXPORTER_EXTEND_QUERY_PATH": "/etc/postgres_exporter/queries.yml"
+            },
+            "image": "ghcr.io/prometheus-community/postgres-exporter:v0.20.1",
+            "mem_limit": "134217728",
+            "networks": {
+              "default": null
+            },
+            "volumes": [
+              {
+                "type": "bind",
+                "source": "/srv/phase14/repo/performance/phase14/queries.yml",
+                "target": "/etc/postgres_exporter/queries.yml",
+                "read_only": true,
+                "bind": {
+                  "create_host_path": true
+                }
+              }
+            ]
+          },
+          "prometheus": {
+            "command": [
+              "--config.file=/etc/prometheus/prometheus.yml",
+              "--storage.tsdb.path=/prometheus",
+              "--storage.tsdb.retention.time=7d"
+            ],
+            "entrypoint": null,
+            "image": "prom/prometheus:v3.14.0",
+            "mem_limit": "536870912",
+            "networks": {
+              "default": null
+            },
+            "ports": [
+              {
+                "mode": "ingress",
+                "host_ip": "loopback",
+                "target": 9090,
+                "published": "19414",
+                "protocol": "tcp"
+              }
+            ],
+            "volumes": [
+              {
+                "type": "bind",
+                "source": "/srv/phase14/repo/performance/phase14/prometheus.yml",
+                "target": "/etc/prometheus/prometheus.yml",
+                "read_only": true,
+                "bind": {
+                  "create_host_path": true
+                }
+              },
+              {
+                "type": "volume",
+                "source": "prometheus",
+                "target": "/prometheus",
+                "volume": {}
+              }
+            ]
+          },
+          "redis": {
+            "cpus": 1,
+            "command": [
+              "redis-server",
+              "--save",
+              "",
+              "--appendonly",
+              "no",
+              "--latency-tracking",
+              "yes"
+            ],
+            "entrypoint": null,
+            "healthcheck": {
+              "test": [
+                "CMD",
+                "redis-cli",
+                "ping"
+              ],
+              "timeout": "2s",
+              "interval": "2s",
+              "retries": 30
+            },
+            "image": "redis:7.4-alpine",
+            "mem_limit": "536870912",
+            "networks": {
+              "default": null
+            },
+            "tmpfs": [
+              "/data"
+            ]
+          },
+          "redis-exporter": {
+            "command": null,
+            "depends_on": {
+              "redis": {
+                "condition": "service_healthy",
+                "required": true
+              }
+            },
+            "entrypoint": null,
+            "environment": {
+              "REDIS_ADDR": "redis://redis:6379"
+            },
+            "image": "ghcr.io/oliver006/redis_exporter:v1.89.0",
+            "mem_limit": "134217728",
+            "networks": {
+              "default": null
+            }
+          }
+        },
+        "volumes": {
+          "postgres": {
+            "name": "phase14-formal-sut_postgres",
+            "labels": {
+              "ticketing.phase14": "capacity"
+            }
+          },
+          "prometheus": {
+            "name": "phase14-formal-sut_prometheus",
+            "labels": {
+              "ticketing.phase14": "capacity"
+            }
+          }
+        }
+      }
+    }
+  }
+}

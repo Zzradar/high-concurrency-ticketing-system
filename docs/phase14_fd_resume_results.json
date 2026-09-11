@@ -1,0 +1,1372 @@
+{
+  "scope": "Phase14核心正式矩阵 FD续测",
+  "sourceHead": "a169350b5ec61a6f9f077a80e7af7bfeca92d239",
+  "sourceTree": "5e35ee9caed3300b2f4520cd616bc9103fc49580",
+  "u1RunId": "phase14-formal-u1-20260911T172711Z-f6fa49",
+  "campaign": {
+    "scope": "Phase14 core formal matrix",
+    "gitHead": "a169350b5ec61a6f9f077a80e7af7bfeca92d239",
+    "targetsSha256": "653bbcf69399ef14f822e2ff4235332384062743072b93e3763632673a5b35b8",
+    "deadlineAt": 1789167600.8098903,
+    "runId": "phase14-formal-campaign-20260911T172657Z-46a735",
+    "status": "completed_with_stops",
+    "runs": [
+      {
+        "index": 0,
+        "case": "U1",
+        "arguments": {
+          "round": 0
+        },
+        "status": "invalid_measurement",
+        "runId": "phase14-formal-u1-20260911T172711Z-f6fa49",
+        "root": "/srv/phase14/repo/performance/results/phase14-formal-u1-20260911T172711Z-f6fa49",
+        "hashes": {
+          "auth-calibration-progress.json": "15c83970fde5f13a9e34e25c83f924fcea223126ff3e2827593ed66adce850d7",
+          "backend-fd.jsonl": "f58a9747deb7a6cb17cfb55c461c3a1862255584b48a6f1c8ea55f3f3b39ae83",
+          "calibration.json": "f09b9334e57388f578b44364f2f13bca849cf7fd20628fee1dc536539a107d25",
+          "compose-k6-source.json": "9b9e92e76a19cd6688ee29074b6db8f71db64b0cf3a84e7a652bf944503a94bc",
+          "correctness.json": "4d896274934a0141624673202cf6270a73d14f490e0a6ab81b555121efbe29e8",
+          "dataset-manifest.json": "204a79cffb06853039ab467f5b94380394c62e31b9f0be920d44883e103e2345",
+          "environment.json": "73f7b6b87437e5849e2892f397ffa25cd7b81a19b55bc6dfe302f37e80e27beb",
+          "fd-compose-hashes.json": "75af468050e4784e3f085549ebe6d778afbdf80c58b8c6d7541d8d5bbb3992df",
+          "fd-original-role-compose.json": "75f14e990d211f2bb80af9a2242f304a33b4e61628fbb51aae76e87a3e82df36",
+          "fd-override.json": "52cd400a0ddda4aee21ecd4c6f5ce8182fe898a575fe17d875f9d731871ce408",
+          "fd-rendered-role-compose.json": "45dcbda79b9bd5b1fdc230653eae0b585a44370daab8a00ecc1bdda703cb28a4",
+          "global-summary.json": "cbd59cee70ec9badf9b301e2a10c1e6c2975d6228fa022166ea312b987d63141",
+          "initialization.json": "abd529909256f09131f186d043afff2f720a3a34686b2fb18e24d535c3821052",
+          "k6-source/diagnostics/post-offload-capacity.js": "b5b3918dd64b54615af851ff0c8186c89f20dbe9380c1fac41400c653fd71321",
+          "k6-source/diagnostics/seat-map-calibration.js": "542fc377dfc2bd12b655a85ba5e76f9b66eea96e87120e6a93445027863aae74",
+          "k6-source/diagnostics/seat-map-encoding.js": "29a381c407343974d741b0ee1960266f09ac9e07663e125065bfce8d1d3ab7b6",
+          "k6-source/lib/config.js": "eb11d425cb0926fc699dbe923b5e103f9b331001df0e2b50a3787cff640b5156",
+          "k6-source/lib/data.js": "7047ad63d254a3a8d97f44b6f86a0d446238a7a45861d0aa5c57315107b5cec3",
+          "k6-source/lib/http.js": "e63405ce925645690351294cead444b5f075be3ac899cadbd9551c27fe4fb2a6",
+          "k6-source/lib/metrics.js": "de4996aa8935363f1b9a390ca42fdc517aaf1a41fa30aafdd020ff420e58e2af",
+          "k6-source/lib/phase14-flow.js": "57d8b02dd956da6389c57ccd709158cbf018dd4aa77ef0e0e6985c3917f38e25",
+          "k6-source/lib/phase14-model.js": "ba18dda9fd71851368c08aedc6ff671e9ddd4698b8863bf134fb3bf8a6567b79",
+          "k6-source/lib/scenarios.js": "fb982449c92fb977232ba3c8bcb5d499a24bd851e116a4b288af24e142ea6467",
+          "k6-source/lib/summary.js": "ff0e55f8bc0c2374872990552b79e8bbb3035d0cda51c20ab354b9f12860372a",
+          "k6-source/workloads/auth-read.js": "dc4c63a9aaa5b5d2ef536d56df9740118b7d274570a0244c69d42815c3c28908",
+          "k6-source/workloads/checkout.js": "253e851baf9701ec4f902edb1af113fd41d8ecf8a72a6e6eff7f7cdfa8d825fb",
+          "k6-source/workloads/formal-hot-seat-wave.js": "f5ac34a65f63240dde9e294540ee0168964fccafe6590e6f177fce741bd1c89b",
+          "k6-source/workloads/formal-seat-contention.js": "4a1f0c59bc6f39a130e4ffe73fba5ec3860ffc9c71a04a56efd8f03f623dd61b",
+          "k6-source/workloads/login.js": "e86f9be8ae2645eca38e2d895f0912120c9723aff6585761f716181b81252863",
+          "k6-source/workloads/payment-lifecycle.js": "b9f3a0906dba2b4b954b6b0cddf1a1aa47c1dc5d60be4b972e7ba971c72d0f92",
+          "k6-source/workloads/payment-start.js": "53f8480cc2b5d6d5210d9d59d774122ff7b0c558e382e4faa2143ae7bf60a23d",
+          "k6-source/workloads/phase14-burst.js": "c09ef6155bd9ed7ecd31be40e76618dd4c734c63ef2b209461253aafbe7a5a4a",
+          "k6-source/workloads/phase14-hotspot.js": "e1eebf71c594b97dfbb1c612da50c27d6d3d46c7cbc55ed70b9e062f77ae4f22",
+          "k6-source/workloads/phase14-login-isolation.js": "499a9175385adc39da15cec72cac2d1c83c5dfedd3871dcf3f77413bf5e9c74f",
+          "k6-source/workloads/phase14-online.js": "6d1ff4c4e12e1645dccb32ee23594d1e2594a014cac444e68cc339c34c61081f",
+          "k6-source/workloads/phase14-startup.js": "580b005146c9cd9789425b638db3fdeb95f6a15902fb20012cc24ee80f70951f",
+          "k6-source/workloads/public-read.js": "188eec9d6048c3ae274ee7fdf7ef21a845ea988f9d3c54e405cadbd83f57e468",
+          "k6-source/workloads/seat-map-read.js": "a852e67b5af3c09100ea9dce7d63e148bb125667fd8c42db878bae24952dbee0",
+          "k6-source/workloads/synthetic-mixed-read.js": "715b001dd726cef9f81b5c776ecc3876b6615559ad0da823d881033ab2a2e189",
+          "k6-source/workloads/synthetic-mixed-transactional.js": "949d79dba164c8eaf48fd8fa7d0de2f82836b7a29902f1737eda4ac26ceff07a",
+          "k6-source/workloads/temporary-hold-contention.js": "95ea4ec6b1181db0c86ea5232e8fc8d51b382ed07afa5332c3ebe6ecf33b63ee",
+          "k6-source/workloads/temporary-hold-hot-wave.js": "f23ff9a0b23ea5cb86f232bb187b0d2141e1c7871ecea64b3c543f8f88fd781f",
+          "manifest.json": "e6a4ce09d671de7e52aa6e153d920a23a21e72c8c572b714e8093ff2e065648b",
+          "metrics-calibration.prom": "4b6feaf6d48a31f867b16c8b58efeb7c2754cd4645851138fc5ece74d79aaaad",
+          "phase14-targets.json": "653bbcf69399ef14f822e2ff4235332384062743072b93e3763632673a5b35b8",
+          "phase14-targets.json.sha256": "fd3ffda76aff65c5c90a4864b88ecd5b06578bf1d5c7164384c5fd52c6e644bb",
+          "postgres-after.json": "c17cea32c24f26eea06d18b22dec0905b42378d8f0b8c5c6e515531d52307b35",
+          "postgres-before.json": "07109551f25d04fa6530ab0d9a08134b231ff22e9328bc8c486baececddc289e",
+          "postgres-delta.json": "643146a737ad38bc3c530ba9f98d037bc404c88d1fbf254809e3b5fb0a942180",
+          "postgres-light-connection.json": "6c84f83cc52b5794ac9609d04e7860db3eebadb310115f6147e439e78c3dbd10",
+          "postgres-light-summary.json": "87ef1e6f125ceed2270b2708179d677a9bf0061565f647f635bcf93d57f8a541",
+          "postgres-light.jsonl": "0e79c9665ae4a69a304b966b0c902015f2953dac7f440ba0cbf347498aec2478",
+          "postgres-statements-after-reset.json": "37af60d15bf817f44c038c05b8fc6663b118a9a5ce336186b3d5854fd1325ee8",
+          "postgres-statements-before-reset.json": "a0c28f55e4181cf8197982da732c47a1dabe1a66d945f849df0d2f9cc71ba272",
+          "preflight.json": "b4dcecdcc3b302a53048404dc77b5dd701e8ec293efbb18f14b6e57281870e9f",
+          "prometheus-queries.json": "38f0fc569ebe3b14eb6c0dc7d249ab73add020655ee090108730c5e263806e38",
+          "recovery.json": "c7980b5b84e025a15ba3259c8049a85e65468fadc2bcd21d3603b317dc44a2f0",
+          "report.md": "9839adcdbc1e8d32e75445c5d010ec57eeabe32d51c27e9cbc378b264fe89b47",
+          "reset.json": "b4eb50325c61afa3415644500da17a148c9338696d0fc8432a56a2afadab8db9",
+          "resource-preflight.json": "17d5a20ef59fe71fe9b9d1b151db2f75ab0de24d62ce004fd6bac380bb03051d",
+          "role-compose.json": "85c8cb682186efaa96713acb574aa8c913120d9fb2fb5087f5ff94cfa7863e59",
+          "samples/host-and-container.jsonl": "1618a60aadd9e1f6c21678633e35dc634a2bd899f18ba42c69eb7aa3a03645d1",
+          "samples/postgres.jsonl": "09343b525da5b3d798dc0d2f9e4ab3b44c3cb8717d41093db34625947cd76d68",
+          "samples/redis.jsonl": "894e8c01b539c9366ecc56c65a28f362183e82d0a2d95b271e91e0635704ddb7",
+          "shards/0/console.log": "9a9bece3cd02eefe45e73f657faa07ec693a1513812605f4e4d12765e84f2b99",
+          "shards/0/raw.json": "e34561ef877ababbb20bb69bae8ffb731e9f870d6a87562520890a1772f48c8a",
+          "shards/0/raw.json.gz": "ca879fc03b3bf766d36cac0fcb5d6037cb0a6443815bc415fb67c7ec431a67fc",
+          "shards/0/raw.json.gz.sha256": "c90b0bb4fc2ab8fc753b9a094f15db6c33be3f29422189db3c5afc00d8314c71",
+          "shards/0/summary.json": "c6feb947bf0dc7ab698fcc03ba81ccd399b2261437b05f60958c7e8e3c0ed2a7",
+          "shards/1/console.log": "f672d123d1eddc16eb6b9b41f081c335eef87c72469639e27de5154d8b45cfd6",
+          "shards/1/raw.json": "07e15c2749836c2bca0dddeb62f9ad31723f41b6d7aba5eeb74c8d78f849ccda",
+          "shards/1/raw.json.gz": "48bad720e9b2ebdebb978823e663072a0377f4ca8e400e56a50bd736f6ad4cae",
+          "shards/1/raw.json.gz.sha256": "166de18125c5c91ca747b24de2f70af302de3644a0018d75a01f5d73b5fe2231",
+          "shards/1/summary.json": "0719076f8b4f1e47c2f21455fd6eb4312ed9e934fad4e2cc606ce05ac5f305b8",
+          "shards/2/console.log": "ff454808afc24553eddb9ca290c955eb818d70026f0969d285d5df8b7cb44d59",
+          "shards/2/raw.json": "b3bf3306b7ce42fb43c5f3536bcabb35ea79f420751b03dc9348c186a6207276",
+          "shards/2/raw.json.gz": "e7bf39acbe7d84c3b1c5fa4d32758f3547cb51e1a12929a3ea059fdf3523b3c3",
+          "shards/2/raw.json.gz.sha256": "f8d85e099cfa492a5558ead90bd90b31cd68cfccdca2215648535c7fe222894c",
+          "shards/2/summary.json": "20e81afe5951cc24c7efdafe785bad946baa16915d08007d1cb82e37ed9a80ba",
+          "shards/3/console.log": "180a7fc5d9c1773a7a14871144a881282a0e5c9664dc732240e534af18ccec7c",
+          "shards/3/raw.json": "b1d7dad688ad38c7b12eb1f20c65befcab5511d70399297f6ec7a3a0be50c2b8",
+          "shards/3/raw.json.gz": "7985beca41c640685c959ebd221174352bb8d41b3637240d8b95254a59711479",
+          "shards/3/raw.json.gz.sha256": "ccd4b383190a36f064845ad3fcc9c409648f57b357df061b4e765708d6e816a2",
+          "shards/3/summary.json": "83199eb8ebd58e5fb0c20bf5cd51abc4ee0656c641b681e5005b6a51541c76d2",
+          "shards/4/console.log": "1850159a5fcf6631d188463c77ec3f36953b541c8ad615842fc81b9fe1f859f0",
+          "shards/4/raw.json": "307441bc0c210e91746fa5e556b81f235760cd9e860f2c2bae2f5e2f2bb46898",
+          "shards/4/raw.json.gz": "52ebf7461d71c005bb9bac5b249427619d87d51c66cc59684ad45d7d91c12528",
+          "shards/4/raw.json.gz.sha256": "f9b3b00709b242b50e2913cf5b797fc1ce7ce128afd9a81babe613d80b9ad0cb",
+          "shards/4/summary.json": "ec1559e0821642e1f0741c92bf2775105bd310c55342c8873b0dd54ea79ba1a5",
+          "smoke-check.json": "ab5f99a481ee208192db005ec28a009ac0a349a308fe0605172359a629a89fbb",
+          "source/scripts/build_real_page_flow_evidence.py": "f0b24fecede987cdd1027c9335aa2c7b68be516568939373306f6405c0193156",
+          "source/scripts/build_static_dynamic_split_evidence.py": "9a4816f1d77bfc89a287da1d8b316f9870e37d7abf85c1ee159d839bf1680c0a",
+          "source/scripts/calibrate_seat_map.py": "027a7d89e03fdb7dbb11ab65c79e2310096b62ec740840bbc722769aaf771de2",
+          "source/scripts/characterize_seat_map_capacity.py": "fb8e7c3315b01db8c5e8ec234a04898aa1302eb7af4a5accc280a23bc6494e4c",
+          "source/scripts/configure_seat_map_experiment.py": "13aaeeb288b008102501309892288908db0852c94f0eff3d40a5b63beaad5370",
+          "source/scripts/diagnose_seat_map.py": "8395ed797ce6b9deb6fc861ea83929cd631e5abb7649e75995eca8a9d01deb86",
+          "source/scripts/docker_stats_sampler.py": "7326c1627e573e1217e750edd3510a325ef20c1d745ff9590e5bc2ce904d9f70",
+          "source/scripts/performance_evidence.py": "e1bc7d155657b1f0852a871350fae0bb0dc07ad5655c9358131cb20c61806101",
+          "source/scripts/phase14_browser_contract.mjs": "9064d3b7ec7d4ae61b62616f2e13ea84dec2bc6d7763f77066d4da99385127bd",
+          "source/scripts/phase14_campaign.py": "b0a86b27c39eff7f4df5ed0fb859c6b41685ff3b68647b5c8e17676f7c8fb410",
+          "source/scripts/phase14_core.py": "c66d99331f1cb7af06e10ffe877591ce38bc3dd27f34d3de12748492b4170530",
+          "source/scripts/phase14_delivery_probe.py": "17aeb7245c05ac91bdf6971c553a655b5120a4f3c05d829b40447ae8fa4b0edb",
+          "source/scripts/phase14_dual.py": "007400699d4a4c720f13311b4fa90aa6e1f1a9e10fcb7848f30be348db2d7c0b",
+          "source/scripts/phase14_dual_sampling.py": "92b7b1831d735fb890dc5c8daab8247f56833c143032384121908ce574bee54b",
+          "source/scripts/phase14_evidence.py": "ece569651180ccd97ff7a5b56486a93da4bb15bd010b95b00ce7499bcaa68cae",
+          "source/scripts/phase14_exporter_fixture.py": "357205ee002a9891e34a9c6e21866f9ec8ec5926dd560bba936dc462835e54bd",
+          "source/scripts/phase14_fd.py": "fcfe4fa5bcc16c961b1c7acf229f745ba27a78266ee9f7deb767d279196d3571",
+          "source/scripts/phase14_initialization.py": "4757e870363a9306883898055316efce3256fdf14861632d57d1e7c65bbc726d",
+          "source/scripts/phase14_local_closeout.py": "f5fede22bd58f46574fb05657284ee3624e206cb7d5ee71a3ce2e6431ab65263",
+          "source/scripts/phase14_model.py": "6c5c79b0b82d0225160d7f01625b05f1c622d26067e7414a3350f0f9ef1ce7f9",
+          "source/scripts/phase14_pg_stream.py": "51aa1b290b79994b5bed5ee4fa5bfcf5cdf502ec8f9f1bde0cfc5350b7105247",
+          "source/scripts/phase14_regression.py": "ac8abe27e4ae2b623ccae6753e574fd93f8ae0ec829550cb87479738cbb5594c",
+          "source/scripts/phase14_sampling.py": "c3bbbf7fee77c967f11840c72be0461147ed59be7cbf8f937567e8f461470fe8",
+          "source/scripts/phase14_sampling_overhead.py": "95f0a693b7601fc5e6f2d7af44e4086c20f3ed4de64890c4d2b76c62fcdb15f0",
+          "source/scripts/phase14_startup.py": "98c1cecc357a3b102cc90571d5ce3fdbfb5257b36ca146e043bf6f19413f3173",
+          "source/scripts/phase14_stop_approved_projects.py": "6e12d912ff9227d4b56ec7a6afd8ea3a1c4df8ceee2a8fe63607321646fe5a79",
+          "source/scripts/phase14_topology.py": "95f2ac8de912ce4cc4f69712709fa5fe3402026c8fc3c3512f1f52b86ef2bc9e",
+          "source/scripts/probe_seat_map_browser.mjs": "a7dbd20ca55b65fe4cebfdea5bb7493f1db677e17d068b02770fadaa5f3c49fa",
+          "source/scripts/record_phase14_page_flow.mjs": "138e28e0a22978d81351a8c0573b3ad9afd702e2c210e64f29ca5eb2ad9f592a",
+          "source/scripts/record_real_page_flow.mjs": "988f33f8e336296a4d0af41cdf4c2aca100f38b41ebcb4e9dd1ed2734aaedf40",
+          "source/scripts/render_baseline_report.py": "849e43260a6d595fd233f9e9c35951adbba780fc7fba842748b5d83ede42c07a",
+          "source/scripts/reset_environment.py": "9e130a4bbb44aae0f39e3832272a839590c175a8629aeee5437de1f61b8ddc54",
+          "source/scripts/run_baseline.py": "de9165b1943e214a0bfbac5db6e57ce83dd49ef2f32d6550393d7a7207b484b3",
+          "source/scripts/run_k6.py": "fb295ff9c12e7f8061b66a79c0e55dd8a7d7ec324816d88746577c857a5c2475",
+          "source/scripts/run_login_experiment.py": "5ec4a36344366d087f21944e5a186bc200a9ce2c3e4aad65fff7141584fb16b2",
+          "source/scripts/run_phase14.py": "43ed37b08675c50f418c3b7021a65e5f251132a3ab2a810852125f26d688c2dc",
+          "source/scripts/summarize_seat_map_calibration.py": "5158add8977617f8c44cbd5a4734c9695e7bcfd937e86b23bb718ef145e56e2e",
+          "source/scripts/summarize_seat_map_capacity.py": "d7eea37d4323ff6697116a77d1b1e66f5836e09df6fa823a98018b864573abf7",
+          "source/scripts/summarize_seat_map_offload.py": "6374bca7ed82cf2d2f95d61a360a8cd90380be8674b5626c4a77e4ad436fe436",
+          "source/scripts/verify_observability.py": "1db9468cc7ef47ac30cefab832ca90b6e3b986fa790638f38c159db853e3dc0c",
+          "source/verification/phase14_verify.py": "c639322d392dde93ca315e85608366b401b4bd00672e111b57572b3bd1529187",
+          "source/verification/verify.sql": "da152e7f1572db109ffa8617a061d9b806759634258e79e1e59addb08ab4c795",
+          "source/verification/verify_database.py": "e35a58cec6cc01ce59fb4c939ca0c0eaabcecbde751424ff20043eb9da416a8c",
+          "spec.json": "6916837ca16ae54ee11a50e4c1f4f4bd43514d6d20928fe88329c7522ac8efd7",
+          "stop-evidence.jsonl": "614766c45cb0b1d663add11d5a6caa14424b974849d4e1417722c4435f48e763",
+          "topology.json": "28ccdf7fef44bf4fb14a236306ef323530f17d97b7e92fb00a55e55203e30702",
+          "verdict.json": "b3453d845e51d09c26f123d91f16bce560a3a6c525f58bd661f55e35322dcb8f",
+          "warnings.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "worktree.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "index": 1,
+        "case": "U2",
+        "arguments": {
+          "round": 0
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 2,
+        "case": "O1",
+        "arguments": {
+          "window": 0
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 3,
+        "case": "O1",
+        "arguments": {
+          "window": 1
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 4,
+        "case": "O1",
+        "arguments": {
+          "window": 2
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 5,
+        "case": "H1",
+        "arguments": {
+          "path": "temporary",
+          "repeat": 0
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 6,
+        "case": "H1",
+        "arguments": {
+          "path": "formal",
+          "repeat": 0
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 7,
+        "case": "H3",
+        "arguments": {
+          "path": "formal"
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 8,
+        "case": "L2",
+        "arguments": {
+          "control_only": true
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      },
+      {
+        "index": 9,
+        "case": "L2",
+        "arguments": {
+          "control_only": false
+        },
+        "status": "not_run",
+        "reason": "data reconciliation failed; stop all tests"
+      }
+    ]
+  },
+  "initializationReadySeconds": 17.59765185546875,
+  "businessReleaseAt": 1789148105.161,
+  "lastHttpPointAt": 1789148133.838487,
+  "observedFragmentSeconds": 28.677486896514893,
+  "admittedMainUsers": 597,
+  "sumMainShardPeakVUs": 587,
+  "httpRequestsByScenario": {
+    "main": 6788,
+    "control_health": 58,
+    "control_auth": 58,
+    "payment": 576,
+    "control_availability": 58
+  },
+  "httpStatusCounts": {
+    "200": 7232,
+    "201": 248,
+    "202": 58
+  },
+  "httpFailedSamples": 0,
+  "observedFragmentRps": 262.85427405830586,
+  "mainFragmentRps": 236.7013547768347,
+  "formalThroughput": null,
+  "formalBusinessFailureRate": null,
+  "httpLatencyMs": {
+    "all": {
+      "count": 7538,
+      "p50": 1.9165805,
+      "p95": 47.76362364999999,
+      "p99": 59.30412045000002,
+      "max": 77.721025
+    },
+    "main": {
+      "count": 6788,
+      "p50": 1.679763,
+      "p95": 48.15792824999999,
+      "p99": 59.79525701,
+      "max": 77.721025
+    },
+    "probes": {
+      "count": 750,
+      "p50": 2.8989935,
+      "p95": 40.87895334999998,
+      "p99": 49.939814119999994,
+      "max": 61.222226
+    }
+  },
+  "businessClassificationCounts": {
+    "business_success": 9266.0
+  },
+  "delivery": {
+    "main": {
+      "planned": null,
+      "started": 597.0,
+      "completed": 0,
+      "interrupted": 597.0
+    },
+    "control_health": {
+      "planned": 4080,
+      "started": 58.0,
+      "completed": 58.0,
+      "interrupted": 0.0
+    },
+    "control_auth": {
+      "planned": 4080,
+      "started": 58.0,
+      "completed": 58.0,
+      "interrupted": 0.0
+    },
+    "control_availability": {
+      "planned": 4080,
+      "started": 58.0,
+      "completed": 58.0,
+      "interrupted": 0.0
+    },
+    "payment": {
+      "planned": 3480,
+      "started": 58.0,
+      "completed": 51.0,
+      "interrupted": 7.0
+    }
+  },
+  "dropped": 0,
+  "stopReasons": [
+    "invalid generator memory",
+    "k6 exit 105",
+    "k6 exit 105",
+    "k6 exit 137",
+    "k6 exit 105",
+    "k6 exit 137"
+  ],
+  "verdict": {
+    "measurement_validity": {
+      "status": "fail",
+      "reasons": [
+        "main: missing/interrupted iterations",
+        "control_health: planned != started",
+        "control_auth: planned != started",
+        "control_availability: planned != started",
+        "payment: planned != started",
+        "payment: missing/interrupted iterations",
+        "main/journey: classification not conserved",
+        "main/startup: classification not conserved",
+        "main/startup_layout: classification not conserved",
+        "payment/payment_terminal: classification not conserved",
+        "main/page: classification not conserved",
+        "main/startup_availability: classification not conserved",
+        "startup delivery mismatch: startup",
+        "startup delivery mismatch: startup_auth",
+        "startup delivery mismatch: startup_notifications",
+        "startup delivery mismatch: startup_session",
+        "startup delivery mismatch: startup_event",
+        "startup delivery mismatch: startup_layout",
+        "startup delivery mismatch: startup_availability",
+        "startup delivery mismatch: startup_checkouts",
+        "startup delivery mismatch: startup_orders",
+        "invalid generator memory",
+        "k6 exit 105",
+        "k6 exit 105",
+        "k6 exit 137",
+        "k6 exit 105",
+        "k6 exit 137"
+      ]
+    },
+    "capacity": {
+      "status": "not_applicable",
+      "badResults": [],
+      "latencyFailures": []
+    },
+    "overload_protection": {
+      "status": "not_applicable",
+      "reason": "not an overload experiment"
+    }
+  },
+  "originalCorrectness": {
+    "passed": false,
+    "global": {
+      "accepted_payment_mismatch": 0,
+      "active_reservation_seat_mismatch": 0,
+      "confirmed_state_mismatch": 0,
+      "effective_seat_overlap": 0,
+      "held_seat_owner_mismatch": 0,
+      "multiple_processing_attempts": 0,
+      "multiple_refunds": 0,
+      "order_amount_mismatch": 0,
+      "order_paid_at_mismatch": 0,
+      "order_reservation_status_mismatch": 0,
+      "refund_order_or_amount_mismatch": 0,
+      "sold_state_mismatch": 0,
+      "terminal_reservation_still_holds": 0,
+      "unaccepted_success_refund_mismatch": 0
+    },
+    "errors": [
+      "payment terminal reconciliation failed"
+    ],
+    "scoped": {
+      "mainOrders": {
+        "orders": 57,
+        "users": 57,
+        "reservations": 57,
+        "wrong_seat_count": 0
+      },
+      "checkoutOwnership": {
+        "mismatch": 0
+      },
+      "loginSessions": {
+        "sessions": 0,
+        "users": 0,
+        "uniqueDigests": 0
+      },
+      "paymentTerminal": {
+        "orders": 58,
+        "paid": 58,
+        "invalid": 0
+      }
+    }
+  },
+  "finalCorrectness": {
+    "passed": false,
+    "global": {
+      "accepted_payment_mismatch": 0,
+      "active_reservation_seat_mismatch": 0,
+      "confirmed_state_mismatch": 0,
+      "effective_seat_overlap": 0,
+      "held_seat_owner_mismatch": 0,
+      "multiple_processing_attempts": 0,
+      "multiple_refunds": 0,
+      "order_amount_mismatch": 0,
+      "order_paid_at_mismatch": 0,
+      "order_reservation_status_mismatch": 0,
+      "refund_order_or_amount_mismatch": 0,
+      "sold_state_mismatch": 0,
+      "terminal_reservation_still_holds": 0,
+      "unaccepted_success_refund_mismatch": 0
+    },
+    "errors": [
+      "payment terminal reconciliation failed"
+    ],
+    "scoped": {
+      "mainOrders": {
+        "orders": 57,
+        "users": 57,
+        "reservations": 57,
+        "wrong_seat_count": 0
+      },
+      "checkoutOwnership": {
+        "mismatch": 0
+      },
+      "loginSessions": {
+        "sessions": 0,
+        "users": 0,
+        "uniqueDigests": 0
+      },
+      "paymentTerminal": {
+        "orders": 58,
+        "paid": 58,
+        "invalid": 0
+      }
+    }
+  },
+  "resources": {
+    "initializationAndBusiness": {
+      "loadHost": {
+        "cpuPeak": 0.6641025641025641,
+        "memoryPeak": 0.5925491297009589,
+        "diskFreeMinimumBytes": 44138295296,
+        "networkError": false
+      },
+      "sutHost": {
+        "cpuPeak": 0.5564625850340136,
+        "memoryPeak": 0.07835503928898513,
+        "diskFreeMinimumBytes": 94838571008,
+        "networkError": false
+      },
+      "oom": false,
+      "restarted": false,
+      "swapping": false,
+      "fdExhausted": false,
+      "networkExhausted": false,
+      "generatorMemoryFractionPeak": 0.9014225006103516,
+      "generatorCpuFractionPeak": 0.9819696517412936,
+      "transactionWaitersPeak": 0.0,
+      "transactionOldestSecondsPeak": 0,
+      "pgLockWaitsPeak": 0,
+      "pgBlockingPeak": 0,
+      "hashQueueFractionPeak": 0.0,
+      "seatQueueFractionPeak": 0.0,
+      "backendContainerCpuFractionPeak": 0.5772384303112313,
+      "sampleCount": 89
+    },
+    "business": {
+      "loadHost": {
+        "cpuPeak": 0.4712328767123288,
+        "memoryPeak": 0.5925491297009589,
+        "diskFreeMinimumBytes": 44138295296,
+        "networkError": false
+      },
+      "sutHost": {
+        "cpuPeak": 0.5564625850340136,
+        "memoryPeak": 0.07835503928898513,
+        "diskFreeMinimumBytes": 94838571008,
+        "networkError": false
+      },
+      "oom": false,
+      "restarted": false,
+      "swapping": false,
+      "fdExhausted": false,
+      "networkExhausted": false,
+      "generatorMemoryFractionPeak": 0.9014225006103516,
+      "generatorCpuFractionPeak": 0.4712328767123288,
+      "transactionWaitersPeak": 0.0,
+      "transactionOldestSecondsPeak": 0,
+      "pgLockWaitsPeak": 0,
+      "pgBlockingPeak": 0,
+      "hashQueueFractionPeak": 0.0,
+      "seatQueueFractionPeak": 0.0,
+      "backendContainerCpuFractionPeak": 0.5772384303112313,
+      "sampleCount": 29
+    }
+  },
+  "resourceAudit": {
+    "root": "/srv/phase14/repo/performance/results/phase14-formal-fd-stop-audit-20260911T173735Z-c42d93",
+    "lastSampleTime": 1789148133.1958904,
+    "generatorMemoryFraction": 0.9014225006103516,
+    "loadHost": {
+      "memoryTotalBytes": 15801126912,
+      "memoryAvailableBytes": 6438182912,
+      "memoryFraction": 0.5925491297009589,
+      "cpuFraction": 0.2805232558139535
+    },
+    "loadContainers": [
+      {
+        "name": "phase14-formal-sut-k6-phase14-formal-u1-20260911T172711Z-f6fa49-4",
+        "memoryPercent": "17.040443420410156%",
+        "memoryStats": {
+          "usage": 368349184,
+          "stats": {
+            "active_anon": 363487232,
+            "active_file": 0,
+            "anon": 363487232,
+            "anon_thp": 0,
+            "file": 2408448,
+            "file_dirty": 1662976,
+            "file_mapped": 0,
+            "file_writeback": 0,
+            "inactive_anon": 0,
+            "inactive_file": 2408448,
+            "kernel_stack": 147456,
+            "pgactivate": 0,
+            "pgdeactivate": 0,
+            "pgfault": 95394,
+            "pglazyfree": 0,
+            "pglazyfreed": 0,
+            "pgmajfault": 0,
+            "pgrefill": 0,
+            "pgscan": 0,
+            "pgsteal": 0,
+            "shmem": 0,
+            "slab": 1374344,
+            "slab_reclaimable": 394216,
+            "slab_unreclaimable": 980128,
+            "sock": 0,
+            "thp_collapse_alloc": 0,
+            "thp_fault_alloc": 0,
+            "unevictable": 0,
+            "workingset_activate": 0,
+            "workingset_nodereclaim": 0,
+            "workingset_refault": 0
+          },
+          "limit": 2147483648
+        }
+      },
+      {
+        "name": "phase14-formal-sut-k6-phase14-formal-u1-20260911T172711Z-f6fa49-3",
+        "memoryPercent": "85.55660247802734%",
+        "memoryStats": {
+          "usage": 1842413568,
+          "stats": {
+            "active_anon": 1830928384,
+            "active_file": 0,
+            "anon": 1830928384,
+            "anon_thp": 2097152,
+            "file": 5111808,
+            "file_dirty": 2678784,
+            "file_mapped": 0,
+            "file_writeback": 0,
+            "inactive_anon": 0,
+            "inactive_file": 5099520,
+            "kernel_stack": 147456,
+            "pgactivate": 0,
+            "pgdeactivate": 0,
+            "pgfault": 462442,
+            "pglazyfree": 0,
+            "pglazyfreed": 0,
+            "pgmajfault": 0,
+            "pgrefill": 0,
+            "pgscan": 0,
+            "pgsteal": 0,
+            "shmem": 0,
+            "slab": 2425920,
+            "slab_reclaimable": 707936,
+            "slab_unreclaimable": 1717984,
+            "sock": 0,
+            "thp_collapse_alloc": 1,
+            "thp_fault_alloc": 0,
+            "unevictable": 0,
+            "workingset_activate": 0,
+            "workingset_nodereclaim": 0,
+            "workingset_refault": 0
+          },
+          "limit": 2147483648
+        }
+      },
+      {
+        "name": "phase14-formal-sut-k6-phase14-formal-u1-20260911T172711Z-f6fa49-2",
+        "memoryPercent": "88.56964111328125%",
+        "memoryStats": {
+          "usage": 1907146752,
+          "stats": {
+            "active_anon": 1895497728,
+            "active_file": 0,
+            "anon": 1895497728,
+            "anon_thp": 2097152,
+            "file": 5128192,
+            "file_dirty": 4505600,
+            "file_mapped": 0,
+            "file_writeback": 0,
+            "inactive_anon": 0,
+            "inactive_file": 5128192,
+            "kernel_stack": 147456,
+            "pgactivate": 0,
+            "pgdeactivate": 0,
+            "pgfault": 481148,
+            "pglazyfree": 0,
+            "pglazyfreed": 0,
+            "pgmajfault": 0,
+            "pgrefill": 0,
+            "pgscan": 0,
+            "pgsteal": 0,
+            "shmem": 0,
+            "slab": 2442048,
+            "slab_reclaimable": 712544,
+            "slab_unreclaimable": 1729504,
+            "sock": 0,
+            "thp_collapse_alloc": 1,
+            "thp_fault_alloc": 0,
+            "unevictable": 0,
+            "workingset_activate": 0,
+            "workingset_nodereclaim": 0,
+            "workingset_refault": 0
+          },
+          "limit": 2147483648
+        }
+      },
+      {
+        "name": "phase14-formal-sut-k6-phase14-formal-u1-20260911T172711Z-f6fa49-1",
+        "memoryPercent": "88.7460708618164%",
+        "memoryStats": {
+          "usage": 1910943744,
+          "stats": {
+            "active_anon": 1898799104,
+            "active_file": 0,
+            "anon": 1898840064,
+            "anon_thp": 2097152,
+            "file": 5136384,
+            "file_dirty": 2535424,
+            "file_mapped": 0,
+            "file_writeback": 0,
+            "inactive_anon": 0,
+            "inactive_file": 5136384,
+            "kernel_stack": 163840,
+            "pgactivate": 0,
+            "pgdeactivate": 0,
+            "pgfault": 479061,
+            "pglazyfree": 0,
+            "pglazyfreed": 0,
+            "pgmajfault": 0,
+            "pgrefill": 0,
+            "pgscan": 0,
+            "pgsteal": 0,
+            "shmem": 0,
+            "slab": 2481376,
+            "slab_reclaimable": 719008,
+            "slab_unreclaimable": 1762368,
+            "sock": 0,
+            "thp_collapse_alloc": 1,
+            "thp_fault_alloc": 0,
+            "unevictable": 0,
+            "workingset_activate": 0,
+            "workingset_nodereclaim": 0,
+            "workingset_refault": 0
+          },
+          "limit": 2147483648
+        }
+      },
+      {
+        "name": "phase14-formal-sut-k6-phase14-formal-u1-20260911T172711Z-f6fa49-0",
+        "memoryPercent": "90.14225006103516%",
+        "memoryStats": {
+          "usage": 1940971520,
+          "stats": {
+            "active_anon": 1929146368,
+            "active_file": 0,
+            "anon": 1929146368,
+            "anon_thp": 2097152,
+            "file": 5181440,
+            "file_dirty": 2588672,
+            "file_mapped": 0,
+            "file_writeback": 0,
+            "inactive_anon": 0,
+            "inactive_file": 5181440,
+            "kernel_stack": 163840,
+            "pgactivate": 0,
+            "pgdeactivate": 0,
+            "pgfault": 489543,
+            "pglazyfree": 0,
+            "pglazyfreed": 0,
+            "pgmajfault": 0,
+            "pgrefill": 0,
+            "pgscan": 0,
+            "pgsteal": 0,
+            "shmem": 0,
+            "slab": 2481648,
+            "slab_reclaimable": 720240,
+            "slab_unreclaimable": 1761408,
+            "sock": 0,
+            "thp_collapse_alloc": 1,
+            "thp_fault_alloc": 0,
+            "unevictable": 0,
+            "workingset_activate": 0,
+            "workingset_nodereclaim": 0,
+            "workingset_refault": 0
+          },
+          "limit": 2147483648
+        }
+      },
+      {
+        "name": "phase14-formal-load-noop-1",
+        "memoryPercent": "6.9671630859375%",
+        "memoryStats": {
+          "usage": 9359360,
+          "stats": {
+            "active_anon": 8822784,
+            "active_file": 0,
+            "anon": 8818688,
+            "anon_thp": 0,
+            "file": 12288,
+            "file_dirty": 0,
+            "file_mapped": 4096,
+            "file_writeback": 0,
+            "inactive_anon": 0,
+            "inactive_file": 8192,
+            "kernel_stack": 32768,
+            "pgactivate": 0,
+            "pgdeactivate": 0,
+            "pgfault": 4390,
+            "pglazyfree": 0,
+            "pglazyfreed": 0,
+            "pgmajfault": 0,
+            "pgrefill": 0,
+            "pgscan": 0,
+            "pgsteal": 0,
+            "shmem": 4096,
+            "slab": 312976,
+            "slab_reclaimable": 124080,
+            "slab_unreclaimable": 188896,
+            "sock": 0,
+            "thp_collapse_alloc": 0,
+            "thp_fault_alloc": 0,
+            "unevictable": 0,
+            "workingset_activate": 0,
+            "workingset_nodereclaim": 0,
+            "workingset_refault": 0
+          },
+          "limit": 134217728
+        }
+      }
+    ],
+    "states": {
+      "sut": [
+        {
+          "service": "backend",
+          "runId": null,
+          "running": true,
+          "oom": false,
+          "restart": 0,
+          "exit": 0,
+          "memoryLimit": 2147483648
+        },
+        {
+          "service": "redis-exporter",
+          "runId": null,
+          "running": true,
+          "oom": false,
+          "restart": 0,
+          "exit": 0,
+          "memoryLimit": 134217728
+        },
+        {
+          "service": "postgres-exporter",
+          "runId": null,
+          "running": true,
+          "oom": false,
+          "restart": 0,
+          "exit": 0,
+          "memoryLimit": 134217728
+        },
+        {
+          "service": "prometheus",
+          "runId": null,
+          "running": true,
+          "oom": false,
+          "restart": 0,
+          "exit": 0,
+          "memoryLimit": 536870912
+        },
+        {
+          "service": "postgres",
+          "runId": null,
+          "running": true,
+          "oom": false,
+          "restart": 0,
+          "exit": 0,
+          "memoryLimit": 1073741824
+        },
+        {
+          "service": "redis",
+          "runId": null,
+          "running": true,
+          "oom": false,
+          "restart": 0,
+          "exit": 0,
+          "memoryLimit": 536870912
+        }
+      ],
+      "load": [
+        {
+          "service": "k6",
+          "runId": "phase14-formal-u1-20260911T172711Z-f6fa49",
+          "running": false,
+          "oom": false,
+          "restart": 0,
+          "exit": 137,
+          "memoryLimit": 2147483648
+        },
+        {
+          "service": "k6",
+          "runId": "phase14-formal-u1-20260911T172711Z-f6fa49",
+          "running": false,
+          "oom": false,
+          "restart": 0,
+          "exit": 105,
+          "memoryLimit": 2147483648
+        },
+        {
+          "service": "k6",
+          "runId": "phase14-formal-u1-20260911T172711Z-f6fa49",
+          "running": false,
+          "oom": false,
+          "restart": 0,
+          "exit": 137,
+          "memoryLimit": 2147483648
+        },
+        {
+          "service": "k6",
+          "runId": "phase14-formal-u1-20260911T172711Z-f6fa49",
+          "running": false,
+          "oom": false,
+          "restart": 0,
+          "exit": 105,
+          "memoryLimit": 2147483648
+        },
+        {
+          "service": "k6",
+          "runId": "phase14-formal-u1-20260911T172711Z-f6fa49",
+          "running": false,
+          "oom": false,
+          "restart": 0,
+          "exit": 105,
+          "memoryLimit": 2147483648
+        },
+        {
+          "service": "noop",
+          "runId": null,
+          "running": true,
+          "oom": false,
+          "restart": 0,
+          "exit": 0,
+          "memoryLimit": 134217728
+        }
+      ]
+    }
+  },
+  "redis": {
+    "used_memoryPeak": 8372440.0,
+    "connected_clientsPeak": 6.0,
+    "blocked_clientsPeak": 0.0,
+    "instantaneous_ops_per_secPeak": 764.0,
+    "keyspace_hitsDelta": 8002,
+    "keyspace_missesDelta": 4624023,
+    "rejected_connectionsDelta": 0,
+    "evicted_keysDelta": 0,
+    "total_error_repliesDelta": 0,
+    "hitFraction": 0.0017275381717499366,
+    "latencyUsecLast": {
+      "latency_percentiles_usec_flushall": {
+        "p50": 184.319,
+        "p99": 184.319,
+        "p99.9": 184.319
+      },
+      "latency_percentiles_usec_expire": {
+        "p50": 2.007,
+        "p99": 4.015,
+        "p99.9": 14.015
+      },
+      "latency_percentiles_usec_dbsize": {
+        "p50": 1.003,
+        "p99": 1.003,
+        "p99.9": 1.003
+      },
+      "latency_percentiles_usec_del": {
+        "p50": 2.007,
+        "p99": 4.015,
+        "p99.9": 9.023
+      },
+      "latency_percentiles_usec_mget": {
+        "p50": 1044.479,
+        "p99": 1441.791,
+        "p99.9": 1966.079
+      },
+      "latency_percentiles_usec_set": {
+        "p50": 3.007,
+        "p99": 10.047,
+        "p99.9": 22.015
+      },
+      "latency_percentiles_usec_eval": {
+        "p50": 4423.679,
+        "p99": 7176.191,
+        "p99.9": 8781.823
+      },
+      "latency_percentiles_usec_ping": {
+        "p50": 1.003,
+        "p99": 2.007,
+        "p99.9": 6.015
+      },
+      "latency_percentiles_usec_client|setname": {
+        "p50": 2.007,
+        "p99": 4.015,
+        "p99.9": 7.007
+      },
+      "latency_percentiles_usec_command|info": {
+        "p50": 2.007,
+        "p99": 3.007,
+        "p99.9": 5.023
+      },
+      "latency_percentiles_usec_latency|histogram": {
+        "p50": 161.791,
+        "p99": 299.007,
+        "p99.9": 313.343
+      },
+      "latency_percentiles_usec_latency|latest": {
+        "p50": 1.003,
+        "p99": 3.007,
+        "p99.9": 6.015
+      },
+      "latency_percentiles_usec_get": {
+        "p50": 1.003,
+        "p99": 5.023,
+        "p99.9": 11.007
+      },
+      "latency_percentiles_usec_info": {
+        "p50": 221.183,
+        "p99": 385.023,
+        "p99.9": 724.991
+      },
+      "latency_percentiles_usec_config|get": {
+        "p50": 196.607,
+        "p99": 280.575,
+        "p99.9": 303.103
+      },
+      "latency_percentiles_usec_slowlog|len": {
+        "p50": 1.003,
+        "p99": 2.007,
+        "p99.9": 2.007
+      },
+      "latency_percentiles_usec_slowlog|get": {
+        "p50": 1.003,
+        "p99": 2.007,
+        "p99.9": 4.015
+      }
+    }
+  },
+  "postgres": {
+    "valid": true,
+    "database": {
+      "numbackends": 0,
+      "xact_commit": 15852,
+      "xact_rollback": 0,
+      "blks_read": 219,
+      "blks_hit": 4053144,
+      "tup_returned": 14542810,
+      "tup_fetched": 10831151,
+      "tup_inserted": 1722,
+      "tup_updated": 1109,
+      "tup_deleted": 364,
+      "conflicts": 0,
+      "temp_files": 0,
+      "temp_bytes": 0,
+      "deadlocks": 0,
+      "blk_read_time": 1.9650000000001455,
+      "blk_write_time": 2.219000000000051,
+      "session_time": 916661.7300000042,
+      "active_time": 24549.67299999995,
+      "idle_in_transaction_time": 656.9919999999993,
+      "sessions": 238,
+      "sessions_abandoned": 0,
+      "sessions_fatal": 0,
+      "sessions_killed": 0
+    },
+    "wal": {
+      "wal_records": 18822,
+      "wal_fpi": 188,
+      "wal_bytes": 3269215,
+      "wal_buffers_full": 0,
+      "wal_write": 1251,
+      "wal_sync": 1243,
+      "wal_write_time": 0,
+      "wal_sync_time": 0
+    },
+    "topStatements": [
+      {
+        "identity": {
+          "queryid": 8134710093968320007
+        },
+        "delta": {
+          "calls": 936,
+          "total_exec_time": 9461.295326999987,
+          "rows": 4680000,
+          "shared_blks_hit": 1541213,
+          "shared_blks_read": 0,
+          "temp_blks_written": 0
+        }
+      },
+      {
+        "identity": {
+          "queryid": 5341900767740232231
+        },
+        "delta": {
+          "calls": 597,
+          "total_exec_time": 7146.081174999997,
+          "rows": 2985000,
+          "shared_blks_hit": 1020084,
+          "shared_blks_read": 0,
+          "temp_blks_written": 0
+        }
+      },
+      {
+        "identity": {
+          "queryid": -385048360748223166
+        },
+        "delta": {
+          "calls": 597,
+          "total_exec_time": 2063.7415510000005,
+          "rows": 597,
+          "shared_blks_hit": 984168,
+          "shared_blks_read": 84,
+          "temp_blks_written": 0
+        }
+      },
+      {
+        "identity": {
+          "queryid": -7390902673174426915
+        },
+        "delta": {
+          "calls": 95,
+          "total_exec_time": 787.6758109999987,
+          "rows": 1520,
+          "shared_blks_hit": 155325,
+          "shared_blks_read": 0,
+          "temp_blks_written": 0
+        }
+      },
+      {
+        "identity": {
+          "queryid": 8207445343163765616
+        },
+        "delta": {
+          "calls": 380,
+          "total_exec_time": 294.88733999999863,
+          "rows": 380,
+          "shared_blks_hit": 1330,
+          "shared_blks_read": 0,
+          "temp_blks_written": 0
+        }
+      }
+    ]
+  },
+  "fd": {
+    "before": {
+      "soft": 1024,
+      "hard": 524288
+    },
+    "after": {
+      "soft": 65535,
+      "hard": 65535
+    },
+    "peak": 2511,
+    "peakFraction": 0.03831540398260472,
+    "errorTimestamps": []
+  },
+  "deltaQualification": {
+    "kind": "phase14-fd-delta",
+    "status": "pass",
+    "createdAt": 1789147521.5243337,
+    "shards": 4,
+    "measurementCommit": "a169350b5ec61a6f9f077a80e7af7bfeca92d239",
+    "originalQualification": {
+      "path": "/srv/phase14/repo/performance/results/phase14-formal-qualify-20260911T162841Z-910b33/qualification.json",
+      "sha256": "4744d36ec630ccfaa2d2030a62c3a4ad96330de267314916c924b95f5afb1031",
+      "measurementCommit": "9006ee822e557255e244364495fbe251a1a25b18"
+    },
+    "fingerprint": {
+      "git": {
+        "load": {
+          "head": "a169350b5ec61a6f9f077a80e7af7bfeca92d239",
+          "tree": "5e35ee9caed3300b2f4520cd616bc9103fc49580",
+          "branch": "main",
+          "worktree": "",
+          "diffCheck": 0
+        },
+        "sut": {
+          "head": "a169350b5ec61a6f9f077a80e7af7bfeca92d239",
+          "tree": "5e35ee9caed3300b2f4520cd616bc9103fc49580",
+          "branch": "main",
+          "worktree": "",
+          "diffCheck": 0
+        }
+      },
+      "controlHead": "a169350b5ec61a6f9f077a80e7af7bfeca92d239",
+      "controlTree": "5e35ee9caed3300b2f4520cd616bc9103fc49580",
+      "officialOriginHead": "a169350b5ec61a6f9f077a80e7af7bfeca92d239",
+      "targetsSha256": "653bbcf69399ef14f822e2ff4235332384062743072b93e3763632673a5b35b8",
+      "image": {
+        "id": "sha256:c099a97fea4f60a7e3d26139770a552cb2a91304526978d5c65daab7df01b00c",
+        "platform": "linux/amd64",
+        "configurationSha256": "50028ac19f0fe8923bd1ff716a04ec0414b631d5fdca343554098ce5a5ef5a99"
+      },
+      "datasetManifestSha256": "204a79cffb06853039ab467f5b94380394c62e31b9f0be920d44883e103e2345",
+      "inputs": {
+        "dataset.sql": "946e3c113e25796bb2d936cd0db7d5023a8dde43902b63d990814c5c058e1b19",
+        "sessions.json": "08b3a64db368a49e0efddfbf1d822bb74d3e837634216e2b74733e95872eb670",
+        "workload-seats.json": "e6f57daba50bc1721709e6c18ae0d35a334e8bc4432e41ae45c41afd1e139242",
+        "workload-users.json": "558cf37c447656a65450ec2725f9d76e49edfe69eaa7df4ff207f30c900576b0"
+      },
+      "snapshotSha256": "229b078d8f8062f0c2d5e33efa1dedb7ce66ae9a0de46584cb5f1ac62c9b1cef",
+      "databaseBaselineSha256": "282e4d3c417071c484afa3fce2d91b49acf1ccdfca9db6a0f50899f554530685",
+      "topology": {
+        "mode": "dual",
+        "sutRole": "phase14-sut",
+        "loadRole": "phase14-load",
+        "sutProject": "phase14-formal-sut",
+        "loadProject": "phase14-formal-load",
+        "portSource": "targets.environment.localPort",
+        "privateAddressValidated": true,
+        "addressSha256": "82ed5832ab5b0ed51058624e4abc3b5e6622b0962ff980222bf04fc7ab3719fc",
+        "fingerprint": "1fa967e7e0230318f83781be4c313367ce424790b388985add4db69081a9e82b"
+      }
+    },
+    "sourceChanges": [
+      "docs/images/phase14_core_initialization.png",
+      "docs/images/phase14_core_u1_resources.png",
+      "docs/phase14_core_results.json",
+      "docs/phase14_core_results.md",
+      "docs/phase14_fd_resume_design.md",
+      "performance/scripts/phase14_campaign.py",
+      "performance/scripts/phase14_dual.py",
+      "performance/scripts/phase14_dual_sampling.py",
+      "performance/scripts/phase14_fd.py",
+      "performance/scripts/run_phase14.py",
+      "performance/tests/test_phase14_core_delivery.py",
+      "performance/tests/test_phase14_fd.py"
+    ],
+    "checks": {
+      "root": "/srv/phase14/repo/performance/results/phase14-formal-fd-deploy-20260911T172454Z-c10108",
+      "hashes": {
+        "fd-original-role-compose.json": "75f14e990d211f2bb80af9a2242f304a33b4e61628fbb51aae76e87a3e82df36",
+        "fd-override.json": "52cd400a0ddda4aee21ecd4c6f5ce8182fe898a575fe17d875f9d731871ce408",
+        "fd-rendered-role-compose.json": "45dcbda79b9bd5b1fdc230653eae0b585a44370daab8a00ecc1bdda703cb28a4",
+        "fd-compose-hashes.json": "75af468050e4784e3f085549ebe6d778afbdf80c58b8c6d7541d8d5bbb3992df",
+        "fd-process-before-connection-check.json": "9d4684d64ce648333ca9544b81ee02d505f352aa5da3939d4a24e4001daee38d",
+        "connection-check.json": "ab5ea2e8da1daa1d869bb8e4cf9f58efc1768a94fbafcbe888575d40e5eb7468",
+        "preflight.json": "06876172702330047717021625b8ddce006a737f1f6a6968e70e312785af4b9d",
+        "new-invariants.json": "61ee1f387ab2b9e48089c71c4233889d526b2ddf51d6d4455620c12413889619"
+      }
+    },
+    "backendFd": {
+      "soft": 65535,
+      "hard": 65535,
+      "open": 384,
+      "fraction": 0.005859464408331426,
+      "containerId": "529ead9f477d6575050ec39e1ff48dab149e46457ecdc1d103c2aadb5a73f568",
+      "startedAt": "2026-09-11T17:25:04.656590485Z",
+      "dockerUlimits": [
+        {
+          "Name": "nofile",
+          "Hard": 65535,
+          "Soft": 65535
+        }
+      ],
+      "errorTimestamps": [],
+      "logWindowSeconds": 5
+    },
+    "environmentDelta": {
+      "backendNofile": {
+        "before": {
+          "soft": 1024,
+          "hard": 524288
+        },
+        "after": {
+          "soft": 65535,
+          "hard": 65535
+        }
+      }
+    },
+    "reused": {
+      "g0": {
+        "root": "/srv/phase14/repo/performance/results/phase14-formal-run-20260911T154259Z-1bdd48",
+        "runId": "phase14-formal-run-20260911T154259Z-1bdd48",
+        "hashes": {
+          "g0.json": "5f14864bdd87208ce704d14b8c875b25e75cc78521c3a518b08eee60ed3f8914",
+          "sampling-overhead.json": "a0a851678d5f4806b838856c38e138df67d3e666c8c7ec085e6a3defdd8f79c6"
+        }
+      },
+      "smoke": {
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-campaign-20260911T154821Z-7afd20",
+        "runId": "phase14-smoke-campaign-20260911T154821Z-7afd20",
+        "hashes": {
+          "campaign.json": "b09766a74778000c750ee1152e739946888dbd378dbf3962f140a40b627e6745",
+          "checkpoint.jsonl": "b75ed5f69fe6f807aaed270d10b20ba8232579b716939355aa7c941fe8614022",
+          "plan.json": "abb946da55e6c87f3d4a1904f24f5f173a776cdca209735711adeee8c0460e30"
+        }
+      },
+      "initQualification": {
+        "root": "/srv/phase14/repo/performance/results/phase14-formal-init-only-20260911T154039Z-c7bb97",
+        "hashes": {
+          "init-qualification.json": "f0e655709da69033309def62a4628445c1b6dfd649d61b3ba6c0752670ac0371"
+        }
+      }
+    },
+    "workDeadlineAt": 1789167600.8098903,
+    "hardDeadlineAt": 1789169100.8098903
+  },
+  "connectionCheck": {
+    "passed": true,
+    "requests": 100,
+    "concurrency": 10,
+    "elapsedSeconds": 0.5113523006439209,
+    "capacityResult": false,
+    "backendFd": {
+      "soft": 65535,
+      "hard": 65535,
+      "open": 384,
+      "fraction": 0.005859464408331426,
+      "containerId": "529ead9f477d6575050ec39e1ff48dab149e46457ecdc1d103c2aadb5a73f568",
+      "startedAt": "2026-09-11T17:25:04.656590485Z",
+      "dockerUlimits": [
+        {
+          "Name": "nofile",
+          "Hard": 65535,
+          "Soft": 65535
+        }
+      ],
+      "errorTimestamps": [],
+      "logWindowSeconds": 5
+    }
+  },
+  "cleanup": {
+    "status": "pass",
+    "completedAt": 1789148385.3397477,
+    "services": {
+      "status": "pass",
+      "startedAt": 1789147500.8098903,
+      "stoppedAt": 1789148322.6411884,
+      "elapsedSeconds": 821.8312981128693,
+      "containers": {
+        "load": {
+          "containersPreserved": 1062,
+          "running": 0,
+          "oomContainers": 0,
+          "restartedContainers": 0
+        },
+        "sut": {
+          "containersPreserved": 6,
+          "running": 0,
+          "oomContainers": 0,
+          "restartedContainers": 0
+        }
+      },
+      "volumes": {
+        "load": [],
+        "sut": [
+          "phase14-formal-sut_postgres",
+          "phase14-formal-sut_prometheus"
+        ]
+      },
+      "imagesPreserved": true,
+      "historicalEvidencePreserved": true,
+      "reason": "Load generator container memory reached 90 percent safety threshold; interrupted payment reconciliation; FD 65535 remained effective",
+      "root": "/srv/phase14/repo/performance/results/phase14-formal-fd-shutdown-20260911T173821Z-ed1b4a"
+    },
+    "ssh": {
+      "sut": {
+        "removedAuthorizations": 1,
+        "otherLinesPreserved": 1
+      },
+      "load": {
+        "finishedAt": 1789148342.968653,
+        "negativeAuthenticationCheck": true,
+        "removedDedicatedFiles": [
+          "phase14_sut_ed25519",
+          "phase14_sut_ed25519.pub",
+          "phase14_known_hosts"
+        ],
+        "removedConfigBlock": true,
+        "remainingPrivateKey": false
+      }
+    }
+  },
+  "tests": {
+    "windows": 32,
+    "linux": 32,
+    "kind": "targeted",
+    "fullSuiteRerun": false
+  },
+  "fdMethods": {
+    "first": "pass",
+    "second": "not_used"
+  },
+  "collection": {
+    "archiveBytes": 2090163,
+    "sha256": "8e7c6c87ab4d226a8b8cf0aad1efc2cbbdbf77f4ad77482b0cb5d06d2226e4f8",
+    "files": 209,
+    "localRoot": "performance\\results\\phase14-fd-analysis\\round"
+  },
+  "standardComposeCommit": "ef5d8638a84d3ecca28c38ad81b039c59f9c85e2",
+  "configurationDeliveryTests": {
+    "windowsFdContract": 6,
+    "windowsCompose": "pass",
+    "linuxTargeted": 33,
+    "linuxCompose": "pass"
+  },
+  "reportScope": "core only; FD fixed; Load container memory safety stop",
+  "full24Completed": false,
+  "loadHardwareInsufficientProven": false,
+  "serviceCapacityProven": false,
+  "images": {
+    "resourceCurve": "docs/images/phase14_fd_resume_resources.png"
+  },
+  "configurationEvidenceFile": "docs/phase14_fd_compose_redacted.json",
+  "reportContractTests": {
+    "windows": 3,
+    "linux": 3
+  }
+}
