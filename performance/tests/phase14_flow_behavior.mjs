@@ -14,12 +14,12 @@ for (const [status,body,expected,result] of [[200,{id:1},200,'business_success']
 assert.throws(()=>model.boundedIndex(2,[0,2]));
 const once=model.onceState();assert(once.claim());assert(!once.claim());
 
-async function harness({fn='burst',index=0,failConfirm=false,failLogin=false,neverPay=false,kind='J1',role='main'}={}) {
+async function harness({fn='burst',index=0,failConfirm=false,failLogin=false,neverPay=false,kind='J1',role='main',releaseAtMs=100000}={}) {
     let clock=100000,jarUser=null;const requests=[],points=[],sleeps=[],events=[];
     const users=Array.from({length:targets.dataset.activeAuthSessions},(_,i)=>({userId:'user-'+i,sessionToken:'session-'+i,csrfToken:'csrf-'+i}));
     const loginUsers=Array.from({length:20},(_,i)=>({userId:'login-'+i,username:'login-'+i}));
     const execution={scenario:{name:'main',iterationInTest:index},vu:{idInTest:index+1}};
-    const spec={targets,case:kind,releaseAtMs:100000,runId:'phase14-test',idempotencyNamespace:'phase14-test',
+    const spec={targets,case:kind,releaseAtMs,runId:'phase14-test',idempotencyNamespace:'phase14-test',
         scenarios:{main:{},control_auth:{},payment:{}},mapping:{main:{count:20,users:20,path:'formal',sessionCount:1}}};
     let checkout=null,paid=false;
     function respond(method,url,body,params) {
@@ -48,7 +48,7 @@ async function harness({fn='burst',index=0,failConfirm=false,failLogin=false,nev
     }
     const http={asyncRequest:(...args)=>{const step=args[3].tags.step;events.push(['start',step]);return new Promise(resolve=>setTimeout(()=>{const value=respond(...args);events.push(['end',step]);resolve(value);},1));},request:respond,batch:items=>items.map(x=>respond(x.method,x.url,null,x.params)),cookieJar:()=>({clear:()=>{jarUser=null;}})};
     class Metric{constructor(name){this.name=name;}add(value,tags){points.push({metric:this.name,value,tags:{scenario:execution.scenario.name,...tags}});}}
-    const context=vm.createContext({__ENV:{PHASE14_SPEC:'spec',SHARD:'0',PHASE14_ROLE:role,LOGIN_PASSWORD:'synthetic'},open:()=>JSON.stringify(spec),Date:{now:()=>clock},console});
+    const context=vm.createContext({__ENV:{PHASE14_SPEC:'spec',SHARD:'0',PHASE14_ROLE:role,LOGIN_PASSWORD:'synthetic'},open:()=>JSON.stringify(spec),Date:{now:()=>clock},console:{log:(...args)=>events.push(['log',...args])}});
     const mocks={'k6/http':{default:http},'k6':{sleep:n=>{sleeps.push(n);clock+=n*1000;}},'k6/execution':{default:execution},'k6/metrics':{Counter:Metric,Trend:Metric},'./data.js':{loadSessions:()=>users,loadWorkloadUsers:()=>loginUsers}};
     const cache=new Map();
     async function link(name){
@@ -62,6 +62,11 @@ async function harness({fn='burst',index=0,failConfirm=false,failLogin=false,nev
     for(const step of new Set(starts.map(x=>x.tags.step)))assert.equal(starts.filter(x=>x.tags.step===step).length,points.filter(x=>x.metric==='phase14_results'&&x.tags.step===step).length);
     return {requests,points,sleeps,events,options:flow.namespace.options};
 }
+const initialized=await harness({fn:'setup',releaseAtMs:105000});
+assert.deepEqual(initialized.events,[['log','PHASE14_INIT_READY|phase14-test|0|']]);
+assert.deepEqual(initialized.sleeps,[5]);
+assert.equal(initialized.requests.length,0);
+assert.equal(initialized.points.length,0);
 for(const kind of ['J1','O1']) {
     const h=await harness({kind,failConfirm:true});
     assert.equal(h.requests.filter(x=>x.method==='POST'&&x.url.endsWith('/checkout-sessions')).length,1);

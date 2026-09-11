@@ -98,7 +98,7 @@ class Executor:
                     '-o', 'ConnectTimeout=10', 'phase14-sut',
                     'cd '+shlex.quote(WORKDIR)+' && exec '+shlex.join(command)]
         if args[0]=='sudo':
-            variables=[k+'='+v for k,v in (env or {}).items() if k.startswith('PHASE14_')]
+            variables=[k+'='+v for k,v in (env or {}).items() if k.startswith('PHASE14_') or k=='COMPOSE_IGNORE_ORPHANS']
             return ['sudo','-n',*(['env',*variables] if variables else []),*args[1:]]
         return list(args)
 

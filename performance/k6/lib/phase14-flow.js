@@ -46,7 +46,7 @@ function target(slice,index){
     return seat(boundedIndex(slot,t.seatSlices[slice]),t);
 }
 function waitRelease(){const seconds=(spec.releaseAtMs-Date.now())/1000;if(seconds>0)sleep(seconds);}
-export function setup(){waitRelease();return {};}
+export function setup(){console.log(`PHASE14_INIT_READY|${spec.runId}|${shard}|`);waitRelease();return {};}
 async function run(fn){waitRelease();iterStarted.add(1,{shard});try{await fn();iterCompleted.add(1,{shard});}catch(error){throw error;}}
 function mapped(){return spec.mapping[exec.scenario.name];}
 function nextIndex(m){const i=exec.scenario.iterationInTest;if(i>=m.count){boundary.add(1,{shard});return null;}return i+(m.offset||0);}

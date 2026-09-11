@@ -26,6 +26,8 @@ class DualEnvironment(Environment):
         self.data = GENERATED/('dual-'+t['mode']+'-v'+str(t['version']))
         self.env['PHASE14_DATA_ROOT'] = str(self.data)
         self.env['PHASE14_BIND_ADDRESS'] = topology.values['sutBindAddress']
+        # Ownership is validated explicitly; retained old shards are evidence.
+        self.env['COMPOSE_IGNORE_ORPHANS'] = 'true'
         self.sut = SutExecutor(topology, self.root/'commands.jsonl')
         self.load = LoadExecutor(topology, self.root/'commands.jsonl')
         self.runtime = Path('/srv/phase14/runtime')

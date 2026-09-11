@@ -24,6 +24,13 @@ def config():
 
 
 class ConfigTests(unittest.TestCase):
+    def test_compose_history_flag_is_scoped_through_sudo(self):
+        with tempfile.TemporaryDirectory() as folder:
+            executor=LoadExecutor(Topology(config()),Path(folder)/'commands.jsonl')
+            argv=executor.argv(['sudo','docker','compose','config'],{'COMPOSE_IGNORE_ORPHANS':'true','UNRELATED':'hidden'})
+            self.assertIn('COMPOSE_IGNORE_ORPHANS=true',argv)
+            self.assertNotIn('UNRELATED=hidden',argv)
+
     def test_load_probe_excludes_history_but_sut_keeps_stopped_services(self):
         from phase14_dual_sampling import probe_host
         for role,selector in [('load','-q'),('sut','-aq')]:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 import argparse
 from copy import deepcopy
+from contextlib import nullcontext
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from fractions import Fraction
@@ -442,20 +443,30 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
     processes=[];logs=[];stop_reasons=[];samples=[];sampler=Sampler(env);guard=StopGuard(t,login_protection=args.case in ('L1','L2'))
     started=time.time();progress=RawProgress(t)
     light=LightPostgresSampler(env,t['generator']['hotspotSampleSeconds'] if args.case=='H3' else t['generator']['sampleSeconds']).start()
+    def observe_initialization():
+        x,pg,rd,_=sampler.sample();samples.append(x);save_sample(root,x,pg,rd)
+        bad,dropped=progress.read(root);x['dropped']=dropped;stop_reasons.extend(guard.sample(x))
+        if bad:stop_reasons.append('error stop window')
+        if stop_reasons:raise RuntimeError('initialization safety stop')
     try:
-        for shard_info in slices:
-            number=shard_info['shard'];folder=root/'shards'/number;folder.mkdir(parents=True)
-            log=(folder/'console.log').open('wb');logs.append(log)
-            args_k6=['docker','compose','-p',env.project,'-f',str(COMPOSE),'-f',str(source_compose.resolve()),'run','--no-deps','--name',f'{env.project}-k6-{run_id}-{number}',
-                     '-e',f'SHARD={number}','-e',f'PHASE14_ROLE={shard_info["role"]}','-e',f'PHASE14_SPEC=/results/{run_id}/spec.json',
-                     '-e',f'BASE_URL={"http://noop:8080" if args.case=="G0" else "http://backend:8080"}','-e','LOGIN_PASSWORD','k6','run',
-                     '--execution-segment',shard_info['segment'],'--execution-segment-sequence',shard_info['sequence'],
-                     '--out',f'json=/results/{run_id}/shards/{number}/raw.json',f'workloads/{spec["workload"]}.js']
-            if getattr(env,'dual',False) is True:
-                processes.append(env.start_generator(args_k6,log))
-            else:
-                with (root/'commands.jsonl').open('a',encoding='utf-8') as f:f.write(json.dumps({'at':utc_now(),'argv':args_k6})+'\n')
-                processes.append(subprocess.Popen(args_k6,stdout=log,stderr=subprocess.STDOUT,env=env.env,cwd=ROOT))
+        from phase14_initialization import Initialization
+        initialize=(Initialization(root,run_id,[s['shard'] for s in slices],spec['releaseAtMs'],observe_initialization)
+                    if getattr(env,'dual',False) is True else nullcontext())
+        with initialize as initialization:
+            for shard_info in slices:
+                number=shard_info['shard'];folder=root/'shards'/number;folder.mkdir(parents=True)
+                log=(folder/'console.log').open('wb');logs.append(log)
+                args_k6=['docker','compose','-p',env.project,'-f',str(COMPOSE),'-f',str(source_compose.resolve()),'run','--no-deps','--name',f'{env.project}-k6-{run_id}-{number}',
+                         '-e',f'SHARD={number}','-e',f'PHASE14_ROLE={shard_info["role"]}','-e',f'PHASE14_SPEC=/results/{run_id}/spec.json',
+                         '-e',f'BASE_URL={"http://noop:8080" if args.case=="G0" else "http://backend:8080"}','-e','LOGIN_PASSWORD','k6','run',
+                         '--execution-segment',shard_info['segment'],'--execution-segment-sequence',shard_info['sequence'],
+                         '--out',f'json=/results/{run_id}/shards/{number}/raw.json',f'workloads/{spec["workload"]}.js']
+                if getattr(env,'dual',False) is True:
+                    processes.append(env.start_generator(args_k6,log))
+                    initialization.wait(processes[-1],log,number)
+                else:
+                    with (root/'commands.jsonl').open('a',encoding='utf-8') as f:f.write(json.dumps({'at':utc_now(),'argv':args_k6})+'\n')
+                    processes.append(subprocess.Popen(args_k6,stdout=log,stderr=subprocess.STDOUT,env=env.env,cwd=ROOT))
         deadline=started+t['generator']['releaseLeadSeconds']+spec['loadSeconds']+t['recovery']['observeSeconds']+t['probes']['paymentDeadlineSeconds']+max(t['behavior']['refreshSeconds'])+t['generator']['scheduler_delivery_guard_seconds']+30
         while any(p.poll() is None for p in processes):
             x,pg,rd,raw=sampler.sample();samples.append(x);save_sample(root,x,pg,rd)
