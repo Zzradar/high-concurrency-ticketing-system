@@ -3,6 +3,9 @@
 #include <cstdint>
 
 namespace ticketing::admission {
+enum class QualificationNamespace { None, Shadow, Formal };
+QualificationNamespace qualificationNamespace(std::string_view mode);
+bool rotatesGeneration(std::string_view oldMode, std::string_view newMode);
 struct PolicyInput {
     std::string mode;
     int prequeueSeconds, maxActiveUsers, admissionRatePerSecond, leaseSeconds;

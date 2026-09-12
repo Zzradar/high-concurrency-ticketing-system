@@ -58,11 +58,47 @@ class PolicyHTTP(unittest.TestCase):
    barrier=threading.Barrier(8)
    def call(i):
     barrier.wait(timeout=10)
-    return clients[i].request(self.path,method='PUT',body={**self.body,'expectedPolicyVersion':expected})[0]
+    return clients[i].request(self.path,method='PUT',body={**self.body,'expectedPolicyVersion':expected,'mode':'OBSERVE' if expected==0 else 'ENFORCED'})
    with concurrent.futures.ThreadPoolExecutor(8) as pool:results=list(pool.map(call,range(8)))
-   self.assertEqual(results.count(200),1);self.assertEqual(results.count(409),7)
+   self.assertEqual(sum(r[0]==200 for r in results),1);self.assertEqual(sum(r[0]==409 for r in results),7)
+   winner=next(r[1] for r in results if r[0]==200)
+   self.assertEqual(self.a.request(self.path)[1],winner)
+   self.assertEqual(sql('SELECT count(*) FROM admission_policy_audit'),str(expected+1))
+   self.assertEqual(sql("SELECT new_policy->>'queueGeneration' FROM admission_policy_audit ORDER BY new_version DESC LIMIT 1"),winner['queueGeneration'])
   self.assertEqual(sql('SELECT count(*) FROM admission_policy_audit'),'2')
   self.assertEqual(sql("SELECT count(*) FROM admission_policy_audit WHERE (new_policy->>'policyVersion')::bigint<>new_version OR (old_policy->>'policyVersion')::bigint<>old_version"),'0')
+ def test_all_namespace_transitions_and_off_reenable(self):
+  modes={'OFF':'NONE','OBSERVE':'SHADOW','PAUSED':'FORMAL','ENFORCED':'FORMAL'}
+  version=0
+  for source,old_space in modes.items():
+   for target,new_space in modes.items():
+    with self.subTest(source=source,target=target):
+     status,before,_=self.put({**self.body,'mode':source,'expectedPolicyVersion':version});self.assertEqual(status,200);version+=1
+     status,after,_=self.put({**self.body,'mode':target,'expectedPolicyVersion':version,'maxActiveUsers':11});self.assertEqual(status,200);version+=1
+     self.assertEqual(after['policyVersion'],version)
+     self.assertEqual(before['queueGeneration']!=after['queueGeneration'],new_space!='NONE' and new_space!=old_space)
+     committed=self.a.request(self.path)[1];self.assertEqual(committed,after)
+     self.assertEqual(self.put({**self.body,'mode':'OBSERVE','expectedPolicyVersion':version-1})[0],409)
+     self.assertEqual(self.a.request(self.path)[1],after)
+  status,formal,_=self.put({**self.body,'mode':'ENFORCED','expectedPolicyVersion':version});self.assertEqual(status,200);version+=1
+  self.assertEqual(self.put({**self.body,'mode':'OFF','expectedPolicyVersion':version})[0],200);version+=1
+  status,reopened,_=self.put({**self.body,'mode':'ENFORCED','expectedPolicyVersion':version});self.assertEqual(status,200);version+=1
+  self.assertNotEqual(formal['queueGeneration'],reopened['queueGeneration'])
+  self.assertEqual(int(sql('SELECT count(*) FROM admission_policy_audit')),version)
+ def test_transaction_and_audit_failures_rollback_generation(self):
+  self.assertEqual(self.put({**self.body,'mode':'OBSERVE'})[0],200)
+  before=self.a.request(self.path)[1]
+  for table in ['event_admission_policies','admission_policy_audit']:
+   with self.subTest(table=table):
+    sql("CREATE FUNCTION phase18_reject_write() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'injected policy gate failure'; END $$; CREATE TRIGGER phase18_reject_write BEFORE INSERT OR UPDATE ON "+table+" FOR EACH ROW EXECUTE FUNCTION phase18_reject_write();")
+    try:
+     self.assertEqual(self.put({**self.body,'mode':'ENFORCED','expectedPolicyVersion':1})[0],500)
+     self.assertEqual(self.a.request(self.path)[1],before)
+     self.assertEqual(sql('SELECT count(*) FROM admission_policy_audit'),'1')
+    finally:sql('DROP TRIGGER phase18_reject_write ON '+table+'; DROP FUNCTION phase18_reject_write();')
+  status,after,_=self.put({**self.body,'mode':'ENFORCED','expectedPolicyVersion':1});self.assertEqual(status,200)
+  self.assertNotEqual(before['queueGeneration'],after['queueGeneration']);self.assertEqual(after['policyVersion'],2)
+  self.assertEqual(sql('SELECT count(*) FROM admission_policy_audit'),'2')
  def test_shadow_cannot_be_promoted_through_pause(self):
   generations=[]
   for version,mode in enumerate(['OBSERVE','PAUSED','ENFORCED']):

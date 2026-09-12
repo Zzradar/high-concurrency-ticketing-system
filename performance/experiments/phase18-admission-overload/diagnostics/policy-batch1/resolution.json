@@ -1,0 +1,13 @@
+{
+  "status": "POLICY_NAMESPACE_DEFECT_CLOSED",
+  "phase18DeliveryComplete": false,
+  "baselineSutSha": "ed51447154418e05ed9e4c49728f3eb114713db9",
+  "fixedHttpLogSha256": "8e90790e265213bf9a8dd919d7a41beb31080682f25a0bbe809acc91c20c8a0c",
+  "transitions": 16,
+  "policyHttpPassed": 7,
+  "ctestPassed": 35,
+  "schemaPassed": 2,
+  "phase17Passed": 13,
+  "frontendPassed": 269,
+  "baselineEvidencePassed": 7
+}

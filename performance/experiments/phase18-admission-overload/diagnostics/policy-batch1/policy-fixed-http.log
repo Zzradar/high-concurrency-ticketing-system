@@ -1,0 +1,12 @@
+test_all_namespace_transitions_and_off_reenable (__main__.PolicyHTTP) ... ok
+test_concurrent_create_and_update_one_winner_one_audit (__main__.PolicyHTTP) ... ok
+test_generation_transitions_and_normalized_audit (__main__.PolicyHTTP) ... ok
+test_missing_secret_rejects_activation_and_readiness (__main__.PolicyHTTP) ... ok
+test_off_auth_csrf_strict_input_and_synthetic_policy (__main__.PolicyHTTP) ... ok
+test_shadow_cannot_be_promoted_through_pause (__main__.PolicyHTTP) ... ok
+test_transaction_and_audit_failures_rollback_generation (__main__.PolicyHTTP) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 12.232s
+
+OK

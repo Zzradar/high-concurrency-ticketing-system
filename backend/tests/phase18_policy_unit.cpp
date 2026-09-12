@@ -7,6 +7,10 @@ int main() {
         Json::Value config;config["policy_refresh_ms"]=bad;
         try{Config::parse(config);return 5;}catch(const std::invalid_argument &){}
     }
+    const std::string modes[]={"OFF","OBSERVE","PAUSED","ENFORCED"};
+    const int spaces[]={0,1,2,2};
+    for(int i=0;i<4;++i)for(int j=0;j<4;++j)
+        if(rotatesGeneration(modes[i],modes[j])!=(spaces[j]!=0 && spaces[i]!=spaces[j]))return 6;
     Json::Value v; v["mode"]="OFF"; v["prequeueSeconds"]=0; v["maxActiveUsers"]=10;
     v["admissionRatePerSecond"]=2; v["leaseSeconds"]=30; v["expectedPolicyVersion"]=0;
     if(parsePolicyInput(v).expectedVersion!=0 || defaultPolicy("e")["mode"]!="OFF" || !defaultPolicy("e")["maxActiveUsers"].isNull()) return 1;

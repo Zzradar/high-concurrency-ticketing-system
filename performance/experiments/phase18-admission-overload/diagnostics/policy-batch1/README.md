@@ -1,4 +1,18 @@
-# Phase18 policy batch 1 — BLOCKED checkpoint
+# Historical policy failure — CLOSED by namespace fix
+
+The generation defect recorded below is now fixed with explicit NONE (OFF), SHADOW (OBSERVE) and FORMAL (PAUSED/ENFORCED) namespaces. Entering a different non-NONE namespace rotates generation. Staying within FORMAL or the same mode preserves it; re-enabling from OFF always rotates. An OFF row may retain an opaque historical generation for audit/storage compatibility, but it confers no qualification.
+
+The original failing test is retained and passes. Additional real HTTP coverage exercises all 16 transitions, OFF re-enable, concurrent winning generation/audit correspondence, stale OCC, and injected policy-write/audit-write failures with complete rollback. No namespace/version is persisted by a losing transaction. Random candidate bytes discarded by a losing OCC transaction are not a committed qualification or sequence allocation.
+
+Validation after correction: Policy HTTP 7/7; CTest 35/35; migration fresh/upgrade 2/2; Phase17 Venue/Publish 13/13; frontend Vitest 269/269 and real-API-mode build; frozen baseline 7/7. `policy-fixed-http.log` records the passing policy gate. The historical failing log and manifest below remain unchanged for diagnosis. Actual stale Shadow access tests against admission/Availability/inventory await runtime integration; these policy-only checks do not claim that unimplemented behavior is delivered.
+
+Checkpoint 3991e814b54c71e5be0032d26d809e71559ef372 is never a deployable release. Phase18 remains under implementation; no after/ measurement or final delivery manifest exists yet.
+
+---
+
+## Original failure record (historical, superseded)
+
+### Phase18 policy batch 1 — BLOCKED checkpoint
 
 This is an incomplete implementation checkpoint, not a delivery or A/B result. No source freeze for after/ has occurred. Do not deploy this intermediate commit: queue enforcement, registry, traffic controls, caching and polling integration are not implemented.
 

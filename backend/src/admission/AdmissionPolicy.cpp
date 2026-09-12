@@ -10,6 +10,16 @@ std::int64_t integer(const Json::Value &v, std::int64_t low, std::int64_t high) 
     const auto n=v.asInt64(); admin::require(n>=low && n<=high); return n;
 }
 }
+QualificationNamespace qualificationNamespace(std::string_view mode) {
+    if(mode=="OFF") return QualificationNamespace::None;
+    if(mode=="OBSERVE") return QualificationNamespace::Shadow;
+    if(mode=="PAUSED" || mode=="ENFORCED") return QualificationNamespace::Formal;
+    throw std::invalid_argument("Unknown admission mode");
+}
+bool rotatesGeneration(std::string_view oldMode, std::string_view newMode) {
+    const auto target=qualificationNamespace(newMode);
+    return target!=QualificationNamespace::None && target!=qualificationNamespace(oldMode);
+}
 PolicyInput parsePolicyInput(const Json::Value &v) {
     admin::fields(v,{"mode","prequeueSeconds","maxActiveUsers","admissionRatePerSecond","leaseSeconds","expectedPolicyVersion"});
     admin::require(v["mode"].isString()); const auto mode=v["mode"].asString();
@@ -54,7 +64,7 @@ Json::Value writePolicy(const admin::DB &db, const std::string &eventId,
     const auto before=readPolicy(db,eventId);
     admin::require(before["policyVersion"].asInt64()==p.expectedVersion,"POLICY_VERSION_CONFLICT",drogon::k409Conflict);
     const auto oldMode=before["mode"].asString();
-    const auto generation=p.expectedVersion==0 || (p.mode=="ENFORCED" && (oldMode=="OFF" || oldMode=="OBSERVE"))
+    const auto generation=p.expectedVersion==0 || rotatesGeneration(oldMode,p.mode)
         ? randomHex(16) : before["queueGeneration"].asString();
     bool changed=false;
     if(p.expectedVersion==0) {
