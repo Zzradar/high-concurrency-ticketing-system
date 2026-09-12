@@ -67,6 +67,7 @@ defineEmits<{
           v-for="session in sessions"
           :key="session.id"
           :session="session"
+          :event-available="event.status === 'ON_SALE'"
           @select="$emit('select', $event)"
         />
       </div>

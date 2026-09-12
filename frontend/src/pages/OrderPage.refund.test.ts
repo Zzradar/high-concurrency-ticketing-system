@@ -22,8 +22,8 @@ beforeEach(() => {
   vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible')
   current = structuredClone(orderFixture)
   vi.spyOn(ticketApi, 'getOrder').mockImplementation(async () => structuredClone(current))
-  vi.spyOn(ticketApi, 'getEvent').mockResolvedValue({ id: 'E1', name: '退款测试场次', description: '', city: '', venue: '', dateRange: '', status: 'ON_SALE', cover: '', sessionCount: 1, category: '' })
-  vi.spyOn(ticketApi, 'getSession').mockResolvedValue({ id: 'S1', eventId: 'E1', date: '', time: '', weekday: '', venue: '', gateTime: '', status: 'ON_SALE', priceFrom: 12800, availability: '充足' })
+  vi.spyOn(ticketApi, 'getEvent').mockResolvedValue({ id: 'E1', name: '退款测试场次', description: '', city: '', venue: '', dateRange: '', salesWindow: {startsAt:'2026-01-01T00:00:00Z',endsAt:'2026-12-01T00:00:00Z',evaluatedAt:'2026-09-01T00:00:00Z',state:'OPEN' as const}, status: 'ON_SALE', cover: '', sessionCount: 1, category: '' })
+  vi.spyOn(ticketApi, 'getSession').mockResolvedValue({ id: 'S1', eventId: 'E1', date: '', time: '', weekday: '', venue: '', gateTime: '', salesWindow: {startsAt:'2026-01-01T00:00:00Z',endsAt:'2026-12-01T00:00:00Z',evaluatedAt:'2026-09-01T00:00:00Z',state:'OPEN' as const}, status: 'ON_SALE', priceFrom: 12800, availability: '充足' })
   vi.spyOn(ticketApi, 'getSeats').mockResolvedValue([])
   vi.spyOn(ticketApi, 'createRefund').mockImplementation(async () => {
     current.buyerRefund = { ...summaryFixture }

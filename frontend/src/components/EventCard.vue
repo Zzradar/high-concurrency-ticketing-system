@@ -14,8 +14,10 @@ defineEmits<{ select: [event: TicketEvent] }>()
     </div>
     <div class="event-card__body">
       <div>
-        <p class="eyebrow">{{ event.city }} · 正在售票</p>
+        <p class="eyebrow">{{ event.city }} · {{ event.status === 'ON_SALE' ? '在售活动' : '即将推出' }}</p>
         <h2>{{ event.name }}</h2>
+        <p>{{ event.salesWindow.state === 'OPEN' ? '售票中' : event.salesWindow.state === 'NOT_STARTED' ? '尚未开售' : '售票已结束' }}</p>
+        <small>开售 {{ event.salesWindow.startsAt }} · 截止 {{ event.salesWindow.endsAt }}</small>
         <p class="event-card__description">{{ event.description }}</p>
       </div>
       <dl class="event-card__meta">

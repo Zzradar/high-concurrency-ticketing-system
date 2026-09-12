@@ -38,8 +38,8 @@ beforeEach(() => {
   currentOrder = { buyerRefund: null, id: 'O1', reservationId: 'R1', eventId: 'E1', sessionId: 'S1', seatIds: [], status: 'PENDING_PAYMENT', totalAmount: 100, createdAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 900000).toISOString() }
   attempt = { id: 'P1', orderId: 'O1', provider: 'stripe', status: 'PROCESSING', startedAt: new Date().toISOString(), processingDeadline: new Date(Date.now() + 10000).toISOString() }
   vi.spyOn(ticketApi, 'getOrder').mockImplementation(async () => ({ ...currentOrder }))
-  vi.spyOn(ticketApi, 'getSession').mockResolvedValue({ id: 'S1', eventId: 'E1', date: '', time: '', weekday: '', venue: '', gateTime: '', status: 'ON_SALE', priceFrom: 100, availability: '充足' })
-  vi.spyOn(ticketApi, 'getEvent').mockResolvedValue({ id: 'E1', name: 'Test Event', description: '', city: '', venue: '', dateRange: '', status: 'ON_SALE', cover: '', sessionCount: 1, category: '' })
+  vi.spyOn(ticketApi, 'getSession').mockResolvedValue({ id: 'S1', eventId: 'E1', date: '', time: '', weekday: '', venue: '', gateTime: '', salesWindow: {startsAt:'2026-01-01T00:00:00Z',endsAt:'2026-12-01T00:00:00Z',evaluatedAt:'2026-09-01T00:00:00Z',state:'OPEN' as const}, status: 'ON_SALE', priceFrom: 100, availability: '充足' })
+  vi.spyOn(ticketApi, 'getEvent').mockResolvedValue({ id: 'E1', name: 'Test Event', description: '', city: '', venue: '', dateRange: '', salesWindow: {startsAt:'2026-01-01T00:00:00Z',endsAt:'2026-12-01T00:00:00Z',evaluatedAt:'2026-09-01T00:00:00Z',state:'OPEN' as const}, status: 'ON_SALE', cover: '', sessionCount: 1, category: '' })
   vi.spyOn(ticketApi, 'getSeats').mockResolvedValue([])
   vi.spyOn(ticketApi, 'getPaymentAttempt').mockImplementation(async () => ({ ...attempt }))
   vi.spyOn(ticketApi, 'payOrder').mockImplementation(async () => ({ disposition: 'STARTED_NEW', order: { ...currentOrder }, paymentAttempt: { ...attempt }, paymentAction: action }))
