@@ -12,7 +12,7 @@ void UserRepository::findByUsername(
     ErrorCallback onError) const
 {
     drogon::app().getDbClient()->execSqlAsync(
-        "SELECT id, username, display_name, password_hash, status "
+        "SELECT id, username, display_name, password_hash, status, role "
         "FROM app_users WHERE username = $1",
         [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) {
             if (rows.empty())
@@ -25,6 +25,7 @@ void UserRepository::findByUsername(
                 .id = row["id"].as<std::string>(),
                 .username = row["username"].as<std::string>(),
                 .displayName = row["display_name"].as<std::string>(),
+                .role = row["role"].as<std::string>(),
                 .passwordHash = row["password_hash"].as<std::string>(),
                 .status = row["status"].as<std::string>(),
             });

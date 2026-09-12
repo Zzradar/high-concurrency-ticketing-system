@@ -57,10 +57,10 @@ class Phase8SchemaContractTest(unittest.TestCase):
             self.assertIn(dto, DTO)
         sequence = (
             "005_add_payment_lifecycle.sql", "006_add_user_authentication.sql",
-            "007_add_payment_provider_recovery.sql", "012_demo_seed.sql",
-            "013_verify_seed.sql", "014_verify_checkout_schema.sql",
-            "015_verify_payment_schema.sql", "016_verify_auth_schema.sql",
-            "017_verify_payment_provider_recovery.sql",
+            "007_add_payment_provider_recovery.sql", "013_demo_seed.sql",
+            "014_verify_seed.sql", "015_verify_checkout_schema.sql",
+            "016_verify_payment_schema.sql", "017_verify_auth_schema.sql",
+            "018_verify_payment_provider_recovery.sql",
         )
         positions = [COMPOSE.index(name) for name in sequence]
         self.assertEqual(positions, sorted(positions))

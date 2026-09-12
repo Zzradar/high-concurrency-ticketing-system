@@ -1,10 +1,10 @@
 """Real PostgreSQL migration and read/gate SQL boundaries in disposable schemas."""
 from pathlib import Path
-import subprocess,re,unittest,uuid
+import os,subprocess,re,unittest,uuid
 ROOT=Path(__file__).resolve().parents[1]
 class SalesMigrationTest(unittest.TestCase):
     def sql(self,text,ok=True):
-        r=subprocess.run(['docker','exec','-i','phase15-postgres','psql','-U','postgres','-qAt','-v','ON_ERROR_STOP=1'],input=self.prefix+text,capture_output=True,text=True,encoding='utf-8')
+        r=subprocess.run(['docker','exec','-i',os.environ.get('PHASE15_PG_CONTAINER','phase15-postgres'),'psql','-U','postgres','-qAt','-v','ON_ERROR_STOP=1'],input=self.prefix+text,capture_output=True,text=True,encoding='utf-8')
         if ok:self.assertEqual(r.returncode,0,r.stderr)
         else:self.assertNotEqual(r.returncode,0)
         return r.stdout.strip()

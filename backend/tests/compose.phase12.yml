@@ -37,13 +37,14 @@ services:
       - ../db/migrations/009_add_buyer_full_refund.sql:/docker-entrypoint-initdb.d/009_add_buyer_full_refund.sql:ro
       - ../db/migrations/010_add_seat_availability_read_model.sql:/docker-entrypoint-initdb.d/010_add_seat_availability_read_model.sql:ro
       - ../db/migrations/011_add_event_sales_window.sql:/docker-entrypoint-initdb.d/011_add_event_sales_window.sql:ro
-      - ../db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/012_demo_seed.sql:ro
-      - ../db/tests/001_verify_seed.sql:/docker-entrypoint-initdb.d/013_verify_seed.sql:ro
-      - ../db/tests/002_verify_checkout_schema.sql:/docker-entrypoint-initdb.d/014_verify_checkout_schema.sql:ro
-      - ../db/tests/003_verify_payment_schema.sql:/docker-entrypoint-initdb.d/015_verify_payment_schema.sql:ro
-      - ../db/tests/004_verify_auth_schema.sql:/docker-entrypoint-initdb.d/016_verify_auth_schema.sql:ro
-      - ../db/tests/005_verify_payment_provider_recovery.sql:/docker-entrypoint-initdb.d/017_verify_payment_provider_recovery.sql:ro
-      - ../db/tests/006_verify_buyer_refunds.sql:/docker-entrypoint-initdb.d/018_verify_buyer_refunds.sql:ro
+      - ../db/migrations/012_add_admin_event_publishing.sql:/docker-entrypoint-initdb.d/012_add_admin_event_publishing.sql:ro
+      - ../db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/013_demo_seed.sql:ro
+      - ../db/tests/001_verify_seed.sql:/docker-entrypoint-initdb.d/014_verify_seed.sql:ro
+      - ../db/tests/002_verify_checkout_schema.sql:/docker-entrypoint-initdb.d/015_verify_checkout_schema.sql:ro
+      - ../db/tests/003_verify_payment_schema.sql:/docker-entrypoint-initdb.d/016_verify_payment_schema.sql:ro
+      - ../db/tests/004_verify_auth_schema.sql:/docker-entrypoint-initdb.d/017_verify_auth_schema.sql:ro
+      - ../db/tests/005_verify_payment_provider_recovery.sql:/docker-entrypoint-initdb.d/018_verify_payment_provider_recovery.sql:ro
+      - ../db/tests/006_verify_buyer_refunds.sql:/docker-entrypoint-initdb.d/019_verify_buyer_refunds.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ticketing -d ticketing"]
       interval: 2s

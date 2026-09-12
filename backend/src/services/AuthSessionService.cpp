@@ -60,14 +60,15 @@ void AuthSessionService::validateCachedRecord(
     auto cached = std::make_shared<AuthSessionRecord>(std::move(record));
     repository_.isActive(
         cached->sessionId, tokenHash,
-        [this, tokenHash, cached, done](bool active) mutable {
-            if (!active)
+        [this, tokenHash, cached, done](std::optional<std::string> role) mutable {
+            if (!role)
             {
                 cache_.remove(tokenHash);
                 (*done)({AuthenticateOutcome::Unauthenticated,
                          std::nullopt, tokenHash});
                 return;
             }
+            cached->role = std::move(*role);
             finishRecord(tokenHash, std::move(*cached), std::move(*done));
         },
         [tokenHash, done]() mutable {

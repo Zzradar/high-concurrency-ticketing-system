@@ -17,6 +17,7 @@ Json::Value userJson(const ticketing::AuthSessionRecord &session)
     user["id"] = session.userId;
     user["username"] = session.username;
     user["displayName"] = session.displayName;
+    user["role"] = session.role;
     return user;
 }
 }  // namespace
@@ -101,6 +102,7 @@ void AuthController::me(
     user["id"] = auth->userId;
     user["username"] = auth->username;
     user["displayName"] = auth->displayName;
+    user["role"] = auth->role;
     callback(drogon::HttpResponse::newHttpJsonResponse(user));
 }
 

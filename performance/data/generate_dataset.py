@@ -331,6 +331,10 @@ def build_generation_sql(
 ) -> str:
     layout = profile["seatLayout"]
     zone_sql = zone_case(profile, "name")
+    zone_values = ",\n".join(
+        f"('perf-zone-{index}', 'perf-venue-001', 'ZONE_{index}', {sql_literal(zone['name'])}, {index})"
+        for index, zone in enumerate(profile["priceZones"])
+    )
     price_sql = zone_case(profile, "price")
     session_rows = profile["sessionsPerEvent"]
     copy_rows = "\n".join(
@@ -389,6 +393,7 @@ DELETE FROM user_sessions WHERE user_id LIKE 'perf-user-%';
 DELETE FROM seats WHERE id LIKE 'perf-seat-%';
 DELETE FROM sessions WHERE id LIKE 'perf-session-%';
 DELETE FROM events WHERE id LIKE 'perf-event-%';
+DELETE FROM venue_zones WHERE venue_id LIKE 'perf-venue-%';
 DELETE FROM venues WHERE id LIKE 'perf-venue-%';
 DELETE FROM app_users WHERE id LIKE 'perf-user-%';
 
@@ -419,13 +424,15 @@ SELECT 'perf-session-' || lpad(event_index::text, 3, '0') || '-' || lpad(session
 FROM generate_series(1, {profile['events']}) AS event_index
 CROSS JOIN generate_series(1, {session_rows}) AS session_index;
 
-INSERT INTO seats (id, venue_id, row_no, seat_no, seat_label, zone)
+INSERT INTO venue_zones(id,venue_id,code,name,sort_order) VALUES {zone_values};
+
+INSERT INTO seats (id, venue_id, row_no, seat_no, seat_label, zone_id)
 SELECT 'perf-seat-' || lpad(seat_index::text, 6, '0'),
        'perf-venue-001',
        'R' || lpad(row_index::text, 3, '0'),
        seat_number,
        'R' || lpad(row_index::text, 3, '0') || '-' || lpad(seat_number::text, 3, '0'),
-       {zone_sql}
+       (SELECT id FROM venue_zones WHERE venue_id='perf-venue-001' AND name=({zone_sql}))
 FROM generate_series(1, {shape.seats}) AS seat_index
 CROSS JOIN LATERAL (
     SELECT ((seat_index - 1) / {layout['seatsPerRow']}) + 1 AS row_index,

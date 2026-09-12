@@ -13,6 +13,7 @@ ticketing::AuthSessionRecord mapSession(const drogon::orm::Row &row)
         .userId = row["user_id"].as<std::string>(),
         .username = row["username"].as<std::string>(),
         .displayName = row["display_name"].as<std::string>(),
+        .role = row["role"].as<std::string>(),
         .createdAtEpoch = row["created_at_epoch"].as<std::int64_t>(),
         .lastSeenAtEpoch = row["last_seen_at_epoch"].as<std::int64_t>(),
         .idleExpiresAtEpoch = row["idle_expires_at_epoch"].as<std::int64_t>(),
@@ -46,6 +47,7 @@ constexpr const char *kReturningSession = R"SQL(
         user_sessions.user_id,
         (SELECT username FROM app_users WHERE id = user_sessions.user_id) AS username,
         (SELECT display_name FROM app_users WHERE id = user_sessions.user_id) AS display_name,
+        (SELECT role FROM app_users WHERE id = user_sessions.user_id) AS role,
         EXTRACT(EPOCH FROM created_at)::bigint AS created_at_epoch,
         EXTRACT(EPOCH FROM last_seen_at)::bigint AS last_seen_at_epoch,
         EXTRACT(EPOCH FROM idle_expires_at)::bigint AS idle_expires_at_epoch,
@@ -89,7 +91,7 @@ void UserSessionRepository::findActiveByTokenHash(
     constexpr const char *sql = R"SQL(
         SELECT
             auth.id AS session_id, auth.user_id, app_user.username,
-            app_user.display_name,
+            app_user.display_name, app_user.role,
             EXTRACT(EPOCH FROM auth.created_at)::bigint AS created_at_epoch,
             EXTRACT(EPOCH FROM auth.last_seen_at)::bigint AS last_seen_at_epoch,
             EXTRACT(EPOCH FROM auth.idle_expires_at)::bigint AS idle_expires_at_epoch,
@@ -111,11 +113,11 @@ void UserSessionRepository::findActiveByTokenHash(
 void UserSessionRepository::isActive(
     const std::string &sessionId,
     const std::string &tokenHash,
-    std::function<void(bool)> onSuccess,
+    std::function<void(std::optional<std::string>)> onSuccess,
     ErrorCallback onError) const
 {
     constexpr const char *sql = R"SQL(
-        SELECT 1
+        SELECT app_user.role
         FROM user_sessions AS auth
         JOIN app_users AS app_user ON app_user.id = auth.user_id
         WHERE auth.id = $1
@@ -128,7 +130,8 @@ void UserSessionRepository::isActive(
     drogon::app().getDbClient()->execSqlAsync(
         sql,
         [onSuccess = std::move(onSuccess)](const drogon::orm::Result &rows) {
-            onSuccess(!rows.empty());
+            onSuccess(rows.empty() ? std::nullopt
+                                  : std::optional<std::string>{rows.front()["role"].as<std::string>()});
         },
         sessionError("Failed to validate cached user session",
                      std::move(onError)),

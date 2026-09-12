@@ -31,7 +31,7 @@ describe('Phase 12 public types and notifications', () => {
   it('renders all four refund notifications and navigates to their local order', async () => {
     const types: NotificationType[] = ['AUTO_REFUND_COMPLETED', 'AUTO_REFUND_FAILED', 'REFUND_COMPLETED', 'REFUND_FAILED']
     const items: UserNotification[] = types.map((type, index) => ({ id: 'N' + index, orderId: 'O1', type, title: type, message: '退款状态通知 ' + index, createdAt: '2026-09-09T02:00:00.000Z' }))
-    const user = { id: 'test-user', username: 'test', displayName: '测试账户' }
+    const user = { id: 'test-user', username: 'test', displayName: '测试账户', role: 'CUSTOMER' as const }
     vi.spyOn(ticketApi, 'me').mockResolvedValue(user)
     vi.spyOn(ticketApi, 'getNotifications').mockResolvedValue(items)
     vi.spyOn(ticketApi, 'markNotificationRead').mockImplementation(async (id) => {

@@ -53,7 +53,8 @@ void AuthFilter::doFilter(const drogon::HttpRequestPtr &request,
                             .sessionId = result.session->sessionId,
                             .tokenHash = std::move(result.tokenHash),
                             .username = result.session->username,
-                            .displayName = result.session->displayName});
+                            .displayName = result.session->displayName,
+                            .role = result.session->role});
             (*acceptPtr)();
         });
 }

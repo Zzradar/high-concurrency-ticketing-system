@@ -13,6 +13,7 @@ struct UserRecord
     std::string id;
     std::string username;
     std::string displayName;
+    std::string role;
     std::string passwordHash;
     std::string status;
 };

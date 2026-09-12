@@ -267,7 +267,7 @@ async function mockLogin(username: string, password: string) {
   if (username.trim().toLowerCase() !== 'demo' || password !== 'Ticketing123!') {
     throw new TicketApiError('用户名或密码错误。', 'INVALID_CREDENTIALS')
   }
-  mockCurrentUser = { id: 'U-1001', username: 'demo', displayName: 'Demo 用户' }
+  mockCurrentUser = { id: 'U-1001', username: 'demo', displayName: 'Demo 用户', role: 'CUSTOMER' }
   return clone(mockCurrentUser)
 }
 

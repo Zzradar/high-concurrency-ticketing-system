@@ -26,6 +26,7 @@ std::string serialize(const ticketing::AuthSessionRecord &record)
     value["userId"] = record.userId;
     value["username"] = record.username;
     value["displayName"] = record.displayName;
+    value["role"] = record.role;
     value["createdAt"] = Json::Int64(record.createdAtEpoch);
     value["lastSeenAt"] = Json::Int64(record.lastSeenAtEpoch);
     value["idleExpiresAt"] = Json::Int64(record.idleExpiresAtEpoch);
@@ -43,7 +44,8 @@ std::optional<ticketing::AuthSessionRecord> deserialize(
     std::string errors;
     std::istringstream input{encoded};
     if (!Json::parseFromStream(builder, input, &value, &errors) ||
-        !value.isObject())
+        !value.isObject() || !value["role"].isString() ||
+        (value["role"].asString() != "CUSTOMER" && value["role"].asString() != "ADMIN"))
     {
         return std::nullopt;
     }
@@ -52,6 +54,7 @@ std::optional<ticketing::AuthSessionRecord> deserialize(
         .userId = value["userId"].asString(),
         .username = value["username"].asString(),
         .displayName = value["displayName"].asString(),
+        .role = value["role"].asString(),
         .createdAtEpoch = value["createdAt"].asInt64(),
         .lastSeenAtEpoch = value["lastSeenAt"].asInt64(),
         .idleExpiresAtEpoch = value["idleExpiresAt"].asInt64(),

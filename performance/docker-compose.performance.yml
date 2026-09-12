@@ -32,7 +32,8 @@ services:
       - ../backend/db/migrations/009_add_buyer_full_refund.sql:/docker-entrypoint-initdb.d/009_add_buyer_full_refund.sql:ro
       - ../backend/db/migrations/010_add_seat_availability_read_model.sql:/docker-entrypoint-initdb.d/010_add_seat_availability_read_model.sql:ro
       - ../backend/db/migrations/011_add_event_sales_window.sql:/docker-entrypoint-initdb.d/011_add_event_sales_window.sql:ro
-      - ../backend/db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/012_demo_seed.sql:ro
+      - ../backend/db/migrations/012_add_admin_event_publishing.sql:/docker-entrypoint-initdb.d/012_add_admin_event_publishing.sql:ro
+      - ../backend/db/seeds/001_demo_seed.sql:/docker-entrypoint-initdb.d/013_demo_seed.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ticketing -d ticketing"]
       interval: 5s

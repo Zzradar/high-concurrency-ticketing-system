@@ -16,6 +16,7 @@ struct AuthContext
     std::string tokenHash;
     std::string username;
     std::string displayName;
+    std::string role;
 };
 
 inline std::optional<AuthContext> authContext(

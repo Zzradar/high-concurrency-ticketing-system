@@ -47,9 +47,11 @@ class SeatSplitSourceContractTest(unittest.TestCase):
         select_list = layout.split("SELECT", 1)[1].split("FROM", 1)[0]
         self.assertNotIn("status", select_list)
         for field in ("inventory.id", "seat.seat_label", "seat.row_no",
-                      "seat.seat_no", "seat.zone", "inventory.price"):
+                      "seat.seat_no", "zone.name AS zone", "inventory.price"):
             self.assertIn(field, select_list)
         self.assertIn("JOIN seats", layout)
+        self.assertIn("JOIN venue_zones", layout)
+        self.assertIn("ORDER BY zone.sort_order", layout)
 
     def test_shared_overlay_and_capacity_guard_are_reused(self) -> None:
         service = read("src/services/SeatService.cpp")

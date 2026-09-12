@@ -206,6 +206,7 @@ export interface CancelOrderResult {
 }
 
 export interface CurrentUser {
+  role: 'CUSTOMER' | 'ADMIN'
   id: string
   username: string
   displayName: string

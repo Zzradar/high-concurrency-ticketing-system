@@ -4,15 +4,18 @@ INSERT INTO venues (id, name, city) VALUES
     ('venue-shanghai-stadium', '上海体育场', '上海'),
     ('venue-pudong-sports-center', '浦东体育中心', '上海');
 
-INSERT INTO app_users (id, display_name, username, password_hash, status) VALUES
+INSERT INTO app_users (id, display_name, username, password_hash, status, role) VALUES
     (
         'U-1001',
         'Demo 用户',
         'demo',
         '$argon2id$v=19$m=65536,t=2,p=1$tUON0+a+tW+XPmzdPL+RoA$OCRPrfDL//acztJL8FF4AhlFnL7GN03xL4mAsYextRo',
-        'ACTIVE'
+        'ACTIVE', 'CUSTOMER'
     ),
-    ('U-SEED-HOLDER', 'Seed 占座用户', 'seed-holder', '!disabled', 'DISABLED');
+    ('U-SEED-HOLDER', 'Seed 占座用户', 'seed-holder', '!disabled', 'DISABLED', 'CUSTOMER'),
+    ('U-ADMIN-DEMO', 'Demo 管理员', 'admin',
+     '$argon2id$v=19$m=65536,t=2,p=1$tUON0+a+tW+XPmzdPL+RoA$OCRPrfDL//acztJL8FF4AhlFnL7GN03xL4mAsYextRo',
+     'ACTIVE', 'ADMIN');
 
 INSERT INTO events (
     id, primary_venue_id, name, description, status,
@@ -53,6 +56,13 @@ INSERT INTO sessions (
     ('ses-basketball-2002', 'evt-basketball-finals', 'venue-pudong-sports-center', '一号馆',
      '2026-11-09 19:00:00+08', '2026-11-09 17:30:00+08', 'ON_SALE');
 
+-- Demo admin / Ticketing123! is local-only; never use this seed for production provisioning.
+INSERT INTO venue_zones (id, venue_id, code, name, sort_order)
+SELECT 'VZ-DEMO-' || venue.id || '-' || z.sort_order, venue.id, z.code, z.name, z.sort_order
+FROM venues venue CROSS JOIN (VALUES
+    ('STAR', '星光区', 0), ('STAND_A', '看台 A 区', 1), ('STAND_B', '看台 B 区', 2)
+) z(code, name, sort_order);
+
 WITH seat_layout AS (
     SELECT
         venue.id AS venue_id,
@@ -68,14 +78,14 @@ WITH seat_layout AS (
     CROSS JOIN (VALUES ('A'), ('B'), ('C'), ('D'), ('E'), ('F')) AS row_data(row_no)
     CROSS JOIN generate_series(1, 10) AS number_data(seat_no)
 )
-INSERT INTO seats (id, venue_id, row_no, seat_no, seat_label, zone)
+INSERT INTO seats (id, venue_id, row_no, seat_no, seat_label, zone_id)
 SELECT
     'seat-' || venue_id || '-' || seat_label,
     venue_id,
     row_no,
     seat_no,
     seat_label,
-    zone
+    (SELECT id FROM venue_zones z WHERE z.venue_id=seat_layout.venue_id AND z.name=seat_layout.zone)
 FROM seat_layout;
 
 INSERT INTO reservations (id, user_id, session_id, status, expires_at, created_at)

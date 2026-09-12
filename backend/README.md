@@ -72,3 +72,6 @@ ctest --test-dir build --output-on-failure
 
 当前不支持部分退款、退款失败后自动第二次退款、项目外 Dashboard 退款自动认领，
 以及 succeeded → failed 后续冲正。Stripe Sandbox 不是生产资金或真实银行结算证明。
+
+本地 Demo 账号：`demo / Ticketing123!`（CUSTOMER）、`admin / Ticketing123!`（ADMIN）。
+Demo 管理员只供本地演示，生产部署不得使用此 Seed 作为管理员 provisioning 方案。

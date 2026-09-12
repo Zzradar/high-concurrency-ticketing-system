@@ -16,7 +16,7 @@ def verify():
     checks['outboxDuplicates']=int(sql('SELECT count(*) FROM (SELECT session_seat_id,formal_version FROM seat_availability_outbox GROUP BY 1,2 HAVING count(*)>1) x;'))
     checks['outboxBacklog']=int(sql('SELECT count(*) FROM seat_availability_outbox;'))
     checks['activeLeases']=int(sql('SELECT count(*) FROM seat_availability_outbox WHERE lease_until>CURRENT_TIMESTAMP;'))
-    inventory=json.loads(sql("SELECT json_agg(row_to_json(r)) FROM (SELECT i.id,i.session_id,i.status,i.formal_version,s.zone FROM session_seats i JOIN seats s ON s.id=i.seat_id ORDER BY i.session_id,i.id) r;"))
+    inventory=json.loads(sql("SELECT json_agg(row_to_json(r)) FROM (SELECT i.id,i.session_id,i.status,i.formal_version,z.name AS zone FROM session_seats i JOIN seats s ON s.id=i.seat_id JOIN venue_zones z ON z.id=s.zone_id AND z.venue_id=s.venue_id ORDER BY i.session_id,i.id) r;"))
     sessions={r['session_id'] for r in inventory}
     checked=0
     for session in sorted(sessions):

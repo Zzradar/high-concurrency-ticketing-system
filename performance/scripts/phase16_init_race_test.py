@@ -9,7 +9,7 @@ ids=['perf-ss-phase16-'+str(i).zfill(5) for i in (21,22,23)]
 token='barrier-'+uuid.uuid4().hex;generation='race-'+uuid.uuid4().hex
 assert test.hold('Ensure',[ids[0]],'before-snapshot',1,300)==1
 redis('DEL',PREFIX+':meta');redis('SET',PREFIX+':init-lock',token,'PX',15000)
-rows=json.loads(sql("SELECT json_agg(x.row) FROM (SELECT json_build_array(i.id,i.status,i.formal_version::text,s.zone) AS row FROM session_seats i JOIN seats s ON s.id=i.seat_id WHERE i.session_id='"+SESSION+"' ORDER BY s.row_no,s.seat_no,i.id) x;"))
+rows=json.loads(sql("SELECT json_agg(x.row) FROM (SELECT json_build_array(i.id,i.status,i.formal_version::text,z.name) AS row FROM session_seats i JOIN seats s ON s.id=i.seat_id JOIN venue_zones z ON z.id=s.zone_id AND z.venue_id=s.venue_id WHERE i.session_id='"+SESSION+"' ORDER BY z.sort_order,s.row_no,s.seat_no,i.id) x;"))
 assert len(rows)==5000
 try:
     assert test.hold('Ensure',[ids[1]],'after-snapshot',2,300)==1

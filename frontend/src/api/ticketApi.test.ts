@@ -27,6 +27,11 @@ describe('ticketApi contract and mock transaction flow', () => {
     vi.useRealTimers()
   })
 
+  it('preserves CUSTOMER role through mock login and me', async () => {
+    expect((await ticketApi.login('demo', 'Ticketing123!')).role).toBe('CUSTOMER')
+    expect((await ticketApi.me()).role).toBe('CUSTOMER')
+  })
+
   it('uses camelCase reservation fields without a client identity header', () => {
     expect(buildReservationRequest('session-1', ['seat-1'])).toEqual({
       sessionId: 'session-1',

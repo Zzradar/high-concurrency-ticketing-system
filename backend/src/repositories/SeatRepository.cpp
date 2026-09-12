@@ -20,12 +20,14 @@ void SeatRepository::listBySessionId(
             seat.row_no,
             seat.seat_no,
             inventory.status,
-            seat.zone,
+            zone.name AS zone,
             inventory.price
         FROM session_seats AS inventory
         JOIN seats AS seat ON seat.id = inventory.seat_id
+        JOIN venue_zones AS zone ON zone.id = seat.zone_id AND zone.venue_id = seat.venue_id
         WHERE inventory.session_id = $1
-        ORDER BY seat.row_no ASC,
+        ORDER BY zone.sort_order ASC,
+                 seat.row_no ASC,
                  seat.seat_no ASC,
                  inventory.id ASC
     )SQL";
@@ -76,12 +78,14 @@ void SeatRepository::listLayoutBySessionId(
             seat.seat_label,
             seat.row_no,
             seat.seat_no,
-            seat.zone,
+            zone.name AS zone,
             inventory.price
         FROM session_seats AS inventory
         JOIN seats AS seat ON seat.id = inventory.seat_id
+        JOIN venue_zones AS zone ON zone.id = seat.zone_id AND zone.venue_id = seat.venue_id
         WHERE inventory.session_id = $1
-        ORDER BY seat.row_no ASC,
+        ORDER BY zone.sort_order ASC,
+                 seat.row_no ASC,
                  seat.seat_no ASC,
                  inventory.id ASC
     )SQL";

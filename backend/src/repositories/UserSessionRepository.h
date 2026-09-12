@@ -13,6 +13,7 @@ struct AuthSessionRecord
     std::string userId;
     std::string username;
     std::string displayName;
+    std::string role;
     std::int64_t createdAtEpoch{};
     std::int64_t lastSeenAtEpoch{};
     std::int64_t idleExpiresAtEpoch{};
@@ -38,7 +39,7 @@ class UserSessionRepository
                                ErrorCallback onError) const;
     void isActive(const std::string &sessionId,
                   const std::string &tokenHash,
-                  std::function<void(bool)> onSuccess,
+                  std::function<void(std::optional<std::string>)> onSuccess,
                   ErrorCallback onError) const;
     void touch(const std::string &sessionId,
                std::int64_t idleTimeoutSeconds,

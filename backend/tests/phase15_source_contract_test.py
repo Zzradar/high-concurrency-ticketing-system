@@ -12,8 +12,8 @@ class SalesContracts(unittest.TestCase):
             s=(ROOT/path).read_text(encoding='utf-8')
             targets=[l.split('/docker-entrypoint-initdb.d/')[1].split(':')[0] for l in s.splitlines() if '/docker-entrypoint-initdb.d/' in l]
             self.assertIn('011_add_event_sales_window.sql',targets)
-            self.assertIn('012_demo_seed.sql',targets)
-            self.assertLess('011_add_event_sales_window.sql','012_demo_seed.sql')
+            self.assertIn('013_demo_seed.sql',targets)
+            self.assertLess('011_add_event_sales_window.sql','013_demo_seed.sql')
             self.assertNotIn('010_demo_seed.sql',targets)
     def test_hold_ttl_and_checkout_close_preserve_phase16_and_key_fences(self):
         hold=(ROOT/'src/services/SeatHoldService.cpp').read_text(encoding='utf-8')

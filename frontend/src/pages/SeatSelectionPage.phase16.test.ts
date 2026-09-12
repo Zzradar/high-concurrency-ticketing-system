@@ -40,7 +40,7 @@ describe('Phase16 page synchronization', () => {
     const spy=await open()
     await vi.advanceTimersByTimeAsync(2100)
     expect(spy.mock.calls.at(-1)![2]?.since).toBeDefined()
-    vi.spyOn(ticketApi,'me').mockResolvedValue({id:'phase16-auth-change',displayName:'Reader',username:'reader'})
+    vi.spyOn(ticketApi,'me').mockResolvedValue({id:'phase16-auth-change',displayName:'Reader',username:'reader',role:'CUSTOMER'})
     const refresh=authState.refreshMe();await vi.advanceTimersByTimeAsync(20);await refresh
     expect(spy.mock.calls.at(-1)![2]).toEqual({zone:expect.any(String)})
   })

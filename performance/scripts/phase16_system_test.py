@@ -14,8 +14,8 @@ sys.path.insert(0,str(ROOT/'backend/tests'))
 from phase16_api_test import sql
 SESSION='perf-session-phase16'
 PREFIX='ticketing:seat-availability:{'+SESSION+'}'
-BASE='http://127.0.0.1:18096'
-OUTPUT=ROOT/'performance/experiments/phase16-availability'
+BASE=os.environ.get('PHASE16_BASE_URL','http://127.0.0.1:18096')
+OUTPUT=Path(os.environ.get('PHASE16_OUTPUT',str(ROOT/'performance/experiments/phase16-availability')))
 
 def docker(*args):
     r=subprocess.run(['docker',*args],capture_output=True,text=True,encoding='utf-8')
@@ -23,7 +23,7 @@ def docker(*args):
     return r.stdout.strip()
 
 def redis(*args):
-    raw=docker('exec','phase16-api-redis','redis-cli','--json',*[str(x) for x in args])
+    raw=docker('exec',os.environ.get('PHASE16_REDIS_CONTAINER','phase16-api-redis'),'redis-cli','--json',*[str(x) for x in args])
     return raw if args[0]=='INFO' else json.loads(raw)
 
 def request(base=BASE,**params):

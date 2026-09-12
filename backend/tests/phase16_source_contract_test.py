@@ -17,7 +17,7 @@ class Phase16Contract(unittest.TestCase):
         for path in [ROOT/'docker-compose.yml',ROOT/'tests/compose.phase11.yml',ROOT/'tests/compose.phase12.yml',ROOT/'../performance/docker-compose.performance.yml']:
             text=path.read_text(encoding='utf-8')
             self.assertIn('010_add_seat_availability_read_model.sql',text)
-            self.assertLess(text.index('010_add_seat_availability_read_model.sql'),text.index('012_demo_seed.sql'))
+            self.assertLess(text.index('010_add_seat_availability_read_model.sql'),text.index('013_demo_seed.sql'))
 
     def test_worker_lease_and_atomic_model_boundaries(self):
         worker=(ROOT/'src/workers/SeatAvailabilityProjectionWorker.cpp').read_text(encoding='utf-8')

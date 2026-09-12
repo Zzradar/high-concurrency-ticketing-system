@@ -92,9 +92,10 @@ struct Request : std::enable_shared_from_this<Request>
         PerformanceMetrics::availability("init","winner");
         auto self=shared_from_this();
         drogon::app().getDbClient()->execSqlAsync(R"SQL(
-            SELECT inventory.id,inventory.status,inventory.formal_version,seat.zone
+            SELECT inventory.id,inventory.status,inventory.formal_version,zone.name AS zone
             FROM session_seats inventory JOIN seats seat ON seat.id=inventory.seat_id
-            WHERE inventory.session_id=$1 ORDER BY seat.row_no,seat.seat_no,inventory.id
+            JOIN venue_zones zone ON zone.id=seat.zone_id AND zone.venue_id=seat.venue_id
+            WHERE inventory.session_id=$1 ORDER BY zone.sort_order,seat.row_no,seat.seat_no,inventory.id
         )SQL",[self](const drogon::orm::Result &result){
             std::vector<std::array<std::string,4>> rows;
             rows.reserve(result.size());
@@ -192,7 +193,8 @@ struct Request : std::enable_shared_from_this<Request>
         drogon::app().getDbClient()->execSqlAsync(R"SQL(
             SELECT inventory.id,inventory.status FROM session_seats inventory
             JOIN seats seat ON seat.id=inventory.seat_id
-            WHERE inventory.session_id=$1 AND seat.zone=$2 ORDER BY inventory.id
+            JOIN venue_zones zone ON zone.id=seat.zone_id AND zone.venue_id=seat.venue_id
+            WHERE inventory.session_id=$1 AND zone.name=$2 ORDER BY zone.sort_order,seat.row_no,seat.seat_no,inventory.id
         )SQL",[self](const drogon::orm::Result &result){
             std::vector<std::array<std::string,2>> rows;
             std::vector<std::string> ids;
@@ -212,9 +214,10 @@ struct Request : std::enable_shared_from_this<Request>
     {
         auto self=shared_from_this();
         drogon::app().getDbClient()->execSqlAsync(R"SQL(
-            SELECT seat.zone,inventory.status,count(*) AS count FROM session_seats inventory
-            JOIN seats seat ON seat.id=inventory.seat_id WHERE inventory.session_id=$1
-            GROUP BY seat.zone,inventory.status ORDER BY min(seat.row_no),min(seat.seat_no),seat.zone
+            SELECT zone.name AS zone,inventory.status,count(*) AS count FROM session_seats inventory
+            JOIN seats seat ON seat.id=inventory.seat_id
+            JOIN venue_zones zone ON zone.id=seat.zone_id AND zone.venue_id=seat.venue_id WHERE inventory.session_id=$1
+            GROUP BY zone.name,zone.sort_order,inventory.status ORDER BY zone.sort_order,inventory.status
         )SQL",[self,rows=std::move(rows),holds=std::move(holds)](const drogon::orm::Result &result) mutable{
             std::vector<std::array<std::string,3>> groups;
             for(const auto &r:result) groups.push_back({r["zone"].as<std::string>(),r["status"].as<std::string>(),r["count"].as<std::string>()});

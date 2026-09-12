@@ -102,6 +102,7 @@ add_executable(ticketing_backend
     src/security/AuthHttp.cpp
     src/services/LoginRateLimiter.cpp
     src/services/AuthService.cpp
+    src/filters/AdminFilter.cpp
     src/filters/AuthFilter.cpp
     src/controllers/AuthController.cpp
 )
@@ -304,4 +305,15 @@ if(BUILD_TESTING AND TICKETING_PHASE15_EXTERNAL_TESTS)
     add_test(NAME phase15_crash_recovery COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase15_crash_recovery_test.py")
     add_test(NAME phase15_observation COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase15_observation_test.py")
     set_tests_properties(phase15_migration phase15_read_api phase15_reservation phase15_checkout phase15_crash_recovery phase15_observation PROPERTIES RUN_SERIAL TRUE LABELS integration)
+endif()
+
+if(BUILD_TESTING)
+    add_test(NAME phase17_source_contract COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase17_source_contract_test.py")
+endif()
+option(TICKETING_PHASE17_EXTERNAL_TESTS "Build test-only admin probe and register isolated Phase17 gates" OFF)
+if(BUILD_TESTING AND TICKETING_PHASE17_EXTERNAL_TESTS)
+    target_sources(ticketing_backend PRIVATE tests/phase17_auth_probe.cpp)
+    add_test(NAME phase17_schema COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase17_schema_test.py")
+    add_test(NAME phase17_http COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase17_http_test.py")
+    set_tests_properties(phase17_schema phase17_http PROPERTIES RUN_SERIAL TRUE LABELS integration)
 endif()

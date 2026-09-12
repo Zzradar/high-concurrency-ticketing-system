@@ -1,10 +1,10 @@
 """Real HTTP/PG lock tests: final admission and idempotency across closing time."""
-import json,subprocess,unittest,uuid
+import os,json,subprocess,unittest,uuid
 from concurrent.futures import ThreadPoolExecutor
 from phase15_test_support import sql,client,until,SESSION,EVENT,AuthenticatedClient,username_for_user
 class DatabaseLock:
     def __init__(self,statement):
-        self.p=subprocess.Popen(['docker','exec','-i','phase15-api-postgres','psql','-U','postgres','-qAt','-v','ON_ERROR_STOP=1'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,encoding='utf-8')
+        self.p=subprocess.Popen(['docker','exec','-i',os.environ.get('PHASE15_POSTGRES_CONTAINER','phase15-api-postgres'),'psql','-U','postgres','-qAt','-v','ON_ERROR_STOP=1'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,encoding='utf-8')
         self.p.stdin.write("BEGIN;"+statement+";SELECT 'LOCK_READY';\n");self.p.stdin.flush()
         while True:
             line=self.p.stdout.readline().strip()
