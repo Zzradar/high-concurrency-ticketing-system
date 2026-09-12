@@ -1,0 +1,8 @@
+test_backward_clock_normalization_and_forward_refill_cap (__main__.TokenBucket) ... ok
+test_boundaries_retry_and_no_partial_charge (__main__.TokenBucket) ... ok
+test_concurrent_event_budget_is_atomic (__main__.TokenBucket) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 5.939s
+
+OK

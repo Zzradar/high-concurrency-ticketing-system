@@ -1,3 +1,4 @@
+#include "admission/TrafficControl.h"
 #include "controllers/PaymentController.h"
 
 #include "common/ApiResponse.h"
@@ -11,6 +12,10 @@ void PaymentController::getAttempt(
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string paymentAttemptId) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Financial,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     using HttpCallback = std::function<void(const drogon::HttpResponsePtr &)>;
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.getPaymentAttempt(

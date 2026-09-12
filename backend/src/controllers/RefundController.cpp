@@ -1,3 +1,4 @@
+#include "admission/TrafficControl.h"
 #include "controllers/RefundController.h"
 #include "common/ApiResponse.h"
 #include "common/AuthContext.h"
@@ -19,6 +20,10 @@ void RefundController::request(const drogon::HttpRequestPtr &r,
                                std::function<void(const drogon::HttpResponsePtr &)> &&cb,
                                std::string id) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Financial,std::move(cb));
+    if(!trafficReply)return;
+    cb=std::move(*trafficReply);
+
     if (!r->body().empty())
     {
         cb(ticketing::makeErrorResponse(drogon::k400BadRequest, "INVALID_REQUEST_BODY",
@@ -31,5 +36,9 @@ void RefundController::get(const drogon::HttpRequestPtr &r,
                            std::function<void(const drogon::HttpResponsePtr &)> &&cb,
                            std::string id) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Financial,std::move(cb));
+    if(!trafficReply)return;
+    cb=std::move(*trafficReply);
+
     service_.get(id, ticketing::authenticatedUserId(r), respond(std::move(cb)));
 }

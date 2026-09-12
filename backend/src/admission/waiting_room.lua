@@ -79,7 +79,11 @@ for _,index in ipairs({4,5}) do
  local dead=redis.call('ZRANGEBYSCORE',KEYS[index],'-inf',now,'LIMIT',0,batch)
  for _,id in ipairs(dead) do remove(id);expired=expired+1 end
 end
-if now < starts or now >= ends or mode=='PAUSED' or tonumber(redis.call('GET',KEYS[9]) or '0')>now then touch();return {'PAUSED',tostring(now),tostring(expired),'0'} end
+local runtimePaused=tonumber(redis.call('GET',KEYS[9]) or '0')>now
+if now < starts or now >= ends or mode=='PAUSED' or runtimePaused then
+ local reason=now>=ends and 'SALES_ENDED' or now<starts and 'PREQUEUE' or mode=='PAUSED' and 'ADMIN_PAUSED' or 'RUNTIME_PAUSED'
+ touch();return {'PAUSED',tostring(now),tostring(expired),'0',tostring(redis.call('ZCARD',KEYS[2])+redis.call('ZCARD',KEYS[3])),tostring(redis.call('ZCARD',KEYS[5])),reason}
+end
 local previous=tonumber(redis.call('HGET',KEYS[8],'time') or tostring(now))
 local tokens=tonumber(redis.call('HGET',KEYS[8],'tokens') or '0')
 tokens=math.min(rate*1000,tokens+math.max(0,math.min(3600000,now-previous))*rate)

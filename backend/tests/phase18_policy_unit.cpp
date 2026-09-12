@@ -1,3 +1,4 @@
+#include "admission/TrafficConfig.h"
 #include "admission/AdmissionPolicy.h"
 #include <iostream>
 #include "admission/AdmissionConfig.h"
@@ -6,6 +7,16 @@ int main() {
     for(auto bad:{Json::Value(true),Json::Value("2000"),Json::Value(2000.0),Json::Value(0),Json::Value(10001)}) {
         Json::Value config;config["policy_refresh_ms"]=bad;
         try{Config::parse(config);return 5;}catch(const std::invalid_argument &){}
+    }
+    Json::Value traffic;
+    for(auto name:resourceNames)traffic["bulkheads"][name]=16;
+    for(auto name:{"account_capacity","account_rate","event_capacity","event_rate"})traffic[name]=20;
+    if(TrafficConfig::parse(traffic).accountCapacity!=20)return 7;
+    for(auto field:{"account_capacity","account_rate","event_capacity","event_rate"})for(auto bad:{Json::Value{},Json::Value(true),Json::Value("20"),Json::Value(20.0),Json::Value(0),Json::Value(1000001)}){
+      auto invalid=traffic;invalid[field]=bad;try{TrafficConfig::parse(invalid);return 8;}catch(const std::invalid_argument &){}
+    }
+    for(auto name:resourceNames)for(auto bad:{Json::Value{},Json::Value(true),Json::Value("16"),Json::Value(16.0),Json::Value(0),Json::Value(257)}){
+      auto invalid=traffic;invalid["bulkheads"][name]=bad;try{TrafficConfig::parse(invalid);return 9;}catch(const std::invalid_argument &){}
     }
     const std::string modes[]={"OFF","OBSERVE","PAUSED","ENFORCED"};
     const int spaces[]={0,1,2,2};

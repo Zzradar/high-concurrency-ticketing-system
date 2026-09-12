@@ -1,3 +1,4 @@
+#include "admission/TrafficControl.h"
 #include "controllers/StripeWebhookController.h"
 
 #include "common/ApiResponse.h"
@@ -16,6 +17,10 @@ void StripeWebhookController::receive(
     const drogon::HttpRequestPtr &request,
     std::function<void(const drogon::HttpResponsePtr &)> &&callback) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Financial,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     const std::string rawBody{request->body()};
     const auto signature = request->getHeader("Stripe-Signature");
     const auto config = ticketing::StripeConfig::load();

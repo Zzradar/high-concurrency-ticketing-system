@@ -56,6 +56,22 @@
     "client_max_memory_body_size": "64K"
   },
   "custom_config": {
+    "traffic_control": {
+      "bulkheads": {
+            "PUBLIC_STATIC_READ": 16,
+            "ADMISSION": 16,
+            "AVAILABILITY": 16,
+            "INVENTORY_WRITE": 16,
+            "RECOVERY": 16,
+            "FINANCIAL": 16,
+            "ADMIN": 16,
+            "POSTGRES_FALLBACK": 2
+      },
+      "account_capacity": 20,
+      "account_rate": 10,
+      "event_capacity": 200,
+      "event_rate": 100
+},
     "admission": {
       "policy_refresh_ms": 2000,
       "policy_limit": 10000,

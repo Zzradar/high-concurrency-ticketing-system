@@ -1,3 +1,5 @@
+#include "admission/AdmissionRuntime.h"
+#include "admission/TrafficControl.h"
 #include "admission/AdmissionService.h"
 #include "observability/Phase14Metrics.h"
 #include "services/ReservationService.h"
@@ -14,6 +16,7 @@ namespace ticketing
 {
 struct ReservationService::FlowState
 {
+    std::shared_ptr<admission::TrafficControl::Work> traffic=std::make_shared<admission::TrafficControl::Work>();
     bool admissionBypass{false};
     std::string userId;
     std::string idempotencyKey;
@@ -98,7 +101,8 @@ void ReservationService::createReservation(CreateReservationInput input,
     state->idempotencyKey = std::move(input.idempotencyKey);
     state->sessionId = std::move(normalized->first);
     state->seatIds = std::move(normalized->second);
-    state->completion = std::move(completion);
+    state->completion = admission::TrafficControl::bind<CreateReservationResult>(state->traffic,std::move(completion));
+    if(!state->admissionBypass){if(auto response=admission::TrafficControl::transition(state->traffic,admission::Resource::Recovery)){CreateReservationResult failure;failure.admissionResponse=response;finish(state,std::move(failure));return;}}
     queryExisting(state, false);
 }
 
@@ -151,9 +155,12 @@ void ReservationService::queryExisting(
                     return;
                 }
                 if(state->admissionBypass){startTransaction(state);return;}
-                admission::AdmissionService::guard(state->sessionId,state->userId,[this,state](const drogon::HttpResponsePtr &response){
+                admission::AdmissionService::guard(state->sessionId,state->userId,"RESERVATION_CREATE",[this,state](const drogon::HttpResponsePtr &response){
                     if(response){CreateReservationResult failure;failure.admissionResponse=response;finish(state,std::move(failure));}
-                    else startTransaction(state);
+                    else {
+                        if(auto failureResponse=admission::TrafficControl::transition(state->traffic,admission::Resource::InventoryWrite,state->sessionId)){CreateReservationResult failure;failure.admissionResponse=failureResponse;finish(state,std::move(failure));return;}
+                        startTransaction(state);
+                    }
                 });
                 return;
             }
@@ -468,6 +475,7 @@ void ReservationService::finish(const std::shared_ptr<FlowState> &state,
         return;
     }
     state->finished = true;
+    if(result.outcome==CreateReservationOutcome::InternalError)admission::AdmissionRuntime::pauseSession(state->sessionId);
     auto completion = std::move(state->completion);
     completion(std::move(result));
 }

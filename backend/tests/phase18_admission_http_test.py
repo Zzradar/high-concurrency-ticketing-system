@@ -99,7 +99,9 @@ class AdmissionHTTP(unittest.TestCase):
   for _ in range(3):self.current()
   query="SELECT coalesce(sum(calls),0)::bigint FROM pg_stat_statements WHERE query ILIKE '%user_sessions%' AND query NOT ILIKE '%pg_stat_statements%'"
   before=int(sql(query))
-  for _ in range(20):self.assertEqual(self.current()['state'],'ADMITTED')
+  for _ in range(20):
+   time.sleep(.11)  # Respect the separate account status token refill.
+   self.assertEqual(self.current()['state'],'ADMITTED')
   self.assertEqual(int(sql(query))-before,0,'Stable status must not read or touch user_sessions')
   token=self.u.cookie('ticketing_session');cache_key='ticketing:auth-session:'+hashlib.sha256(token.encode()).hexdigest()
   # Only inspect existence. Never print/cache fixture tokens in evidence.

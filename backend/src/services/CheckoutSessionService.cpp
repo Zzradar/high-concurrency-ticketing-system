@@ -1,3 +1,5 @@
+#include "admission/AdmissionRuntime.h"
+#include "admission/TrafficControl.h"
 #include "admission/AdmissionService.h"
 #include "observability/Phase14Metrics.h"
 #include "services/CheckoutSessionService.h"
@@ -16,6 +18,7 @@ namespace ticketing
 {
 struct CheckoutSessionService::CreateState
 {
+    std::shared_ptr<admission::TrafficControl::Work> traffic=std::make_shared<admission::TrafficControl::Work>();
     std::string checkoutSessionId;
     std::string userId;
     std::string sessionId;
@@ -30,6 +33,7 @@ struct CheckoutSessionService::CreateState
 
 struct CheckoutSessionService::ReplaceState
 {
+    std::shared_ptr<admission::TrafficControl::Work> traffic=std::make_shared<admission::TrafficControl::Work>();
     std::string checkoutSessionId;
     std::string userId;
     std::vector<std::string> seatIds;
@@ -49,6 +53,7 @@ struct CheckoutSessionService::ReplaceState
 
 struct CheckoutSessionService::ConfirmState
 {
+    std::shared_ptr<admission::TrafficControl::Work> traffic=std::make_shared<admission::TrafficControl::Work>();
     std::string checkoutSessionId;
     std::string userId;
     std::string idempotencyKey;
@@ -181,9 +186,10 @@ void CheckoutSessionService::create(std::string userId,
     state->userId = std::move(userId);
     state->sessionId = body["sessionId"].asString();
     state->seatIds = std::move(*seatIds);
-    state->completion = std::move(completion);
-    admission::AdmissionService::guard(state->sessionId,state->userId,[this,state](const drogon::HttpResponsePtr &response){
+    state->completion = admission::TrafficControl::bind<CheckoutSessionResult>(state->traffic,std::move(completion));
+    admission::AdmissionService::guard(state->sessionId,state->userId,"CHECKOUT_CREATE",[this,state](const drogon::HttpResponsePtr &response){
         if(response){admissionFailure(state,response);return;}
+        if(auto failure=admission::TrafficControl::transition(state->traffic,admission::Resource::InventoryWrite,state->sessionId)){admissionFailure(state,failure);return;}
     auto client = drogon::app().getDbClient("default");
     Phase14Metrics::newTransactionAsync(client, Phase14Metrics::Flow::Checkout,
         [this, state](const CheckoutSessionRepository::TransactionPtr &tx) {
@@ -347,7 +353,8 @@ void CheckoutSessionService::replaceSeats(std::string checkoutSessionId,
     state->seatIds = std::move(*seatIds);
     state->expectedRevision = body["expectedRevision"].asInt64();
     state->targetRevision = state->expectedRevision + 1;
-    state->completion = std::move(completion);
+    state->completion = admission::TrafficControl::bind<CheckoutSessionResult>(state->traffic,std::move(completion));
+    if(auto response=admission::TrafficControl::transition(state->traffic,admission::Resource::Recovery)){admissionFailure(state,response);return;}
     auto client = drogon::app().getDbClient("default");
     Phase14Metrics::newTransactionAsync(client, Phase14Metrics::Flow::Checkout,
         [this, state](const CheckoutSessionRepository::TransactionPtr &tx) {
@@ -414,8 +421,10 @@ void CheckoutSessionService::replaceLoadCurrentSeats(
                                 state->seatIds.end(),
                                 std::back_inserter(state->removedSeatIds));
             if(state->addedSeatIds.empty()){replaceValidateSeats(state);return;}
-            admission::AdmissionService::guard(state->record.value.sessionId,state->userId,[this,state](const drogon::HttpResponsePtr &response){
-                if(response)admissionFailure(state,response);else replaceValidateSeats(state);
+            admission::AdmissionService::guard(state->record.value.sessionId,state->userId,"SEAT_REPLACE",[this,state](const drogon::HttpResponsePtr &response){
+                if(response){admissionFailure(state,response);return;}
+                if(auto failure=admission::TrafficControl::transition(state->traffic,admission::Resource::InventoryWrite,state->record.value.sessionId)){admissionFailure(state,failure);return;}
+                replaceValidateSeats(state);
             });
         },
         [this, state] {
@@ -646,7 +655,8 @@ void CheckoutSessionService::confirm(std::string checkoutSessionId,
     auto state = std::make_shared<ConfirmState>();
     state->checkoutSessionId = std::move(checkoutSessionId);
     state->userId = std::move(userId);
-    state->completion = std::move(completion);
+    state->completion = admission::TrafficControl::bind<CheckoutSessionResult>(state->traffic,std::move(completion));
+    if(auto response=admission::TrafficControl::transition(state->traffic,admission::Resource::Recovery)){admissionFailure(state,response);return;}
     auto client = drogon::app().getDbClient("default");
     Phase14Metrics::newTransactionAsync(client, Phase14Metrics::Flow::Checkout,
         [this, state](const CheckoutSessionRepository::TransactionPtr &tx) {
@@ -756,8 +766,10 @@ void CheckoutSessionService::confirmLoadSeats(
             state->idempotencyKey =
                 "CHK-CONFIRM-" + drogon::utils::getUuid(true);
             state->disposition = "CONFIRMED_NOW";
-            admission::AdmissionService::guard(state->record.value.sessionId,state->userId,[this,state](const drogon::HttpResponsePtr &response){
-                if(response)admissionFailure(state,response);else confirmEnsureHolds(state);
+            admission::AdmissionService::guard(state->record.value.sessionId,state->userId,"CONFIRM",[this,state](const drogon::HttpResponsePtr &response){
+                if(response){admissionFailure(state,response);return;}
+                if(auto failure=admission::TrafficControl::transition(state->traffic,admission::Resource::InventoryWrite,state->record.value.sessionId)){admissionFailure(state,failure);return;}
+                confirmEnsureHolds(state);
             });
         },
         [state] { failConfirm(state, CheckoutSessionOutcome::InternalError); });
@@ -1426,6 +1438,7 @@ void CheckoutSessionService::failCreate(
     const std::shared_ptr<CreateState> &state,
     CheckoutSessionOutcome outcome) const
 {
+    if(outcome==CheckoutSessionOutcome::InternalError)admission::AdmissionRuntime::pauseSession(state->sessionId);
     if (state->finished)
     {
         return;
@@ -1456,6 +1469,7 @@ void CheckoutSessionService::failReplace(
     const std::shared_ptr<ReplaceState> &state,
     CheckoutSessionOutcome outcome) const
 {
+    if(outcome==CheckoutSessionOutcome::InternalError)admission::AdmissionRuntime::pauseSession(state->record.value.sessionId);
     if (state->finished)
     {
         return;
@@ -1486,6 +1500,7 @@ void CheckoutSessionService::failConfirm(
     const std::shared_ptr<ConfirmState> &state,
     CheckoutSessionOutcome outcome)
 {
+    if(outcome==CheckoutSessionOutcome::InternalError)admission::AdmissionRuntime::pauseSession(state->record.value.sessionId);
     if (state->finished)
     {
         return;

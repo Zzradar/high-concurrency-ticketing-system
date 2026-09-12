@@ -1,3 +1,4 @@
+#include "admission/TrafficControl.h"
 #include "controllers/CheckoutSessionController.h"
 
 #include "common/ApiResponse.h"
@@ -114,6 +115,7 @@ void CheckoutSessionController::create(
     const drogon::HttpRequestPtr &request,
     std::function<void(const drogon::HttpResponsePtr &)> &&callback) const
 {
+
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     const auto json = request->getJsonObject();
     if (!json)
@@ -135,6 +137,10 @@ void CheckoutSessionController::list(
     const drogon::HttpRequestPtr &request,
     std::function<void(const drogon::HttpResponsePtr &)> &&callback) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Recovery,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.listRecoverable(
         ticketing::authenticatedUserId(request),
@@ -172,6 +178,10 @@ void CheckoutSessionController::get(
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string id) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Recovery,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.get(std::move(id),
                  ticketing::authenticatedUserId(request),
@@ -185,6 +195,7 @@ void CheckoutSessionController::replaceSeats(
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string id) const
 {
+
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     const auto json = request->getJsonObject();
     if (!json)
@@ -209,6 +220,7 @@ void CheckoutSessionController::confirm(
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string id) const
 {
+
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.confirm(std::move(id),
                      ticketing::authenticatedUserId(request),
@@ -234,6 +246,10 @@ void CheckoutSessionController::abandon(
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string id) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Recovery,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.abandon(std::move(id),
                      ticketing::authenticatedUserId(request),

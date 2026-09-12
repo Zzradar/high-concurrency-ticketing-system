@@ -1,3 +1,4 @@
+#include "admission/TrafficControl.h"
 #include "controllers/SessionController.h"
 
 #include "common/ApiResponse.h"
@@ -15,6 +16,10 @@ void SessionController::listEventSessions(
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string eventId) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::PublicStaticRead,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.listEventSessions(
         eventId,
@@ -48,6 +53,10 @@ void SessionController::getSession(
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string sessionId) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::PublicStaticRead,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     auto done = std::make_shared<HttpCallback>(std::move(callback));
     service_.getSession(
         sessionId,

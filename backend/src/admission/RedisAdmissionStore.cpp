@@ -1,3 +1,4 @@
+#include "admission/AdmissionMetrics.h"
 #include "admission/RedisAdmissionStore.h"
 #include "admission/AdmissionPolicy.h"
 #include "admission/AdmissionConfig.h"
@@ -28,7 +29,7 @@ RedisAdmissionStore::Result RedisAdmissionStore::run(const RuntimePolicy &p,cons
   std::to_string(score),std::to_string(config.schedulerBatch),bootstrap?"1":"0"};
  for(size_t i=0;i<16;++i)values[i+9]=args[i];
  try {
-  return drogon::app().getRedisClient("traffic_control")->execCommandSync<Result>(
+  auto result=drogon::app().getRedisClient("traffic_control")->execCommandSync<Result>(
    [](const drogon::nosql::RedisResult &result){Result owned;for(const auto &v:result.asArray())owned.push_back(v.asString());return owned;},
    "EVAL %b 9 %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s",scripts::waiting_room.data(),scripts::waiting_room.size(),
    values[0].c_str(),
@@ -56,6 +57,8 @@ RedisAdmissionStore::Result RedisAdmissionStore::run(const RuntimePolicy &p,cons
    values[22].c_str(),
    values[23].c_str(),
    values[24].c_str());
+  if(op!="sync" && op!="tick" && !result.empty())AdmissionMetrics::count("ticketing_admission_decisions_total",{p.mode,result[0],op=="join"?"ADMISSION_JOIN":op=="heartbeat"?"ADMISSION_HEARTBEAT":op=="leave"?"ADMISSION_LEAVE":"ADMISSION_STATUS"});
+  return result;
  }catch(...){return {"UNAVAILABLE"};}
 }
 }

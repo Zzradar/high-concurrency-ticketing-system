@@ -1,3 +1,4 @@
+#include "admission/TrafficControl.h"
 #include "admission/AdmissionRuntime.h"
 #include "controllers/HealthController.h"
 #include "admission/AdmissionPolicy.h"
@@ -11,6 +12,10 @@ void HealthController::health(
     const drogon::HttpRequestPtr &,
     std::function<void(const drogon::HttpResponsePtr &)> &&callback) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::PublicStaticRead,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     using Callback = std::function<void(const drogon::HttpResponsePtr &)>;
     auto callbackPtr = std::make_shared<Callback>(std::move(callback));
     auto database = drogon::app().getDbClient("default");

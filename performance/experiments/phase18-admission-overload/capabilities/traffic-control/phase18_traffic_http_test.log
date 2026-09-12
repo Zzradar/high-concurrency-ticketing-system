@@ -1,0 +1,9 @@
+Isolated API process sample (KiB, threads): {'VmHWM': 93320, 'VmRSS': 33912, 'Threads': 166}
+OFF saturation: requests=32, rejected=16, availability peak=16, drained=0; financial/recovery=200
+test_enforced_429_retry_and_observe_never_intercepts (__main__.TrafficHTTP) ... ok
+test_off_read_saturation_is_bounded_and_releases_permits (__main__.TrafficHTTP) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 8.322s
+
+OK

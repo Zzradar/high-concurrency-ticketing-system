@@ -17,6 +17,7 @@ inline drogon::HttpResponsePtr makeErrorResponse(
 
     auto response = drogon::HttpResponse::newHttpJsonResponse(body);
     response->setStatusCode(status);
+    response->addHeader("Cache-Control", "private, no-store");
     return response;
 }
 }  // namespace ticketing

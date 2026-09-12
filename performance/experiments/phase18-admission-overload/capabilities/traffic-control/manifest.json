@@ -1,0 +1,47 @@
+{
+  "kind": "additional capability evidence; not OFF A/B",
+  "baseCommit": "e7bacedf0039ff9b756f92778702819cef8ba322",
+  "sourceLFNormalizedSha256": {
+    "backend/src/admission/AdmissionConfig.h": "53dc03593889eb8f82a56f4aa43c69c35a56af4684c3c5c2e7d7b3068847341b",
+    "backend/src/admission/AdmissionMetrics.h": "5befcb4980f90d01fc3cccfeb26a4e91ecc1c60da565e5f47672097d81a7f748",
+    "backend/src/admission/AdmissionPolicy.cpp": "cb021a12dfd79a753668368d8d71bb9c00a22c2377bd664ab5f36244a8a02a7c",
+    "backend/src/admission/AdmissionPolicy.h": "554aaf58c639170c0f5b34aa95b120d44d8803ee9fbffc528cd256639cda22e5",
+    "backend/src/admission/AdmissionRuntime.cpp": "6d9515827fd1d702075be955e9e362ad2850b98b705ed10976bdee2eb8ee4f70",
+    "backend/src/admission/AdmissionRuntime.h": "d84caa50fb34af150f6652f7cdbe9c81050a6296737ea88d3ca4162d83f4208f",
+    "backend/src/admission/AdmissionService.cpp": "9efa3cd64b4d9c0e64fcb61b9a176b4df03df5e66d7bd52d1cf18ba0a4cc3d02",
+    "backend/src/admission/AdmissionService.h": "456c5a6b3d2aa2daa6d13db4dbd8184c0f0f6dc254c1865b67aa305a50f26047",
+    "backend/src/admission/Bulkhead.h": "b179c79a5f2125b80abb9904cdf6bbec9f8e13e102d15cffa687cfac5e73b1e7",
+    "backend/src/admission/RedisAdmissionStore.cpp": "f873ff8514d5338df21a42ee11512ce328508630fb6f438b7934252b4d1aa345",
+    "backend/src/admission/RedisAdmissionStore.h": "ad82566d5c48eacff57932c6badd9efb3b64262ef9b53e40e4b8049379a582f2",
+    "backend/src/admission/token_bucket.lua": "bfd50409e2394f0f4c3cfb7dfd7bd9c24140ae2ccf35296fa011f418f7f487d8",
+    "backend/src/admission/TrafficConfig.h": "81f0f578f2f5428c73e1c6ea64631c002f01c893865bfc4cbb301f9e31023863",
+    "backend/src/admission/TrafficControl.cpp": "720466507f4c4944aae769d4da67764c1277b236ea2fe8093c3929478a04f4d0",
+    "backend/src/admission/TrafficControl.h": "ce770df06ccb04f8876c68a36f816e9caed6dbc97de28891c8a0679faa86a691",
+    "backend/src/admission/waiting_room.lua": "f735f4b58b78b5fcb689df8c13349165eb06e8fd06c67e6481fd98fa0f58af39"
+  },
+  "baselineSutSha": "ed51447154418e05ed9e4c49728f3eb114713db9",
+  "deliveryManifestSha256": "19f394034d74e027a19e62f3e61f2ab82c9806b542604d666dc24d948640f338",
+  "baselineManifestSha256": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402",
+  "binarySha256": "820b90695b68d94843df5ec0534e4a86cd437ebb43c2812e7e9d18900cb637f5",
+  "raw": {
+    "ctest.log": "cfb2297812fa2b76d728774a373eb697913ab753f7930fae067723e0f70d3f8a",
+    "phase17_publishing_test.log": "e050e695ab346bc0b526777683dd78ae8dae9ee25351091b796dda695cc8e28d",
+    "phase17_venue_test.log": "97aea2e71651f66058715b3602307b33f05deb971e6ed72c781411c53594fa1a",
+    "phase18_admission_http_test.log": "f2d9fb2669f85a4e6fd9d15db67328acb27009d0ec57cc4f911b6856316ed55d",
+    "phase18_policy_http_test.log": "5ef3a6e6e83219b33b7a66b9a4db53e5d61f6ef5a2b8144b12d1820e50d3eead",
+    "phase18_schema_test.log": "522ea00dd7f656abf59dc6ec0c5032987d18218810cdf43b0e9de30dbe4fe1c9",
+    "phase18_token_bucket_test.log": "39ed76e11de25f7a4b7f6cadaead2917940df780af148281b40ae333e812cef7",
+    "phase18_traffic_http_test.log": "3157dee85572cba2baab8133d25ffc3764811d6380bd65ef78254f50baae9240",
+    "phase18_waiting_room_test.log": "e0b86038998e72b25ea6d76c740fae22804873977d7cfb19e673b3acbab2214c"
+  },
+  "scripts": {
+    "backend/tests/phase18_admission_http_test.py": "450ffc2904d4a0b481c88487dd4f65999f309857ca76f8ac1f5bf62f31ff451f",
+    "backend/tests/phase18_bulkhead_unit.cpp": "702e1420414a77ebcb43c0bc5da1bc9d5e071e1b987c42269d15dcc765e97451",
+    "backend/tests/phase18_policy_http_test.py": "5ae4c422dd847deb450120edc438268429423d864413ac34b6dd3fc245587bfa",
+    "backend/tests/phase18_policy_unit.cpp": "c9e4947a076aa708391f60ba271e289b893bddcce1862dc0af531fb6c39936d1",
+    "backend/tests/phase18_schema_test.py": "0139e9a8e5f3be3b6aef0d18df45d8899522e155b7120974b0fd363480b20cd1",
+    "backend/tests/phase18_token_bucket_test.py": "263f6671c60fdab0a091419ee05d7c54db34b647a44e6ac2a1f5db1e5dac62b1",
+    "backend/tests/phase18_traffic_http_test.py": "52d7a7d8f8ab993c37d58847de349b61641c8e18d96e9545602fbd593c3d3707",
+    "backend/tests/phase18_waiting_room_test.py": "9cb7157d4a9f188cf104a6f33bf228ef92872fc1f68b5cf87b14d265d4694ddd"
+  }
+}

@@ -40,6 +40,17 @@ class PerformanceMetricsSourceContractTest(unittest.TestCase):
         self.assertEqual(
             set(by_name),
             {
+                "ticketing_traffic_peak_inflight",
+                "ticketing_admission_runtime_pauses_total",
+                "ticketing_admission_decisions_total",
+                "ticketing_rate_limit_rejections_total",
+                "ticketing_overload_rejections_total",
+                "ticketing_traffic_inflight",
+                "ticketing_admission_queue_depth",
+                "ticketing_admission_active",
+                "ticketing_admission_expirations_total",
+                "ticketing_admission_scheduler_runs_total",
+                "ticketing_admission_auth_fallback_total",
                 "ticketing_sales_window_rejections_total",
                 "ticketing_availability_events_total",
                 "ticketing_availability_duration_seconds",

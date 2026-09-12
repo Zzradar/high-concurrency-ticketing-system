@@ -1,3 +1,4 @@
+#include "admission/TrafficControl.h"
 #include "controllers/NotificationController.h"
 
 #include "common/ApiResponse.h"
@@ -29,6 +30,10 @@ void NotificationController::list(
     const drogon::HttpRequestPtr &request,
     std::function<void(const drogon::HttpResponsePtr &)> &&callback) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Availability,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.list(
         ticketing::authenticatedUserId(request),
@@ -49,6 +54,10 @@ void NotificationController::markRead(
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string notificationId) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Availability,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.markRead(
         std::move(notificationId), ticketing::authenticatedUserId(request),

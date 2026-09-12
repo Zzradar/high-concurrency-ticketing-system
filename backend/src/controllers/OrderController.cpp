@@ -1,3 +1,4 @@
+#include "admission/TrafficControl.h"
 #include "controllers/OrderController.h"
 
 #include "common/ApiResponse.h"
@@ -11,6 +12,10 @@ void OrderController::listOrders(
     const drogon::HttpRequestPtr &request,
     std::function<void(const drogon::HttpResponsePtr &)> &&callback) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Financial,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     std::size_t limit = 20;
     const auto limitText = request->getParameter("limit");
     if (!limitText.empty())
@@ -60,6 +65,10 @@ void OrderController::getOrder(
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string orderId) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Financial,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     using HttpCallback =
         std::function<void(const drogon::HttpResponsePtr &)>;
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
@@ -108,6 +117,10 @@ void OrderController::cancelOrder(
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string orderId) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Financial,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     using HttpCallback = std::function<void(const drogon::HttpResponsePtr &)>;
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.cancelOrder(
@@ -157,6 +170,10 @@ void OrderController::payOrder(
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string orderId) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Financial,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     using HttpCallback = std::function<void(const drogon::HttpResponsePtr &)>;
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     paymentService_.startPayment(

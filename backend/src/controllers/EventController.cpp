@@ -1,3 +1,4 @@
+#include "admission/TrafficControl.h"
 #include "controllers/EventController.h"
 
 #include "common/ApiResponse.h"
@@ -14,6 +15,10 @@ void EventController::listEvents(
     const drogon::HttpRequestPtr &,
     std::function<void(const drogon::HttpResponsePtr &)> &&callback) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::PublicStaticRead,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.listEvents(
         [callbackPtr](std::vector<ticketing::TicketEvent> events) {
@@ -37,6 +42,10 @@ void EventController::getEvent(
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string eventId) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::PublicStaticRead,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.getEvent(
         eventId,

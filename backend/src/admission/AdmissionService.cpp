@@ -1,3 +1,4 @@
+#include "admission/TrafficControl.h"
 #include "admission/AdmissionService.h"
 #include "admission/AdmissionRuntime.h"
 #include "admission/AdmissionConfig.h"
@@ -28,7 +29,7 @@ drogon::HttpResponsePtr error(const char *code,drogon::HttpStatusCode status=dro
 void submit(std::function<void(admin::Reply)> task,admin::Reply completion) {
  auto done=std::make_shared<admin::Reply>(std::move(completion));
  unsigned current=inflight.load();
- do {if(current>=4){(*done)(error("SYSTEM_OVERLOADED"));return;}}while(!inflight.compare_exchange_weak(current,current+1));
+ do {if(current>=4){(*done)(TrafficControl::overloaded(Resource::Admission));return;}}while(!inflight.compare_exchange_weak(current,current+1));
  auto claimed=std::make_shared<std::atomic<bool>>(false);
  auto finish=[claimed,done](const drogon::HttpResponsePtr &response){if(!claimed->exchange(true)){--inflight;(*done)(response);}};
  auto failure=[finish]{finish(error("ADMISSION_UNAVAILABLE"));};
@@ -54,6 +55,10 @@ void AdmissionService::request(std::string event,std::string user,std::string op
   const auto found=AdmissionRuntime::policy(event);
   if(!found || !found->published){done(error("EVENT_NOT_FOUND",drogon::k404NotFound));return;}
   const auto &p=*found;
+  if(p.mode!="OFF" && op!="leave") {
+   const auto requestClass=op=="join"?"ADMISSION_JOIN":op=="heartbeat"?"ADMISSION_HEARTBEAT":"ADMISSION_STATUS";
+   if(auto limited=TrafficControl::rate(p,user,requestClass)){done(limited);return;}
+  }
   if(p.mode=="OFF" || p.mode=="OBSERVE") {
    if(p.mode=="OBSERVE" && op=="join")RedisAdmissionStore::run(p,op,user);
    done(response(p,{"NOT_REQUIRED"}));return;
@@ -68,13 +73,13 @@ void AdmissionService::request(std::string event,std::string user,std::string op
   else done(response(p,result));
  },std::move(reply));
 }
-void AdmissionService::guard(std::string session,std::string user,admin::Reply completion) {
+void AdmissionService::guard(std::string session,std::string user,std::string operation,admin::Reply completion) {
  if(AdmissionRuntime::ready()) {
   const auto event=AdmissionRuntime::eventForSession(session);
   const auto policy=event?AdmissionRuntime::policy(*event):std::nullopt;
   if(policy && policy->mode=="OFF"){completion(nullptr);return;}
  }
- submit([session,user](admin::Reply done){
+ submit([session,user,operation](admin::Reply done){
   if(!AdmissionRuntime::ready()){done(error("ADMISSION_UNAVAILABLE"));return;}
   const auto event=AdmissionRuntime::eventForSession(session);
   // Missing sessions remain subject to the original PostgreSQL not-found/DRAFT check.
@@ -88,6 +93,7 @@ void AdmissionService::guard(std::string session,std::string user,admin::Reply c
   const auto p=AdmissionRuntime::policy(*event);
   if(!p || p->mode=="OFF"){done(nullptr);return;}
   if(!p->published){done(error("SESSION_NOT_FOUND",drogon::k404NotFound));return;}
+  if(auto limited=TrafficControl::rate(*p,user,operation)){done(limited);return;}
   if(p->mode=="OBSERVE") {if(!user.empty()){RedisAdmissionStore::run(*p,"join",user);RedisAdmissionStore::run(*p,"status",user);}done(nullptr);return;}
   if(user.empty()){done(error("UNAUTHENTICATED",drogon::k401Unauthorized));return;}
   if(!p->redisReady){done(error("ADMISSION_UNAVAILABLE"));return;}

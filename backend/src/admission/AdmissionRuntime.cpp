@@ -1,3 +1,5 @@
+#include "admission/TrafficControl.h"
+#include "admission/AdmissionMetrics.h"
 #include "admission/AdmissionRuntime.h"
 #include "admission/AdmissionPolicy.h"
 #include "admission/AdmissionConfig.h"
@@ -15,7 +17,9 @@ bool stopping=false,loaded=false,dirty=true;
 uint64_t invalidation=0;
 std::thread worker;
 std::unordered_map<std::string,RuntimePolicy> policies;
+std::unordered_map<std::string,std::chrono::steady_clock::time_point> pauses;
 std::unordered_map<std::string,std::string> sessions;
+std::unordered_map<std::string,std::pair<double,double>> queueSizes;
 std::chrono::steady_clock::time_point refreshed;
 const std::string scheduleKey="ticketing:admission:schedule";
 void reset(const RuntimePolicy &p) {
@@ -82,19 +86,34 @@ void refresh(const Config &config) {
  policies=std::move(next);sessions=std::move(nextSessions);loaded=true;dirty=false;refreshed=std::chrono::steady_clock::now();
 }
 void tick(const Config &config) {
+ TrafficControl::sample();
  std::unordered_map<std::string,RuntimePolicy> byHash;
  {std::lock_guard lock(mutex);if(!loaded || dirty)return;for(const auto &[id,p]:policies)if(p.mode!="OFF"&&p.published&&p.redisReady&&p.endsMs>trantor::Date::now().microSecondsSinceEpoch()/1000)byHash.emplace(RedisAdmissionStore::eventHash(id),p);}
- if(byHash.empty())return;
+ if(byHash.empty()){queueSizes.clear();AdmissionMetrics::gauge("ticketing_admission_queue_depth",{},0);AdmissionMetrics::gauge("ticketing_admission_active",{},0);return;}
  const auto redis=drogon::app().getRedisClient("traffic_control");
- const auto due=redis->execCommandSync<std::vector<std::string>>([](const drogon::nosql::RedisResult &r){std::vector<std::string> v;for(const auto &x:r.asArray())v.push_back(x.asString());return v;},"ZRANGE %s 0 %d",scheduleKey.c_str(),config.schedulerBatch-1);
+ std::vector<RuntimePolicy> pending;
+ {std::lock_guard lock(mutex);const auto now=std::chrono::steady_clock::now();
+  for(auto it=pauses.begin();it!=pauses.end();){if(now>=it->second){it=pauses.erase(it);continue;}const auto p=policies.find(it->first);if(p!=policies.end()&&p->second.redisReady&&pending.size()<static_cast<size_t>(config.schedulerBatch))pending.push_back(p->second);++it;}
+ }
+ for(const auto &p:pending){const auto key=RedisAdmissionStore::keys(p)[8];
+  const auto written=redis->execCommandSync<int64_t>([](const drogon::nosql::RedisResult &r){return r.asInteger();},
+   "EVAL %s 1 %s", "if redis.call('EXISTS',KEYS[1])==1 then return 0 end local t=redis.call('TIME');local n=tonumber(t[1])*1000+math.floor(tonumber(t[2])/1000);redis.call('SET',KEYS[1],n+5000,'PX',5000);return 1",key.c_str());
+  if(written)AdmissionMetrics::count("ticketing_admission_runtime_pauses_total",{});
+ }
+ const auto due=redis->execCommandSync<std::vector<std::string>>([](const drogon::nosql::RedisResult &r){std::vector<std::string> v;for(const auto &x:r.asArray())v.push_back(x.asString());return v;},"EVAL %s 1 %s %d", "local t=redis.call('TIME');local n=tonumber(t[1])*1000+math.floor(tonumber(t[2])/1000);return redis.call('ZRANGEBYSCORE',KEYS[1],'-inf',n,'LIMIT',0,ARGV[1])",scheduleKey.c_str(),config.schedulerBatch);
  for(const auto &hash:due) {
   const auto found=byHash.find(hash);
-  if(found==byHash.end()){redis->execCommandSync<int64_t>([](const drogon::nosql::RedisResult &r){return r.asInteger();},"ZREM %s %s",scheduleKey.c_str(),hash.c_str());continue;}
+  if(found==byHash.end()){queueSizes.erase(hash);redis->execCommandSync<int64_t>([](const drogon::nosql::RedisResult &r){return r.asInteger();},"ZREM %s %s",scheduleKey.c_str(),hash.c_str());continue;}
   const auto result=RedisAdmissionStore::run(found->second,"tick");
   if(result.size()<2 || (result[0]!="OK"&&result[0]!="PAUSED")){AdmissionRuntime::invalidate();return;}
+  AdmissionMetrics::count("ticketing_admission_scheduler_runs_total",{result.size()>6?result[6]:"OK"});
+  if(result.size()>2)AdmissionMetrics::count("ticketing_admission_expirations_total",{},std::stod(result[2]));
+  if(result.size()>5)queueSizes[hash]={std::stod(result[4]),std::stod(result[5])};
   const auto next=std::stoll(result[1])+config.schedulerMs;
   redis->execCommandSync<int64_t>([](const drogon::nosql::RedisResult &r){return r.asInteger();},"ZADD %s %lld %s",scheduleKey.c_str(),static_cast<long long>(next),hash.c_str());
  }
+ double depth=0,active=0;for(const auto &[hash,size]:queueSizes){depth+=size.first;active+=size.second;}
+ AdmissionMetrics::gauge("ticketing_admission_queue_depth",{},depth);AdmissionMetrics::gauge("ticketing_admission_active",{},active);
  redis->execCommandSync<int64_t>([](const drogon::nosql::RedisResult &r){return r.asInteger();},"EXPIRE %s 604800",scheduleKey.c_str());
 }
 }
@@ -110,6 +129,12 @@ void AdmissionRuntime::start() {
  });
 }
 void AdmissionRuntime::stop(){{std::lock_guard lock(mutex);stopping=true;}wake.notify_all();if(worker.joinable())worker.join();}
+void AdmissionRuntime::pauseSession(const std::string &session){
+ std::lock_guard lock(mutex);const auto event=sessions.find(session);if(event==sessions.end())return;
+ const auto p=policies.find(event->second);if(p==policies.end()||p->second.mode=="OFF")return;
+ // Registry bounds the cardinality. Repeated rejections do not extend the cooldown.
+ pauses.try_emplace(event->second,std::chrono::steady_clock::now()+std::chrono::seconds(5));
+}
 void AdmissionRuntime::invalidate(){std::lock_guard lock(mutex);dirty=true;++invalidation;}
 bool AdmissionRuntime::ready(){std::lock_guard lock(mutex);return loaded&&!dirty&&std::chrono::steady_clock::now()-refreshed<std::chrono::seconds(15);}
 std::optional<RuntimePolicy> AdmissionRuntime::policy(const std::string &id){std::lock_guard lock(mutex);const auto p=policies.find(id);return p==policies.end()?std::nullopt:std::optional<RuntimePolicy>(p->second);}

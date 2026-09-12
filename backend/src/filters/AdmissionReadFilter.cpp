@@ -1,3 +1,4 @@
+#include "admission/TrafficControl.h"
 #include "filters/AdmissionReadFilter.h"
 
 #include "common/ApiResponse.h"
@@ -22,6 +23,7 @@ void AdmissionReadFilter::doFilter(const drogon::HttpRequestPtr &request,
     service_.authenticateReadOnly(
         rawToken,
         [request, rejectPtr, acceptPtr](AuthenticateResult result) {
+            if(result.outcome==AuthenticateOutcome::Overloaded){(*rejectPtr)(admission::TrafficControl::overloaded(admission::Resource::PostgresFallback));return;}
             if (result.outcome == AuthenticateOutcome::Unavailable)
             {
                 (*rejectPtr)(makeErrorResponse(drogon::k503ServiceUnavailable,

@@ -1,3 +1,4 @@
+#include "admission/TrafficControl.h"
 #include "admission/AdmissionService.h"
 #include "admission/AdmissionRuntime.h"
 #include "admission/AdmissionConfig.h"
@@ -143,6 +144,7 @@ int main(int argc, char *argv[])
         ticketing::SeatHoldService::validateConfiguration();
         ticketing::PaymentProviderFactory::validateConfiguration();
         ticketing::AuthConfig::validate();
+        ticketing::admission::TrafficControl::configure();
         (void)ticketing::admin::limits();
         (void)ticketing::admission::Config::parse(drogon::app().getCustomConfig()["admission"]);
         ticketing::PerformanceMetrics::registerWithApplication();

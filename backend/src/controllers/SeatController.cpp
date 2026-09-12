@@ -1,3 +1,4 @@
+#include "admission/TrafficControl.h"
 #include "admission/AdmissionService.h"
 #include "admission/AdmissionRuntime.h"
 #include "common/AuthContext.h"
@@ -43,6 +44,10 @@ void SeatController::listSeatLayout(
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string sessionId) const
 {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::PublicStaticRead,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     (void)request;
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
     service_.listSeatLayout(
@@ -277,20 +282,29 @@ void SeatController::authorizeRead(const drogon::HttpRequestPtr &request,const s
     if(policy && (policy->mode=="ENFORCED" || policy->mode=="PAUSED")) {
         authService_.authenticateReadOnly(request->getCookie(ticketing::AuthConfig::load().cookieName),
             [session,accept=std::move(accept),reject=std::move(reject)](ticketing::AuthenticateResult auth){
+                if(auth.outcome==ticketing::AuthenticateOutcome::Overloaded){reject(ticketing::admission::TrafficControl::overloaded(ticketing::admission::Resource::PostgresFallback));return;}
                 if(auth.outcome!=ticketing::AuthenticateOutcome::Authenticated || !auth.session) {
                     reject(ticketing::makeErrorResponse(auth.outcome==ticketing::AuthenticateOutcome::Unavailable?drogon::k503ServiceUnavailable:drogon::k401Unauthorized,
                         auth.outcome==ticketing::AuthenticateOutcome::Unavailable?"AUTH_UNAVAILABLE":"UNAUTHENTICATED","Authentication required"));return;
                 }
-                ticketing::admission::AdmissionService::guard(session,auth.session->userId,[accept,reject](const drogon::HttpResponsePtr &response){if(response)reject(response);else accept();});
+                ticketing::admission::AdmissionService::guard(session,auth.session->userId,"AVAILABILITY_SYNC",[accept,reject](const drogon::HttpResponsePtr &response){if(response)reject(response);else accept();});
             });return;
     }
-    ticketing::admission::AdmissionService::guard(session,"",[accept,reject](const drogon::HttpResponsePtr &response){if(response)reject(response);else accept();});
+    ticketing::admission::AdmissionService::guard(session,"","AVAILABILITY_SYNC",[accept,reject](const drogon::HttpResponsePtr &response){if(response)reject(response);else accept();});
 }
 void SeatController::listSessionSeats(const drogon::HttpRequestPtr &request,HttpCallback &&callback,std::string session) const {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Availability,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     auto done=std::make_shared<HttpCallback>(std::move(callback));
     authorizeRead(request,session,[this,request,session,done]{listSessionSeatsAuthorized(request,HttpCallback(*done),session);},*done);
 }
 void SeatController::listSeatAvailability(const drogon::HttpRequestPtr &request,HttpCallback &&callback,std::string session) const {
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Availability,std::move(callback));
+    if(!trafficReply)return;
+    callback=std::move(*trafficReply);
+
     auto done=std::make_shared<HttpCallback>(std::move(callback));
     authorizeRead(request,session,[this,request,session,done]{listSeatAvailabilityAuthorized(request,HttpCallback(*done),session);},*done);
 }

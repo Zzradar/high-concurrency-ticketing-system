@@ -70,6 +70,13 @@ class WaitingRoom(unittest.TestCase):
   self.mode='ENFORCED';self.version=4;self.call('sync');self.ready();self.call('tick');self.assertEqual(self.call('status')[0],'ADMITTED')
   self.version=3;self.assertEqual(self.call('sync')[0],'STALE');self.assertEqual(self.call('join')[0],'RESET_REQUIRED')
   self.version=4;command('DEL',self.keys()[0]);self.assertEqual(self.call('status')[0],'RESET_REQUIRED');self.assertEqual(self.call('sync',bootstrap='0')[0],'MISSING')
+ def test_runtime_cooldown_keeps_positions_and_resumes_with_distinct_reason(self):
+  self.call('join');self.ready()
+  clock=command('TIME');now=int(clock[0])*1000+int(clock[1])//1000
+  command('SET',self.keys()[8],now+5000,'PX',5000)
+  paused=self.call('tick');self.assertEqual(paused[0],'PAUSED');self.assertEqual(paused[6],'RUNTIME_PAUSED')
+  self.assertEqual(command('ZCARD',self.keys()[4]),0);self.assertEqual(command('ZCARD',self.keys()[1]),1)
+  command('DEL',self.keys()[8]);self.call('tick');self.assertEqual(self.call('status')[0],'ADMITTED')
  def test_preopen_ended_leave_and_short_lua_failure(self):
   self.starts=self.now+100000;self.ends=self.now+200000
   self.assertEqual(self.call('leave')[0],'NOT_JOINED');self.assertEqual(self.call('leave')[0],'NOT_JOINED')

@@ -1,3 +1,4 @@
+#include "admission/TrafficControl.h"
 #include "controllers/AdmissionController.h"
 #include "admission/AdmissionService.h"
 #include "common/AuthContext.h"
@@ -17,6 +18,18 @@ void handle(const drogon::HttpRequestPtr &r,ticketing::admin::Reply reply,std::s
  ticketing::admission::AdmissionService::request(event,ticketing::authenticatedUserId(r),op,generation,std::move(reply));
 }
 }
-void AdmissionController::status(const drogon::HttpRequestPtr &r,ticketing::admin::Reply &&reply,std::string event)const{handle(r,std::move(reply),event,"status");}
-void AdmissionController::mutate(const drogon::HttpRequestPtr &r,ticketing::admin::Reply &&reply,std::string event)const{handle(r,std::move(reply),event,r->method()==drogon::Delete?"leave":"join");}
-void AdmissionController::heartbeat(const drogon::HttpRequestPtr &r,ticketing::admin::Reply &&reply,std::string event)const{handle(r,std::move(reply),event,"heartbeat");}
+void AdmissionController::status(const drogon::HttpRequestPtr &r,ticketing::admin::Reply &&reply,std::string event)const{
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Admission,std::move(reply));
+    if(!trafficReply)return;
+    reply=std::move(*trafficReply);
+handle(r,std::move(reply),event,"status");}
+void AdmissionController::mutate(const drogon::HttpRequestPtr &r,ticketing::admin::Reply &&reply,std::string event)const{
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Admission,std::move(reply));
+    if(!trafficReply)return;
+    reply=std::move(*trafficReply);
+handle(r,std::move(reply),event,r->method()==drogon::Delete?"leave":"join");}
+void AdmissionController::heartbeat(const drogon::HttpRequestPtr &r,ticketing::admin::Reply &&reply,std::string event)const{
+    auto trafficReply=ticketing::admission::TrafficControl::wrap(ticketing::admission::Resource::Admission,std::move(reply));
+    if(!trafficReply)return;
+    reply=std::move(*trafficReply);
+handle(r,std::move(reply),event,"heartbeat");}

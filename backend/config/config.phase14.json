@@ -65,6 +65,17 @@
       "config": {
         "path": "/metrics",
         "collectors": [
+{"name": "ticketing_traffic_peak_inflight", "help": "Phase18 observed bounded request concurrency high water", "type": "gauge", "labels": ["request_class"]},
+{"name":"ticketing_admission_runtime_pauses_total","type":"counter","help":"Event cooldown publications","labels":[]},
+          {"name": "ticketing_admission_decisions_total", "help": "Phase18 bounded ticketing_admission_decisions_total", "type": "counter", "labels": ["mode", "outcome", "request_class"]},
+{"name": "ticketing_rate_limit_rejections_total", "help": "Phase18 bounded ticketing_rate_limit_rejections_total", "type": "counter", "labels": ["mode", "scope", "request_class"]},
+{"name": "ticketing_overload_rejections_total", "help": "Phase18 bounded ticketing_overload_rejections_total", "type": "counter", "labels": ["resource"]},
+{"name": "ticketing_traffic_inflight", "help": "Phase18 bounded ticketing_traffic_inflight", "type": "gauge", "labels": ["request_class"]},
+{"name": "ticketing_admission_queue_depth", "help": "Phase18 bounded ticketing_admission_queue_depth", "type": "gauge", "labels": []},
+{"name": "ticketing_admission_active", "help": "Phase18 bounded ticketing_admission_active", "type": "gauge", "labels": []},
+{"name": "ticketing_admission_expirations_total", "help": "Phase18 bounded ticketing_admission_expirations_total", "type": "counter", "labels": []},
+{"name": "ticketing_admission_scheduler_runs_total", "help": "Phase18 bounded ticketing_admission_scheduler_runs_total", "type": "counter", "labels": ["outcome"]},
+{"name": "ticketing_admission_auth_fallback_total", "help": "Phase18 bounded ticketing_admission_auth_fallback_total", "type": "counter", "labels": ["outcome"]},
           {"name":"ticketing_sales_window_rejections_total","help":"Sales window business rejections by entrypoint and reason","type":"counter","labels":["entrypoint","reason"]},
 {
   "name": "ticketing_availability_events_total",
@@ -387,6 +398,22 @@
     }
   ],
   "custom_config": {
+    "traffic_control": {
+      "bulkheads": {
+            "PUBLIC_STATIC_READ": 16,
+            "ADMISSION": 16,
+            "AVAILABILITY": 16,
+            "INVENTORY_WRITE": 16,
+            "RECOVERY": 16,
+            "FINANCIAL": 16,
+            "ADMIN": 16,
+            "POSTGRES_FALLBACK": 2
+      },
+      "account_capacity": 20,
+      "account_rate": 10,
+      "event_capacity": 200,
+      "event_rate": 100
+},
     "admission": {
       "policy_refresh_ms": 2000,
       "policy_limit": 10000,

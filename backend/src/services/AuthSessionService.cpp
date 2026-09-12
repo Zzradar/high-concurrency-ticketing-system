@@ -1,3 +1,5 @@
+#include "admission/AdmissionMetrics.h"
+#include "admission/TrafficControl.h"
 #include "services/AuthSessionService.h"
 
 #include "security/AuthConfig.h"
@@ -83,11 +85,15 @@ void AuthSessionService::authenticateReadOnly(std::string rawToken, Completion c
         if(reject){completion({AuthenticateOutcome::Unavailable,std::nullopt,tokenHash});return;}
         if(!first)return;
         // The existing strict path remains authoritative on misses, including role/revocation.
-        authenticate(rawToken,[tokenHash](AuthenticateResult authenticated) {
+        auto permit=admission::TrafficControl::acquire(admission::Resource::PostgresFallback);
+        auto completed=[tokenHash,permit](AuthenticateResult authenticated) {
             std::vector<Completion> callbacks;
             {std::lock_guard lock(pendingMutex);callbacks=std::move(pending.at(tokenHash));pending.erase(tokenHash);}
             for(auto &callback:callbacks)callback(authenticated);
-        });
+        };
+        if(!permit){admission::AdmissionMetrics::count("ticketing_admission_auth_fallback_total",{"OVERLOADED"});completed({AuthenticateOutcome::Overloaded,std::nullopt,tokenHash});return;}
+        admission::AdmissionMetrics::count("ticketing_admission_auth_fallback_total",{"STARTED"});
+        authenticate(rawToken,std::move(completed));
     });
 }
 
