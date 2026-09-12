@@ -15,6 +15,18 @@ class SalesContracts(unittest.TestCase):
             self.assertIn('012_demo_seed.sql',targets)
             self.assertLess('011_add_event_sales_window.sql','012_demo_seed.sql')
             self.assertNotIn('010_demo_seed.sql',targets)
+    def test_hold_ttl_and_checkout_close_preserve_phase16_and_key_fences(self):
+        hold=(ROOT/'src/services/SeatHoldService.cpp').read_text(encoding='utf-8')
+        self.assertIn("'PX', ttl",hold);self.assertIn("'PEXPIRE'",hold)
+        self.assertIn('ttlMilliseconds <= 0',hold)
+        self.assertIn('static_cast<std::int64_t>(ttlSeconds()) * 1000',hold)
+        derived=(ROOT/'src/availability/hold.lua').read_text(encoding='utf-8')
+        self.assertNotIn('sales_',derived)
+        repository=(ROOT/'src/repositories/CheckoutSessionRepository.cpp').read_text(encoding='utf-8')
+        self.assertIn("status='SUBMITTING' AND active_confirm_idempotency_key=$2",repository)
+        service=(ROOT/'src/services/CheckoutSessionService.cpp').read_text(encoding='utf-8')
+        close=service[service.index('void CheckoutSessionService::closeSalesWindowCommit'):service.index('void CheckoutSessionService::freezeConfirm')]
+        self.assertLess(close.index('if(!committed)'),close.index('seatHoldService_.release'))
     def test_read_fields_remain_independent_of_static_status(self):
         for name in ['Event','Session']:
             s=(ROOT/('src/repositories/'+name+'Repository.cpp')).read_text(encoding='utf-8')

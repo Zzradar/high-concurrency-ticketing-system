@@ -1,0 +1,12 @@
+test_checkout_create_both_closed_states_no_hold (__main__.CheckoutSalesTest) ... ok
+test_millisecond_ttl_bounded_by_window_and_default (__main__.CheckoutSalesTest) ... ok
+test_natural_expiry_converges_phase16_derived_model (__main__.CheckoutSalesTest) ... ok
+test_replace_rejection_preserves_revision_and_ttl_empty_release_allowed (__main__.CheckoutSalesTest) ... ok
+test_selecting_confirm_closes_and_releases_hold (__main__.CheckoutSalesTest) ... ok
+test_submitting_formal_replay_and_reserved_confirm_after_end (__main__.CheckoutSalesTest) ... ok
+test_submitting_without_formal_result_closes_with_fenced_key (__main__.CheckoutSalesTest) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 25.588s
+
+OK

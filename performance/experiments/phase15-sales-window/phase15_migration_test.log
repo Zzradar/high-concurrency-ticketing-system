@@ -1,0 +1,9 @@
+test_actual_public_read_queries (__main__.SalesMigrationTest) ... ok
+test_fresh_seed_and_original_invariants (__main__.SalesMigrationTest) ... ok
+test_half_open_microsecond_boundaries_and_empty_window (__main__.SalesMigrationTest) ... ok
+test_upgrade_backfill_and_constraints (__main__.SalesMigrationTest) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 10.754s
+
+OK

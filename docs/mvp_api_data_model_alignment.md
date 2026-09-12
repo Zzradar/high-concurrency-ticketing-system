@@ -971,3 +971,7 @@ SELECTED
 PostgreSQL `SessionSeat.status = HELD` 才代表后端已经成功创建正式临时预订。
 座位图 API 可能把“PG AVAILABLE + 其他 C1 live Redis Hold”临时表现为 HELD；该展示
 叠加不等同于数据库正式 HELD，也不改变 PostgreSQL 的最终权威。
+
+## Phase15 数据与接口补充
+
+Event持久化sales_starts_at/sales_ends_at，Session按start_time收紧有效截止；不新增或重定义静态ON_SALE/COMING_SOON/SOLD_OUT枚举。Event/Session DTO新增必需salesWindow，时间判定来自DB。Availability存量/增量模型不持久化SalesWindow。Checkout收口和Hold剩余TTL是时间准入的消费者；Order.expiresAt、支付尝试和Refund历史权利保持原含义。见[Phase15记录](phase15_sales_window_implementation.md)。

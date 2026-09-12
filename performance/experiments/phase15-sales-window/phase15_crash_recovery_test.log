@@ -1,0 +1,6 @@
+test_committed_order_recovers_after_actual_crash_and_sales_end (__main__.CrashRecoveryTest) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 5.337s
+
+OK

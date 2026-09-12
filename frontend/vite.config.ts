@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
       environment: 'happy-dom',
       setupFiles: ['./src/test/setup.ts'],
       css: true,
-      exclude: ['e2e/**', 'phase16-e2e/**', 'node_modules/**', 'dist/**'],
+      exclude: ['e2e/**', 'phase16-e2e/**', 'phase15-e2e/**', 'node_modules/**', 'dist/**'],
     },
   }
 })

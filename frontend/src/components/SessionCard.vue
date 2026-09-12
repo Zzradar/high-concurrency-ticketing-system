@@ -6,7 +6,7 @@ import { useSalesWindow } from '../utils/salesWindow'
 import type { TicketSession } from '../types'
 import { formatCny } from '../utils/money'
 
-const props = defineProps<{ session: TicketSession; eventAvailable?: boolean }>()
+const props = withDefaults(defineProps<{ session: TicketSession; eventAvailable?: boolean }>(), { eventAvailable: true })
 const current = ref(props.session)
 watch(() => props.session, value => { current.value = value })
 const { label } = useSalesWindow(computed(() => current.value.salesWindow), async () => {
