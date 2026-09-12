@@ -39,6 +39,10 @@ class SeatController final : public drogon::HttpController<SeatController>
         std::string sessionId) const;
 
   private:
+    void authorizeRead(const drogon::HttpRequestPtr &,const std::string &,
+                       std::function<void()> accept,std::function<void(const drogon::HttpResponsePtr &)> reject) const;
+    void listSessionSeatsAuthorized(const drogon::HttpRequestPtr &,std::function<void(const drogon::HttpResponsePtr &)> &&,std::string) const;
+    void listSeatAvailabilityAuthorized(const drogon::HttpRequestPtr &,std::function<void(const drogon::HttpResponsePtr &)> &&,std::string) const;
     void listWithOwnCheckout(
         const std::string &sessionId,
         const std::string &checkoutSessionId,

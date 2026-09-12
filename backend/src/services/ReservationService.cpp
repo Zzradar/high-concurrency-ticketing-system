@@ -1,3 +1,4 @@
+#include "admission/AdmissionService.h"
 #include "observability/Phase14Metrics.h"
 #include "services/ReservationService.h"
 
@@ -13,6 +14,7 @@ namespace ticketing
 {
 struct ReservationService::FlowState
 {
+    bool admissionBypass{false};
     std::string userId;
     std::string idempotencyKey;
     std::string sessionId;
@@ -91,6 +93,7 @@ void ReservationService::createReservation(CreateReservationInput input,
     }
 
     auto state = std::make_shared<FlowState>();
+    state->admissionBypass = input.admissionBypass;
     state->userId = std::move(input.userId);
     state->idempotencyKey = std::move(input.idempotencyKey);
     state->sessionId = std::move(normalized->first);
@@ -117,6 +120,7 @@ void ReservationService::createReservationForCheckout(
                           .userId = std::move(userId),
                           .idempotencyKey = std::move(idempotencyKey),
                           .body = std::move(body),
+                          .admissionBypass = true,
                       },
                       std::move(completion));
 }
@@ -146,7 +150,11 @@ void ReservationService::queryExisting(
                            });
                     return;
                 }
-                startTransaction(state);
+                if(state->admissionBypass){startTransaction(state);return;}
+                admission::AdmissionService::guard(state->sessionId,state->userId,[this,state](const drogon::HttpResponsePtr &response){
+                    if(response){CreateReservationResult failure;failure.admissionResponse=response;finish(state,std::move(failure));}
+                    else startTransaction(state);
+                });
                 return;
             }
 

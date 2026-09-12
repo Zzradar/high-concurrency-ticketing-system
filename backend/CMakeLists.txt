@@ -343,3 +343,24 @@ if(BUILD_TESTING)
  target_link_libraries(phase18_policy_unit PRIVATE Drogon::Drogon Threads::Threads OpenSSL::Crypto)
  add_test(NAME phase18_policy_unit COMMAND phase18_policy_unit)
 endif()
+
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated/admission")
+set(PHASE18_SCRIPT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/generated/admission/AdmissionScripts.h")
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/src/admission/waiting_room.lua" PHASE18_WAITING_LUA)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/admission/waiting_room.lua")
+file(WRITE "${PHASE18_SCRIPT_HEADER}" "#pragma once\n#include <string_view>\nnamespace ticketing::admission::scripts { inline constexpr std::string_view waiting_room=R\"p18lua(${PHASE18_WAITING_LUA})p18lua\"; }\n")
+target_sources(ticketing_backend PRIVATE src/admission/RedisAdmissionStore.cpp)
+
+target_sources(ticketing_backend PRIVATE src/admission/AdmissionRuntime.cpp)
+
+target_sources(ticketing_backend PRIVATE src/filters/AdmissionReadFilter.cpp)
+
+target_sources(ticketing_backend PRIVATE src/admission/AdmissionService.cpp src/controllers/AdmissionController.cpp)
+
+option(TICKETING_PHASE18_EXTERNAL_TESTS "Register explicit isolated Phase18 PostgreSQL/Redis/HTTP gates" OFF)
+if(BUILD_TESTING AND TICKETING_PHASE18_EXTERNAL_TESTS)
+ foreach(gate schema policy_http waiting_room admission_http)
+  add_test(NAME phase18_${gate} COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase18_${gate}_test.py")
+  set_tests_properties(phase18_${gate} PROPERTIES RUN_SERIAL TRUE LABELS integration)
+ endforeach()
+endif()

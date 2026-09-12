@@ -23,6 +23,14 @@
   ],
   "redis_clients": [
     {
+      "name": "traffic_control",
+      "host": "redis",
+      "port": 6379,
+      "is_fast": false,
+      "number_of_connections": 2,
+      "timeout": 0.4
+    },
+    {
       "name": "seat_holds",
       "host": "redis",
       "port": 6379,

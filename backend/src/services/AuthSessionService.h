@@ -29,6 +29,7 @@ class AuthSessionService
     using Completion = std::function<void(AuthenticateResult)>;
 
     void authenticate(std::string rawToken, Completion completion) const;
+    void authenticateReadOnly(std::string rawToken, Completion completion) const;
     void revoke(std::string sessionId,
                 std::string tokenHash,
                 std::function<void(bool)> completion) const;

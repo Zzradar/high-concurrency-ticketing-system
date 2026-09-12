@@ -15,6 +15,7 @@ drogon::HttpResponsePtr makeServiceResponse(
     ticketing::CreateReservationResult result)
 {
     using ticketing::CreateReservationOutcome;
+    if(result.admissionResponse)return result.admissionResponse;
 
     if (result.outcome == CreateReservationOutcome::Created ||
         result.outcome == CreateReservationOutcome::Replayed)

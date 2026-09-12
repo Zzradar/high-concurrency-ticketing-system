@@ -6,6 +6,7 @@
 #include "repositories/NotificationRepository.h"
 
 #include <json/json.h>
+#include <drogon/HttpResponse.h>
 
 #include <functional>
 #include <memory>
@@ -20,6 +21,7 @@ struct CreateReservationInput
     std::string userId;
     std::string idempotencyKey;
     Json::Value body;
+    bool admissionBypass{false};
 };
 
 enum class CreateReservationOutcome
@@ -40,6 +42,7 @@ struct CreateReservationResult
 {
     CreateReservationOutcome outcome{CreateReservationOutcome::InternalError};
     std::optional<ReservationResult> value;
+    drogon::HttpResponsePtr admissionResponse;
 };
 
 class ReservationService

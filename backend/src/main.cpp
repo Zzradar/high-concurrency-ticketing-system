@@ -1,3 +1,5 @@
+#include "admission/AdmissionService.h"
+#include "admission/AdmissionRuntime.h"
 #include "admission/AdmissionConfig.h"
 #include "workers/SeatAvailabilityProjectionWorker.h"
 #include "workers/OrderExpiryWorker.h"
@@ -175,6 +177,7 @@ int main(int argc, char *argv[])
              checkoutReconciliation,
              paymentWorker,
              checkoutReconciliationBatchSize] {
+                ticketing::admission::AdmissionRuntime::start();
                 availabilityWorker->start();
                 expiryWorker->start();
                 paymentWorker->start();
@@ -199,6 +202,8 @@ int main(int argc, char *argv[])
         drogon::app().run();
         // Join before application/static teardown. Accepted tasks drain;
         // late Redis callbacks retain the stopped executor and receive busy.
+        ticketing::admission::AdmissionService::stop();
+        ticketing::admission::AdmissionRuntime::stop();
         seatMapCompute->shutdown();
     }
     catch (const std::exception &error)

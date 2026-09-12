@@ -48,10 +48,10 @@ constexpr const char *kReturningSession = R"SQL(
         (SELECT username FROM app_users WHERE id = user_sessions.user_id) AS username,
         (SELECT display_name FROM app_users WHERE id = user_sessions.user_id) AS display_name,
         (SELECT role FROM app_users WHERE id = user_sessions.user_id) AS role,
-        EXTRACT(EPOCH FROM created_at)::bigint AS created_at_epoch,
-        EXTRACT(EPOCH FROM last_seen_at)::bigint AS last_seen_at_epoch,
-        EXTRACT(EPOCH FROM idle_expires_at)::bigint AS idle_expires_at_epoch,
-        EXTRACT(EPOCH FROM absolute_expires_at)::bigint AS absolute_expires_at_epoch
+        FLOOR(EXTRACT(EPOCH FROM created_at))::bigint AS created_at_epoch,
+        FLOOR(EXTRACT(EPOCH FROM last_seen_at))::bigint AS last_seen_at_epoch,
+        FLOOR(EXTRACT(EPOCH FROM idle_expires_at))::bigint AS idle_expires_at_epoch,
+        FLOOR(EXTRACT(EPOCH FROM absolute_expires_at))::bigint AS absolute_expires_at_epoch
 )SQL";
 }  // namespace
 
@@ -92,10 +92,10 @@ void UserSessionRepository::findActiveByTokenHash(
         SELECT
             auth.id AS session_id, auth.user_id, app_user.username,
             app_user.display_name, app_user.role,
-            EXTRACT(EPOCH FROM auth.created_at)::bigint AS created_at_epoch,
-            EXTRACT(EPOCH FROM auth.last_seen_at)::bigint AS last_seen_at_epoch,
-            EXTRACT(EPOCH FROM auth.idle_expires_at)::bigint AS idle_expires_at_epoch,
-            EXTRACT(EPOCH FROM auth.absolute_expires_at)::bigint AS absolute_expires_at_epoch
+            FLOOR(EXTRACT(EPOCH FROM auth.created_at))::bigint AS created_at_epoch,
+            FLOOR(EXTRACT(EPOCH FROM auth.last_seen_at))::bigint AS last_seen_at_epoch,
+            FLOOR(EXTRACT(EPOCH FROM auth.idle_expires_at))::bigint AS idle_expires_at_epoch,
+            FLOOR(EXTRACT(EPOCH FROM auth.absolute_expires_at))::bigint AS absolute_expires_at_epoch
         FROM user_sessions AS auth
         JOIN app_users AS app_user ON app_user.id = auth.user_id
         WHERE auth.token_hash = $1

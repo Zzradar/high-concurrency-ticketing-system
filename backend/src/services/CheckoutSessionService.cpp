@@ -1,3 +1,4 @@
+#include "admission/AdmissionService.h"
 #include "observability/Phase14Metrics.h"
 #include "services/CheckoutSessionService.h"
 
@@ -83,6 +84,13 @@ struct CheckoutSessionService::AbandonState
 
 namespace
 {
+template<class State>
+void admissionFailure(const std::shared_ptr<State> &state,const drogon::HttpResponsePtr &response) {
+ if(state->finished)return;state->finished=true;
+ if(state->transaction){state->transaction->rollback();state->transaction.reset();}
+ CheckoutSessionResult result;result.admissionResponse=response;
+ auto completion=std::move(state->completion);completion(std::move(result));
+}
 std::optional<CheckoutSessionOutcome> salesFailure(const SessionSalesGate &gate)
 {
     if(!gate.staticallyAvailable())return CheckoutSessionOutcome::SessionNotAvailable;
@@ -174,6 +182,8 @@ void CheckoutSessionService::create(std::string userId,
     state->sessionId = body["sessionId"].asString();
     state->seatIds = std::move(*seatIds);
     state->completion = std::move(completion);
+    admission::AdmissionService::guard(state->sessionId,state->userId,[this,state](const drogon::HttpResponsePtr &response){
+        if(response){admissionFailure(state,response);return;}
     auto client = drogon::app().getDbClient("default");
     Phase14Metrics::newTransactionAsync(client, Phase14Metrics::Flow::Checkout,
         [this, state](const CheckoutSessionRepository::TransactionPtr &tx) {
@@ -185,6 +195,7 @@ void CheckoutSessionService::create(std::string userId,
             state->transaction = tx;
             createValidateUser(state);
         });
+    });
 }
 
 void CheckoutSessionService::createValidateUser(
@@ -402,7 +413,10 @@ void CheckoutSessionService::replaceLoadCurrentSeats(
                                 state->seatIds.begin(),
                                 state->seatIds.end(),
                                 std::back_inserter(state->removedSeatIds));
-            replaceValidateSeats(state);
+            if(state->addedSeatIds.empty()){replaceValidateSeats(state);return;}
+            admission::AdmissionService::guard(state->record.value.sessionId,state->userId,[this,state](const drogon::HttpResponsePtr &response){
+                if(response)admissionFailure(state,response);else replaceValidateSeats(state);
+            });
         },
         [this, state] {
             failReplace(state, CheckoutSessionOutcome::InternalError);
@@ -742,7 +756,9 @@ void CheckoutSessionService::confirmLoadSeats(
             state->idempotencyKey =
                 "CHK-CONFIRM-" + drogon::utils::getUuid(true);
             state->disposition = "CONFIRMED_NOW";
-            confirmEnsureHolds(state);
+            admission::AdmissionService::guard(state->record.value.sessionId,state->userId,[this,state](const drogon::HttpResponsePtr &response){
+                if(response)admissionFailure(state,response);else confirmEnsureHolds(state);
+            });
         },
         [state] { failConfirm(state, CheckoutSessionOutcome::InternalError); });
 }

@@ -1,3 +1,4 @@
+#include "admission/AdmissionRuntime.h"
 #include "controllers/HealthController.h"
 #include "admission/AdmissionPolicy.h"
 
@@ -23,6 +24,10 @@ void HealthController::health(
                 response->setStatusCode(drogon::k503ServiceUnavailable);
                 response->addHeader("Cache-Control","private, no-store");
                 (*callbackPtr)(response);return;
+            }
+            if(!ticketing::admission::AdmissionRuntime::ready()) {
+                Json::Value pending;pending["status"]="degraded";pending["code"]="ADMISSION_NOT_READY";
+                auto response=drogon::HttpResponse::newHttpJsonResponse(pending);response->setStatusCode(drogon::k503ServiceUnavailable);(*callbackPtr)(response);return;
             }
             Json::Value body;
             body["status"] = "ok";

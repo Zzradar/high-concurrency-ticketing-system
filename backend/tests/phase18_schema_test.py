@@ -14,16 +14,18 @@ class AdmissionSchema(unittest.TestCase):
   self.addCleanup(lambda:self.sql('DROP SCHEMA '+self.schema+' CASCADE;'))
  def install(self,upgrade=False):
   for p in sorted((ROOT/'db/migrations').glob('*.sql')):
-   if upgrade and p.name.startswith('013'):continue
+   if upgrade and p.name>='013':continue
    self.sql(p.read_text(encoding='utf-8'))
   self.sql((ROOT/'db/seeds/001_demo_seed.sql').read_text(encoding='utf-8'))
  def test_upgrade_preserves_business_and_absent_policy_is_off(self):
   self.install(True)
   before=self.sql("SELECT md5(string_agg(row_to_json(s)::text,',' ORDER BY id)) FROM session_seats s")
   self.sql((ROOT/'db/migrations/013_add_admission_control.sql').read_text())
+  self.sql((ROOT/'db/migrations/014_add_admission_runtime_tracking.sql').read_text())
   self.assertEqual(before,self.sql("SELECT md5(string_agg(row_to_json(s)::text,',' ORDER BY id)) FROM session_seats s"))
   self.assertEqual(self.sql('SELECT count(*) FROM event_admission_policies'),'0')
   self.assertEqual(self.sql('SELECT count(*) FROM admission_policy_audit'),'0')
+  self.assertEqual(self.sql('SELECT count(*) FROM admission_runtime_generations'),'0')
  def test_fresh_constraints_and_policy_occ(self):
   self.install()
   self.sql("INSERT INTO event_admission_policies(event_id,mode,prequeue_seconds,max_active_users,admission_rate_per_second,lease_seconds,policy_version,queue_generation,updated_by) SELECT (SELECT id FROM events LIMIT 1),'OFF',0,10,2,30,1,repeat('a',32),id FROM app_users WHERE role='ADMIN' LIMIT 1")

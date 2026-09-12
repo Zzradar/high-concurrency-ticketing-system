@@ -1,3 +1,6 @@
+#include "admission/AdmissionService.h"
+#include "admission/AdmissionRuntime.h"
+#include "common/AuthContext.h"
 #include "services/SeatAvailabilityReadModel.h"
 #include "services/CheckoutOwnershipCache.h"
 #include <charconv>
@@ -16,7 +19,7 @@ namespace
 using HttpCallback = std::function<void(const drogon::HttpResponsePtr &)>;
 }
 
-void SeatController::listSessionSeats(
+void SeatController::listSessionSeatsAuthorized(
     const drogon::HttpRequestPtr &request,
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string sessionId) const
@@ -75,7 +78,7 @@ void SeatController::listSeatLayout(
         });
 }
 
-void SeatController::listSeatAvailability(
+void SeatController::listSeatAvailabilityAuthorized(
     const drogon::HttpRequestPtr &request,
     std::function<void(const drogon::HttpResponsePtr &)> &&callback,
     std::string sessionId) const
@@ -264,4 +267,30 @@ void SeatController::listAvailabilityWithOwnCheckout(
                 drogon::k503ServiceUnavailable, "SEAT_MAP_BUSY",
                 "Seat map compute capacity exhausted"));
         });
+}
+
+void SeatController::authorizeRead(const drogon::HttpRequestPtr &request,const std::string &session,
+    std::function<void()> accept,HttpCallback reject) const {
+    const auto event=ticketing::admission::AdmissionRuntime::eventForSession(session);
+    const auto policy=event?ticketing::admission::AdmissionRuntime::policy(*event):std::nullopt;
+    if(ticketing::admission::AdmissionRuntime::ready() && policy && policy->mode=="OFF"){accept();return;}
+    if(policy && (policy->mode=="ENFORCED" || policy->mode=="PAUSED")) {
+        authService_.authenticateReadOnly(request->getCookie(ticketing::AuthConfig::load().cookieName),
+            [session,accept=std::move(accept),reject=std::move(reject)](ticketing::AuthenticateResult auth){
+                if(auth.outcome!=ticketing::AuthenticateOutcome::Authenticated || !auth.session) {
+                    reject(ticketing::makeErrorResponse(auth.outcome==ticketing::AuthenticateOutcome::Unavailable?drogon::k503ServiceUnavailable:drogon::k401Unauthorized,
+                        auth.outcome==ticketing::AuthenticateOutcome::Unavailable?"AUTH_UNAVAILABLE":"UNAUTHENTICATED","Authentication required"));return;
+                }
+                ticketing::admission::AdmissionService::guard(session,auth.session->userId,[accept,reject](const drogon::HttpResponsePtr &response){if(response)reject(response);else accept();});
+            });return;
+    }
+    ticketing::admission::AdmissionService::guard(session,"",[accept,reject](const drogon::HttpResponsePtr &response){if(response)reject(response);else accept();});
+}
+void SeatController::listSessionSeats(const drogon::HttpRequestPtr &request,HttpCallback &&callback,std::string session) const {
+    auto done=std::make_shared<HttpCallback>(std::move(callback));
+    authorizeRead(request,session,[this,request,session,done]{listSessionSeatsAuthorized(request,HttpCallback(*done),session);},*done);
+}
+void SeatController::listSeatAvailability(const drogon::HttpRequestPtr &request,HttpCallback &&callback,std::string session) const {
+    auto done=std::make_shared<HttpCallback>(std::move(callback));
+    authorizeRead(request,session,[this,request,session,done]{listSeatAvailabilityAuthorized(request,HttpCallback(*done),session);},*done);
 }

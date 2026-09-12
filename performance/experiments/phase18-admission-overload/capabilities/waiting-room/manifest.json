@@ -1,0 +1,25 @@
+{
+  "status": "CAPABILITY_BATCH_PASS_NOT_FINAL_DELIVERY",
+  "parentCommit": "4e2171d",
+  "baselineSutSha": "ed51447154418e05ed9e4c49728f3eb114713db9",
+  "binarySha256": "0369ac28d472f020ee078de0037330d7cdfb96d8e76cb3874bb5aba6c797ee6d",
+  "files": {
+    "backend/src/admission/AdmissionConfig.h": "fd6eaf1382fc29d8f0a352e34eedb9641e4c11ecfe9d6a91930debae96b8dbf7",
+    "backend/src/admission/AdmissionPolicy.cpp": "3b827a37087b298c177b05227d92853c04ccc589a1ca7dbcab19e501e8f35f87",
+    "backend/src/admission/AdmissionPolicy.h": "27c321a360086e0bbe64c7cea358373fb64263bc1bc0ee0f42624f5427b7ae4e",
+    "backend/src/admission/AdmissionRuntime.cpp": "fd586503a9bd70e801b3baaa46e75e071615b13331520d5f5a5652d858c4505e",
+    "backend/src/admission/AdmissionRuntime.h": "05af1625ab8aa3c0a04f87446760d2030b8f99ee7881b9a962405f74ad061c3b",
+    "backend/src/admission/AdmissionService.cpp": "287836d77c651290eac4c1ffb74c3ffc4596e3e17ac6b624b51a04105b54814f",
+    "backend/src/admission/AdmissionService.h": "e89dedcebd7a4b6ddde2edd02c0ce65fe7a2a274e236c4529b71b36d6f7b527f",
+    "backend/src/admission/RedisAdmissionStore.cpp": "a5bf2ae07540278384f46e1abf751df78ead1025391d9a8c6c49180da2a1f6c9",
+    "backend/src/admission/RedisAdmissionStore.h": "3272308d3682452ee9ee06255bea094ffb3d6b4aa0402fb010c80cda8e253db5",
+    "backend/src/admission/waiting_room.lua": "3bce132af2e4e03779eaa673620c920020e27fa9068f0716b0295f3237bfddbd",
+    "backend/tests/phase18_admission_http_test.py": "53a4d65d88ad06695e83f3e2c664fb8248b17ba346b5ca59cdfdece684d052e2",
+    "backend/tests/phase18_waiting_room_test.py": "a45a929e0b3b7e9b51b30c705d01bbee4316d65a5e7ccca15a0598026667bcb1"
+  },
+  "logs": {
+    "ctest.log": "380f4385cf75315e189ee223dabbc3b4feb6447254f3f6b35dfa33323d7e2a68",
+    "http.log": "167552b123a4d62eb4637c5ccfa1ec43878d8a6166fec442e6368b311cbaedad",
+    "redis-lua.log": "0f8fd4e0d8216da070b65afa9f94b501b5e2f861acabe383a80686a3f254a367"
+  }
+}

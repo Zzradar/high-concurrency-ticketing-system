@@ -15,6 +15,7 @@ drogon::HttpResponsePtr makeCheckoutResponse(
     ticketing::CheckoutSessionResult result)
 {
     using ticketing::CheckoutSessionOutcome;
+    if(result.admissionResponse)return result.admissionResponse;
     switch (result.outcome)
     {
         case CheckoutSessionOutcome::Created:

@@ -49,6 +49,10 @@ std::optional<ticketing::AuthSessionRecord> deserialize(
     {
         return std::nullopt;
     }
+    for(const auto key:{"sessionId","userId","username","displayName"})
+        if(!value[key].isString() || value[key].asString().empty())return std::nullopt;
+    for(const auto key:{"createdAt","lastSeenAt","idleExpiresAt","absoluteExpiresAt"})
+        if((value[key].type()!=Json::intValue&&value[key].type()!=Json::uintValue)||!value[key].isInt64()||value[key].asInt64()<=0)return std::nullopt;
     return ticketing::AuthSessionRecord{
         .sessionId = value["sessionId"].asString(),
         .userId = value["userId"].asString(),
@@ -116,7 +120,8 @@ void AuthSessionCache::put(const std::string &tokenHash,
     const auto config = AuthConfig::load();
     const auto remaining = std::min(record.idleExpiresAtEpoch - nowEpoch(),
                                     record.absoluteExpiresAtEpoch - nowEpoch());
-    const auto ttl = std::min(config.sessionCacheTtlSeconds, remaining);
+    const auto jitter=static_cast<std::int64_t>(std::stoul(tokenHash.substr(0,8),nullptr,16) % (config.sessionCacheTtlSeconds/5+1));
+    const auto ttl = std::min(config.sessionCacheTtlSeconds-jitter, remaining);
     if (ttl <= 0) return;
     const auto key = keyFor(tokenHash);
     const auto value = serialize(record);

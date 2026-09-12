@@ -43,6 +43,7 @@ struct CheckoutSessionResult
     CheckoutSessionOutcome outcome{CheckoutSessionOutcome::InternalError};
     std::optional<CheckoutSession> value;
     std::string disposition;
+    drogon::HttpResponsePtr admissionResponse;
 };
 
 struct CheckoutSessionListResult

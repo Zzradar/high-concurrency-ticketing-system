@@ -1,3 +1,4 @@
+#include "admission/AdmissionRuntime.h"
 #include "controllers/AdmissionPolicyController.h"
 #include "common/AuthContext.h"
 void AdmissionPolicyController::policy(const drogon::HttpRequestPtr &request,
@@ -9,7 +10,8 @@ void AdmissionPolicyController::policy(const drogon::HttpRequestPtr &request,
     ticketing::admin::dispatch([eventId,body,user,update](const ticketing::admin::DB &db) {
         return update?ticketing::admission::writePolicy(db,eventId,body,user)
                      :ticketing::admission::readPolicy(db,eventId);
-    },[reply=std::move(reply)](const drogon::HttpResponsePtr &response) {
+    },[reply=std::move(reply),update](const drogon::HttpResponsePtr &response) {
+        if(update && response->statusCode()==drogon::k200OK)ticketing::admission::AdmissionRuntime::invalidate();
         response->addHeader("Cache-Control","private, no-store"); reply(response);
     });
 }
