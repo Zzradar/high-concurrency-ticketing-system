@@ -17,12 +17,12 @@ function instant(value: unknown): value is string {
 export function isSalesWindow(value: unknown): value is SalesWindow {
   return record(value) && instant(value.startsAt) && instant(value.endsAt) &&
     instant(value.evaluatedAt) && Date.parse(value.startsAt) < Date.parse(value.endsAt) &&
-    ['NOT_STARTED', 'OPEN', 'ENDED'].includes(String(value.state))
+    typeof value.state === 'string' && ['NOT_STARTED', 'OPEN', 'ENDED'].includes(value.state)
 }
 
 export function isTicketEvent(value: unknown): value is TicketEvent {
   return record(value) && ['id', 'name', 'description', 'city', 'venue', 'dateRange', 'cover', 'category']
     .every(key => typeof value[key] === 'string') && value.id !== '' && value.name !== '' &&
-    ['ON_SALE', 'COMING_SOON'].includes(String(value.status)) &&
+    typeof value.status === 'string' && ['ON_SALE', 'COMING_SOON'].includes(value.status) &&
     Number.isSafeInteger(value.sessionCount) && Number(value.sessionCount) >= 0 && isSalesWindow(value.salesWindow)
 }
