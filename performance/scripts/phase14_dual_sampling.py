@@ -100,6 +100,9 @@ def probe_host(role,project,detailed):
         from phase14_fd import process_sample
         backend=[x for x in items if x['Config']['Labels']['com.docker.compose.service']=='backend' and x['State']['Running']]
         host['backendFd']=process_sample(backend[0],docker) if len(backend)==1 else None
+    else:
+        from phase14_memory import cgroup_memory
+        host['generatorCgroups']=[cgroup_memory(x) for x in items if x['Id'] in active and x['Config']['Labels']['com.docker.compose.service']=='k6' and x['State']['Running']]
     return {'host':host,'containers':safe_containers(items),'stats':stats}
 
 

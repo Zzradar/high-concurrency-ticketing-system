@@ -36,6 +36,7 @@ class DualEnvironment(Environment):
         self.created = time.time()
         self.generators = {}
         self.fd_resume = False
+        self.memory_resume = False
 
     def command(self, args, **kwargs):
         # Legacy observational Docker calls refer to the SUT, never Load.
@@ -205,6 +206,7 @@ class DualEnvironment(Environment):
         child=DualEnvironment(self.t,root,self.topology)
         child.deadline_at=getattr(self,'deadline_at',None)
         child.fd_resume=self.fd_resume
+        child.memory_resume=self.memory_resume
         return child
 
     def start_generator(self, argv, log):
@@ -214,6 +216,9 @@ class DualEnvironment(Environment):
         argv=list(argv);argv[argv.index('-p')+1]=self.load_project
         first=argv.index('-f');argv[first+1]=self.role_file('load')
         if 'load' not in self.models: self.resolve('load')
+        if self.memory_resume:
+            from phase14_memory import apply_main_override
+            argv=apply_main_override(self,argv)
         for i,arg in enumerate(argv):
             if arg.startswith('BASE_URL=') and arg!='BASE_URL=http://noop:8080':argv[i]='BASE_URL='+self.base
             if arg=='LOGIN_PASSWORD':argv[i]='LOGIN_PASSWORD='+self.env['LOGIN_PASSWORD']

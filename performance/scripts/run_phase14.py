@@ -270,6 +270,8 @@ def main():
     parser.add_argument('--topology-config',type=Path)
     parser.add_argument('--qualification',type=Path)
     parser.add_argument('--delta-qualification',type=Path,help='Explicit original qualification plus FD-only delta record')
+    parser.add_argument('--memory-qualification',action='store_true',help='One diagnostic observation of original U1 first 120 seconds')
+    parser.add_argument('--memory-evidence',type=Path,help='Passed one-shot memory qualification for formal core continuation')
     parser.add_argument('--formal-approved',action='store_true')
     parser.add_argument('--g0-evidence',type=Path)
     parser.add_argument('--smoke-evidence',type=Path)
@@ -484,8 +486,16 @@ def execute_case(args,t,env,*,spec_factory=build_spec):
                     with (root/'commands.jsonl').open('a',encoding='utf-8') as f:f.write(json.dumps({'at':utc_now(),'argv':args_k6})+'\n')
                     processes.append(subprocess.Popen(args_k6,stdout=log,stderr=subprocess.STDOUT,env=env.env,cwd=ROOT))
             if initialization is not None:initialization.finish()
+            if getattr(env,'memory_resume',False):
+                from phase14_memory import validate_units
+                x,pg,rd,_=sampler.sample();samples.append(x);save_sample(root,x,pg,rd)
+                limits=validate_units(x['loadHost']['generatorCgroups'],run_id)
+                write(root/'memory-effective-limits.json',limits)
+                if time.time()>=spec['releaseAtMs']/1000:raise RuntimeError('memory limit check missed release guard')
         deadline=spec['releaseAtMs']/1000+spec['loadSeconds']+t['recovery']['observeSeconds']+t['probes']['paymentDeadlineSeconds']+max(t['behavior']['refreshSeconds'])+t['generator']['scheduler_delivery_guard_seconds']+30
         while any(p.poll() is None for p in processes):
+            if getattr(args,'memory_qualification',False) and time.time()>=spec['releaseAtMs']/1000+120:
+                stop_reasons.append('planned memory qualification boundary');break
             if getattr(args,'deadline_at',None) and time.time()>=args.deadline_at:
                 stop_reasons.append('core wall-clock deadline');break
             x,pg,rd,raw=sampler.sample();samples.append(x);save_sample(root,x,pg,rd)

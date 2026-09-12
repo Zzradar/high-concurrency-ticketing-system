@@ -170,6 +170,9 @@ def preflight(env):
 
 
 def qualification_guard(args, env, *, immediate=True):
+    if getattr(args,'memory_evidence',None):
+        from phase14_memory import guard
+        return guard(args,env,immediate)
     if getattr(args,'delta_qualification',None):
         from phase14_fd import delta_guard
         return delta_guard(args,env,immediate=immediate)
@@ -404,6 +407,13 @@ def dual_main(args,t):
     env=DualEnvironment(t,Path(topology.values['resultRoot'])/run_id(args.action,t['mode']),topology)
     env.deadline_at=getattr(args,'deadline_at',None)
     env.fd_resume=bool(getattr(args,'delta_qualification',None))
+    env.memory_resume=bool(getattr(args,'memory_qualification',False) or getattr(args,'memory_evidence',None))
+    if env.memory_resume:env.fd_resume=True
+    if getattr(args,'memory_qualification',False):
+        from phase14_memory import qualification
+        if args.action!='run' or args.case!='U1' or args.shards!=4 or not args.core:raise ValueError('memory qualification requires four-shard core U1')
+        env.fd_resume=True
+        return qualification(args,t,env)
     if args.action=='init-only':
         from phase14_core import init_pair
         if not getattr(args,'core',False):raise ValueError('init-only requires core policy')
