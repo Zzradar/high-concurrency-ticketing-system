@@ -1,0 +1,57 @@
+[
+  {
+    "name": "diff",
+    "exitCode": 0,
+    "seconds": 0.06200000015087426
+  },
+  {
+    "name": "vitest",
+    "exitCode": 0,
+    "seconds": 21.25
+  },
+  {
+    "name": "frontend-build",
+    "exitCode": 0,
+    "seconds": 19.265999999828637
+  },
+  {
+    "name": "performance",
+    "exitCode": 0,
+    "seconds": 5.391000000061467
+  },
+  {
+    "name": "source",
+    "exitCode": 0,
+    "seconds": 0.2339999999385327
+  },
+  {
+    "name": "api-smoke",
+    "exitCode": 0,
+    "seconds": 6.4530000002123415
+  },
+  {
+    "name": "verifier",
+    "exitCode": 0,
+    "seconds": 8.327999999979511
+  },
+  {
+    "name": "migration",
+    "exitCode": 0,
+    "seconds": 16.859000000171363
+  },
+  {
+    "name": "redis",
+    "exitCode": 0,
+    "seconds": 34.29700000002049
+  },
+  {
+    "name": "refund-verifier",
+    "exitCode": 0,
+    "seconds": 1.0629999998491257
+  },
+  {
+    "name": "release-ctest",
+    "exitCode": 0,
+    "testsPassed": 31
+  }
+]

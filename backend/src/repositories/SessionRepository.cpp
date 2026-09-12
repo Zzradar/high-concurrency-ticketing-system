@@ -44,8 +44,14 @@ void SessionRepository::listByEventId(
             COUNT(inventory.id)::BIGINT AS total_count,
             COUNT(inventory.id) FILTER (
                 WHERE inventory.status = 'AVAILABLE'
-            )::BIGINT AS available_count
+            )::BIGINT AS available_count,
+            TO_CHAR((event.sales_starts_at) AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS sales_starts_at,
+            TO_CHAR((LEAST(event.sales_ends_at,session.start_time)) AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS sales_ends_at,
+            TO_CHAR((statement_timestamp()) AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS sales_evaluated_at,
+            CASE WHEN LEAST(event.sales_ends_at,session.start_time)<=event.sales_starts_at THEN 'ENDED' WHEN statement_timestamp()<event.sales_starts_at THEN 'NOT_STARTED' WHEN statement_timestamp()>=LEAST(event.sales_ends_at,session.start_time) THEN 'ENDED' ELSE 'OPEN' END AS sales_state
+
         FROM sessions AS session
+        JOIN events AS event ON event.id=session.event_id
         JOIN venues AS venue ON venue.id = session.venue_id
         LEFT JOIN session_seats AS inventory
             ON inventory.session_id = session.id
@@ -57,7 +63,7 @@ void SessionRepository::listByEventId(
             session.gate_time,
             session.hall_name,
             session.status,
-            venue.name
+            venue.name,event.sales_starts_at,event.sales_ends_at
         ORDER BY session.start_time ASC, session.id ASC
     )SQL";
 
@@ -82,6 +88,7 @@ void SessionRepository::listByEventId(
                     .totalCount = row["total_count"].as<std::int64_t>(),
                     .availableCount =
                         row["available_count"].as<std::int64_t>(),
+                .salesWindow = SalesWindow::fromRow(row),
                 });
             }
             onSuccess(std::move(sessions));
@@ -132,13 +139,19 @@ void SessionRepository::findById(
             session.status AS database_status,
             COALESCE(MIN(inventory.price), 0)::BIGINT AS price_from,
             COUNT(inventory.id)::BIGINT AS total_count,
-            COUNT(inventory.id) FILTER (WHERE inventory.status = 'AVAILABLE')::BIGINT AS available_count
+            COUNT(inventory.id) FILTER (WHERE inventory.status = 'AVAILABLE')::BIGINT AS available_count,
+            TO_CHAR((event.sales_starts_at) AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS sales_starts_at,
+            TO_CHAR((LEAST(event.sales_ends_at,session.start_time)) AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS sales_ends_at,
+            TO_CHAR((statement_timestamp()) AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS sales_evaluated_at,
+            CASE WHEN LEAST(event.sales_ends_at,session.start_time)<=event.sales_starts_at THEN 'ENDED' WHEN statement_timestamp()<event.sales_starts_at THEN 'NOT_STARTED' WHEN statement_timestamp()>=LEAST(event.sales_ends_at,session.start_time) THEN 'ENDED' ELSE 'OPEN' END AS sales_state
+
         FROM sessions AS session
+        JOIN events AS event ON event.id=session.event_id
         JOIN venues AS venue ON venue.id = session.venue_id
         LEFT JOIN session_seats AS inventory ON inventory.session_id = session.id
         WHERE session.id = $1
         GROUP BY session.id, session.event_id, session.start_time,
-                 session.gate_time, session.hall_name, session.status, venue.name
+                 session.gate_time, session.hall_name, session.status, venue.name,event.sales_starts_at,event.sales_ends_at
     )SQL";
     drogon::app().getDbClient("default")->execSqlAsync(
         sql,
@@ -161,6 +174,7 @@ void SessionRepository::findById(
                 .priceFrom = row["price_from"].as<std::int64_t>(),
                 .totalCount = row["total_count"].as<std::int64_t>(),
                 .availableCount = row["available_count"].as<std::int64_t>(),
+                .salesWindow = SalesWindow::fromRow(row),
             });
         },
         [onError = std::move(onError)](const drogon::orm::DrogonDbException &error) {

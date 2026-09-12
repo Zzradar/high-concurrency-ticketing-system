@@ -395,7 +395,7 @@ DELETE FROM app_users WHERE id LIKE 'perf-user-%';
 INSERT INTO venues (id, name, city)
 VALUES ('perf-venue-001', 'Phase 10A Performance Venue', 'Shanghai');
 
-INSERT INTO events (id, primary_venue_id, name, description, status, category, cover_url, date_range)
+INSERT INTO events (id, primary_venue_id, name, description, status, category, cover_url, date_range, sales_starts_at, sales_ends_at)
 SELECT 'perf-event-' || lpad(event_index::text, 3, '0'),
        'perf-venue-001',
        'Performance Event ' || event_index,
@@ -403,7 +403,9 @@ SELECT 'perf-event-' || lpad(event_index::text, 3, '0'),
        'ON_SALE',
        'PERFORMANCE_TEST',
        'https://example.invalid/performance/event-' || event_index || '.jpg',
-       'Generated future schedule'
+       'Generated future schedule',
+       clock_timestamp()-INTERVAL '1 day',
+       clock_timestamp()+make_interval(days => {profile['futureStartOffsetDays']+1}, hours => {profile['events']}*{session_rows}*{profile['sessionSpacingHours']})
 FROM generate_series(1, {profile['events']}) AS event_index;
 
 INSERT INTO sessions (id, event_id, venue_id, hall_name, start_time, gate_time, status)

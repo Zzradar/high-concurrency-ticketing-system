@@ -1,4 +1,5 @@
 #pragma once
+#include "common/SalesWindow.h"
 
 #include <cstdint>
 #include <functional>
@@ -20,6 +21,7 @@ struct EventRow
     std::string cover;
     std::int64_t sessionCount{};
     std::string category;
+    SalesWindow salesWindow;
 };
 
 class EventRepository

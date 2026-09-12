@@ -1,4 +1,5 @@
 #pragma once
+#include "common/SalesWindow.h"
 
 #include <json/json.h>
 
@@ -21,6 +22,7 @@ struct TicketEvent
     std::string cover;
     std::int64_t sessionCount{};
     std::string category;
+    SalesWindow salesWindow;
 
     Json::Value toJson() const
     {
@@ -35,6 +37,7 @@ struct TicketEvent
         value["cover"] = cover;
         value["sessionCount"] = Json::Int64(sessionCount);
         value["category"] = category;
+        value["salesWindow"] = salesWindow.toJson();
         return value;
     }
 };
@@ -51,6 +54,7 @@ struct TicketSession
     std::string status;
     std::int64_t priceFrom{};
     std::string availability;
+    SalesWindow salesWindow;
 
     Json::Value toJson() const
     {
@@ -65,6 +69,7 @@ struct TicketSession
         value["status"] = status;
         value["priceFrom"] = Json::Int64(priceFrom);
         value["availability"] = availability;
+        value["salesWindow"] = salesWindow.toJson();
         return value;
     }
 };

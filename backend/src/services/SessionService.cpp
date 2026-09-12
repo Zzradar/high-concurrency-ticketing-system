@@ -35,6 +35,7 @@ TicketSession SessionService::toDto(SessionRow row)
         .status = soldOut ? "SOLD_OUT" : "ON_SALE",
         .priceFrom = row.priceFrom,
         .availability = std::move(availability),
+        .salesWindow = std::move(row.salesWindow),
     };
 }
 

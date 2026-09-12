@@ -1,0 +1,8 @@
+test_completed_buyer_refund_is_valid (__main__.RefundVerifierTest) ... ok
+test_missing_refund_remains_invalid (__main__.RefundVerifierTest) ... ok
+test_wrong_refund_amount_remains_invalid (__main__.RefundVerifierTest) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.848s
+
+OK

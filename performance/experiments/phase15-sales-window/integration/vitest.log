@@ -1,0 +1,12 @@
+
+> frontend@0.0.0 test
+> vitest run
+
+
+ RUN  v4.1.11 D:/Documents/vscode/高并发订票系统/frontend
+
+
+ Test Files  19 passed (19)
+      Tests  188 passed (188)
+   Start at  11:39:51
+   Duration  13.52s (transform 6.67s, setup 1.61s, import 29.03s, tests 4.96s, environment 119.72s)

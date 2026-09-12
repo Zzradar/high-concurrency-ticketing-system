@@ -16,7 +16,7 @@ INSERT INTO app_users (id, display_name, username, password_hash, status) VALUES
 
 INSERT INTO events (
     id, primary_venue_id, name, description, status,
-    category, cover_url, date_range
+    category, cover_url, date_range, sales_starts_at, sales_ends_at
 ) VALUES
     (
         'evt-concert-2026',
@@ -26,7 +26,7 @@ INSERT INTO events (
         'ON_SALE',
         '演唱会',
         '/images/concert-cover.png',
-        '2026.10.01 — 10.03'
+        '2026.10.01 — 10.03', '2026-01-01 00:00:00+00', '2026-10-04 00:00:00+00'
     ),
     (
         'evt-basketball-finals',
@@ -36,7 +36,7 @@ INSERT INTO events (
         'ON_SALE',
         '体育赛事',
         '/images/basketball-cover.png',
-        '2026.11.08 — 11.09'
+        '2026.11.08 — 11.09', '2026-01-01 00:00:00+00', '2026-11-10 00:00:00+00'
     );
 
 INSERT INTO sessions (
