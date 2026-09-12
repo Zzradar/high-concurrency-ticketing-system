@@ -47,9 +47,12 @@ class MultiInstance(unittest.TestCase):
   peaks=[]
   for turn in range(5):
    peaks.append(f.redis('ZCARD',root+'active'));self.assertLessEqual(peaks[-1],1)
-   # Remove admitted users through either real API and observe independently scheduled release.
-   for c in [case.u,*clients]:
-    if c.request(case.path)[1].get('state')=='ADMITTED':self.assertEqual(c.request(case.path,method='DELETE')[0],200);break
+   # Redis release may precede the peer's policy refresh. Wait for an actual
+   # ADMITTED identity; never silently count a loop without a successful leave.
+   def admitted():
+    return next((c for c in [case.u,*clients] if c.request(case.path)[1].get('state')=='ADMITTED'),None)
+   leaving=f.until(admitted)
+   self.assertEqual(leaving.request(case.path,method='DELETE')[0],200)
    f.until(lambda:f.redis('ZCARD',root+'active')==1)
   self.assertEqual(sum(f.redis('ZCARD',root+s) for s in ['prequeue','waiting','active']),4)
   print('two API instances, two schedulers, PG pool budget=8; duplicate joins=16 -> one position; nine unique positions minus five leaves=4; maxActiveUsers=1 observed peak='+str(max(peaks)))
