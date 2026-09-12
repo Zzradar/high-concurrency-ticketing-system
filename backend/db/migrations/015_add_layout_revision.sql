@@ -12,6 +12,7 @@ INSERT INTO session_layout_revisions SELECT id, 1 FROM sessions ORDER BY id;
 CREATE FUNCTION bump_session_layout_revisions(affected TEXT[]) RETURNS VOID
 LANGUAGE plpgsql AS $$
 BEGIN
+    IF coalesce(cardinality(affected),0)=0 THEN RETURN; END IF;
     -- Deterministic lock order for a static correction spanning multiple Sessions.
     PERFORM session_id FROM session_layout_revisions
       WHERE session_id = ANY(affected) ORDER BY session_id FOR UPDATE;

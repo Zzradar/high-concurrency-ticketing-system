@@ -50,9 +50,12 @@ class LayoutRevisionSchema(fixture.AdmissionSchema):
  def test_targeting_and_noop(self):
   self.install()
   sid=self.sql('SELECT id FROM sessions ORDER BY id LIMIT 1');venue=self.sql("SELECT venue_id FROM sessions WHERE id='"+sid+"'")
+  self.sql('CREATE TABLE revision_statements(n int);CREATE FUNCTION count_revision_statement() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN INSERT INTO revision_statements VALUES(1);RETURN NULL;END $$;CREATE TRIGGER count_revision_statement AFTER UPDATE ON session_layout_revisions FOR EACH STATEMENT EXECUTE FUNCTION count_revision_statement()')
   before=self.sql("SELECT json_object_agg(session_id,revision ORDER BY session_id) FROM session_layout_revisions")
   self.sql('UPDATE session_seats SET price=price;UPDATE seats SET seat_label=seat_label;UPDATE venue_zones SET name=name;UPDATE venues SET name=name;')
   self.assertEqual(before,self.sql("SELECT json_object_agg(session_id,revision ORDER BY session_id) FROM session_layout_revisions"))
+  self.sql('UPDATE session_seats SET formal_version=formal_version+1;')
+  self.assertEqual(self.sql('SELECT count(*) FROM revision_statements'),'0','No-op and dynamic changes must not execute even an empty revision UPDATE')
   self.sql("CREATE TABLE revision_before AS SELECT * FROM session_layout_revisions; UPDATE venue_zones SET name=name||'-fixed' WHERE venue_id='"+venue+"'")
   self.assertEqual(self.sql("SELECT count(*) FROM session_layout_revisions r JOIN revision_before b USING(session_id) WHERE r.revision<>b.revision+CASE WHEN EXISTS(SELECT 1 FROM session_seats i JOIN seats s ON s.id=i.seat_id WHERE i.session_id=r.session_id AND s.venue_id='"+venue+"') THEN 1 ELSE 0 END"),'0')
  def test_session_id_reuse_and_inventory_truncate(self):
