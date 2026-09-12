@@ -1,0 +1,9 @@
+protocol/** -text whitespace=cr-at-eol
+baseline/** -text whitespace=cr-at-eol
+diagnostics/** -text whitespace=cr-at-eol
+manifest.json -text whitespace=cr-at-eol
+validation/** -text whitespace=cr-at-eol
+# Raw command output retains original padding for SHA-256 fidelity. Source and JSON retain normal whitespace checks.
+baseline/*.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+diagnostics/**/*.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+baseline/toolchain-version.txt whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol

@@ -1,0 +1,1072 @@
+{
+  "startedUtc": "2026-09-12T12:18:04.066Z",
+  "environment": {
+    "playwright": "1.63.0",
+    "executable": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+    "product": "Edg/152.0.4191.66",
+    "args": [
+      "--disable-field-trial-config",
+      "--disable-background-networking",
+      "--disable-background-timer-throttling",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-back-forward-cache",
+      "--disable-breakpad",
+      "--disable-client-side-phishing-detection",
+      "--disable-component-extensions-with-background-pages",
+      "--disable-component-update",
+      "--no-default-browser-check",
+      "--disable-default-apps",
+      "--disable-dev-shm-usage",
+      "--disable-edgeupdater",
+      "--disable-extensions",
+      "--disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion",
+      "--enable-features=CDPScreenshotNewSurface",
+      "--allow-pre-commit-input",
+      "--disable-hang-monitor",
+      "--disable-ipc-flooding-protection",
+      "--disable-popup-blocking",
+      "--disable-prompt-on-repost",
+      "--disable-renderer-backgrounding",
+      "--disable-updater-scheduler",
+      "--force-color-profile=srgb",
+      "--metrics-recording-only",
+      "--no-first-run",
+      "--password-store=basic",
+      "--use-mock-keychain",
+      "--no-service-autorun",
+      "--export-tagged-pdf",
+      "--disable-search-engine-choice-screen",
+      "--unsafely-disable-devtools-self-xss-warnings",
+      "--edge-skip-compat-layer-relaunch",
+      "--disable-infobars",
+      "--disable-search-engine-choice-screen",
+      "--disable-sync",
+      "--enable-unsafe-swiftshader",
+      "--no-sandbox",
+      "--user-data-dir=PROFILE",
+      "--remote-debugging-port=0",
+      "about:blank"
+    ],
+    "resolution": "Official msedge channel verified in diagnostics; headed; one context and two same-window pages; noDefaults=true"
+  },
+  "profile": "C:\\Users\\a12\\AppData\\Local\\Temp\\phase18-stage0-v2\\formal3\\browser-profile",
+  "args": [
+    "--disable-field-trial-config",
+    "--disable-background-networking",
+    "--disable-background-timer-throttling",
+    "--disable-backgrounding-occluded-windows",
+    "--disable-back-forward-cache",
+    "--disable-breakpad",
+    "--disable-client-side-phishing-detection",
+    "--disable-component-extensions-with-background-pages",
+    "--disable-component-update",
+    "--no-default-browser-check",
+    "--disable-default-apps",
+    "--disable-dev-shm-usage",
+    "--disable-edgeupdater",
+    "--disable-extensions",
+    "--disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion",
+    "--enable-features=CDPScreenshotNewSurface",
+    "--allow-pre-commit-input",
+    "--disable-hang-monitor",
+    "--disable-ipc-flooding-protection",
+    "--disable-popup-blocking",
+    "--disable-prompt-on-repost",
+    "--disable-renderer-backgrounding",
+    "--disable-updater-scheduler",
+    "--force-color-profile=srgb",
+    "--metrics-recording-only",
+    "--no-first-run",
+    "--password-store=basic",
+    "--use-mock-keychain",
+    "--no-service-autorun",
+    "--export-tagged-pdf",
+    "--disable-search-engine-choice-screen",
+    "--unsafely-disable-devtools-self-xss-warnings",
+    "--edge-skip-compat-layer-relaunch",
+    "--disable-infobars",
+    "--disable-search-engine-choice-screen",
+    "--disable-sync",
+    "--enable-unsafe-swiftshader",
+    "--no-sandbox",
+    "--user-data-dir=C:\\Users\\a12\\AppData\\Local\\Temp\\phase18-stage0-v2\\formal3\\browser-profile",
+    "--remote-debugging-port=0",
+    "about:blank"
+  ],
+  "connection": "CDP noDefaults=true",
+  "requests": [
+    {
+      "id": 1,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0",
+      "startEpochMs": 1789215485117,
+      "startMonotonicNs": "1135642863169700",
+      "status": 200,
+      "headersEpochMs": 1789215485169,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215485172,
+      "ms": 54.7294,
+      "bytes": 50536,
+      "mode": "snapshot",
+      "hasMore": false
+    },
+    {
+      "id": 2,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215487163,
+      "startMonotonicNs": "1135644908310500",
+      "status": 200,
+      "headersEpochMs": 1789215487231,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215487234,
+      "ms": 71.2432,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 3,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215489234,
+      "startMonotonicNs": "1135646979903100",
+      "status": 200,
+      "headersEpochMs": 1789215489312,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215489313,
+      "ms": 78.8327,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 4,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215491315,
+      "startMonotonicNs": "1135649060792800",
+      "status": 200,
+      "headersEpochMs": 1789215491374,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215491376,
+      "ms": 61.0676,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 5,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215493384,
+      "startMonotonicNs": "1135651129543900",
+      "status": 200,
+      "headersEpochMs": 1789215493437,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215493438,
+      "ms": 53.8614,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 6,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215495440,
+      "startMonotonicNs": "1135653185457000",
+      "status": 200,
+      "headersEpochMs": 1789215495498,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215495500,
+      "ms": 59.9041,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 7,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215497508,
+      "startMonotonicNs": "1135655253961100",
+      "status": 200,
+      "headersEpochMs": 1789215497562,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215497563,
+      "ms": 55.1722,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 8,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215499572,
+      "startMonotonicNs": "1135657317692300",
+      "status": 200,
+      "headersEpochMs": 1789215499625,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215499627,
+      "ms": 55.1257,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 9,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215501634,
+      "startMonotonicNs": "1135659379490200",
+      "status": 200,
+      "headersEpochMs": 1789215501690,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215501692,
+      "ms": 57.8205,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 10,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215503692,
+      "startMonotonicNs": "1135661437703200",
+      "status": 200,
+      "headersEpochMs": 1789215503750,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215503751,
+      "ms": 59.153,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 11,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215505763,
+      "startMonotonicNs": "1135663508700100",
+      "status": 200,
+      "headersEpochMs": 1789215505819,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215505820,
+      "ms": 56.5792,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 12,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215507824,
+      "startMonotonicNs": "1135665569646900",
+      "status": 200,
+      "headersEpochMs": 1789215507883,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215507884,
+      "ms": 60.1111,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 13,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215509885,
+      "startMonotonicNs": "1135667630747900",
+      "status": 200,
+      "headersEpochMs": 1789215509940,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215509941,
+      "ms": 56.1929,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 14,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215511949,
+      "startMonotonicNs": "1135669694897100",
+      "status": 200,
+      "headersEpochMs": 1789215512004,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215512005,
+      "ms": 55.9647,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 15,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215514029,
+      "startMonotonicNs": "1135671774800600",
+      "status": 200,
+      "headersEpochMs": 1789215514100,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215514102,
+      "ms": 72.479,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 16,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215516104,
+      "startMonotonicNs": "1135673850007100",
+      "status": 200,
+      "headersEpochMs": 1789215516157,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215516157,
+      "ms": 53.2585,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 17,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215518165,
+      "startMonotonicNs": "1135675910595100",
+      "status": 200,
+      "headersEpochMs": 1789215518218,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215518219,
+      "ms": 53.9297,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 18,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215520224,
+      "startMonotonicNs": "1135677969771400",
+      "status": 200,
+      "headersEpochMs": 1789215520279,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215520280,
+      "ms": 56.4559,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 19,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215522292,
+      "startMonotonicNs": "1135680037728000",
+      "status": 200,
+      "headersEpochMs": 1789215522342,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215522344,
+      "ms": 51.5692,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 20,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215524358,
+      "startMonotonicNs": "1135682103941900",
+      "status": 200,
+      "headersEpochMs": 1789215524430,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215524431,
+      "ms": 72.3638,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 21,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215526432,
+      "startMonotonicNs": "1135684177354500",
+      "status": 200,
+      "headersEpochMs": 1789215526493,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215526494,
+      "ms": 62.6507,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 22,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215528501,
+      "startMonotonicNs": "1135686246458600",
+      "status": 200,
+      "headersEpochMs": 1789215528556,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215528557,
+      "ms": 56.1983,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 23,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215530559,
+      "startMonotonicNs": "1135688304418000",
+      "status": 200,
+      "headersEpochMs": 1789215530621,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215530622,
+      "ms": 63.0564,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 24,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215532634,
+      "startMonotonicNs": "1135690379317300",
+      "status": 200,
+      "headersEpochMs": 1789215532691,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215532692,
+      "ms": 58.4882,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 25,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215534699,
+      "startMonotonicNs": "1135692444767600",
+      "status": 200,
+      "headersEpochMs": 1789215534755,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215534756,
+      "ms": 57.0006,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 26,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215536771,
+      "startMonotonicNs": "1135694516765900",
+      "status": 200,
+      "headersEpochMs": 1789215536828,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215536830,
+      "ms": 58.8447,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 27,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215538842,
+      "startMonotonicNs": "1135696587670900",
+      "status": 200,
+      "headersEpochMs": 1789215538913,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215538914,
+      "ms": 71.9118,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 28,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215540923,
+      "startMonotonicNs": "1135698668902900",
+      "status": 200,
+      "headersEpochMs": 1789215540978,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215540979,
+      "ms": 55.6619,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 29,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215542995,
+      "startMonotonicNs": "1135700741166700",
+      "status": 200,
+      "headersEpochMs": 1789215543051,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215543052,
+      "ms": 56.5675,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 30,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215545053,
+      "startMonotonicNs": "1135702798792200",
+      "status": 200,
+      "headersEpochMs": 1789215545105,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215545106,
+      "ms": 53.1459,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 31,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215555360,
+      "startMonotonicNs": "1135713106087800",
+      "status": 200,
+      "headersEpochMs": 1789215555409,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215555411,
+      "ms": 50.6027,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 32,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215555410,
+      "startMonotonicNs": "1135713156088400",
+      "status": 200,
+      "headersEpochMs": 1789215555440,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215555442,
+      "ms": 31.7038,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 33,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215557450,
+      "startMonotonicNs": "1135715195806600",
+      "status": 200,
+      "headersEpochMs": 1789215557488,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215557489,
+      "ms": 39.011,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 34,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215559490,
+      "startMonotonicNs": "1135717236123400",
+      "status": 200,
+      "headersEpochMs": 1789215559558,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215559560,
+      "ms": 69.454,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 35,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215561559,
+      "startMonotonicNs": "1135719305383400",
+      "status": 200,
+      "headersEpochMs": 1789215561598,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215561600,
+      "ms": 40.2412,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 36,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=10b9a472-699d-43ea-b936-a73d71355774&since=1789215468465-0",
+      "startEpochMs": 1789215563601,
+      "startMonotonicNs": "1135721347384600",
+      "status": 200,
+      "headersEpochMs": 1789215563644,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789215563645,
+      "ms": 44.079,
+      "bytes": 536,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    }
+  ],
+  "phases": [
+    {
+      "state": "visible",
+      "actionAt": 1789215485235,
+      "observedAt": 1789215485273,
+      "durationMs": 60000,
+      "hidden": false,
+      "visibilityState": "visible"
+    },
+    {
+      "state": "hidden",
+      "actionAt": 1789215545286,
+      "observedAt": 1789215545321,
+      "durationMs": 10000,
+      "hidden": true,
+      "visibilityState": "hidden"
+    },
+    {
+      "state": "restored",
+      "actionAt": 1789215555329,
+      "observedAt": 1789215555411,
+      "durationMs": 10000,
+      "hidden": false,
+      "visibilityState": "visible"
+    }
+  ],
+  "timeline": [
+    {
+      "url": "http://127.0.0.1:18183/sessions/p18-s-5000/seats",
+      "records": [
+        {
+          "type": "init",
+          "trusted": null,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789215484941,
+          "performanceNow": 27.100000143051147,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 3035
+            }
+          ]
+        },
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789215484945,
+          "performanceNow": 30,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 3035
+            }
+          ]
+        },
+        {
+          "type": "blur",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789215545288,
+          "performanceNow": 60373.10000014305,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 3035
+            }
+          ]
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": true,
+          "visibilityState": "hidden",
+          "dateNow": 1789215545293,
+          "performanceNow": 60378.200000047684,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 3035
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 60377.299999952316,
+              "duration": 0,
+              "navigationId": 3035
+            }
+          ]
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789215555356,
+          "performanceNow": 70441.60000014305,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 3035
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 60377.299999952316,
+              "duration": 0,
+              "navigationId": 3035
+            },
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 70430.70000004768,
+              "duration": 0,
+              "navigationId": 3035
+            }
+          ]
+        },
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789215555375,
+          "performanceNow": 70460.20000004768,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 3035
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 60377.299999952316,
+              "duration": 0,
+              "navigationId": 3035
+            },
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 70430.70000004768,
+              "duration": 0,
+              "navigationId": 3035
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "url": "data:text/html,<title>Neutral tab</title><h1>Neutral</h1>",
+      "records": [
+        {
+          "type": "init",
+          "trusted": null,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789215484818,
+          "performanceNow": 15,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4102
+            }
+          ]
+        },
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789215484819,
+          "performanceNow": 16.200000047683716,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4102
+            }
+          ]
+        },
+        {
+          "type": "blur",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789215484864,
+          "performanceNow": 60.60000014305115,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4102
+            }
+          ]
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": true,
+          "visibilityState": "hidden",
+          "dateNow": 1789215484870,
+          "performanceNow": 66.5,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4102
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 66.40000009536743,
+              "duration": 0,
+              "navigationId": 4102
+            }
+          ]
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789215545303,
+          "performanceNow": 60499.799999952316,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4102
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 66.40000009536743,
+              "duration": 0,
+              "navigationId": 4102
+            },
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 60499.60000014305,
+              "duration": 0,
+              "navigationId": 4102
+            }
+          ]
+        },
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789215545305,
+          "performanceNow": 60502,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4102
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 66.40000009536743,
+              "duration": 0,
+              "navigationId": 4102
+            },
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 60499.60000014305,
+              "duration": 0,
+              "navigationId": 4102
+            }
+          ]
+        },
+        {
+          "type": "blur",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789215555333,
+          "performanceNow": 70529.60000014305,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4102
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 66.40000009536743,
+              "duration": 0,
+              "navigationId": 4102
+            },
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 60499.60000014305,
+              "duration": 0,
+              "navigationId": 4102
+            }
+          ]
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": true,
+          "visibilityState": "hidden",
+          "dateNow": 1789215555338,
+          "performanceNow": 70534.40000009537,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4102
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 66.40000009536743,
+              "duration": 0,
+              "navigationId": 4102
+            },
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 60499.60000014305,
+              "duration": 0,
+              "navigationId": 4102
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 70534.40000009537,
+              "duration": 0,
+              "navigationId": 4102
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "topology": [
+    {
+      "name": "seat",
+      "targetId": "6F188AB1EE4811C7304947D63E845D7C",
+      "type": "page",
+      "title": "Phase18 5000 · 选座 | 票迹",
+      "url": "http://127.0.0.1:18183/sessions/p18-s-5000/seats",
+      "attached": true,
+      "canAccessOpener": false,
+      "browserContextId": "3B332C33AC4ED201327748E7F048E15D",
+      "pid": 52460,
+      "windowId": 1321493512,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    },
+    {
+      "name": "neutral",
+      "targetId": "F41E417C287DDE5866A471B24227EB79",
+      "type": "page",
+      "title": "Neutral tab",
+      "url": "data:text/html,<title>Neutral tab</title><h1>Neutral</h1>",
+      "attached": true,
+      "canAccessOpener": false,
+      "browserContextId": "3B332C33AC4ED201327748E7F048E15D",
+      "pid": 57984,
+      "windowId": 1321493512,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    }
+  ],
+  "errors": [],
+  "maxInflight": 2,
+  "passed": true,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Edg/152.0.4191.66",
+    "revision": "@cc2931e6363af1d70882ad63ee33b0e8cd524de0",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36 Edg/152.0.0.0",
+    "jsVersion": "15.2.23.10"
+  },
+  "endedUtc": "2026-09-12T12:19:25.473Z",
+  "inflightAtClose": 0
+}

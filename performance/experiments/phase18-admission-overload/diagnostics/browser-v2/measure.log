@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "C:\Users\a12\AppData\Local\Temp\phase18-stage0-v2\protocol\protocol.py", line 146, in <module>
+    globals()[A.action]()
+  File "C:\Users\a12\AppData\Local\Temp\phase18-stage0-v2\protocol\protocol.py", line 127, in measure
+    reads();snapshot('browser-before')
+  File "C:\Users\a12\AppData\Local\Temp\phase18-stage0-v2\protocol\protocol.py", line 84, in reads
+    base=f'/sessions/p18-s-{n}';snapshot(f'layout-{n}-before');r,raw=request(base+'/seat-layout');assert r['status']==200 and len(json.loads(raw)['seats'])==n
+  File "C:\Users\a12\AppData\Local\Temp\phase18-stage0-v2\protocol\protocol.py", line 71, in snapshot
+    save(label+'-database.json',{'at':utc(),'pg':pg,'redis':json.loads(redis('INFO','commandstats')),'pgDatabase':sql("SELECT xact_commit,xact_rollback,deadlocks,numbackends FROM pg_stat_database WHERE datname='ticketing';"),'connections':sql("SELECT application_name,state,wait_event_type,wait_event,count(*) FROM pg_stat_activity WHERE datname='ticketing' GROUP BY 1,2,3,4;")})
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\json\decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)

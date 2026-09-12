@@ -1,0 +1,14 @@
+{
+  "computer": {
+    "TotalPhysicalMemory": 33917235200,
+    "NumberOfLogicalProcessors": 16
+  },
+  "capturedUtc": "2026-09-12T12:18:48.6905441Z",
+  "processors": [
+    {
+      "Name": "Intel(R) Core(TM) Ultra 7 255H",
+      "NumberOfCores": 16,
+      "NumberOfLogicalProcessors": 16
+    }
+  ]
+}

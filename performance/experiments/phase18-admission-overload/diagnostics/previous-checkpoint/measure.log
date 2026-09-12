@@ -1,0 +1,43 @@
+Traceback (most recent call last):
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\urllib\request.py", line 1348, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 1283, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 1329, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 1278, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 1038, in _send_output
+    self.send(msg)
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 976, in send
+    self.connect()
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 942, in connect
+    self.sock = self._create_connection(
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\socket.py", line 845, in create_connection
+    raise err
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\socket.py", line 833, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] ����Ŀ�����������ܾ����޷����ӡ�
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\a12\AppData\Local\Temp\phase18-stage0-ed514471\measure.py", line 89, in <module>
+    layout();burst();verify()
+  File "C:\Users\a12\AppData\Local\Temp\phase18-stage0-ed514471\measure.py", line 46, in layout
+    path=f'/sessions/p18-s-{n}/seat-layout';before=pg();first,body=req(path)
+  File "C:\Users\a12\AppData\Local\Temp\phase18-stage0-ed514471\measure.py", line 39, in req
+    try:r=urllib.request.urlopen(urllib.request.Request(BASE+path,headers=headers or {}),timeout=10)
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\urllib\request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\urllib\request.py", line 519, in open
+    response = self._open(req, data)
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\urllib\request.py", line 536, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\urllib\request.py", line 496, in _call_chain
+    result = func(*args)
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\urllib\request.py", line 1377, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\urllib\request.py", line 1351, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [WinError 10061] ����Ŀ�����������ܾ����޷����ӡ�>

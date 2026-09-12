@@ -1,0 +1,184 @@
+{
+  "stage": "Stage0",
+  "status": "VALID_BASELINE_ONLY",
+  "baselineSutSha": "ed51447154418e05ed9e4c49728f3eb114713db9",
+  "gitDirty": false,
+  "branch": "phase18/admission-overload-control",
+  "worktree": "D:\\Documents\\vscode\\high-concurrency-ticketing-system-phase18",
+  "commitTimestampAndParents": "ed51447154418e05ed9e4c49728f3eb114713db9 2026-09-12T18:32:05+08:00 e19888121202c672aef4f6bb75b1e8f04cd61a00",
+  "measurementStart": {
+    "utc": "2026-09-12T12:17:41.793351+00:00",
+    "requestOrder": [
+      "5000-layout",
+      "5000-snapshot-delta",
+      "10000-layout",
+      "10000-snapshot-delta",
+      "browser",
+      "k6",
+      "eight-user-burst",
+      "verifier"
+    ]
+  },
+  "measurementEnd": {
+    "utc": "2026-09-12T12:20:06.612294+00:00"
+  },
+  "baselineManifest": {
+    "path": "baseline/manifest.json",
+    "sha256": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402"
+  },
+  "scripts": {
+    "browser-environment.json": {
+      "externalSha256": "6fa7aafb6dc3d8e4206a387d846edb4301feb56e7d2c52765c185833ee5932ed",
+      "repositorySha256": "6fa7aafb6dc3d8e4206a387d846edb4301feb56e7d2c52765c185833ee5932ed"
+    },
+    "browser.mjs": {
+      "externalSha256": "b7739573cdc4f103d587f64584fbaff6041f3bd62d82d9ebe15a06eda9d0a274",
+      "repositorySha256": "b7739573cdc4f103d587f64584fbaff6041f3bd62d82d9ebe15a06eda9d0a274"
+    },
+    "k6.js": {
+      "externalSha256": "f0520f15e52939ac8e0b6e9c873838ab605b3a45a779202ddd4f9e3e6f310e2d",
+      "repositorySha256": "f0520f15e52939ac8e0b6e9c873838ab605b3a45a779202ddd4f9e3e6f310e2d"
+    },
+    "nginx.conf": {
+      "externalSha256": "05155eff6174b7fff341d76cf8032f2d68b36e5bfe173fc630608343a8469b66",
+      "repositorySha256": "05155eff6174b7fff341d76cf8032f2d68b36e5bfe173fc630608343a8469b66"
+    },
+    "protocol.py": {
+      "externalSha256": "4b35b1dd707718dc5bba570598fdc8d202ed32bd4a40a1281871bffc989a96b5",
+      "repositorySha256": "4b35b1dd707718dc5bba570598fdc8d202ed32bd4a40a1281871bffc989a96b5"
+    },
+    "seed.py": {
+      "externalSha256": "9786864e0bc876ca88b415240593aa8f83d4e01746423ec3b501a02577ae6b80",
+      "repositorySha256": "9786864e0bc876ca88b415240593aa8f83d4e01746423ec3b501a02577ae6b80"
+    },
+    "stats.py": {
+      "externalSha256": "3970ca8b0bc7583c1912152e9ff975fcbbbee371837d066171d54c8d2174ce8c",
+      "repositorySha256": "3970ca8b0bc7583c1912152e9ff975fcbbbee371837d066171d54c8d2174ce8c"
+    },
+    "test_stats.py": {
+      "externalSha256": "02d00379d8155e5e944fb04da796b1a79dda38bc36fa0953f1d3940aba83703a",
+      "repositorySha256": "02d00379d8155e5e944fb04da796b1a79dda38bc36fa0953f1d3940aba83703a"
+    }
+  },
+  "browser": {
+    "playwright": "1.63.0",
+    "executable": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+    "product": "Edg/152.0.4191.66",
+    "args": [
+      "--disable-field-trial-config",
+      "--disable-background-networking",
+      "--disable-background-timer-throttling",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-back-forward-cache",
+      "--disable-breakpad",
+      "--disable-client-side-phishing-detection",
+      "--disable-component-extensions-with-background-pages",
+      "--disable-component-update",
+      "--no-default-browser-check",
+      "--disable-default-apps",
+      "--disable-dev-shm-usage",
+      "--disable-edgeupdater",
+      "--disable-extensions",
+      "--disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion",
+      "--enable-features=CDPScreenshotNewSurface",
+      "--allow-pre-commit-input",
+      "--disable-hang-monitor",
+      "--disable-ipc-flooding-protection",
+      "--disable-popup-blocking",
+      "--disable-prompt-on-repost",
+      "--disable-renderer-backgrounding",
+      "--disable-updater-scheduler",
+      "--force-color-profile=srgb",
+      "--metrics-recording-only",
+      "--no-first-run",
+      "--password-store=basic",
+      "--use-mock-keychain",
+      "--no-service-autorun",
+      "--export-tagged-pdf",
+      "--disable-search-engine-choice-screen",
+      "--unsafely-disable-devtools-self-xss-warnings",
+      "--edge-skip-compat-layer-relaunch",
+      "--disable-infobars",
+      "--disable-search-engine-choice-screen",
+      "--disable-sync",
+      "--enable-unsafe-swiftshader",
+      "--no-sandbox",
+      "--user-data-dir=PROFILE",
+      "--remote-debugging-port=0",
+      "about:blank"
+    ],
+    "resolution": "Official msedge channel verified in diagnostics; headed; one context and two same-window pages; noDefaults=true"
+  },
+  "dataFingerprint": {
+    "seed": 18,
+    "fixtures": [
+      {
+        "seatCount": 5000,
+        "zoneCount": 5,
+        "inventorySha256": "1387589764fc13eb7cc1d7bf0222663aa8db7cfa992f91756935db82efa31d82"
+      },
+      {
+        "seatCount": 10000,
+        "zoneCount": 5,
+        "inventorySha256": "f720116ea87fd806a194890ab0e1b70f140a572d7bc9c792e4da8cc67a8e9583"
+      }
+    ]
+  },
+  "host": {
+    "computer": {
+      "TotalPhysicalMemory": 33917235200,
+      "NumberOfLogicalProcessors": 16
+    },
+    "capturedUtc": "2026-09-12T12:18:48.6905441Z",
+    "processors": [
+      {
+        "Name": "Intel(R) Core(TM) Ultra 7 255H",
+        "NumberOfCores": 16,
+        "NumberOfLogicalProcessors": 16
+      }
+    ]
+  },
+  "build": {
+    "container": "phase18v2-build",
+    "source": "clean exact baseline mounted read-only at /sut",
+    "parameters": [
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DBUILD_TESTING=ON",
+      "-DBUILD_SHARED_LIBS=OFF",
+      "-DTICKETING_FETCH_DROGON=ON",
+      "-DFETCHCONTENT_SOURCE_DIR_DROGON=/src/build/_deps/drogon-src"
+    ],
+    "parallel": 2,
+    "cppStandard": 20,
+    "binarySha256": "519827ecd80956659484f9d5fdf3c7b9aeb91ebac0384bc7d9331e60d2dba46d",
+    "drogonSha": "4c5430757ea5451a7c38fbbef4b4bef7dbb47f2f",
+    "trantorSha": "63a4e5e164e219dc3bf30cdbfa1462ae5602fa97",
+    "frontendEnvironment": {
+      "VITE_USE_MOCK_API": "false"
+    },
+    "frontendLockSha256": "3518dd5c3eaeaa34a5c19ac3a4a215207a306a55aa39fd0bfd4a6f17bae9a2fe"
+  },
+  "diagnosticsExcluded": true,
+  "afterSutSha": null,
+  "limitations": [
+    "Shared host; isolated cgroups, not dedicated CPUs. No capacity/SLA claim.",
+    "Resource sampling approximately every 2-4 seconds; subinterval resource peaks may be missed. HTTP flow high-water from server metrics records request peaks.",
+    "gzipOfflineBytes is deterministic offline compression; gzipWire reports actual transport encoding.",
+    "Phase14 transaction acquisition histograms include only already-instrumented paths; SQL calls/rows are pg_stat_statements, not inferred.",
+    "All policies are absent/OFF at baseline; future enforced admission tests are additional scenarios.",
+    "Browser binary and Playwright version must match; external script hashes must equal committed copies before Stage0 commit.",
+    "Cold means first request to this fixture after fresh API start; no host page-cache flush."
+  ],
+  "validation": {
+    "performancePythonPassed": 240,
+    "performancePythonFailed": 0,
+    "protocolTestsPassed": 4,
+    "vitestPassed": 265,
+    "ctestPassed": 34,
+    "scriptExternalCopyMatches": 8,
+    "performanceLogSha256": "5701743291666e46063b15fac89019aa048b1d80523b020e6b0a9b0732ed8ace",
+    "phase18BusinessSourceChanges": false,
+    "testContainersStopped": true
+  }
+}

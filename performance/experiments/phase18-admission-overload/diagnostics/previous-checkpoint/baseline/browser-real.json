@@ -1,0 +1,340 @@
+{
+  "durationMs": 80586,
+  "phases": [
+    {
+      "state": "visible",
+      "atMs": 392
+    },
+    {
+      "state": "hidden",
+      "confirmed": false,
+      "atMs": 60536
+    },
+    {
+      "state": "foreground",
+      "atMs": 70571
+    }
+  ],
+  "records": [
+    {
+      "atMs": 454,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0",
+      "status": 200,
+      "mode": "snapshot",
+      "hasMore": false
+    },
+    {
+      "atMs": 2420,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 4471,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 6527,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 8563,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 10604,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 12657,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 14687,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 16757,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 18794,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 20836,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 22887,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 24926,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 26984,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 29019,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 31099,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 33140,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 35185,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 37225,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 39273,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 41334,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 43388,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 45422,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 47469,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 49509,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 51576,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 53606,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 55643,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 57680,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 59719,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 61842,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 63836,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 65881,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 67918,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 69947,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 72001,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 74044,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 76091,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 78132,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    },
+    {
+      "atMs": 80185,
+      "url": "http://127.0.0.1:18181/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=6d5fce2f-e2ae-4a0c-91d4-cdb61647389d&since=1789212986157-0",
+      "status": 200,
+      "mode": "delta",
+      "changes": 0,
+      "hasMore": false
+    }
+  ],
+  "errors": []
+}

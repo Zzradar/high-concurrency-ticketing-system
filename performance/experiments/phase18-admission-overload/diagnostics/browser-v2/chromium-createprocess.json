@@ -1,0 +1,8 @@
+{
+  "executable": "C:\\Users\\a12\\AppData\\Local\\ms-playwright\\chromium-1243\\chrome-win64\\chrome.exe",
+  "sha256": "9b07943f834485b43c9d54caea2951c78715f9f07070a80ab6658465ebd3e711",
+  "createSuspendedSucceeded": false,
+  "winError": 14001,
+  "message": "应用程序无法启动，因为应用程序的并行配置不正确。有关详细信息，请参阅应用程序事件日志，或使用命令行 sxstrace.exe 工具。",
+  "noBrowserCodeExecuted": true
+}

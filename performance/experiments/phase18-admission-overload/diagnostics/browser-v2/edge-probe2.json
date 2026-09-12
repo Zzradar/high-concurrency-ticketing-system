@@ -1,0 +1,205 @@
+{
+  "playwright": "1.63.0",
+  "channel": "msedge",
+  "headless": false,
+  "connection": "launchPersistentContext (Playwright pipe); CDP only for topology read and removal of focus emulation",
+  "profile": "C:\\Users\\a12\\AppData\\Local\\Temp\\phase18-stage0-v2\\edge-profile",
+  "launchOptions": {
+    "channel": "msedge",
+    "headless": false
+  },
+  "timeline": [
+    {
+      "url": "data:text/html,<title>Seat visibility probe</title><h1>Seat probe</h1>",
+      "records": [
+        {
+          "type": "init",
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789214312942,
+          "performanceNow": 11.5,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 6751
+            }
+          ]
+        },
+        {
+          "type": "blur",
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789214314309,
+          "performanceNow": 1379,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 6751
+            }
+          ]
+        },
+        {
+          "type": "focus",
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789214314333,
+          "performanceNow": 1402.2999999523163,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 6751
+            }
+          ]
+        },
+        {
+          "type": "blur",
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789214314365,
+          "performanceNow": 1434.5999999046326,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 6751
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "url": "data:text/html,<title>Neutral visibility probe</title><h1>Neutral</h1>",
+      "records": [
+        {
+          "type": "init",
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789214312985,
+          "performanceNow": 12.200000047683716,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 9006
+            }
+          ]
+        },
+        {
+          "type": "blur",
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789214314312,
+          "performanceNow": 1338.2999999523163,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 9006
+            }
+          ]
+        },
+        {
+          "type": "focus",
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789214314385,
+          "performanceNow": 1411.7999999523163,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 9006
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "topology": [
+    {
+      "name": "seat",
+      "targetId": "9C272188D08BDC0C2E4532E5DA50FCC6",
+      "browserContextId": "B65B730CB15E2076D326E0A2DA9F4078",
+      "windowId": 192486827,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1296,
+        "height": 854,
+        "windowState": "normal"
+      }
+    },
+    {
+      "name": "other",
+      "targetId": "4D9E90ED6A46A53636542BA1B0D1126A",
+      "browserContextId": "B65B730CB15E2076D326E0A2DA9F4078",
+      "windowId": 192486827,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1296,
+        "height": 854,
+        "windowState": "normal"
+      }
+    }
+  ],
+  "samples": [
+    {
+      "label": "default-seat-front",
+      "hidden": false,
+      "visibilityState": "visible",
+      "dateNow": 1789214313271,
+      "performanceNow": 340.39999985694885
+    },
+    {
+      "label": "default-other-front",
+      "hidden": false,
+      "visibilityState": "visible",
+      "dateNow": 1789214314307,
+      "performanceNow": 1376.7999999523163
+    },
+    {
+      "label": "trial-0-seat-front",
+      "hidden": false,
+      "visibilityState": "visible",
+      "dateNow": 1789214314363,
+      "performanceNow": 1432.5
+    }
+  ],
+  "passed": false,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Edg/152.0.4191.66",
+    "revision": "@cc2931e6363af1d70882ad63ee33b0e8cd524de0",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36 Edg/152.0.0.0",
+    "jsVersion": "15.2.23.10"
+  },
+  "commandLine": {
+    "unavailable": "cdpSession.send: Protocol error (Browser.getBrowserCommandLine): Command line not returned because --enable-automation not set.",
+    "source": "complete pw:browser launch log"
+  },
+  "executablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+  "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+  "focusOverrideRemovedAt": 1789214314310,
+  "error": {
+    "message": "page.waitForFunction: Timeout 5000ms exceeded.",
+    "stack": "page.waitForFunction: Timeout 5000ms exceeded.\n    at C:\\Users\\a12\\AppData\\Local\\Temp\\phase18-stage0-v2\\visibility-probe.mjs:54:41"
+  }
+}

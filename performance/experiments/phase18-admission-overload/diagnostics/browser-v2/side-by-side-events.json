@@ -1,0 +1,17 @@
+[
+  {
+    "TimeCreated": "2026-09-12T20:01:03.9622161+08:00",
+    "Id": 33,
+    "Message": "“C:\\Users\\a12\\AppData\\Local\\ms-playwright\\chromium-1243\\chrome-win64\\chrome.exe”的激活上下文生成失败。 找不到从属程序集 153.0.8010.12,language=\"&#x2a;\",type=\"win32\",version=\"153.0.8010.12\"。 请使用 sxstrace.exe 进行详细诊断。"
+  },
+  {
+    "TimeCreated": "2026-09-12T19:59:41.9740663+08:00",
+    "Id": 33,
+    "Message": "“C:\\Users\\a12\\AppData\\Local\\ms-playwright\\chromium-1243\\chrome-win64\\chrome.exe”的激活上下文生成失败。 找不到从属程序集 153.0.8010.12,language=\"&#x2a;\",type=\"win32\",version=\"153.0.8010.12\"。 请使用 sxstrace.exe 进行详细诊断。"
+  },
+  {
+    "TimeCreated": "2026-09-12T19:34:00.9796531+08:00",
+    "Id": 33,
+    "Message": "“C:\\Users\\a12\\AppData\\Local\\ms-playwright\\chromium-1243\\chrome-win64\\chrome.exe”的激活上下文生成失败。 找不到从属程序集 153.0.8010.12,language=\"&#x2a;\",type=\"win32\",version=\"153.0.8010.12\"。 请使用 sxstrace.exe 进行详细诊断。"
+  }
+]

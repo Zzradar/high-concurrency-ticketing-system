@@ -1,0 +1,9 @@
+test_boundary_uses_start_time (test_stats.StatisticsTest) ... ok
+test_empty_is_not_success_or_zero_latency (test_stats.StatisticsTest) ... ok
+test_nearest_rank_and_failures_included (test_stats.StatisticsTest) ... ok
+test_redis_info_is_raw_while_other_commands_are_json (test_stats.StatisticsTest) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+OK

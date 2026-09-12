@@ -1,0 +1,37 @@
+{
+  "toolchain": {
+    "tag": "phase14-engineering-build:20260910-v3",
+    "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+    "repoDigests": [
+      "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+    ]
+  },
+  "postgres": {
+    "tag": "postgres:16-alpine",
+    "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+    "repoDigests": [
+      "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+    ]
+  },
+  "redis": {
+    "tag": "redis:7.4-alpine",
+    "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+    "repoDigests": [
+      "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+    ]
+  },
+  "nginx": {
+    "tag": "nginx:1.28-alpine",
+    "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+    "repoDigests": [
+      "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+    ]
+  },
+  "k6": {
+    "tag": "grafana/k6:2.2.0",
+    "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+    "repoDigests": [
+      "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+    ]
+  }
+}

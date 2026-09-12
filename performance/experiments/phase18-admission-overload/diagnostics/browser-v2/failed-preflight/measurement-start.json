@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-12T12:15:26.142741+00:00",
+  "requestOrder": [
+    "5000-layout",
+    "5000-snapshot-delta",
+    "10000-layout",
+    "10000-snapshot-delta",
+    "browser",
+    "k6",
+    "eight-user-burst",
+    "verifier"
+  ]
+}

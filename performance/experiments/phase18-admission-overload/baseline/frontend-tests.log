@@ -1,0 +1,5 @@
+
+> frontend@0.0.0 test
+> vitest run --reporter=json --outputFile=C:\Users\a12\AppData\Local\Temp\phase18-stage0-v2\formal3\frontend-tests.json
+
+JSON report written to C:/Users/a12/AppData/Local/Temp/phase18-stage0-v2/formal3/frontend-tests.json

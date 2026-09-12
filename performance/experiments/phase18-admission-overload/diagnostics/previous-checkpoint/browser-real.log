@@ -1,0 +1,8 @@
+file:///C:/Users/a12/AppData/Local/Temp/phase18-stage0-ed514471/browser.mjs:31
+ if(!hidden)throw new Error('Real browser did not enter document.hidden; visibility evidence invalid');
+                  ^
+
+Error: Real browser did not enter document.hidden; visibility evidence invalid
+    at file:///C:/Users/a12/AppData/Local/Temp/phase18-stage0-ed514471/browser.mjs:31:19
+
+Node.js v24.18.0

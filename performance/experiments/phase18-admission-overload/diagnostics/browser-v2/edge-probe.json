@@ -1,0 +1,96 @@
+{
+  "playwright": "1.63.0",
+  "channel": "msedge",
+  "headless": false,
+  "connection": "launchPersistentContext (Playwright pipe); CDP only for topology read and removal of focus emulation",
+  "profile": "C:\\Users\\a12\\AppData\\Local\\Temp\\phase18-stage0-v2\\edge-profile",
+  "launchOptions": {
+    "channel": "msedge",
+    "headless": false
+  },
+  "timeline": [
+    {
+      "url": "data:text/html,<title>Seat visibility probe</title><h1>Seat probe</h1>",
+      "records": [
+        {
+          "type": "init",
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789214267435,
+          "performanceNow": 23.5,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 3009
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "url": "data:text/html,<title>Neutral visibility probe</title><h1>Neutral</h1>",
+      "records": [
+        {
+          "type": "init",
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789214267473,
+          "performanceNow": 10.399999856948853,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 3628
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "topology": [
+    {
+      "name": "seat",
+      "targetId": "0A62C104DBF2F7DBD820A667FF596E6B",
+      "browserContextId": "DB0F8F4A9D7DF8694FAC879D96AC1F9B",
+      "windowId": 192486766,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1296,
+        "height": 854,
+        "windowState": "normal"
+      }
+    },
+    {
+      "name": "other",
+      "targetId": "4A084165641B531918892C8635C1EF38",
+      "browserContextId": "DB0F8F4A9D7DF8694FAC879D96AC1F9B",
+      "windowId": 192486766,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1296,
+        "height": 854,
+        "windowState": "normal"
+      }
+    }
+  ],
+  "samples": [],
+  "passed": false,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Edg/152.0.4191.66",
+    "revision": "@cc2931e6363af1d70882ad63ee33b0e8cd524de0",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36 Edg/152.0.0.0",
+    "jsVersion": "15.2.23.10"
+  },
+  "error": {
+    "message": "cdpSession.send: Protocol error (Browser.getBrowserCommandLine): Command line not returned because --enable-automation not set.",
+    "stack": "cdpSession.send: Protocol error (Browser.getBrowserCommandLine): Command line not returned because --enable-automation not set.\n    at C:\\Users\\a12\\AppData\\Local\\Temp\\phase18-stage0-v2\\visibility-probe.mjs:39:31"
+  }
+}

@@ -1,0 +1,537 @@
+{
+  "status": "BLOCKED_STAGE0_NOT_VALID",
+  "baselineSutSha": "ed51447154418e05ed9e4c49728f3eb114713db9",
+  "gitDirty": false,
+  "branch": "phase18/admission-overload-control",
+  "worktree": "D:\\Documents\\vscode\\high-concurrency-ticketing-system-phase18",
+  "capturedUtc": "2026-09-12T11:38:58.000294+00:00",
+  "blocker": "Real Edge browser did not enter document.hidden after tab switch. Chromium launch failed; first Edge build used default mock mode; real-API build collected requests but visibility gate failed. Stop required by implementation prompt.",
+  "build": {
+    "cmake": [
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DBUILD_TESTING=ON",
+      "-DBUILD_SHARED_LIBS=OFF",
+      "-DTICKETING_FETCH_DROGON=ON",
+      "-DFETCHCONTENT_SOURCE_DIR_DROGON=/src/build/_deps/drogon-src"
+    ],
+    "parallel": 2,
+    "cppStandard": 20,
+    "drogonSha": "4c5430757ea5451a7c38fbbef4b4bef7dbb47f2f",
+    "trantorSha": "63a4e5e164e219dc3bf30cdbfa1462ae5602fa97",
+    "frontendEnv": {
+      "VITE_USE_MOCK_API": "false"
+    },
+    "backendBinarySha256": "519827ecd80956659484f9d5fdf3c7b9aeb91ebac0384bc7d9331e60d2dba46d"
+  },
+  "versions": {
+    "node": {
+      "exitCode": 0,
+      "stdout": "v24.18.0",
+      "stderr": ""
+    },
+    "python": {
+      "exitCode": 0,
+      "stdout": "Python 3.10.11",
+      "stderr": ""
+    },
+    "docker": {
+      "exitCode": 0,
+      "stdout": "{\"Client\":{\"Version\":\"29.7.2\",\"ApiVersion\":\"1.55\",\"DefaultAPIVersion\":\"1.55\",\"GitCommit\":\"a7dcaa6\",\"GoVersion\":\"go1.26.5\",\"Os\":\"windows\",\"Arch\":\"amd64\",\"BuildTime\":\"Wed Aug  5 18:31:33 2026\",\"Context\":\"desktop-linux\"},\"Server\":{\"Platform\":{\"Name\":\"Docker Desktop 4.88.1 (237512)\"},\"Version\":\"29.7.2\",\"ApiVersion\":\"1.55\",\"MinAPIVersion\":\"1.40\",\"Os\":\"linux\",\"Arch\":\"amd64\",\"Components\":[{\"Name\":\"Engine\",\"Version\":\"29.7.2\",\"Details\":{\"ApiVersion\":\"1.55\",\"Arch\":\"amd64\",\"BuildTime\":\"Wed Aug  5 18:28:36 2026\",\"Experimental\":\"false\",\"GitCommit\":\"6a43e3d\",\"GoVersion\":\"go1.26.5\",\"KernelVersion\":\"6.18.33.2-microsoft-standard-WSL2\",\"MinAPIVersion\":\"1.40\",\"Module\":\"github.com/moby/moby/v2\",\"ModuleVersion\":\"v2.0.0+unknown\",\"Os\":\"linux\"}},{\"Name\":\"containerd\",\"Version\":\"v2.3.3\",\"Details\":{\"GitCommit\":\"aad11006b869517fcd3009450b6f82da282e1a9b\"}},{\"Name\":\"runc\",\"Version\":\"1.4.3\",\"Details\":{\"GitCommit\":\"v1.4.3-0-gbb14dabe\"}},{\"Name\":\"docker-init\",\"Version\":\"0.19.0\",\"Details\":{\"GitCommit\":\"de40ad0\"}}],\"GitCommit\":\"6a43e3d\",\"GoVersion\":\"go1.26.5\",\"KernelVersion\":\"6.18.33.2-microsoft-standard-WSL2\",\"BuildTime\":\"2026-08-05T18:28:36.000000000+00:00\"}}",
+      "stderr": ""
+    }
+  },
+  "images": {
+    "phase14-engineering-build:20260910-v3": {
+      "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "repoDigests": [
+        "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+      ]
+    },
+    "postgres:16-alpine": {
+      "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "repoDigests": [
+        "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+      ]
+    },
+    "redis:7.4-alpine": {
+      "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "repoDigests": [
+        "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+      ]
+    },
+    "nginx:1.28-alpine": {
+      "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+      "repoDigests": [
+        "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+      ]
+    }
+  },
+  "containers": {
+    "phase18-baseline-build": {
+      "image": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-09-12T11:25:56.400390415Z",
+        "FinishedAt": "2026-09-12T11:30:34.16930128Z"
+      },
+      "limits": {
+        "NanoCpus": 2000000000,
+        "Memory": 4294967296,
+        "MemorySwap": 8589934592,
+        "PidsLimit": 256,
+        "Ulimits": [
+          {
+            "Name": "nofile",
+            "Hard": 4096,
+            "Soft": 4096
+          }
+        ]
+      },
+      "ports": {}
+    },
+    "phase18-postgres": {
+      "image": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 34145,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-09-12T11:28:03.539352347Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "limits": {
+        "NanoCpus": 1000000000,
+        "Memory": 536870912,
+        "MemorySwap": 1073741824,
+        "PidsLimit": 128,
+        "Ulimits": [
+          {
+            "Name": "nofile",
+            "Hard": 4096,
+            "Soft": 4096
+          }
+        ]
+      },
+      "ports": {
+        "5432/tcp": null
+      }
+    },
+    "phase18-redis": {
+      "image": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 34308,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-09-12T11:28:04.090170086Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "limits": {
+        "NanoCpus": 1000000000,
+        "Memory": 536870912,
+        "MemorySwap": 1073741824,
+        "PidsLimit": 128,
+        "Ulimits": [
+          {
+            "Name": "nofile",
+            "Hard": 4096,
+            "Soft": 4096
+          }
+        ]
+      },
+      "ports": {
+        "6379/tcp": null
+      }
+    },
+    "phase18-api": {
+      "image": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 60433,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-09-12T11:31:40.175769945Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "limits": {
+        "NanoCpus": 2000000000,
+        "Memory": 1073741824,
+        "MemorySwap": 2147483648,
+        "PidsLimit": 256,
+        "Ulimits": [
+          {
+            "Name": "nofile",
+            "Hard": 4096,
+            "Soft": 4096
+          }
+        ]
+      },
+      "ports": {
+        "8080/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18180"
+          }
+        ]
+      }
+    },
+    "phase18-frontend": {
+      "image": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 60593,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-09-12T11:31:40.824249407Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "limits": {
+        "NanoCpus": 500000000,
+        "Memory": 134217728,
+        "MemorySwap": 268435456,
+        "PidsLimit": 64,
+        "Ulimits": [
+          {
+            "Name": "nofile",
+            "Hard": 1024,
+            "Soft": 1024
+          }
+        ]
+      },
+      "ports": {
+        "8080/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18181"
+          }
+        ]
+      }
+    }
+  },
+  "networks": [
+    "phase18-stage0",
+    "phase18-ingress"
+  ],
+  "dockerResources": {
+    "exitCode": 0,
+    "stdout": "CPUs=16 Memory=16548249600",
+    "stderr": ""
+  },
+  "otherContainers": {
+    "exitCode": 0,
+    "stdout": "phase18-frontend\nphase18-api\nphase18-redis\nphase18-postgres\nphase17-phase12-backend-1\nphase17-phase12-postgres-1\nphase17-phase12-fake-stripe-1\nphase17-phase12-redis-1\nphase17-build\nphase17-redis\nphase17-postgres\nphase15-phase12-backend-1\nphase15-phase12-postgres-1\nphase15-phase12-redis-1\nphase15-phase12-fake-stripe-1\nphase15-api-backend\nphase15-redis\nphase15-api-postgres\nphase15-postgres\nphase16-api-backend\nphase16-api-redis\nphase16-api-postgres\nphase16-redis\nphase16-postgres\nphase12-build\nphase12-db\nphase11-regular-sandbox-2f1870e-postgres-1\nphase11-regular-sandbox-2f1870e-redis-1\nphase11-eight-simulation-2f1870e-backend-1\nphase11-eight-simulation-2f1870e-redis-1\nphase11-eight-simulation-2f1870e-postgres-1\nticketing-phase10a-backend-1\nticketing-phase10a-postgres-1\nticketing-phase10a-grafana-1\nticketing-phase10a-prometheus-1\nticketing-phase10a-postgres-exporter-1\nticketing-phase10a-redis-exporter-1\nticketing-phase10a-redis-1\nticketing-phase10a-cadvisor-1\nticketing-dev",
+    "stderr": ""
+  },
+  "repositoryConfigs": {
+    "config.docker.json": {
+      "sha256": "ff0a760b9c8ccf54b92269e2c0d997eb55da419b70cfb3aa8301a2045151923d",
+      "relatedFields": {
+        "app": {
+          "number_of_threads": 0,
+          "enable_session": false,
+          "document_root": "./public",
+          "upload_path": "uploads",
+          "client_max_body_size": "1M",
+          "client_max_memory_body_size": "64K"
+        },
+        "redis_clients": [
+          {
+            "name": "seat_holds",
+            "host": "redis",
+            "port": 6379,
+            "is_fast": false,
+            "number_of_connections": 2,
+            "timeout": 0.4
+          },
+          {
+            "name": "auth_sessions",
+            "host": "redis",
+            "port": 6379,
+            "is_fast": false,
+            "number_of_connections": 2,
+            "timeout": 0.4
+          }
+        ]
+      }
+    },
+    "config.json": {
+      "sha256": "bb208fe4ae1397e577d41e4cfeefacabb38c2e189fe2f2076b986b16f3db489d",
+      "relatedFields": {
+        "app": {
+          "number_of_threads": 0,
+          "enable_session": false,
+          "document_root": "./public",
+          "upload_path": "uploads",
+          "client_max_body_size": "1M",
+          "client_max_memory_body_size": "64K"
+        },
+        "redis_clients": [
+          {
+            "name": "seat_holds",
+            "host": "127.0.0.1",
+            "port": 6379,
+            "is_fast": false,
+            "number_of_connections": 2,
+            "timeout": 0.4
+          },
+          {
+            "name": "auth_sessions",
+            "host": "127.0.0.1",
+            "port": 6379,
+            "is_fast": false,
+            "number_of_connections": 2,
+            "timeout": 0.4
+          }
+        ]
+      }
+    },
+    "config.performance.json": {
+      "sha256": "1c400f0ca0523c8393a82b44b683b53dd29ee11a033d9fece925e48e42933f38",
+      "relatedFields": {
+        "app": {
+          "number_of_threads": 0,
+          "enable_session": false,
+          "document_root": "./public",
+          "upload_path": "uploads",
+          "client_max_body_size": "1M",
+          "client_max_memory_body_size": "64K"
+        },
+        "redis_clients": [
+          {
+            "name": "seat_holds",
+            "host": "redis",
+            "port": 6379,
+            "is_fast": false,
+            "number_of_connections": 2,
+            "timeout": 0.4
+          },
+          {
+            "name": "auth_sessions",
+            "host": "redis",
+            "port": 6379,
+            "is_fast": false,
+            "number_of_connections": 2,
+            "timeout": 0.4
+          }
+        ]
+      }
+    },
+    "config.performance.no_metrics.json": {
+      "sha256": "510fee5008f18c9456bc0e553bd99bdc6266f5d92e4589c5120ff720fd35d6a7",
+      "relatedFields": {
+        "app": {
+          "number_of_threads": 0,
+          "enable_session": false,
+          "document_root": "./public",
+          "upload_path": "uploads",
+          "client_max_body_size": "1M",
+          "client_max_memory_body_size": "64K"
+        },
+        "redis_clients": [
+          {
+            "name": "seat_holds",
+            "host": "redis",
+            "port": 6379,
+            "is_fast": false,
+            "number_of_connections": 2,
+            "timeout": 0.4
+          },
+          {
+            "name": "auth_sessions",
+            "host": "redis",
+            "port": 6379,
+            "is_fast": false,
+            "number_of_connections": 2,
+            "timeout": 0.4
+          }
+        ]
+      }
+    },
+    "config.phase14.json": {
+      "sha256": "7d233dca8338d3189900eacf48e1e7d199778d1a8c1cdd058b8fef3b4b292e21",
+      "relatedFields": {
+        "app": {
+          "number_of_threads": 0,
+          "enable_session": false,
+          "document_root": "./public",
+          "upload_path": "uploads",
+          "client_max_body_size": "1M",
+          "client_max_memory_body_size": "64K"
+        },
+        "redis_clients": [
+          {
+            "name": "seat_holds",
+            "host": "redis",
+            "port": 6379,
+            "is_fast": false,
+            "number_of_connections": 2,
+            "timeout": 0.4
+          },
+          {
+            "name": "auth_sessions",
+            "host": "redis",
+            "port": 6379,
+            "is_fast": false,
+            "number_of_connections": 2,
+            "timeout": 0.4
+          }
+        ]
+      }
+    }
+  },
+  "runtimeConfigSha256": "fb01f030d3ff574f146260e3121e606352191d6367e3f0536b150354745ef5cf",
+  "verification": {
+    "ctest": {
+      "passed": 34,
+      "failed": 0
+    },
+    "vitest": {
+      "passed": 265,
+      "failed": 0
+    },
+    "databaseChecks": {
+      "passed": 27,
+      "violations": 0
+    },
+    "burst": {
+      "offered": 8,
+      "created": 1,
+      "seatConflict": 7
+    }
+  },
+  "limitations": [
+    "Stage0 incomplete; no after measurement and no performance improvement claim.",
+    "Browser hidden/foreground gate failed; browser data is diagnostic only.",
+    "Initial network and mock-build failures retained.",
+    "Measurement protocol is not yet frozen or committed; external/committed script identity gate not satisfied.",
+    "No complete browser PG/Redis/resource sampling or k6 summary; no complete baseline manifest.",
+    "Host shared with historical running containers.",
+    "No production source, configuration, migration or tracked test changes; no commit or push."
+  ],
+  "files": {
+    "backend-build.log": {
+      "sha256": "c74bb2c4647720ba32a5b98480b2101685b5592df3046488a93963b257d5f04d",
+      "bytes": 54232
+    },
+    "backend-ctest.log": {
+      "sha256": "3fe23ac9890d6272ef3f8d7f2dc216f7255d5e692559e8c37420dfafb2dccade",
+      "bytes": 4420
+    },
+    "browser-edge.log": {
+      "sha256": "3f110ccf393bce87ab65154ad502d97af59d95b6a9b93a0b2daa5d737e6fff50",
+      "bytes": 302
+    },
+    "browser-real.log": {
+      "sha256": "24a5008b1a8588ef81debe4c1d5926257ba57511afa6edcbfaa54133cc4607e3",
+      "bytes": 398
+    },
+    "browser.log": {
+      "sha256": "685f6b4884cd4f06d718cab38d47461bcb02d94e632702b57031e0a853fcb3fa",
+      "bytes": 3591
+    },
+    "browser.mjs": {
+      "sha256": "54f364202eedc486afe5e998f7735cec31e0d88eabb24b15c26760afadc02634",
+      "bytes": 1860
+    },
+    "capture_checkpoint.py": {
+      "sha256": "4d1d92de67f1aaa5327eb2fb0b0b1b7838c4aa91ca6b03b5b29c13605d603e20",
+      "bytes": 3847
+    },
+    "config.json": {
+      "sha256": "fb01f030d3ff574f146260e3121e606352191d6367e3f0536b150354745ef5cf",
+      "bytes": 11026
+    },
+    "frontend-build.log": {
+      "sha256": "d9158d82dcd47aaf870f29b8e9251c4dd68507e1d3869a31251cea282bde4eb8",
+      "bytes": 990
+    },
+    "frontend-real-api-build.log": {
+      "sha256": "b2e315637291c44b1efd7ab0dcefc4eb82a03dd5495ad1cd7b0f9fd2e3b68106",
+      "bytes": 990
+    },
+    "frontend-tests.json": {
+      "sha256": "7631401984ac8c47e307232007185fbc3bb75b1aeb82f98cfcbc76c5101f7df9",
+      "bytes": 87073
+    },
+    "frontend-tests.log": {
+      "sha256": "5ede43448ce20404e492e29acedb3348a032e1d5743bff725dc40be0873edc86",
+      "bytes": 246
+    },
+    "measure-run2.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "measure.log": {
+      "sha256": "95d96d51a4aeff6b82eb8274b2ceb2a80f69ed8c41beac5fa36949662576957b",
+      "bytes": 3157
+    },
+    "measure.py": {
+      "sha256": "b58235327e254267e01d389514f5507226de4085d618a7bf9662aa52c192cbd7",
+      "bytes": 6463
+    },
+    "nginx.conf": {
+      "sha256": "52019e9a426445d2eff31b47c67ddeb68d2e823680ce30abaeb4545e24b50d81",
+      "bytes": 243
+    },
+    "setup.py": {
+      "sha256": "bea97f7f6f5dcbcc2080bd6db7f3d18b69162fe4ee08e44960675a12c37f7992",
+      "bytes": 2084
+    },
+    "ticketing_backend": {
+      "sha256": "519827ecd80956659484f9d5fdf3c7b9aeb91ebac0384bc7d9331e60d2dba46d",
+      "bytes": 8553512
+    },
+    "baseline\\browser-real.json": {
+      "sha256": "b3035904fef6e3917350b7a03df3ee3768df69eb9b3b0bbc8060e5e566a12cd3",
+      "bytes": 11548
+    },
+    "baseline\\browser.json": {
+      "sha256": "337a9ea297c0e2845c4eee955aa770de8d4e9a9c28279f61aa7c5b8ad8991ffc",
+      "bytes": 74
+    },
+    "baseline\\burst.json": {
+      "sha256": "89c576324db28815c05f7ebe03da33d3a17d2379e70e756bf938e5e039e699c1",
+      "bytes": 154953
+    },
+    "baseline\\data-fingerprint.json": {
+      "sha256": "0974004c391a7778177fd3c9fc3384751c7910408bafccfd85a7fdf07e8606e2",
+      "bytes": 321
+    },
+    "baseline\\layout.json": {
+      "sha256": "575ec0c78ca047898ac2fbba3a15e03e21bdb5edd77b150f46ccd9fb5cca9ab7",
+      "bytes": 313612
+    },
+    "baseline\\verifier.json": {
+      "sha256": "5093e2973ae58c2b1069704a9bbb8fc40527dcace5023e4e6698ac58ea846085",
+      "bytes": 862
+    }
+  }
+}

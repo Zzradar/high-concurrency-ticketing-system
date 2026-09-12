@@ -1,0 +1,38 @@
+{
+  "browser": {
+    "nativeHiddenAt": 1789215545293,
+    "nativeRestoredAt": 1789215555356,
+    "hiddenDurationMs": 10063,
+    "requestStartsByPhase": {
+      "visible": 30,
+      "hidden": 0,
+      "restored": 6
+    },
+    "restoreFirstRequestMs": 4,
+    "networkMaxInflight": 2,
+    "emptyDeltas": 35,
+    "errors": 0
+  },
+  "layoutPg": [
+    {
+      "seats": 5000,
+      "statements": [
+        {
+          "query": "SELECT\n            inventory.id,\n            seat.seat_label,\n            seat.row_no,\n            seat.seat_no,\n            zone.name AS zone,\n            inventory.price\n        FROM session_seats AS inventory\n        JOIN seats AS seat ON seat.id = inventory.seat_id\n        JOIN venue_zones AS zone ON zone.id = seat.zone_id AND zone.venue_id = seat.venue_id\n        WHERE inventory.session_id = $1 AND EXISTS(SELECT $2 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>$3 AND e.status<>$4)\n        ORDER BY zone.sort_order ASC,\n                 seat.row_no ASC,\n                 seat.seat_no ASC,\n                 inventory.id ASC",
+          "calls": 42,
+          "rows": 210000
+        }
+      ]
+    },
+    {
+      "seats": 10000,
+      "statements": [
+        {
+          "query": "SELECT\n            inventory.id,\n            seat.seat_label,\n            seat.row_no,\n            seat.seat_no,\n            zone.name AS zone,\n            inventory.price\n        FROM session_seats AS inventory\n        JOIN seats AS seat ON seat.id = inventory.seat_id\n        JOIN venue_zones AS zone ON zone.id = seat.zone_id AND zone.venue_id = seat.venue_id\n        WHERE inventory.session_id = $1 AND EXISTS(SELECT $2 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>$3 AND e.status<>$4)\n        ORDER BY zone.sort_order ASC,\n                 seat.row_no ASC,\n                 seat.seat_no ASC,\n                 inventory.id ASC",
+          "calls": 42,
+          "rows": 420000
+        }
+      ]
+    }
+  ]
+}

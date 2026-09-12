@@ -1,0 +1,15 @@
+{
+  "seed": 18,
+  "fixtures": [
+    {
+      "seats": 5000,
+      "zones": 5,
+      "sha256": "dec2e23febbc33380c56d5b7bf5a63faf4ad4c288515fbd338e2143d39ad4b75"
+    },
+    {
+      "seats": 10000,
+      "zones": 5,
+      "sha256": "d633c453fdfd0bbf80897237977328378ffaae826ee2dddf4da93f89c33e596b"
+    }
+  ]
+}
