@@ -1,3 +1,4 @@
+#include "admission/PublicAdmissionSummary.h"
 #include "admission/TrafficControl.h"
 #include "controllers/SessionController.h"
 
@@ -36,7 +37,7 @@ void SessionController::listEventSessions(
             Json::Value body{Json::arrayValue};
             for (const auto &session : *sessions)
             {
-                body.append(session.toJson());
+                body.append(ticketing::admission::withPublicAdmission(session.toJson(),session.eventId));
             }
             (*callbackPtr)(drogon::HttpResponse::newHttpJsonResponse(body));
         },
@@ -68,7 +69,7 @@ void SessionController::getSession(
                     "Session not found"));
                 return;
             }
-            (*done)(drogon::HttpResponse::newHttpJsonResponse(session->toJson()));
+            (*done)(drogon::HttpResponse::newHttpJsonResponse(ticketing::admission::withPublicAdmission(session->toJson(),session->eventId)));
         },
         [done] {
             (*done)(ticketing::makeErrorResponse(

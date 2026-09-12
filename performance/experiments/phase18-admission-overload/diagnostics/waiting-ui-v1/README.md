@@ -1,0 +1,1 @@
+CLOSED fixture diagnostic. Core real Edge queue/visibility/rate/reset/admission/back checks passed; the final logout selector used the obsolete label. The entire capability run is repeated against one completed frontend build. This mixed development-run evidence is excluded from release gates, baseline and A/B.

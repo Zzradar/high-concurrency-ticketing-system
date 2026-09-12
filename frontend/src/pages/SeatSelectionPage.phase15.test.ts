@@ -9,7 +9,7 @@ const id = 'ses-concert-1001', start = Date.parse('2026-09-12T00:00:00Z'), end =
 beforeEach(async () => {
   resetMockData(); setMockLatency(0); authState.clearAuth(); sessionStorage.clear()
   await router.push('/sessions/'+id+'/seats'); await router.isReady()
-  vi.useFakeTimers(); vi.setSystemTime(start)
+  vi.useFakeTimers(); vi.setSystemTime(start);vi.spyOn(Math,'random').mockReturnValue(.5)
   vi.spyOn(document,'hidden','get').mockReturnValue(false)
   setMockSalesWindow('evt-concert-2026',new Date(start).toISOString(),new Date(end).toISOString())
 })

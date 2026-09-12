@@ -1,0 +1,428 @@
+{
+  "purpose": "Waiting Room capability only, not OFF A/B",
+  "environment": {
+    "playwright": "1.63.0",
+    "executable": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+    "product": "Edg/152.0.4191.66",
+    "args": [
+      "--disable-field-trial-config",
+      "--disable-background-networking",
+      "--disable-background-timer-throttling",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-back-forward-cache",
+      "--disable-breakpad",
+      "--disable-client-side-phishing-detection",
+      "--disable-component-extensions-with-background-pages",
+      "--disable-component-update",
+      "--no-default-browser-check",
+      "--disable-default-apps",
+      "--disable-dev-shm-usage",
+      "--disable-edgeupdater",
+      "--disable-extensions",
+      "--disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion",
+      "--enable-features=CDPScreenshotNewSurface",
+      "--allow-pre-commit-input",
+      "--disable-hang-monitor",
+      "--disable-ipc-flooding-protection",
+      "--disable-popup-blocking",
+      "--disable-prompt-on-repost",
+      "--disable-renderer-backgrounding",
+      "--disable-updater-scheduler",
+      "--force-color-profile=srgb",
+      "--metrics-recording-only",
+      "--no-first-run",
+      "--password-store=basic",
+      "--use-mock-keychain",
+      "--no-service-autorun",
+      "--export-tagged-pdf",
+      "--disable-search-engine-choice-screen",
+      "--unsafely-disable-devtools-self-xss-warnings",
+      "--edge-skip-compat-layer-relaunch",
+      "--disable-infobars",
+      "--disable-search-engine-choice-screen",
+      "--disable-sync",
+      "--enable-unsafe-swiftshader",
+      "--no-sandbox",
+      "--user-data-dir=PROFILE",
+      "--remote-debugging-port=0",
+      "about:blank"
+    ],
+    "resolution": "Official msedge channel verified in diagnostics; headed; one context and two same-window pages; noDefaults=true"
+  },
+  "business": {
+    "eventId": "EVT-2ff01a5a-0513-483a-b470-476b64293f1e",
+    "sessionId": "SES-163f2893-1748-42d9-8055-60b66115c727"
+  },
+  "requests": [
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission",
+      "method": "GET",
+      "start": 1789228692555,
+      "status": 200,
+      "end": 1789228692556
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission",
+      "method": "POST",
+      "start": 1789228692631,
+      "status": 200,
+      "end": 1789228692638
+    },
+    {
+      "page": "other",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission",
+      "method": "GET",
+      "start": 1789228692794,
+      "status": 200,
+      "end": 1789228692796
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission?queueGeneration=c41c90e3fc7c93cf33fd94e4db410013",
+      "method": "GET",
+      "start": 1789228728898,
+      "status": 200,
+      "end": 1789228728899
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission",
+      "method": "POST",
+      "start": 1789228728940,
+      "status": 200,
+      "end": 1789228728946
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission?queueGeneration=c41c90e3fc7c93cf33fd94e4db410013",
+      "method": "GET",
+      "start": 1789228730955,
+      "status": 503,
+      "end": 1789228732162
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission?queueGeneration=c41c90e3fc7c93cf33fd94e4db410013",
+      "method": "GET",
+      "start": 1789228735542,
+      "status": 200,
+      "end": 1789228735549
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission?queueGeneration=c41c90e3fc7c93cf33fd94e4db410013",
+      "method": "GET",
+      "start": 1789228737556,
+      "status": 429,
+      "end": 1789228737560
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission?queueGeneration=c41c90e3fc7c93cf33fd94e4db410013",
+      "method": "GET",
+      "start": 1789228738840,
+      "status": 503,
+      "end": 1789228738841
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission?queueGeneration=c41c90e3fc7c93cf33fd94e4db410013",
+      "method": "GET",
+      "start": 1789228747482,
+      "status": 200,
+      "end": 1789228747488
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission",
+      "method": "POST",
+      "start": 1789228747872,
+      "status": 200,
+      "end": 1789228747879
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission?queueGeneration=c8110701fa7bac94ec4020d9c49c267f",
+      "method": "GET",
+      "start": 1789228750064,
+      "status": 200,
+      "end": 1789228750080
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission",
+      "method": "GET",
+      "start": 1789228750092,
+      "status": 200,
+      "end": 1789228750099
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/sessions/SES-163f2893-1748-42d9-8055-60b66115c727/seat-availability?zone=A",
+      "method": "GET",
+      "start": 1789228750099,
+      "status": 200,
+      "end": 1789228750112
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/sessions/SES-163f2893-1748-42d9-8055-60b66115c727/seat-availability?zone=A&generation=50a98707-425b-44f8-b9ab-0e161e55b248&since=1789228750103-0",
+      "method": "GET",
+      "start": 1789228752338,
+      "status": 200,
+      "end": 1789228752347
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission/heartbeat",
+      "method": "POST",
+      "start": 1789228755101,
+      "status": 200,
+      "end": 1789228755106
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission",
+      "method": "GET",
+      "start": 1789228756719,
+      "status": 200,
+      "end": 1789228756725
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/sessions/SES-163f2893-1748-42d9-8055-60b66115c727/seat-availability?zone=A",
+      "method": "GET",
+      "start": 1789228756724,
+      "status": 200,
+      "end": 1789228756734
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/sessions/SES-163f2893-1748-42d9-8055-60b66115c727/seat-availability?zone=A&generation=50a98707-425b-44f8-b9ab-0e161e55b248&since=1789228750103-0",
+      "method": "GET",
+      "start": 1789228758737,
+      "status": 200,
+      "end": 1789228758746
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission/heartbeat",
+      "method": "POST",
+      "start": 1789228761736,
+      "status": 200,
+      "end": 1789228761740
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/sessions/SES-163f2893-1748-42d9-8055-60b66115c727/seat-availability?zone=A&generation=50a98707-425b-44f8-b9ab-0e161e55b248&since=1789228750103-0",
+      "method": "GET",
+      "start": 1789228764247,
+      "status": 200,
+      "end": 1789228764254
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission/heartbeat",
+      "method": "POST",
+      "start": 1789228766750,
+      "status": 200,
+      "end": 1789228766755
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission/heartbeat",
+      "method": "POST",
+      "start": 1789228771757,
+      "status": 200,
+      "end": 1789228771762
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/sessions/SES-163f2893-1748-42d9-8055-60b66115c727/seat-availability?zone=A&generation=50a98707-425b-44f8-b9ab-0e161e55b248&since=1789228750103-0",
+      "method": "GET",
+      "start": 1789228774844,
+      "status": 200,
+      "end": 1789228774855
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission/heartbeat",
+      "method": "POST",
+      "start": 1789228776773,
+      "status": 200,
+      "end": 1789228776777
+    },
+    {
+      "page": "seat",
+      "url": "http://127.0.0.1:18183/api/events/EVT-2ff01a5a-0513-483a-b470-476b64293f1e/admission/heartbeat",
+      "method": "POST",
+      "start": 1789228781794,
+      "status": 200,
+      "end": 1789228781798
+    }
+  ],
+  "visibility": [
+    {
+      "url": "http://127.0.0.1:18183/sessions/SES-163f2893-1748-42d9-8055-60b66115c727/seats",
+      "records": [
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228691998
+        },
+        {
+          "type": "blur",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228692736
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": true,
+          "state": "hidden",
+          "at": 1789228692740
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228728885
+        },
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228728888
+        },
+        {
+          "type": "blur",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228737885
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": true,
+          "state": "hidden",
+          "at": 1789228737888
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228738830
+        },
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228738833
+        }
+      ]
+    },
+    {
+      "url": "data:text/html,<h1>Neutral</h1>",
+      "records": [
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228693824
+        },
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228693824
+        },
+        {
+          "type": "blur",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228696959
+        },
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228700725
+        },
+        {
+          "type": "blur",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228728873
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": true,
+          "state": "hidden",
+          "at": 1789228728877
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228737897
+        },
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228737900
+        },
+        {
+          "type": "blur",
+          "trusted": true,
+          "hidden": false,
+          "state": "visible",
+          "at": 1789228738820
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": true,
+          "state": "hidden",
+          "at": 1789228738823
+        }
+      ]
+    }
+  ],
+  "checks": [
+    "direct URL metadata -> login -> explicit join -> PAUSED",
+    "two real tabs share one position",
+    "real hidden stops status and heartbeat; presence expires",
+    "real Redis outage returns recoverable HTTP 503 UI",
+    "real HTTP 429 consumer message",
+    "old generation requires explicit reset join",
+    "ADMITTED replaces waiting polls with seat polling plus independent heartbeat",
+    "browser back restores admitted seat route"
+  ],
+  "maxAvailabilityInflight": 1,
+  "passed": false,
+  "error": {
+    "message": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '退出登录', exact: true })\u001b[22m\n",
+    "stack": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '退出登录', exact: true })\u001b[22m\n\n    at D:\\Documents\\vscode\\high-concurrency-ticketing-system-phase18\\performance\\experiments\\phase18-admission-overload\\capabilities\\waiting-ui\\browser.mjs:66:58"
+  }
+}

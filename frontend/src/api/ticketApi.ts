@@ -1,6 +1,7 @@
+import { isAdmissionSummary } from '../utils/admissionContract'
 import { isAvailabilitySync } from '../utils/availabilityContract'
 import { retryHint } from '../utils/pollingPolicy'
-import { isTicketEvent } from '../utils/eventContract'
+import { isTicketEvent,isTicketSession } from '../utils/eventContract'
 import { salesWindowAt } from '../utils/salesWindow'
 import type { SeatAvailabilitySyncOptions, SeatAvailabilitySyncResponse } from '../types'
 import axios from 'axios'
@@ -1013,7 +1014,7 @@ export const ticketApi = {
   async getEvents(): Promise<TicketEvent[]> {
     if (isMockMode) return mockGetEvents()
     const data: unknown = (await http.get<unknown>('/events')).data
-    if (!Array.isArray(data) || !data.every(isTicketEvent)) {
+    if (!Array.isArray(data) || !data.every(item=>isTicketEvent(item)&&isAdmissionSummary(item.admission))) {
       throw new TicketApiError('活动信息暂不可用，请稍后重试。', 'INVALID_EVENT_RESPONSE')
     }
     return data
@@ -1026,14 +1027,16 @@ export const ticketApi = {
       return clone(currentEvent(event))
     }
     const data: unknown = (await http.get<unknown>('/events/' + eventId)).data
-    if (!isTicketEvent(data) || data.id !== eventId) {
+    if (!isTicketEvent(data) || !isAdmissionSummary(data.admission) || data.id !== eventId) {
       throw new TicketApiError('活动信息暂不可用，请稍后重试。', 'INVALID_EVENT_RESPONSE')
     }
     return data
   },
   async getSessions(eventId: string): Promise<TicketSession[]> {
     if (isMockMode) return mockGetSessions(eventId)
-    return (await http.get<TicketSession[]>('/events/' + eventId + '/sessions')).data
+    const data:unknown=(await http.get<unknown>('/events/' + eventId + '/sessions')).data
+    if(!Array.isArray(data)||!data.every(item=>isTicketSession(item)&&isAdmissionSummary(item.admission)&&item.eventId===eventId))throw new TicketApiError('场次信息暂不可用。','INVALID_SESSION_RESPONSE')
+    return data
   },
   async getSession(sessionId: string): Promise<TicketSession> {
     if (isMockMode) {
@@ -1042,7 +1045,9 @@ export const ticketApi = {
       if (!session) throw new TicketApiError('场次不存在。', 'SESSION_NOT_FOUND')
       return clone(currentSession(session))
     }
-    return (await http.get<TicketSession>('/sessions/' + sessionId)).data
+    const data:unknown=(await http.get<unknown>('/sessions/' + sessionId)).data
+    if(!isTicketSession(data)||!isAdmissionSummary(data.admission)||data.id!==sessionId)throw new TicketApiError('场次信息暂不可用。','INVALID_SESSION_RESPONSE')
+    return data
   },
   async getSeats(sessionId: string, checkoutSessionId?: string): Promise<Seat[]> {
     const seats = isMockMode

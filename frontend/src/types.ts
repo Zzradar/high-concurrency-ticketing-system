@@ -65,6 +65,7 @@ export interface SalesWindow {
 }
 
 export interface TicketEvent {
+  admission?: AdmissionSummary
   id: string
   name: string
   description: string
@@ -79,6 +80,7 @@ export interface TicketEvent {
 }
 
 export interface TicketSession {
+  admission?: AdmissionSummary
   id: string
   eventId: string
   date: string
@@ -254,3 +256,20 @@ export interface SeatAvailabilityDeltaResponse extends SeatAvailabilitySyncBase 
   changes: SeatAvailability[]
 }
 export type SeatAvailabilitySyncResponse = SeatAvailabilitySnapshotResponse | SeatAvailabilityDeltaResponse
+
+export type AdmissionState = 'NOT_REQUIRED' | 'NOT_JOINED' | 'PREQUEUED' | 'WAITING' | 'ADMITTED' | 'RESET_REQUIRED' | 'SALES_ENDED' | 'PAUSED'
+export interface AdmissionSummary {
+  required: boolean
+  state: 'NOT_REQUIRED' | 'PREQUEUE' | 'OPEN' | 'PAUSED' | 'SALES_ENDED' | 'UNAVAILABLE'
+  prequeueStartsAt: string | null
+}
+export interface AdmissionStatus {
+  state: AdmissionState
+  queueGeneration: string | null
+  positionApprox: number | null
+  admittedUntil: string | null
+  pollAfterMs: number
+  heartbeatAfterMs: number | null
+  serverTime: string
+  joinAllowed: boolean
+}

@@ -2,7 +2,7 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import EventCard from '../components/EventCard.vue'
 import type { TicketEvent } from '../types'
-const valid = {id:'e',name:'N',description:'',city:'C',venue:'V',dateRange:'D',cover:'',category:'C',status:'ON_SALE',sessionCount:1,
+const valid = {admission:{required:false,state:'NOT_REQUIRED',prequeueStartsAt:null},id:'e',name:'N',description:'',city:'C',venue:'V',dateRange:'D',cover:'',category:'C',status:'ON_SALE',sessionCount:1,
  salesWindow:{startsAt:'2026-01-01T00:00:00Z',endsAt:'2027-01-01T00:00:00Z',evaluatedAt:'2026-09-12T00:00:00Z',state:'OPEN'}}
 afterEach(()=>{vi.restoreAllMocks();vi.unstubAllEnvs();vi.resetModules()})
 for (const [name, window] of Object.entries({missing:undefined,empty:{},arrayState:{...valid.salesWindow,state:['OPEN']},nestedArrayState:{...valid.salesWindow,state:[['OPEN']]},invalidDate:{...valid.salesWindow,startsAt:'garbage'},invalidCalendar:{...valid.salesWindow,startsAt:'2026-02-30T00:00:00Z'},emptyRange:{...valid.salesWindow,endsAt:valid.salesWindow.startsAt},valid:valid.salesWindow})) {

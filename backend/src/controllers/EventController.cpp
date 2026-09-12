@@ -1,3 +1,4 @@
+#include "admission/PublicAdmissionSummary.h"
 #include "admission/TrafficControl.h"
 #include "controllers/EventController.h"
 
@@ -25,7 +26,7 @@ void EventController::listEvents(
             Json::Value body{Json::arrayValue};
             for (const auto &event : events)
             {
-                body.append(event.toJson());
+                body.append(ticketing::admission::withPublicAdmission(event.toJson(),event.id));
             }
             (*callbackPtr)(drogon::HttpResponse::newHttpJsonResponse(body));
         },
@@ -59,7 +60,7 @@ void EventController::getEvent(
                 return;
             }
             (*callbackPtr)(
-                drogon::HttpResponse::newHttpJsonResponse(event->toJson()));
+                drogon::HttpResponse::newHttpJsonResponse(ticketing::admission::withPublicAdmission(event->toJson(),event->id)));
         },
         [callbackPtr] {
             (*callbackPtr)(ticketing::makeErrorResponse(

@@ -1,0 +1,42 @@
+{
+  "kind": "capability only; not frozen OFF A/B",
+  "baseCommit": "5f54c486f271328be4864cd2d71887bc1d91cc31",
+  "sourceLFNormalizedSha256": {
+    "backend/src/admission/AdmissionService.cpp": "bd043aaea450e32082111d9758291db7d168106eb9700cc0c1118fbe052f0a11",
+    "backend/src/controllers/EventController.cpp": "b1676e8c4555ac9575a47362fa6149f72f3519891dee251247f04b71c70013f0",
+    "backend/src/controllers/SessionController.cpp": "d53bf0d089d8f73b2cf85e3226343b6be90792608138eca651b03873b893786c",
+    "frontend/src/api/eventContract.test.ts": "23660b76b62e2e3af7b65a6ce0b7673dfcd70d22a13c4b40dc1b3da3cad9a517",
+    "frontend/src/api/ticketApi.ts": "d924c894eb3a1c30b2eafe3fde93ec1c3cbf4570687a64a9bc87e408be058a40",
+    "frontend/src/navigation.ts": "15d1a81c9fe6248e475f5f8e0213ce77842c1c13e08447f2dc5feaa74edb04e7",
+    "frontend/src/pages/LoginView.vue": "8881336da303f169060200c1d5780368336ba5b522152ddeff2215aef5542338",
+    "frontend/src/pages/SeatSelectionPage.phase15.test.ts": "33fea4c972e381c18e376f4a10631d8c0743494c79f22ea6b0412fdd90bf77cd",
+    "frontend/src/pages/SeatSelectionPage.vue": "6062398acb17e94cbf3664c2383733636c33c2d94e47799c3d446d5781b3cb9e",
+    "frontend/src/router.ts": "6964e64078bd361c203ad989a398803cd6268290a4e9f1e3c3e418ed2aec43c9",
+    "frontend/src/types.ts": "c55f776f8dd13802658c791d324793200d7119cc0e93554fa6e26603203a127d",
+    "frontend/src/utils/eventContract.ts": "b04af9cfecdd2fdc68414fb5c5ab499a8fee8abdb4ed6bd06d09286b448dfcce",
+    "backend/src/admission/PublicAdmissionSummary.h": "a27fb237865e2c80d84bf6544bfd50a89d3b795cc57c149f8d95c35a55e84a40",
+    "backend/tests/phase18_browser_fixture.py": "b93621e18d538019fab6ebf0cac7a3f2aae05df1d3152f7b69a79c79f1a4848f",
+    "backend/tests/phase18_public_contract_test.py": "02f77b8c0f915a191e491a38015f6cb8a04ee1483f293172edba143665e074e0",
+    "frontend/src/api/admissionApi.ts": "3df6583d264cb6a9a74113fcce6ab3aaf5f48ff00f385abd728946eeaa763b7f",
+    "frontend/src/pages/WaitingRoomPage.test.ts": "1c5f43517290dc6009c764576c864fc349d033ef773ba32c02d8679dfead11ca",
+    "frontend/src/pages/WaitingRoomPage.vue": "a9921edade13eb1e3f516e3c120e6f80bf17954c34124a961fd90439ab75a7df",
+    "frontend/src/utils/admissionContract.ts": "e3b55a7fa9b39606864f8c5a2a8dfd0250d4134bf3849bd13715ba09368123bd",
+    "frontend/src/utils/admissionPolling.test.ts": "e5d9cba9b8e6985af15edc681b5e202945c3fc45694d7c30b999a41c0aed325d",
+    "frontend/src/utils/admissionPolling.ts": "2d15e1af56c9243e0d968254d4a6db2250e3de97828d8c92b1563eaf3e92f499",
+    "frontend/src/utils/timeContract.ts": "c372657e47580b9e03fd5c38dd7d09ddc6559dd1b6e38e8e3032e6e83d004587"
+  },
+  "raw": {
+    "baseline-gate.log": "7bc14bcec4529de3024fb19bf3008077c473c93a41d8f16afdb45bf68cdd592b",
+    "browser.json": "5854e98f2daca67f63ea96830c0e443ee82bafcd62c9229445c8136728fb46b0",
+    "browser.json.browser.log": "179bbd8dcd4b6c3f916def4f922dc151909230e3490276431e37069a678955ee",
+    "browser.json.png": "84723106ef5eb3818e195a24234ab8cffd27f3f187ecfc3466f16a86950173ab",
+    "browser.mjs": "476b9e4a7446c92b5248536905091b4a2bbb94cb52d46089af59f7a6510eed11",
+    "build.log": "546dcf24bc28b5620ea975191b0f7780742ac66acb90698b3bd26cf35062f683",
+    "ctest.log": "dc7d33d9d7dd215263ee5e12ebdad9f1f1691cc55198e404948c0989ad1c2fd9",
+    "public-http.log": "e849bc1c9b216912678038e7e7ac0a51fadbbd8843bfb16d5bd2268dcc47cbac",
+    "vitest.log": "e48b0caa5a27f40a7553a2e20b1349ab8ec7d1d2794b5845aadf66263b8fc3e3"
+  },
+  "baselineSutSha": "ed51447154418e05ed9e4c49728f3eb114713db9",
+  "deliveryManifestSha256": "19f394034d74e027a19e62f3e61f2ab82c9806b542604d666dc24d948640f338",
+  "baselineManifestSha256": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402"
+}

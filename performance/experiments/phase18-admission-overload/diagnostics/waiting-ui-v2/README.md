@@ -1,0 +1,1 @@
+CLOSED selector fixture diagnostic. All queue, outage, rate, reset, native hidden and admitted/back checks passed. The final logout button belongs to the account menu; the complete test now opens that menu first and accepts the actual login destination. Excluded from formal capability gates, Stage0 and A/B.

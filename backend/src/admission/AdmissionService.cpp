@@ -48,6 +48,14 @@ drogon::HttpResponsePtr response(const RuntimePolicy &p,const RedisAdmissionStor
  body["joinAllowed"]=p.mode!="OFF"&&p.mode!="OBSERVE"&&now>=p.startsMs-p.prequeueSeconds*1000LL&&now<p.endsMs;
  auto result=drogon::HttpResponse::newHttpJsonResponse(body);result->addHeader("Cache-Control","private, no-store");return result;
 }
+drogon::HttpResponsePtr stateConflict(const RuntimePolicy &policy,const RedisAdmissionStore::Result &state,const char *code) {
+ auto value=response(policy,state);
+ Json::Value body=*value->getJsonObject();
+ body["code"]=code;body["message"]=code;
+ auto result=drogon::HttpResponse::newHttpJsonResponse(body);
+ result->setStatusCode(drogon::k409Conflict);
+ result->addHeader("Cache-Control","private, no-store");return result;
+}
 }
 void AdmissionService::request(std::string event,std::string user,std::string op,std::string expected,admin::Reply reply) {
  submit([event,user,op,expected](admin::Reply done){
@@ -69,7 +77,7 @@ void AdmissionService::request(std::string event,std::string user,std::string op
   if(!p.redisReady){done(error("ADMISSION_UNAVAILABLE"));return;}
   const auto result=RedisAdmissionStore::run(p,op,user);
   if(result.empty()||result[0]=="UNAVAILABLE"||result[0]=="INVALID"||result[0]=="SEQUENCE_EXHAUSTED")done(error("ADMISSION_UNAVAILABLE"));
-  else if(result[0]=="ADMISSION_NOT_OPEN")done(error("ADMISSION_NOT_OPEN",drogon::k409Conflict));
+  else if(result[0]=="ADMISSION_NOT_OPEN")done(stateConflict(p,{"NOT_JOINED"},"ADMISSION_NOT_OPEN"));
   else done(response(p,result));
  },std::move(reply));
 }
@@ -99,7 +107,7 @@ void AdmissionService::guard(std::string session,std::string user,std::string op
   if(!p->redisReady){done(error("ADMISSION_UNAVAILABLE"));return;}
   const auto result=RedisAdmissionStore::run(*p,"status",user);
   if(result.empty() || result[0]=="UNAVAILABLE"||result[0]=="RESET_REQUIRED")done(error("ADMISSION_UNAVAILABLE"));
-  else if(result[0]!="ADMITTED")done(error("ADMISSION_REQUIRED",drogon::k409Conflict));
+  else if(result[0]!="ADMITTED")done(stateConflict(*p,result,"ADMISSION_REQUIRED"));
   else done(nullptr);
  },std::move(completion));
 }

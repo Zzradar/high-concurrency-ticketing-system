@@ -16,6 +16,7 @@ import SeatSelectionPage from './pages/SeatSelectionPage.vue'
 import SessionListPage from './pages/SessionListPage.vue'
 
 export const appRoutes: RouteRecordRaw[] = [
+  {path:'/events/:eventId/waiting-room',name:routeNames.waitingRoom,component:()=>import('./pages/WaitingRoomPage.vue'),meta:{title:'活动排队 | 票迹'}},
   {path:'/admin',name:'admin',redirect:'/admin/events',meta:{requiresAuth:true,requiresAdmin:true,title:'管理后台 | 票迹'}},
   {path:'/admin/events',name:'admin-events',component:()=>import('./pages/AdminEventListPage.vue'),meta:{requiresAuth:true,requiresAdmin:true,title:'管理后台 | 票迹'}},
   {path:'/admin/events/new',name:'admin-event-new',component:()=>import('./pages/AdminEventEditorPage.vue'),meta:{requiresAuth:true,requiresAdmin:true,title:'管理后台 | 票迹'}},

@@ -4,6 +4,7 @@ export const routeNames = {
   events: 'events',
   eventSessions: 'event-sessions',
   sessionSeats: 'session-seats',
+  waitingRoom: 'waiting-room',
   orders: 'orders',
   orderDetail: 'order-detail',
   notFound: 'not-found',

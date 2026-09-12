@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { authState } from '../auth/authState'
 import { TicketApiError } from '../api/ticketApi'
 import { routeNames } from '../navigation'
+import { safeInternalRedirect } from '../utils/admissionContract'
 
 const route = useRoute()
 const router = useRouter()
@@ -18,7 +19,7 @@ async function submit() {
   error.value = ''
   try {
     await authState.login(username.value, password.value)
-    const redirect = typeof route.query.redirect === 'string' && route.query.redirect.startsWith('/')
+    const redirect = safeInternalRedirect(route.query.redirect)
       ? route.query.redirect
       : { name: routeNames.events }
     await router.replace(redirect)

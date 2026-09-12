@@ -8,6 +8,9 @@ import PageState from '../components/PageState.vue'
 import { routeNames, setPageTitle } from '../navigation'
 import { requestNotificationRefresh, showNotice } from '../uiSignals'
 import { useSalesWindow } from '../utils/salesWindow'
+import { admissionApi,admissionErrorText } from '../api/admissionApi'
+import { AdmissionPolling } from '../utils/admissionPolling'
+import RecoverableCheckoutPanel from '../components/RecoverableCheckoutPanel.vue'
 import { nextPollDelay } from '../utils/pollingPolicy'
 import { ZoneAvailabilityState } from '../utils/zoneAvailability'
 import SeatSelectionView from '../views/SeatSelectionView.vue'
@@ -56,8 +59,41 @@ let emptyStreak = 0
 let errorStreak = 0
 let retryAfterMs: number | undefined
 function resetPolling() { emptyStreak = 0; errorStreak = 0; retryAfterMs = undefined; pollAfterMs = 2000 }
+const admissionBlocked = ref(false)
+let leasePolling:AdmissionPolling|undefined
+const formalAdmission = computed(()=>!!(session.value?.admission?.required || event.value?.admission?.required))
 const salesOpen = computed(() => session.value?.salesWindow.state === 'OPEN' && session.value.status === 'ON_SALE' && event.value?.status === 'ON_SALE')
 const { label: salesLabel } = useSalesWindow(computed(() => session.value?.salesWindow), refreshSalesSession)
+function waitingTarget(){return {name:routeNames.waitingRoom,params:{eventId:session.value!.eventId},query:{sessionId:session.value!.id}}}
+function enterWaitingRoom(){leasePolling?.stop();stopAvailabilityTimer();void router.replace(waitingTarget())}
+function blockNewSelection(){
+ admissionBlocked.value=true;availabilityEpoch++;stopAvailabilityTimer();leasePolling?.stop()
+ if(!checkout.value && !recoverable.value.length)enterWaitingRoom()
+}
+async function ensureAdmission(){
+ if(!formalAdmission.value){admissionBlocked.value=false;return true}
+ if(session.value?.admission?.state==='UNAVAILABLE'||event.value?.admission?.state==='UNAVAILABLE')throw new TicketApiError('当前访问较多，请稍后重新加载。','ADMISSION_UNAVAILABLE',503)
+ if(!authState.currentUser.value){void router.replace({name:routeNames.login,query:{redirect:router.resolve(waitingTarget()).fullPath}});return false}
+ const expectedEpoch=pageLoadEpoch,expectedUser=authState.currentUser.value.id
+ const state=await admissionApi.status(session.value!.eventId)
+ if(disposed || expectedEpoch!==pageLoadEpoch || expectedUser!==authState.currentUser.value?.id)return false
+ if(!['ADMITTED','NOT_REQUIRED'].includes(state.state)){blockNewSelection();return false}
+ admissionBlocked.value=false
+ leasePolling?.stop()
+ if(state.state==='ADMITTED'){
+  const eventId=session.value!.eventId
+  leasePolling=new AdmissionPolling({leaseOnly:true,hidden:()=>document.hidden,
+   request:(op,generation)=>op==='heartbeat'?admissionApi.heartbeat(eventId,generation!):admissionApi.status(eventId,generation),
+   update:value=>{if(expectedEpoch===pageLoadEpoch&&expectedUser===authState.currentUser.value?.id&&!['ADMITTED','NOT_REQUIRED'].includes(value.state))blockNewSelection()},
+   error:cause=>{availabilityWarning.value=admissionErrorText(cause)},
+  });leasePolling.start(state)
+ }
+ return true
+}
+function isAdmissionFailure(cause:unknown){
+ if(cause instanceof TicketApiError&&cause.code==='ADMISSION_REQUIRED'){blockNewSelection();return true}
+ return false
+}
 async function refreshSalesSession() {
   if (!session.value) return
   const id = session.value.id
@@ -93,7 +129,7 @@ function stopAvailabilityTimer() {
 }
 function scheduleAvailability() {
   stopAvailabilityTimer()
-  if (disposed || document.hidden || !salesOpen.value || !seatMapLoaded.value || !activeZone.value) return
+  if (admissionBlocked.value || disposed || document.hidden || !salesOpen.value || !seatMapLoaded.value || !activeZone.value) return
   if (refreshWork) return
   availabilityTimer = setTimeout(() => { void refreshSeats(false) }, nextPollDelay({pollAfterMs,emptyStreak,errorStreak,retryAfterMs}))
 }
@@ -140,12 +176,13 @@ function requestForeground() {
   foregroundTimer = setTimeout(() => { foregroundTimer=undefined; void refreshSeats(true) },0)
 }
 function visibilityChanged() {
+  leasePolling?.visibility()
   if (document.hidden) { wasHidden=true; focusNeedsRead=true; stopAvailabilityTimer(); if(foregroundTimer!==undefined)clearTimeout(foregroundTimer);foregroundTimer=undefined }
   else if (wasHidden) { wasHidden=false; focusNeedsRead=false; requestForeground() }
 }
 
 const selectedSeats = computed(() => seats.value.filter((seat) => selectedSeatIds.value.includes(seat.id)))
-const editingDisabled = computed(() => !salesOpen.value || refreshing.value || syncing.value || confirming.value || submittingPolling.value || checkout.value?.status !== 'SELECTING' && !!checkout.value)
+const editingDisabled = computed(() => admissionBlocked.value || !salesOpen.value || refreshing.value || syncing.value || confirming.value || submittingPolling.value || checkout.value?.status !== 'SELECTING' && !!checkout.value)
 const existingOrder = computed(() => sessionOrders.value.find((order) => order.status === 'PENDING_PAYMENT') ?? sessionOrders.value.find((order) => order.status === 'PAID'))
 
 function locatorWrite(value: CheckoutSession) {
@@ -159,7 +196,7 @@ function locatorClear() {
 }
 
 async function refreshSeats(authoritative = true): Promise<boolean> {
-  if (!session.value || !seatMapLoaded.value || !activeZone.value || disposed || document.hidden) return false
+  if (!session.value || !seatMapLoaded.value || !activeZone.value || disposed || document.hidden || admissionBlocked.value) return false
   stopAvailabilityTimer()
   const context = (authState.currentUser.value?.id ?? '') + '|' + (checkout.value?.id ?? '')
   const changed = context !== ownContext
@@ -188,6 +225,7 @@ async function refreshSeats(authoritative = true): Promise<boolean> {
         if (epoch === availabilityEpoch && succeeded) availabilityWarning.value = ''
       } catch (cause) {
         succeeded = false
+        if(isAdmissionFailure(cause))return false
         if (epoch === availabilityEpoch) {
           errorStreak=Math.min(5,errorStreak+1)
           retryAfterMs=cause instanceof TicketApiError?cause.retryAfterMs:undefined
@@ -249,6 +287,7 @@ async function recoverCheckout() {
 }
 
 async function load() {
+  leasePolling?.stop();admissionBlocked.value=false
   const loadEpoch = ++pageLoadEpoch
   availabilityEpoch++
   stopAvailabilityTimer()
@@ -275,9 +314,14 @@ async function load() {
     zoneSummaries.value = []
     ownContext = ''
     seatMapLoaded.value = true
-    if (activeZone.value && !(await refreshSeats())) { seatMapLoaded.value = false; throw new Error('Initial zone unavailable') }
+    if(formalAdmission.value){
+      admissionBlocked.value=true
+      await Promise.all([recoverCheckout(),refreshSessionOrders()])
+      if(disposed || loadEpoch!==pageLoadEpoch || !(await ensureAdmission()) || loadEpoch!==pageLoadEpoch)return
+    }
+    if (activeZone.value && !document.hidden && !(await refreshSeats())) { if(admissionBlocked.value)return;seatMapLoaded.value = false; throw new Error('Initial zone unavailable') }
     setPageTitle(event.value.name + ' · 选座')
-    await Promise.all([recoverCheckout(), refreshSessionOrders()])
+    if(!formalAdmission.value)await Promise.all([recoverCheckout(), refreshSessionOrders()])
   } catch (cause) {
     if (disposed || loadEpoch !== pageLoadEpoch) return
     const resourceMissing = cause instanceof TicketApiError &&
@@ -319,8 +363,9 @@ async function toggleSeat(seat: Seat) {
     }
     await refreshSeats()
   } catch (cause) {
+    if (isAdmissionFailure(cause)) return
     if (await handleSalesFailure(cause)) return
-    error.value = cause instanceof TicketApiError ? cause.message : '座位选择同步失败。'
+    error.value = cause instanceof TicketApiError && [429,503].includes(cause.status??0) ? admissionErrorText(cause) : cause instanceof TicketApiError ? cause.message : '座位选择同步失败。'
     const isHoldConflict = cause instanceof TicketApiError && cause.code === 'SEAT_TEMPORARILY_HELD'
     let refreshed: boolean | undefined
     if (checkout.value) {
@@ -376,8 +421,9 @@ async function confirmCheckout() {
       })
     }
   } catch (cause) {
+    if (isAdmissionFailure(cause)) return
     if (await handleSalesFailure(cause)) return
-    error.value = cause instanceof TicketApiError ? cause.message : '确认结果暂时未知，正在恢复同一购票会话。'
+    error.value = cause instanceof TicketApiError && [429,503].includes(cause.status??0) ? admissionErrorText(cause) : cause instanceof TicketApiError ? cause.message : '确认结果暂时未知，正在恢复同一购票会话。'
     if (!(cause instanceof TicketApiError) || cause.status !== undefined && cause.status >= 500 || cause.code === 'INTERNAL_ERROR') startSubmittingPoll(checkout.value.id)
   } finally {
     confirming.value = false
@@ -446,6 +492,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   disposed = true
+  leasePolling?.stop()
   if (foregroundTimer !== undefined) clearTimeout(foregroundTimer)
   pageLoadEpoch++
   availabilityEpoch++
@@ -455,7 +502,10 @@ onBeforeUnmount(() => {
   window.removeEventListener('focus', handleFocus)
   window.removeEventListener('blur', handleBlur)
 })
-watch(() => authState.currentUser.value?.id, () => { void refreshSeats() })
+watch(() => authState.currentUser.value?.id, () => {
+ if(formalAdmission.value){leasePolling?.stop();checkout.value=null;recoverable.value=[];selectedSeatIds.value=[];void load()}
+ else void refreshSeats()
+})
 watch(() => route.params.sessionId, () => { pollingGeneration++; checkout.value = null; selectedSeatIds.value = []; void load() })
 </script>
 
@@ -475,8 +525,18 @@ watch(() => route.params.sessionId, () => { pollingGeneration++; checkout.value 
     <button type="button" @click="router.push({ name: routeNames.orderDetail, params: { orderId: existingOrder.id } })">查看订单</button><span>也可继续购票</span>
   </section>
   <p v-if="session" class="message-banner" role="status">{{ salesLabel }} · 开售 {{ session.salesWindow.startsAt }} · 截止 {{ session.salesWindow.endsAt }}</p>
+  <section v-if="admissionBlocked && session" class="selection-panel page-shell" aria-label="排队与已有购票恢复">
+    <p>新的选座需要先完成排队，已有购票会话仍可恢复或释放。</p>
+    <button class="primary-button" @click="enterWaitingRoom">前往排队</button>
+    <template v-if="checkout">
+      <button v-if="checkout.status==='SELECTING'" :disabled="syncing" @click="clearSeats">释放已选座位</button>
+      <button v-if="checkout.status==='SELECTING'" :disabled="syncing" @click="abandon(checkout)">放弃此购票会话</button>
+      <button v-if="checkout.status==='SUBMITTING'" :disabled="confirming" @click="confirmCheckout">恢复确认结果</button>
+    </template>
+    <RecoverableCheckoutPanel v-if="recoverable.length" :sessions="recoverable" :seats="seatLayout" @continue="activate" @abandon="abandon" @start-new="enterWaitingRoom" />
+  </section>
   <SeatSelectionView
-    v-if="event && session && seatMapLoaded"
+    v-if="event && session && seatMapLoaded && !admissionBlocked"
     :event="event" :session="session" :seats="seats.filter(seat => seat.zone === activeZone)"
     :seat-layout="seatLayout" :active-zone="activeZone" :zone-summaries="zoneSummaries" @change-zone="changeZone" :selected-seats="selectedSeats"
     :selected-seat-ids="selectedSeatIds" :checkout-session="checkout"

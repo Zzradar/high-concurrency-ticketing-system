@@ -1,0 +1,12 @@
+test_all_manifest_raw_hashes (test_phase18_baseline_evidence.Phase18BaselineEvidence) ... ok
+test_database_and_resource_collectors (test_phase18_baseline_evidence.Phase18BaselineEvidence) ... ok
+test_diagnostics_are_excluded (test_phase18_baseline_evidence.Phase18BaselineEvidence) ... ok
+test_exact_source_and_protocol_bytes (test_phase18_baseline_evidence.Phase18BaselineEvidence) ... ok
+test_k6_and_burst (test_phase18_baseline_evidence.Phase18BaselineEvidence) ... ok
+test_native_visibility_and_real_api (test_phase18_baseline_evidence.Phase18BaselineEvidence) ... ok
+test_uncached_layout_and_read_samples (test_phase18_baseline_evidence.Phase18BaselineEvidence) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.016s
+
+OK
