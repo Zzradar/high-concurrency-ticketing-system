@@ -1,0 +1,5 @@
+PASS cold 5000 singleflight
+PASS projector crash/replay
+PASS initializer crash/rebuild
+PASS Redis unavailable/degraded/recovery
+PASS Redis flush and PostgreSQL rollback; evidence saved

@@ -72,12 +72,54 @@ class PublishingTest(unittest.TestCase):
         finally:sql('DROP TRIGGER p17_fail_publish ON events; DROP FUNCTION p17_fail_publish();')
         self.call('/admin/events/'+eid+'/publish','POST')
     def test_future_window_published_but_checkout_blocked_and_ended_rejected(self):
-        v,e,b=self.draft();root='/admin/events/'+e['id'];b['salesStartsAt']=instant(1);self.call(root,'PUT',b);result=self.call(root+'/publish','POST');sid=result['event']['sessions'][0]['id']
+        v,e,b=self.draft();root='/admin/events/'+e['id'];b['salesStartsAt']=instant(0.002);self.call(root,'PUT',b);result=self.call(root+'/publish','POST');sid=result['event']['sessions'][0]['id']
         self.assertEqual(anonymous_request('/events/'+e['id'])[1]['salesWindow']['state'],'NOT_STARTED')
         seat=anonymous_request('/sessions/'+sid+'/seat-layout')[1]['seats'][0]['id']
         self.assertEqual(AuthenticatedClient().request('/checkout-sessions',method='POST',body={'sessionId':sid,'seatIds':[seat]})[1]['code'],'SALES_NOT_STARTED')
+        # Let the dynamically published event naturally cross its opening time.
+        deadline=time.monotonic()+12
+        while anonymous_request('/events/'+e['id'])[1]['salesWindow']['state']!='OPEN':
+            self.assertLess(time.monotonic(),deadline);time.sleep(.1)
+        c=AuthenticatedClient();status,checkout,_=c.request('/checkout-sessions',method='POST',body={'sessionId':sid,'seatIds':[seat]});self.assertEqual(status,201,checkout)
+        status,confirmed,_=c.request('/checkout-sessions/'+checkout['id']+'/confirm',method='POST');self.assertEqual(status,200,confirmed)
+        self.assertEqual(c.request('/orders/'+confirmed['checkoutSession']['order']['id']+'/cancel',method='POST')[0],200)
         v,e,b=self.draft();b['salesStartsAt']=instant(-3);b['salesEndsAt']=instant(-2);root='/admin/events/'+e['id'];self.call(root,'PUT',b)
         self.assertIn('EVENT_WINDOW_ENDED',[x['code'] for x in self.call(root+'/publish-preview')['issues']]);self.call(root+'/publish','POST',status=409)
+    def test_plan_replace_races_publish_without_partial_inventory(self):
+        for _ in range(3):
+            v,e,b=self.draft();root='/admin/events/'+e['id'];other=AuthenticatedClient('admin');other.login()
+            with ThreadPoolExecutor(2) as pool:
+                publish=pool.submit(self.a.request,root+'/publish',method='POST')
+                replace=pool.submit(other.request,'/admin/venues/'+v['id'],method='PUT',body=plan())
+                pub,rep=publish.result(),replace.result()
+            self.assertIn((pub[0],rep[0]),[(200,409),(409,200)])
+            if pub[0]==200:
+                self.assertEqual(pub[1]['inventory']['sessionSeatCount'],7);self.assertEqual(rep[1]['code'],'VENUE_SEAT_PLAN_FROZEN')
+            else:
+                self.assertTrue(rep[1]['pricingReset']);self.assertFalse(self.call(root+'/publish-preview')['publishable'])
+                self.assertEqual(sql("SELECT count(*) FROM session_seats i JOIN sessions s ON s.id=i.session_id WHERE s.event_id='"+e['id']+"';"),'0')
+    def test_dynamic_published_order_expires_and_inventory_converges(self):
+        from urllib.parse import quote
+        v,e,b=self.draft();published=self.call('/admin/events/'+e['id']+'/publish','POST');sid=published['event']['sessions'][0]['id']
+        seat=anonymous_request('/sessions/'+sid+'/seat-layout')[1]['seats'][0];c=AuthenticatedClient()
+        status,checkout,_=c.request('/checkout-sessions',method='POST',body={'sessionId':sid,'seatIds':[seat['id']]});self.assertEqual(status,201,checkout)
+        status,confirmed,_=c.request('/checkout-sessions/'+checkout['id']+'/confirm',method='POST');self.assertEqual(status,200,confirmed)
+        order=confirmed['checkoutSession']['order']['id']
+        sql("UPDATE orders SET created_at=clock_timestamp()-interval '1 minute',expires_at=clock_timestamp()-interval '1 second' WHERE id='"+order+"'; UPDATE reservations SET created_at=clock_timestamp()-interval '1 minute',expires_at=clock_timestamp()-interval '1 second' WHERE id=(SELECT reservation_id FROM orders WHERE id='"+order+"');")
+        deadline=time.monotonic()+20
+        while time.monotonic()<deadline:
+            current=c.request('/orders/'+order)[1]
+            if current['status']=='EXPIRED':break
+            time.sleep(.2)
+        self.assertEqual(current['status'],'EXPIRED')
+        self.assertEqual(sql("SELECT status FROM session_seats WHERE id='"+seat['id']+"';"),'AVAILABLE')
+        path='/sessions/'+sid+'/seat-availability?zone='+quote(seat['zone'])
+        deadline=time.monotonic()+10
+        while time.monotonic()<deadline:
+            snapshot=anonymous_request(path)[1]
+            if all(s['status']=='AVAILABLE' for s in snapshot['seats']):break
+            time.sleep(.1)
+        self.assertTrue(all(s['status']=='AVAILABLE' for s in snapshot['seats']))
     def test_publish_does_not_depend_on_redis(self):
         v,e,b=self.draft();command(['docker','stop',REDIS])
         try:self.assertEqual(self.call('/admin/events/'+e['id']+'/publish','POST')['disposition'],'PUBLISHED_NOW')

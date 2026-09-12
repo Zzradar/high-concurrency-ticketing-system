@@ -1,0 +1,200 @@
+{
+  "version": "phase14-raw-sqlite-linear-v1",
+  "inputs": [
+    {
+      "shard": "0",
+      "sha256": "cf5668a175eeb8c82c66df4ad45a3667289b1eece3c70c057d63f9d604d71895",
+      "bytes": 4442
+    }
+  ],
+  "start": null,
+  "end": null,
+  "counts": [
+    {
+      "metric": "data_received",
+      "tags": [
+        "",
+        "",
+        ""
+      ],
+      "count": 0.0
+    },
+    {
+      "metric": "data_received",
+      "tags": [
+        "main",
+        "",
+        ""
+      ],
+      "count": 3700.0
+    },
+    {
+      "metric": "data_sent",
+      "tags": [
+        "",
+        "",
+        ""
+      ],
+      "count": 0.0
+    },
+    {
+      "metric": "data_sent",
+      "tags": [
+        "main",
+        "",
+        ""
+      ],
+      "count": 3260.0
+    },
+    {
+      "metric": "http_reqs",
+      "tags": [
+        "main",
+        "health",
+        ""
+      ],
+      "count": 20.0
+    },
+    {
+      "metric": "iterations",
+      "tags": [
+        "main",
+        "",
+        ""
+      ],
+      "count": 41.0
+    },
+    {
+      "metric": "phase14_iterations_completed",
+      "tags": [
+        "main",
+        "",
+        ""
+      ],
+      "count": 20.0
+    },
+    {
+      "metric": "phase14_iterations_started",
+      "tags": [
+        "main",
+        "",
+        ""
+      ],
+      "count": 20.0
+    },
+    {
+      "metric": "phase14_results",
+      "tags": [
+        "main",
+        "health",
+        "business_success"
+      ],
+      "count": 20.0
+    },
+    {
+      "metric": "phase14_scheduler_boundary",
+      "tags": [
+        "main",
+        "",
+        ""
+      ],
+      "count": 21.0
+    },
+    {
+      "metric": "phase14_started",
+      "tags": [
+        "main",
+        "health",
+        ""
+      ],
+      "count": 20.0
+    }
+  ],
+  "trends": [
+    {
+      "metric": "phase14_duration_ms",
+      "tags": [
+        "main",
+        "health",
+        "business_success"
+      ],
+      "count": 20,
+      "p50": 1.0,
+      "p95": 1.1000000000000014,
+      "p99": 2.6199999999999974,
+      "max": 3.0
+    }
+  ],
+  "delivery": {
+    "main": {
+      "planned": 20,
+      "started": 20.0,
+      "completed": 20.0,
+      "interrupted": 0.0
+    }
+  },
+  "dropped": 0,
+  "errors": [],
+  "seconds": {
+    "2026-09-12T06:32:54": {
+      "completed": 18.0
+    },
+    "2026-09-12T06:32:55": {
+      "completed": 2.0
+    }
+  },
+  "stopReasons": [],
+  "startupDelivery": {
+    "startup": {
+      "planned": 0,
+      "started": 0,
+      "completed": 0
+    },
+    "startup_auth": {
+      "planned": 0,
+      "started": 0,
+      "completed": 0
+    },
+    "startup_notifications": {
+      "planned": 0,
+      "started": 0,
+      "completed": 0
+    },
+    "startup_session": {
+      "planned": 0,
+      "started": 0,
+      "completed": 0
+    },
+    "startup_event": {
+      "planned": 0,
+      "started": 0,
+      "completed": 0
+    },
+    "startup_layout": {
+      "planned": 0,
+      "started": 0,
+      "completed": 0
+    },
+    "startup_availability": {
+      "planned": 0,
+      "started": 0,
+      "completed": 0
+    },
+    "startup_checkouts": {
+      "planned": 0,
+      "started": 0,
+      "completed": 0
+    },
+    "startup_orders": {
+      "planned": 0,
+      "started": 0,
+      "completed": 0
+    }
+  },
+  "businessWindows": {
+    "main": {
+      "seconds": 1.0,
+      "completedIterationsPerSecond": 20.0
+    }
+  }
+}

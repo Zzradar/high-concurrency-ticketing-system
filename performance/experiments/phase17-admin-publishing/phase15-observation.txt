@@ -1,0 +1,7 @@
+test_fixed_gate_count_independent_of_seat_count_and_replay_has_zero (phase15_observation_test.ObservationTest) ... ok
+test_only_external_entrypoint_is_counted_once (phase15_observation_test.ObservationTest) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 7.891s
+
+OK

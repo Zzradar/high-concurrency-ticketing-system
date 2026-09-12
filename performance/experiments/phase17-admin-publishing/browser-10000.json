@@ -1,0 +1,14 @@
+{
+  "seatCount": 10000,
+  "currentZoneDomSeats": 2000,
+  "n": 5,
+  "navigationToPaintMs": [
+    653,
+    598,
+    635,
+    555,
+    527
+  ],
+  "p50Ms": 598,
+  "p95Ms": 653
+}

@@ -1,0 +1,12 @@
+test_checkout_create_both_closed_states_no_hold (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_millisecond_ttl_bounded_by_window_and_default (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_natural_expiry_converges_phase16_derived_model (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_replace_rejection_preserves_revision_and_ttl_empty_release_allowed (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_selecting_confirm_closes_and_releases_hold (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_submitting_formal_replay_and_reserved_confirm_after_end (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_submitting_without_formal_result_closes_with_fenced_key (phase15_checkout_test.CheckoutSalesTest) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 23.912s
+
+OK

@@ -1,0 +1,6 @@
+test_formal_commit_survives_process_crash_and_sales_end (phase17_crash_test.CrashTest) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 4.599s
+
+OK

@@ -1,0 +1,50 @@
+{
+  "measurement_validity": {
+    "status": "fail",
+    "reasons": [
+      "local_characterization_only",
+      "smoke input is not formal capacity"
+    ]
+  },
+  "capacity": {
+    "status": "not_applicable",
+    "reason": "smoke sample size and duration do not qualify for formal performance evaluation"
+  },
+  "overload_protection": {
+    "status": "not_applicable",
+    "reason": "smoke sample size and duration do not qualify for formal performance evaluation"
+  },
+  "diagnostic": {
+    "capacity": {
+      "status": "not_applicable",
+      "badResults": [],
+      "latencyFailures": []
+    },
+    "overload_protection": {
+      "status": "not_applicable",
+      "reason": "not an overload experiment"
+    },
+    "formalRecovery": {
+      "passed": false,
+      "errors": [
+        "queues not drained continuously",
+        "inflight not recovered",
+        "postgres not recovered",
+        "control recovery: health",
+        "control recovery: auth",
+        "control recovery: availability",
+        "memory growth/window"
+      ],
+      "observedSeconds": 7.568809986114502,
+      "mode": "smoke"
+    },
+    "latencyFailures": []
+  },
+  "formal_recovery": {
+    "status": "not_applicable",
+    "reason": "smoke sample size and duration do not qualify for formal performance evaluation"
+  },
+  "functional": {
+    "status": "pass"
+  }
+}

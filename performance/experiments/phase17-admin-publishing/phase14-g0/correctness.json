@@ -1,0 +1,47 @@
+{
+  "passed": true,
+  "global": {
+    "accepted_payment_mismatch": 0,
+    "active_reservation_seat_mismatch": 0,
+    "confirmed_state_mismatch": 0,
+    "effective_seat_overlap": 0,
+    "held_seat_owner_mismatch": 0,
+    "multiple_processing_attempts": 0,
+    "multiple_refunds": 0,
+    "order_amount_mismatch": 0,
+    "order_paid_at_mismatch": 0,
+    "order_reservation_status_mismatch": 0,
+    "refund_order_or_amount_mismatch": 0,
+    "sold_state_mismatch": 0,
+    "terminal_reservation_still_holds": 0,
+    "unaccepted_success_refund_mismatch": 0
+  },
+  "errors": [],
+  "queries": {
+    "mainOrders": "SELECT json_build_object('orders',count(*),'users',count(DISTINCT o.user_id),'reservations',count(DISTINCT o.reservation_id),\n        'wrong_seat_count',count(*) FILTER (WHERE (SELECT count(*) FROM reservation_session_seats r WHERE r.reservation_id=o.reservation_id)<>1)) FROM orders o WHERE o.user_id LIKE 'perf-user-%' AND substring(o.user_id from '[0-9]+$')::bigint BETWEEN 1 AND 20;",
+    "checkoutOwnership": "SELECT json_build_object('mismatch',count(*) FILTER (WHERE\n        (c.reservation_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM reservations r WHERE r.id=c.reservation_id AND r.user_id=c.user_id AND r.session_id=c.session_id))\n        OR c.status='SUBMITTING')) FROM checkout_sessions c WHERE c.user_id LIKE 'perf-user-%' AND substring(c.user_id from '[0-9]+$')::bigint BETWEEN 1 AND 20;",
+    "loginSessions": "SELECT json_build_object('sessions',count(*),'users',count(DISTINCT user_id),'uniqueDigests',count(DISTINCT token_hash)) FROM user_sessions WHERE user_id LIKE 'perf-user-%' AND substring(user_id from '[0-9]+$')::bigint BETWEEN 2001 AND 2020 AND revoked_at IS NULL AND idle_expires_at>clock_timestamp() AND absolute_expires_at>clock_timestamp();",
+    "paymentTerminal": "SELECT json_build_object('orders',count(*),'paid',count(*) FILTER(WHERE o.status='PAID' AND r.status='CONFIRMED'),\n        'invalid',count(*) FILTER (WHERE\n        (SELECT count(*) FROM payment_attempts a WHERE a.order_id=o.id AND a.status='SUCCEEDED' AND a.accepted_at IS NOT NULL AND a.provider='simulation' AND a.provider_payment_id IS NOT NULL)<>1\n        OR EXISTS(SELECT 1 FROM payment_attempts a WHERE a.order_id=o.id AND (a.status='PROCESSING' OR a.completed_at > a.started_at + make_interval(secs=>30)))\n        OR EXISTS(SELECT 1 FROM reservation_session_seats i JOIN session_seats s ON s.id=i.session_seat_id WHERE i.reservation_id=r.id AND s.status<>'SOLD')))\n        FROM orders o JOIN reservations r ON r.id=o.reservation_id WHERE o.user_id LIKE 'perf-user-%' AND substring(o.user_id from '[0-9]+$')::bigint BETWEEN 601 AND 800;"
+  },
+  "scoped": {
+    "mainOrders": {
+      "orders": 0,
+      "users": 0,
+      "reservations": 0,
+      "wrong_seat_count": 0
+    },
+    "checkoutOwnership": {
+      "mismatch": 0
+    },
+    "loginSessions": {
+      "sessions": 0,
+      "users": 0,
+      "uniqueDigests": 0
+    },
+    "paymentTerminal": {
+      "orders": 0,
+      "paid": 0,
+      "invalid": 0
+    }
+  }
+}

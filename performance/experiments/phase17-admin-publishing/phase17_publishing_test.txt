@@ -1,0 +1,14 @@
+test_concurrent_publish_is_exactly_once (phase17_publishing_test.PublishingTest) ... ok
+test_draft_hidden_at_every_public_entry_and_checkout (phase17_publishing_test.PublishingTest) ... ok
+test_dynamic_published_order_expires_and_inventory_converges (phase17_publishing_test.PublishingTest) ... ok
+test_future_window_published_but_checkout_blocked_and_ended_rejected (phase17_publishing_test.PublishingTest) ... ok
+test_multiple_sessions_publish_counts_prices_and_audit (phase17_publishing_test.PublishingTest) ... ok
+test_plan_replace_races_publish_without_partial_inventory (phase17_publishing_test.PublishingTest) ... ok
+test_preview_partial_prices_and_validation (phase17_publishing_test.PublishingTest) ... ok
+test_publish_does_not_depend_on_redis (phase17_publishing_test.PublishingTest) ... ok
+test_update_failure_rolls_back_inventory_and_audit (phase17_publishing_test.PublishingTest) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 21.176s
+
+OK

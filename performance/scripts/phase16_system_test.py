@@ -60,7 +60,7 @@ def main():
     healthy()
     # Cold model, concurrent HTTP, one PG initializer. Exact namespace only.
     redis('DEL',PREFIX+':meta')
-    query="SELECT COALESCE(sum(calls),0) FROM pg_stat_statements WHERE query ILIKE '%inventory.formal_version%' AND query ILIKE '%ORDER BY seat.row_no%';"
+    query="SELECT COALESCE(sum(calls),0) FROM pg_stat_statements WHERE query ILIKE '%inventory.formal_version%' AND query ILIKE '%ORDER BY zone.sort_order,seat.row_no%';"
     before=int(sql(query));cpu=redis('INFO','cpu');stats=redis('INFO','commandstats')
     start=time.perf_counter()
     with ThreadPoolExecutor(max_workers=24) as pool:
@@ -71,7 +71,7 @@ def main():
     assert int(sql(query))-before==1
     evidence['cold']={'requests':48,'concurrency':24,'elapsedSeconds':elapsed,'fullPgQueries':int(sql(query))-before,
       'redisCpuBefore':cpu,'redisCpuAfter':redis('INFO','cpu'),'redisCommandsBefore':stats,'redisCommandsAfter':redis('INFO','commandstats')}
-    evidence['cold']['pgStatements']=json.loads(sql("SELECT COALESCE(json_agg(row_to_json(s)),'[]') FROM (SELECT calls,mean_exec_time,total_exec_time FROM pg_stat_statements WHERE query ILIKE '%inventory.formal_version%' AND query ILIKE '%ORDER BY seat.row_no%') s;"))
+    evidence['cold']['pgStatements']=json.loads(sql("SELECT COALESCE(json_agg(row_to_json(s)),'[]') FROM (SELECT calls,mean_exec_time,total_exec_time FROM pg_stat_statements WHERE query ILIKE '%inventory.formal_version%' AND query ILIKE '%ORDER BY zone.sort_order,seat.row_no%') s;"))
     print('PASS cold 5000 singleflight',flush=True)
     # Terminate precisely after Redis apply but before database acknowledgement.
     seat='perf-ss-phase16-00001';old=request();docker('stop','phase16-api-backend')

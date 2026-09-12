@@ -1,0 +1,9 @@
+test_backend_permissions (phase17_venue_test.VenueTest) ... ok
+test_create_detail_list_and_set_based_seats (phase17_venue_test.VenueTest) ... ok
+test_invalid_inputs_and_limits (phase17_venue_test.VenueTest) ... ok
+test_replace_resets_draft_prices_and_frozen_rejects (phase17_venue_test.VenueTest) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 2.198s
+
+OK

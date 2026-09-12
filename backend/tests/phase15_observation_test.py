@@ -1,5 +1,5 @@
 """Real query counts and bounded rejection counter accounting."""
-import json,re,unittest,urllib.request,uuid
+import os,json,re,unittest,urllib.request,uuid
 from phase15_test_support import sql,SESSION,until
 class ObservationTest(unittest.TestCase):
     def setUp(self):
@@ -7,7 +7,7 @@ class ObservationTest(unittest.TestCase):
         self.fixture=CheckoutSalesTest();self.fixture.setUp();self.addCleanup(self.fixture.doCleanups)
     def calls(self):return int(sql("SELECT COALESCE(sum(calls),0) FROM pg_stat_statements WHERE query LIKE '%WITH sales_clock AS MATERIALIZED%' AND query NOT LIKE '%pg_stat_statements%';"))
     def metric(self):
-        text=urllib.request.urlopen('http://127.0.0.1:18095/metrics').read().decode()
+        text=urllib.request.urlopen(os.environ.get('PHASE15_BASE_URL','http://127.0.0.1:18095')+'/metrics').read().decode()
         result={}
         for labels,value in re.findall(r'^ticketing_sales_window_rejections_total\{([^}]+)\} (\S+)',text,re.M):
             tags=dict(re.findall(r'(\w+)="([^"]*)"',labels));self.assertEqual(set(tags),{'entrypoint','reason'})

@@ -1,0 +1,515 @@
+[
+  {
+    "seatCount": 5000,
+    "zoneCount": 5,
+    "sessionCount": 1,
+    "eventId": "EVT-156ae4e8-d7ca-49da-aab0-f18d15c63c26",
+    "sessionId": "SES-16052dfd-e8e9-4189-b4a4-7e95ebb30e2d",
+    "venueId": "VEN-a6d9ef90-b303-4f5a-bf39-7349947443ad",
+    "venueMs": 281.323,
+    "venueSql": [
+      {
+        "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version",
+        "calls": 1,
+        "ms": 0.023742999999996073
+      },
+      {
+        "query": "WITH claimed AS (\n            SELECT id, provider, object_kind, provider_object_id, local_reference_id\n            FROM payment_provider_events\n            WHERE status = $2 AND next_retry_at <= clock_timestamp()\n            ORDER BY received_at\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), wake_payments AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_payment_id = COALESCE(attempt.provider_payment_id, claimed.provider_object_id),\n                next_reconcile_at = CASE WHEN attempt.status IN ($3,$4)\n                                         THEN clock_timestamp() ELSE $5 END\n            FROM claimed\n            WHERE claimed.object_kind = $6\n              AND claimed.local_reference_id = attempt.id\n              AND claimed.provider = attempt.provider\n              AND (attempt.provider_payment_id IS NULL\n                   OR attempt.provider_payment_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        ), wake_refunds AS (\n            UPDATE refunds AS refund\n            SET next_reconcile_at = CASE WHEN refund.status = $7\n                                         THEN clock_timestamp() ELSE $8 END\n            FROM claimed\n            WHERE claimed.object_kind = $9\n              AND claimed.local_reference_id = refund.id\n              AND claimed.provider = refund.provider\n              AND (refund.provider_refund_id IS NULL\n                   OR refund.provider_refund_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        )\n        UPDATE payment_provider_events AS event\n        SET status = $10, processed_at = clock_timestamp(), last_error = $11\n        FROM claimed\n        WHERE event.id = claimed.id\n          AND (event.provider_object_id IS NULL\n               OR event.id IN (SELECT id FROM wake_payments)\n               OR event.id IN (SELECT id FROM wake_refunds))",
+        "calls": 1,
+        "ms": 0.026108000000000686
+      },
+      {
+        "query": "SELECT status, COUNT(*) AS count, COALESCE(MAX(EXTRACT($1 FROM clock_timestamp()-created_at)) FILTER (WHERE status=$2),$3) AS age FROM refunds GROUP BY status",
+        "calls": 1,
+        "ms": 0.015523999999999205
+      },
+      {
+        "query": "INSERT INTO venues(id,name,city) VALUES($1,$2,$3)",
+        "calls": 1,
+        "ms": 0.04150199999999993
+      },
+      {
+        "query": "WITH claimed AS (\n            SELECT attempt.id,\n                   CASE WHEN attempt.provider_status IN ($4,$5)\n                        THEN $6\n                        WHEN attempt.next_reconcile_at IS NULL THEN $7\n                        WHEN attempt.reconciliation_lease_until IS NOT NULL THEN $8\n                        ELSE $9 END AS recovery_reason\n            FROM payment_attempts AS attempt\n            WHERE attempt.provider <> $10\n              AND attempt.status IN ($11, $12)\n              AND (attempt.reconciliation_lease_until IS NULL\n                   OR attempt.reconciliation_lease_until <= clock_timestamp())\n              AND (attempt.provider_status IN ($13,$14)\n                   OR attempt.next_reconcile_at IS NULL\n                   OR attempt.next_reconcile_at <= clock_timestamp())\n            ORDER BY (attempt.provider_status IN ($15,$16)) DESC NULLS LAST,\n                     attempt.next_reconcile_at NULLS FIRST, attempt.id\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), leased AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_retry_count = provider_retry_count + $17,\n                reconciliation_lease_token = $3,\n                reconciliation_lease_until = clock_timestamp() + INTERVAL $18,\n                next_reconcile_at = clock_timestamp() + LEAST($2, power($19, LEAST(provider_retry_count, $20))) * INTERVAL $21\n            FROM claimed WHERE attempt.id = claimed.id\n            RETURNING attempt.*, claimed.recovery_reason\n        )\n        SELECT leased.id, leased.order_id, leased.provider, leased.provider_payment_id,\n               ticket_order.total_amount, leased.currency, leased.recovery_reason\n        FROM leased JOIN orders AS ticket_order ON ticket_order.id = leased.order_id",
+        "calls": 1,
+        "ms": 0.02713500000000124
+      },
+      {
+        "query": "INSERT INTO venue_zones(id,venue_id,code,name,sort_order)\n      SELECT z->>$3,$1,z->>$4,z->>$5,(ordinal-$6)::integer FROM jsonb_array_elements($2::jsonb) WITH ORDINALITY a(z,ordinal)",
+        "calls": 1,
+        "ms": 0.1969940000000001
+      },
+      {
+        "query": "INSERT INTO seats(id,venue_id,zone_id,row_no,seat_no,seat_label)\n      SELECT z->>$3||$4||row_ordinal||$5||n,$1,z->>$6,r->>$7,n,(r->>$8)||lpad(n::text,$9,$10)\n      FROM jsonb_array_elements($2::jsonb) z\n      CROSS JOIN LATERAL jsonb_array_elements(z->$11) WITH ORDINALITY rows(r,row_ordinal)\n      CROSS JOIN LATERAL generate_series($12,(r->>$13)::integer) n",
+        "calls": 1,
+        "ms": 246.191192
+      },
+      {
+        "query": "SELECT jsonb_build_object($2,v.id,$3,v.name,$4,v.city,\n        $5,(SELECT count(*) FROM seats WHERE venue_id=v.id),\n        $6,(SELECT count(*) FROM venue_zones WHERE venue_id=v.id),\n        $7,EXISTS(SELECT $8 FROM session_seats WHERE venue_id=v.id),\n        $9,COALESCE((SELECT jsonb_agg(jsonb_build_object($10,z.id,$11,z.code,$12,z.name,$13,z.sort_order,\n          $14,(SELECT count(*) FROM seats WHERE zone_id=z.id),\n          $15,COALESCE((SELECT jsonb_agg(jsonb_build_object($16,r.row_no,$17,r.n) ORDER BY r.row_no) FROM (SELECT row_no,count(*) n FROM seats WHERE zone_id=z.id GROUP BY row_no) r),$18::jsonb)) ORDER BY z.sort_order) FROM venue_zones z WHERE z.venue_id=v.id),$19::jsonb)) AS data FROM venues v WHERE v.id=$1",
+        "calls": 1,
+        "ms": 8.082200999999998
+      },
+      {
+        "query": "WITH claimed AS (\n SELECT id, CASE WHEN reconciliation_lease_until IS NOT NULL THEN $4 ELSE $5 END AS recovery_reason\n FROM refunds WHERE status=$6 AND provider_terminal_at IS NULL AND next_reconcile_at <= clock_timestamp()\n AND (reconciliation_lease_until IS NULL OR reconciliation_lease_until <= clock_timestamp())\n ORDER BY next_reconcile_at,id FOR UPDATE SKIP LOCKED LIMIT $1\n ), leased AS (UPDATE refunds r SET provider_retry_count=provider_retry_count+$7,\n reconciliation_lease_token=$3,reconciliation_lease_until=clock_timestamp()+INTERVAL $8,\n next_reconcile_at=clock_timestamp()+LEAST($2,power($9,LEAST(provider_retry_count,$10)))*INTERVAL $11\n FROM claimed WHERE r.id=claimed.id RETURNING r.*,claimed.recovery_reason)\n SELECT leased.*,a.provider_payment_id FROM leased JOIN payment_attempts a ON a.id=leased.payment_attempt_id",
+        "calls": 1,
+        "ms": 0.020765999999998286
+      },
+      {
+        "query": "SELECT app_user.role\n        FROM user_sessions AS auth\n        JOIN app_users AS app_user ON app_user.id = auth.user_id\n        WHERE auth.id = $1\n          AND auth.token_hash = $2\n          AND auth.revoked_at IS NULL\n          AND auth.idle_expires_at > clock_timestamp()\n          AND auth.absolute_expires_at > clock_timestamp()\n          AND app_user.status = $3",
+        "calls": 1,
+        "ms": 0.0892509999999973
+      }
+    ],
+    "publishMs": 230.561,
+    "publishSql": [
+      {
+        "query": "SELECT start_time>clock_timestamp() future,gate_time<start_time gate,\n          LEAST(e.sales_ends_at,s.start_time)>e.sales_starts_at AS window_ok FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1",
+        "calls": 2,
+        "ms": 0.06748699999999985
+      },
+      {
+        "query": "INSERT INTO session_seats(id,session_id,seat_id,venue_id,status,price,current_reservation_id)\n          SELECT $2||s.id||$3||seat.id,s.id,seat.id,s.venue_id,$4,p.price,$5\n          FROM sessions s JOIN session_zone_prices p ON p.session_id=s.id AND p.venue_id=s.venue_id\n          JOIN seats seat ON seat.zone_id=p.zone_id AND seat.venue_id=s.venue_id WHERE s.event_id=$1 AND s.status=$6",
+        "calls": 1,
+        "ms": 182.13911099999996
+      },
+      {
+        "query": "SELECT sales_ends_at<=clock_timestamp() ended FROM events WHERE id=$1",
+        "calls": 2,
+        "ms": 0.024745000000000017
+      },
+      {
+        "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version",
+        "calls": 1,
+        "ms": 0.01790499999999895
+      },
+      {
+        "query": "UPDATE events SET status=$3,published_at=clock_timestamp(),published_by=$2,\n          date_range=(SELECT to_char(min(start_time) AT TIME ZONE $4,$5) || CASE WHEN (min(start_time) AT TIME ZONE $6)::date=(max(start_time) AT TIME ZONE $7)::date THEN $8 ELSE $9||to_char(max(start_time) AT TIME ZONE $10,$11) END FROM sessions WHERE event_id=$1) WHERE id=$1",
+        "calls": 1,
+        "ms": 0.1470069999999999
+      },
+      {
+        "query": "UPDATE sessions SET status=$2 WHERE event_id=$1 AND status=$3",
+        "calls": 1,
+        "ms": 0.086333
+      },
+      {
+        "query": "SELECT id FROM events WHERE id=$1 FOR UPDATE",
+        "calls": 1,
+        "ms": 0.025242999999999904
+      },
+      {
+        "query": "SELECT id FROM venues WHERE id=$1 FOR UPDATE",
+        "calls": 1,
+        "ms": 0.025827000000000044
+      },
+      {
+        "query": "SELECT jsonb_build_object($2,e.id,$3,e.name,$4,e.description,$5,e.category,$6,e.cover_url,\n        $7,e.primary_venue_id,$8,e.status,$9,e.date_range,\n        $10,to_char(e.sales_starts_at AT TIME ZONE $11,$12),\n        $13,to_char(e.sales_ends_at AT TIME ZONE $14,$15),\n        $16,to_char(e.published_at AT TIME ZONE $17,$18),$19,e.published_by,\n        $20,COALESCE((SELECT jsonb_agg(jsonb_build_object($21,s.id,$22,s.status,$23,s.venue_id,$24,s.hall_name,\n         $25,to_char(s.start_time AT TIME ZONE $26,$27),\n         $28,to_char(s.gate_time AT TIME ZONE $29,$30),\n         $31,COALESCE((SELECT jsonb_agg(jsonb_build_object($32,p.zone_id,$33,p.price) ORDER BY z.sort_order) FROM session_zone_prices p JOIN venue_zones z ON z.id=p.zone_id WHERE p.session_id=s.id),$34::jsonb)) ORDER BY s.start_time,s.id) FROM sessions s WHERE s.event_id=e.id),$35::jsonb)) data\n         FROM events e WHERE e.id=$1",
+        "calls": 3,
+        "ms": 0.41853300000000004
+      },
+      {
+        "query": "SELECT jsonb_build_object($2,v.id,$3,v.name,$4,v.city,\n        $5,(SELECT count(*) FROM seats WHERE venue_id=v.id),\n        $6,(SELECT count(*) FROM venue_zones WHERE venue_id=v.id),\n        $7,EXISTS(SELECT $8 FROM session_seats WHERE venue_id=v.id),\n        $9,COALESCE((SELECT jsonb_agg(jsonb_build_object($10,z.id,$11,z.code,$12,z.name,$13,z.sort_order,\n          $14,(SELECT count(*) FROM seats WHERE zone_id=z.id),\n          $15,COALESCE((SELECT jsonb_agg(jsonb_build_object($16,r.row_no,$17,r.n) ORDER BY r.row_no) FROM (SELECT row_no,count(*) n FROM seats WHERE zone_id=z.id GROUP BY row_no) r),$18::jsonb)) ORDER BY z.sort_order) FROM venue_zones z WHERE z.venue_id=v.id),$19::jsonb)) AS data FROM venues v WHERE v.id=$1",
+        "calls": 3,
+        "ms": 21.749957999999992
+      },
+      {
+        "query": "SELECT app_user.role\n        FROM user_sessions AS auth\n        JOIN app_users AS app_user ON app_user.id = auth.user_id\n        WHERE auth.id = $1\n          AND auth.token_hash = $2\n          AND auth.revoked_at IS NULL\n          AND auth.idle_expires_at > clock_timestamp()\n          AND auth.absolute_expires_at > clock_timestamp()\n          AND app_user.status = $3",
+        "calls": 1,
+        "ms": 0.08725600000000355
+      }
+    ],
+    "actualInventory": 5000,
+    "layout": {
+      "n": 20,
+      "p50Ms": 59.011,
+      "p95Ms": 64.846,
+      "jsonBytes": 824766,
+      "gzipBytes": 31732,
+      "samplesMs": [
+        48.786,
+        45.023,
+        61.541,
+        46.75,
+        64.846,
+        64.628,
+        59.743,
+        61.219,
+        61.739,
+        64.096,
+        47.74,
+        43.898,
+        47.93,
+        44.031,
+        41.841,
+        62.561,
+        45.122,
+        62.775,
+        59.011,
+        65.145
+      ]
+    },
+    "coldInitHttp": {
+      "n": 1,
+      "p50Ms": 128.123,
+      "p95Ms": 128.123,
+      "jsonBytes": 119586,
+      "gzipBytes": 2859,
+      "samplesMs": [
+        128.123
+      ]
+    },
+    "coldSql": [
+      {
+        "query": "SELECT EXISTS(SELECT $2 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>$3 AND e.status<>$4) AS found",
+        "calls": 1,
+        "ms": 0.07588000000000017
+      },
+      {
+        "query": "SELECT inventory.id,inventory.status,inventory.formal_version,zone.name AS zone\n            FROM session_seats inventory JOIN seats seat ON seat.id=inventory.seat_id\n            JOIN venue_zones zone ON zone.id=seat.zone_id AND zone.venue_id=seat.venue_id\n            WHERE inventory.session_id=$1 ORDER BY zone.sort_order,seat.row_no,seat.seat_no,inventory.id",
+        "calls": 1,
+        "ms": 12.746929999999999
+      }
+    ],
+    "redisEvalMicroseconds": [
+      12280
+    ],
+    "snapshot": {
+      "n": 20,
+      "p50Ms": 29.839,
+      "p95Ms": 32.518,
+      "jsonBytes": 119586,
+      "gzipBytes": 2859,
+      "samplesMs": [
+        14.903,
+        31.503,
+        32.032,
+        29.6,
+        34.64,
+        13.68,
+        16.856,
+        28.294,
+        32.518,
+        30.897,
+        29.839,
+        29.905,
+        31.365,
+        29.946,
+        31.37,
+        30.459,
+        12.665,
+        12.328,
+        12.321,
+        23.964
+      ]
+    },
+    "delta": {
+      "n": 20,
+      "p50Ms": 4.735,
+      "p95Ms": 21.249,
+      "jsonBytes": 566,
+      "gzipBytes": 241,
+      "samplesMs": [
+        5.02,
+        18.861,
+        14.78,
+        3.375,
+        3.06,
+        2.892,
+        21.249,
+        16.58,
+        30.859,
+        5.209,
+        4.497,
+        4.946,
+        4.675,
+        4.465,
+        5.206,
+        4.556,
+        4.611,
+        4.592,
+        18.222,
+        4.735
+      ]
+    },
+    "deltaSql": [
+      {
+        "query": "SELECT EXISTS(SELECT $2 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>$3 AND e.status<>$4) AS found",
+        "calls": 20,
+        "ms": 1.5722879999999977
+      },
+      {
+        "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version",
+        "calls": 1,
+        "ms": 0.012793999999999528
+      }
+    ]
+  },
+  {
+    "seatCount": 10000,
+    "zoneCount": 5,
+    "sessionCount": 1,
+    "eventId": "EVT-f43f6999-2842-44b6-93d3-37c1596cfe84",
+    "sessionId": "SES-478a02f6-69fe-4979-993a-70dea89f7d8e",
+    "venueId": "VEN-ff78a877-fd3c-4a38-8bfb-ec70c00d0ac8",
+    "venueMs": 523.813,
+    "venueSql": [
+      {
+        "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version",
+        "calls": 1,
+        "ms": 0.024614999999997167
+      },
+      {
+        "query": "INSERT INTO venues(id,name,city) VALUES($1,$2,$3)",
+        "calls": 1,
+        "ms": 0.04814099999999999
+      },
+      {
+        "query": "INSERT INTO venue_zones(id,venue_id,code,name,sort_order)\n      SELECT z->>$3,$1,z->>$4,z->>$5,(ordinal-$6)::integer FROM jsonb_array_elements($2::jsonb) WITH ORDINALITY a(z,ordinal)",
+        "calls": 1,
+        "ms": 0.3721879999999995
+      },
+      {
+        "query": "INSERT INTO seats(id,venue_id,zone_id,row_no,seat_no,seat_label)\n      SELECT z->>$3||$4||row_ordinal||$5||n,$1,z->>$6,r->>$7,n,(r->>$8)||lpad(n::text,$9,$10)\n      FROM jsonb_array_elements($2::jsonb) z\n      CROSS JOIN LATERAL jsonb_array_elements(z->$11) WITH ORDINALITY rows(r,row_ordinal)\n      CROSS JOIN LATERAL generate_series($12,(r->>$13)::integer) n",
+        "calls": 1,
+        "ms": 489.56141
+      },
+      {
+        "query": "SELECT jsonb_build_object($2,v.id,$3,v.name,$4,v.city,\n        $5,(SELECT count(*) FROM seats WHERE venue_id=v.id),\n        $6,(SELECT count(*) FROM venue_zones WHERE venue_id=v.id),\n        $7,EXISTS(SELECT $8 FROM session_seats WHERE venue_id=v.id),\n        $9,COALESCE((SELECT jsonb_agg(jsonb_build_object($10,z.id,$11,z.code,$12,z.name,$13,z.sort_order,\n          $14,(SELECT count(*) FROM seats WHERE zone_id=z.id),\n          $15,COALESCE((SELECT jsonb_agg(jsonb_build_object($16,r.row_no,$17,r.n) ORDER BY r.row_no) FROM (SELECT row_no,count(*) n FROM seats WHERE zone_id=z.id GROUP BY row_no) r),$18::jsonb)) ORDER BY z.sort_order) FROM venue_zones z WHERE z.venue_id=v.id),$19::jsonb)) AS data FROM venues v WHERE v.id=$1",
+        "calls": 1,
+        "ms": 13.721816999999987
+      },
+      {
+        "query": "SELECT app_user.role\n        FROM user_sessions AS auth\n        JOIN app_users AS app_user ON app_user.id = auth.user_id\n        WHERE auth.id = $1\n          AND auth.token_hash = $2\n          AND auth.revoked_at IS NULL\n          AND auth.idle_expires_at > clock_timestamp()\n          AND auth.absolute_expires_at > clock_timestamp()\n          AND app_user.status = $3",
+        "calls": 1,
+        "ms": 0.15744699999999767
+      }
+    ],
+    "publishMs": 486.563,
+    "publishSql": [
+      {
+        "query": "SELECT start_time>clock_timestamp() future,gate_time<start_time gate,\n          LEAST(e.sales_ends_at,s.start_time)>e.sales_starts_at AS window_ok FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1",
+        "calls": 2,
+        "ms": 0.06406400000000012
+      },
+      {
+        "query": "INSERT INTO session_seats(id,session_id,seat_id,venue_id,status,price,current_reservation_id)\n          SELECT $2||s.id||$3||seat.id,s.id,seat.id,s.venue_id,$4,p.price,$5\n          FROM sessions s JOIN session_zone_prices p ON p.session_id=s.id AND p.venue_id=s.venue_id\n          JOIN seats seat ON seat.zone_id=p.zone_id AND seat.venue_id=s.venue_id WHERE s.event_id=$1 AND s.status=$6",
+        "calls": 1,
+        "ms": 405.467126
+      },
+      {
+        "query": "SELECT sales_ends_at<=clock_timestamp() ended FROM events WHERE id=$1",
+        "calls": 2,
+        "ms": 0.02168300000000012
+      },
+      {
+        "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version",
+        "calls": 2,
+        "ms": 0.05159999999999343
+      },
+      {
+        "query": "UPDATE events SET status=$3,published_at=clock_timestamp(),published_by=$2,\n          date_range=(SELECT to_char(min(start_time) AT TIME ZONE $4,$5) || CASE WHEN (min(start_time) AT TIME ZONE $6)::date=(max(start_time) AT TIME ZONE $7)::date THEN $8 ELSE $9||to_char(max(start_time) AT TIME ZONE $10,$11) END FROM sessions WHERE event_id=$1) WHERE id=$1",
+        "calls": 1,
+        "ms": 0.1749369999999999
+      },
+      {
+        "query": "UPDATE sessions SET status=$2 WHERE event_id=$1 AND status=$3",
+        "calls": 1,
+        "ms": 0.04922199999999999
+      },
+      {
+        "query": "SELECT id FROM events WHERE id=$1 FOR UPDATE",
+        "calls": 1,
+        "ms": 0.02048799999999984
+      },
+      {
+        "query": "SELECT id FROM venues WHERE id=$1 FOR UPDATE",
+        "calls": 1,
+        "ms": 0.020964000000000205
+      },
+      {
+        "query": "SELECT jsonb_build_object($2,e.id,$3,e.name,$4,e.description,$5,e.category,$6,e.cover_url,\n        $7,e.primary_venue_id,$8,e.status,$9,e.date_range,\n        $10,to_char(e.sales_starts_at AT TIME ZONE $11,$12),\n        $13,to_char(e.sales_ends_at AT TIME ZONE $14,$15),\n        $16,to_char(e.published_at AT TIME ZONE $17,$18),$19,e.published_by,\n        $20,COALESCE((SELECT jsonb_agg(jsonb_build_object($21,s.id,$22,s.status,$23,s.venue_id,$24,s.hall_name,\n         $25,to_char(s.start_time AT TIME ZONE $26,$27),\n         $28,to_char(s.gate_time AT TIME ZONE $29,$30),\n         $31,COALESCE((SELECT jsonb_agg(jsonb_build_object($32,p.zone_id,$33,p.price) ORDER BY z.sort_order) FROM session_zone_prices p JOIN venue_zones z ON z.id=p.zone_id WHERE p.session_id=s.id),$34::jsonb)) ORDER BY s.start_time,s.id) FROM sessions s WHERE s.event_id=e.id),$35::jsonb)) data\n         FROM events e WHERE e.id=$1",
+        "calls": 3,
+        "ms": 0.3302710000000033
+      },
+      {
+        "query": "SELECT jsonb_build_object($2,v.id,$3,v.name,$4,v.city,\n        $5,(SELECT count(*) FROM seats WHERE venue_id=v.id),\n        $6,(SELECT count(*) FROM venue_zones WHERE venue_id=v.id),\n        $7,EXISTS(SELECT $8 FROM session_seats WHERE venue_id=v.id),\n        $9,COALESCE((SELECT jsonb_agg(jsonb_build_object($10,z.id,$11,z.code,$12,z.name,$13,z.sort_order,\n          $14,(SELECT count(*) FROM seats WHERE zone_id=z.id),\n          $15,COALESCE((SELECT jsonb_agg(jsonb_build_object($16,r.row_no,$17,r.n) ORDER BY r.row_no) FROM (SELECT row_no,count(*) n FROM seats WHERE zone_id=z.id GROUP BY row_no) r),$18::jsonb)) ORDER BY z.sort_order) FROM venue_zones z WHERE z.venue_id=v.id),$19::jsonb)) AS data FROM venues v WHERE v.id=$1",
+        "calls": 3,
+        "ms": 43.05080899999996
+      },
+      {
+        "query": "SELECT app_user.role\n        FROM user_sessions AS auth\n        JOIN app_users AS app_user ON app_user.id = auth.user_id\n        WHERE auth.id = $1\n          AND auth.token_hash = $2\n          AND auth.revoked_at IS NULL\n          AND auth.idle_expires_at > clock_timestamp()\n          AND auth.absolute_expires_at > clock_timestamp()\n          AND app_user.status = $3",
+        "calls": 1,
+        "ms": 0.07685200000000236
+      }
+    ],
+    "actualInventory": 10000,
+    "layout": {
+      "n": 20,
+      "p50Ms": 105.022,
+      "p95Ms": 117.024,
+      "jsonBytes": 1653966,
+      "gzipBytes": 63183,
+      "samplesMs": [
+        93.624,
+        117.024,
+        96.762,
+        105.022,
+        108.044,
+        104.747,
+        109.4,
+        93.345,
+        113.831,
+        120.237,
+        91.988,
+        92.991,
+        108.362,
+        107.557,
+        108.349,
+        110.852,
+        91.89,
+        109.616,
+        93.008,
+        91.455
+      ]
+    },
+    "coldInitHttp": {
+      "n": 1,
+      "p50Ms": 235.197,
+      "p95Ms": 235.197,
+      "jsonBytes": 239506,
+      "gzipBytes": 5343,
+      "samplesMs": [
+        235.197
+      ]
+    },
+    "coldSql": [
+      {
+        "query": "SELECT EXISTS(SELECT $2 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>$3 AND e.status<>$4) AS found",
+        "calls": 1,
+        "ms": 0.0839850000000002
+      },
+      {
+        "query": "SELECT inventory.id,inventory.status,inventory.formal_version,zone.name AS zone\n            FROM session_seats inventory JOIN seats seat ON seat.id=inventory.seat_id\n            JOIN venue_zones zone ON zone.id=seat.zone_id AND zone.venue_id=seat.venue_id\n            WHERE inventory.session_id=$1 ORDER BY zone.sort_order,seat.row_no,seat.seat_no,inventory.id",
+        "calls": 1,
+        "ms": 29.953712000000003
+      },
+      {
+        "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version",
+        "calls": 1,
+        "ms": 0.020561999999998193
+      },
+      {
+        "query": "WITH claimed AS (\n            SELECT id, provider, object_kind, provider_object_id, local_reference_id\n            FROM payment_provider_events\n            WHERE status = $2 AND next_retry_at <= clock_timestamp()\n            ORDER BY received_at\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), wake_payments AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_payment_id = COALESCE(attempt.provider_payment_id, claimed.provider_object_id),\n                next_reconcile_at = CASE WHEN attempt.status IN ($3,$4)\n                                         THEN clock_timestamp() ELSE $5 END\n            FROM claimed\n            WHERE claimed.object_kind = $6\n              AND claimed.local_reference_id = attempt.id\n              AND claimed.provider = attempt.provider\n              AND (attempt.provider_payment_id IS NULL\n                   OR attempt.provider_payment_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        ), wake_refunds AS (\n            UPDATE refunds AS refund\n            SET next_reconcile_at = CASE WHEN refund.status = $7\n                                         THEN clock_timestamp() ELSE $8 END\n            FROM claimed\n            WHERE claimed.object_kind = $9\n              AND claimed.local_reference_id = refund.id\n              AND claimed.provider = refund.provider\n              AND (refund.provider_refund_id IS NULL\n                   OR refund.provider_refund_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        )\n        UPDATE payment_provider_events AS event\n        SET status = $10, processed_at = clock_timestamp(), last_error = $11\n        FROM claimed\n        WHERE event.id = claimed.id\n          AND (event.provider_object_id IS NULL\n               OR event.id IN (SELECT id FROM wake_payments)\n               OR event.id IN (SELECT id FROM wake_refunds))",
+        "calls": 1,
+        "ms": 0.031793000000000404
+      },
+      {
+        "query": "SELECT status, COUNT(*) AS count, COALESCE(MAX(EXTRACT($1 FROM clock_timestamp()-created_at)) FILTER (WHERE status=$2),$3) AS age FROM refunds GROUP BY status",
+        "calls": 1,
+        "ms": 0.020177999999999585
+      },
+      {
+        "query": "WITH claimed AS (\n            SELECT attempt.id,\n                   CASE WHEN attempt.provider_status IN ($4,$5)\n                        THEN $6\n                        WHEN attempt.next_reconcile_at IS NULL THEN $7\n                        WHEN attempt.reconciliation_lease_until IS NOT NULL THEN $8\n                        ELSE $9 END AS recovery_reason\n            FROM payment_attempts AS attempt\n            WHERE attempt.provider <> $10\n              AND attempt.status IN ($11, $12)\n              AND (attempt.reconciliation_lease_until IS NULL\n                   OR attempt.reconciliation_lease_until <= clock_timestamp())\n              AND (attempt.provider_status IN ($13,$14)\n                   OR attempt.next_reconcile_at IS NULL\n                   OR attempt.next_reconcile_at <= clock_timestamp())\n            ORDER BY (attempt.provider_status IN ($15,$16)) DESC NULLS LAST,\n                     attempt.next_reconcile_at NULLS FIRST, attempt.id\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), leased AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_retry_count = provider_retry_count + $17,\n                reconciliation_lease_token = $3,\n                reconciliation_lease_until = clock_timestamp() + INTERVAL $18,\n                next_reconcile_at = clock_timestamp() + LEAST($2, power($19, LEAST(provider_retry_count, $20))) * INTERVAL $21\n            FROM claimed WHERE attempt.id = claimed.id\n            RETURNING attempt.*, claimed.recovery_reason\n        )\n        SELECT leased.id, leased.order_id, leased.provider, leased.provider_payment_id,\n               ticket_order.total_amount, leased.currency, leased.recovery_reason\n        FROM leased JOIN orders AS ticket_order ON ticket_order.id = leased.order_id",
+        "calls": 1,
+        "ms": 0.031026000000000664
+      },
+      {
+        "query": "WITH claimed AS (\n SELECT id, CASE WHEN reconciliation_lease_until IS NOT NULL THEN $4 ELSE $5 END AS recovery_reason\n FROM refunds WHERE status=$6 AND provider_terminal_at IS NULL AND next_reconcile_at <= clock_timestamp()\n AND (reconciliation_lease_until IS NULL OR reconciliation_lease_until <= clock_timestamp())\n ORDER BY next_reconcile_at,id FOR UPDATE SKIP LOCKED LIMIT $1\n ), leased AS (UPDATE refunds r SET provider_retry_count=provider_retry_count+$7,\n reconciliation_lease_token=$3,reconciliation_lease_until=clock_timestamp()+INTERVAL $8,\n next_reconcile_at=clock_timestamp()+LEAST($2,power($9,LEAST(provider_retry_count,$10)))*INTERVAL $11\n FROM claimed WHERE r.id=claimed.id RETURNING r.*,claimed.recovery_reason)\n SELECT leased.*,a.provider_payment_id FROM leased JOIN payment_attempts a ON a.id=leased.payment_attempt_id",
+        "calls": 1,
+        "ms": 0.019175000000000608
+      }
+    ],
+    "redisEvalMicroseconds": [
+      19446
+    ],
+    "snapshot": {
+      "n": 20,
+      "p50Ms": 42.702,
+      "p95Ms": 47.16,
+      "jsonBytes": 239506,
+      "gzipBytes": 5343,
+      "samplesMs": [
+        42.917,
+        44.871,
+        46.538,
+        45.775,
+        22.636,
+        37.906,
+        45.302,
+        47.16,
+        45.831,
+        45.873,
+        46.017,
+        22.801,
+        25.981,
+        25.722,
+        21.916,
+        39.97,
+        22.502,
+        39.294,
+        48.889,
+        42.702
+      ]
+    },
+    "delta": {
+      "n": 20,
+      "p50Ms": 15.622,
+      "p95Ms": 17.263,
+      "jsonBytes": 566,
+      "gzipBytes": 240,
+      "samplesMs": [
+        15.653,
+        15.571,
+        13.783,
+        15.809,
+        15.053,
+        2.98,
+        28.285,
+        3.436,
+        2.515,
+        5.673,
+        17.263,
+        15.89,
+        14.83,
+        15.757,
+        16.209,
+        15.973,
+        15.622,
+        15.979,
+        14.428,
+        15.698
+      ]
+    },
+    "deltaSql": [
+      {
+        "query": "SELECT EXISTS(SELECT $2 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>$3 AND e.status<>$4) AS found",
+        "calls": 20,
+        "ms": 1.4470849999999977
+      },
+      {
+        "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version",
+        "calls": 1,
+        "ms": 0.016923000000005572
+      },
+      {
+        "query": "WITH claimed AS (\n            SELECT id, provider, object_kind, provider_object_id, local_reference_id\n            FROM payment_provider_events\n            WHERE status = $2 AND next_retry_at <= clock_timestamp()\n            ORDER BY received_at\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), wake_payments AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_payment_id = COALESCE(attempt.provider_payment_id, claimed.provider_object_id),\n                next_reconcile_at = CASE WHEN attempt.status IN ($3,$4)\n                                         THEN clock_timestamp() ELSE $5 END\n            FROM claimed\n            WHERE claimed.object_kind = $6\n              AND claimed.local_reference_id = attempt.id\n              AND claimed.provider = attempt.provider\n              AND (attempt.provider_payment_id IS NULL\n                   OR attempt.provider_payment_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        ), wake_refunds AS (\n            UPDATE refunds AS refund\n            SET next_reconcile_at = CASE WHEN refund.status = $7\n                                         THEN clock_timestamp() ELSE $8 END\n            FROM claimed\n            WHERE claimed.object_kind = $9\n              AND claimed.local_reference_id = refund.id\n              AND claimed.provider = refund.provider\n              AND (refund.provider_refund_id IS NULL\n                   OR refund.provider_refund_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        )\n        UPDATE payment_provider_events AS event\n        SET status = $10, processed_at = clock_timestamp(), last_error = $11\n        FROM claimed\n        WHERE event.id = claimed.id\n          AND (event.provider_object_id IS NULL\n               OR event.id IN (SELECT id FROM wake_payments)\n               OR event.id IN (SELECT id FROM wake_refunds))",
+        "calls": 1,
+        "ms": 0.03631599999999935
+      },
+      {
+        "query": "SELECT status, COUNT(*) AS count, COALESCE(MAX(EXTRACT($1 FROM clock_timestamp()-created_at)) FILTER (WHERE status=$2),$3) AS age FROM refunds GROUP BY status",
+        "calls": 1,
+        "ms": 0.018167999999999296
+      },
+      {
+        "query": "WITH claimed AS (\n            SELECT attempt.id,\n                   CASE WHEN attempt.provider_status IN ($4,$5)\n                        THEN $6\n                        WHEN attempt.next_reconcile_at IS NULL THEN $7\n                        WHEN attempt.reconciliation_lease_until IS NOT NULL THEN $8\n                        ELSE $9 END AS recovery_reason\n            FROM payment_attempts AS attempt\n            WHERE attempt.provider <> $10\n              AND attempt.status IN ($11, $12)\n              AND (attempt.reconciliation_lease_until IS NULL\n                   OR attempt.reconciliation_lease_until <= clock_timestamp())\n              AND (attempt.provider_status IN ($13,$14)\n                   OR attempt.next_reconcile_at IS NULL\n                   OR attempt.next_reconcile_at <= clock_timestamp())\n            ORDER BY (attempt.provider_status IN ($15,$16)) DESC NULLS LAST,\n                     attempt.next_reconcile_at NULLS FIRST, attempt.id\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), leased AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_retry_count = provider_retry_count + $17,\n                reconciliation_lease_token = $3,\n                reconciliation_lease_until = clock_timestamp() + INTERVAL $18,\n                next_reconcile_at = clock_timestamp() + LEAST($2, power($19, LEAST(provider_retry_count, $20))) * INTERVAL $21\n            FROM claimed WHERE attempt.id = claimed.id\n            RETURNING attempt.*, claimed.recovery_reason\n        )\n        SELECT leased.id, leased.order_id, leased.provider, leased.provider_payment_id,\n               ticket_order.total_amount, leased.currency, leased.recovery_reason\n        FROM leased JOIN orders AS ticket_order ON ticket_order.id = leased.order_id",
+        "calls": 1,
+        "ms": 0.022023000000000792
+      },
+      {
+        "query": "WITH claimed AS (\n SELECT id, CASE WHEN reconciliation_lease_until IS NOT NULL THEN $4 ELSE $5 END AS recovery_reason\n FROM refunds WHERE status=$6 AND provider_terminal_at IS NULL AND next_reconcile_at <= clock_timestamp()\n AND (reconciliation_lease_until IS NULL OR reconciliation_lease_until <= clock_timestamp())\n ORDER BY next_reconcile_at,id FOR UPDATE SKIP LOCKED LIMIT $1\n ), leased AS (UPDATE refunds r SET provider_retry_count=provider_retry_count+$7,\n reconciliation_lease_token=$3,reconciliation_lease_until=clock_timestamp()+INTERVAL $8,\n next_reconcile_at=clock_timestamp()+LEAST($2,power($9,LEAST(provider_retry_count,$10)))*INTERVAL $11\n FROM claimed WHERE r.id=claimed.id RETURNING r.*,claimed.recovery_reason)\n SELECT leased.*,a.provider_payment_id FROM leased JOIN payment_attempts a ON a.id=leased.payment_attempt_id",
+        "calls": 1,
+        "ms": 0.04673599999999922
+      }
+    ]
+  }
+]

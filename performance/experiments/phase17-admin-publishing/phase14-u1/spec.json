@@ -1,0 +1,524 @@
+{
+  "version": 3,
+  "startupPlan": {
+    "users": 20,
+    "requests": 200,
+    "steps": {
+      "startup_auth": 40,
+      "startup_notifications": 40,
+      "startup_session": 20,
+      "startup_event": 20,
+      "startup_layout": 20,
+      "startup_availability": 20,
+      "startup_checkouts": 20,
+      "startup_orders": 20
+    }
+  },
+  "deliverySchedule": {
+    "control_health": {
+      "businessExecutor": {
+        "executor": "constant-arrival-rate",
+        "exec": "control",
+        "rate": 2,
+        "timeUnit": "1s",
+        "duration": "12s",
+        "startTime": "0s",
+        "preAllocatedVUs": 36,
+        "gracefulStop": "33s"
+      },
+      "businessWindowSeconds": 12.0,
+      "schedulerGuardSeconds": 1,
+      "executorWindowSeconds": 13.0
+    },
+    "control_auth": {
+      "businessExecutor": {
+        "executor": "constant-arrival-rate",
+        "exec": "control",
+        "rate": 2,
+        "timeUnit": "1s",
+        "duration": "12s",
+        "startTime": "0s",
+        "preAllocatedVUs": 36,
+        "gracefulStop": "33s"
+      },
+      "businessWindowSeconds": 12.0,
+      "schedulerGuardSeconds": 1,
+      "executorWindowSeconds": 13.0
+    },
+    "control_availability": {
+      "businessExecutor": {
+        "executor": "constant-arrival-rate",
+        "exec": "control",
+        "rate": 2,
+        "timeUnit": "1s",
+        "duration": "12s",
+        "startTime": "0s",
+        "preAllocatedVUs": 36,
+        "gracefulStop": "33s"
+      },
+      "businessWindowSeconds": 12.0,
+      "schedulerGuardSeconds": 1,
+      "executorWindowSeconds": 13.0
+    },
+    "payment": {
+      "businessExecutor": {
+        "executor": "constant-arrival-rate",
+        "exec": "payment",
+        "rate": 2,
+        "timeUnit": "1s",
+        "duration": "6s",
+        "startTime": "0s",
+        "preAllocatedVUs": 28,
+        "gracefulStop": "33s"
+      },
+      "businessWindowSeconds": 6.0,
+      "schedulerGuardSeconds": 1,
+      "executorWindowSeconds": 7.0
+    }
+  },
+  "case": "U1",
+  "mode": "smoke",
+  "targets": {
+    "version": 3,
+    "seed": 14001,
+    "scope": "Disjoint within one Run ID. Reuse only after full snapshot restore and empty Redis; fresh idempotency namespace and evidence directory per run.",
+    "dataset": {
+      "registeredUsers": 2100,
+      "activeAuthSessions": 2000,
+      "loginUsers": 20,
+      "events": 2,
+      "sessionsPerEvent": 10,
+      "seatsPerSession": 100
+    },
+    "behavior": {
+      "browse": 60,
+      "hold": 25,
+      "order": 15,
+      "thinkSeconds": [
+        0.01,
+        0.05
+      ],
+      "refreshSeconds": [
+        1,
+        3
+      ],
+      "maxPurchasesPerUser": 1,
+      "maxSeats": 4
+    },
+    "online": {
+      "rounds": [
+        [
+          {
+            "users": 20,
+            "rampSeconds": 2,
+            "holdSeconds": 4
+          }
+        ],
+        [
+          {
+            "users": 20,
+            "rampSeconds": 2,
+            "holdSeconds": 4
+          }
+        ]
+      ]
+    },
+    "burst": {
+      "users": 20,
+      "windowsSeconds": [
+        6,
+        3,
+        1
+      ],
+      "seatsPerUser": 1
+    },
+    "hotspot": {
+      "users": 20,
+      "seats": 2,
+      "contendersPerSeat": 10,
+      "windowSeconds": 2,
+      "h1Repeats": 2,
+      "h2SessionCounts": [
+        10,
+        20
+      ],
+      "h3P95OffsetSeconds": 1,
+      "h3MaxOffsetSeconds": 2
+    },
+    "login": {
+      "users": 20,
+      "windowsSeconds": [
+        6,
+        2
+      ],
+      "backgroundWarmSeconds": 4,
+      "backgroundRecoverySeconds": 6,
+      "fallbackFraction": 0.7,
+      "backgroundGoodputFraction": 0.9,
+      "backgroundLatencyRatio": 1.5,
+      "busyLatencyMs": [
+        1000,
+        2000
+      ]
+    },
+    "expiry": {
+      "orders": 20,
+      "futureSeconds": 8,
+      "windowSeconds": 1,
+      "maxObserveSeconds": 30,
+      "afterDrainSeconds": 2,
+      "futureDrainGoalSeconds": 60
+    },
+    "soak": {
+      "seconds": 12,
+      "extendedSeconds": 3600,
+      "fallbackFraction": 0.7
+    },
+    "probes": {
+      "controlRate": 2,
+      "paymentRate": 2,
+      "paymentScenarios": [
+        "U1",
+        "U2",
+        "J1",
+        "O1",
+        "L1",
+        "L2"
+      ],
+      "paymentDelaySeconds": [
+        2,
+        6
+      ],
+      "paymentDeadlineSeconds": 30,
+      "paymentFailureRate": 0,
+      "pollSeconds": 1
+    },
+    "latencyMs": {
+      "health": [
+        500,
+        1000
+      ],
+      "auth": [
+        500,
+        1000
+      ],
+      "page": [
+        1500,
+        3000
+      ],
+      "availability": [
+        800,
+        1500
+      ],
+      "hold": [
+        1500,
+        3000
+      ],
+      "adjust": [
+        1500,
+        3000
+      ],
+      "confirm": [
+        1500,
+        3000
+      ],
+      "journey": [
+        4000,
+        8000
+      ]
+    },
+    "recovery": {
+      "observeSeconds": 6,
+      "queueZeroDeadlineSeconds": 60,
+      "continuousSeconds": 30,
+      "inflightIdleAllowance": 2,
+      "controlWindowSeconds": 60,
+      "controlMinSamples": 100,
+      "controlBaselineRatio": 1.5,
+      "memoryPeakFraction": 0.85,
+      "memoryWindowSeconds": 60,
+      "memoryGrowthFraction": 0.01,
+      "restarts": 0,
+      "oom": 0
+    },
+    "stop": {
+      "windowSeconds": 10,
+      "minErrorSamples": 100,
+      "errorFraction": 0.01,
+      "consecutiveErrorWindows": 2,
+      "smallWindowErrors": 3,
+      "stalledInflight": 100,
+      "stallSeconds": 10,
+      "queueFraction": 0.9,
+      "queueSeconds": 10,
+      "transactionWaiters": 100,
+      "transactionWaitSeconds": 10,
+      "oldestTransactionSeconds": 3,
+      "memoryFraction": 0.9,
+      "maxSameLevelRepeat": 1
+    },
+    "generator": {
+      "scheduler_delivery_guard_seconds": 1,
+      "cpuFraction": 0.8,
+      "cpuContinuousSeconds": 10,
+      "memoryFraction": 0.9,
+      "maxClockSkewMs": 100,
+      "maxShards": 16,
+      "dropped": 0,
+      "interrupted": 0,
+      "sampleSeconds": 1,
+      "hotspotSampleSeconds": 0.2,
+      "maxSamplingOverheadFraction": 0.05,
+      "diskSafetyFactor": 2,
+      "releaseLeadSeconds": 8
+    },
+    "calibration": {
+      "authSamples": 20,
+      "baselineSeconds": 4
+    },
+    "environment": {
+      "projectPrefix": "phase14-",
+      "applicationName": "ticketing_backend_phase14",
+      "database": "ticketing",
+      "localPort": 18137,
+      "prometheusPort": 19137,
+      "maxRuns": 50,
+      "retentionDays": 7
+    },
+    "slices": {
+      "main": [
+        0,
+        20
+      ],
+      "calibration": [
+        200,
+        220
+      ],
+      "control": [
+        400,
+        600
+      ],
+      "payment": [
+        600,
+        800
+      ],
+      "expiry": [
+        800,
+        1000
+      ],
+      "background": [
+        1000,
+        1200
+      ],
+      "backgroundHold": [
+        1200,
+        1400
+      ],
+      "backgroundOrder": [
+        1400,
+        1600
+      ],
+      "login": [
+        2000,
+        2020
+      ]
+    },
+    "seatSlices": {
+      "main": [
+        0,
+        250
+      ],
+      "payment": [
+        250,
+        500
+      ],
+      "expiry": [
+        500,
+        750
+      ],
+      "backgroundHold": [
+        750,
+        1000
+      ],
+      "backgroundOrder": [
+        1000,
+        1250
+      ],
+      "control": [
+        1250,
+        1500
+      ]
+    },
+    "smoke": {
+      "users": 20,
+      "authSamples": 20,
+      "registeredUsers": 2100,
+      "activeAuthSessions": 2000,
+      "loginUsers": 20,
+      "seatsPerSession": 100,
+      "rampSeconds": 2,
+      "holdSeconds": 4,
+      "burstWindowsSeconds": [
+        6,
+        3,
+        1
+      ],
+      "hotspotSeats": 2,
+      "hotspotWindowSeconds": 2,
+      "loginWindowsSeconds": [
+        6,
+        2
+      ],
+      "backgroundWarmSeconds": 4,
+      "recoverySeconds": 6,
+      "expiryFutureSeconds": 8,
+      "expiryObserveSeconds": 30,
+      "expiryAfterDrainSeconds": 2,
+      "soakSeconds": 12,
+      "releaseLeadSeconds": 8,
+      "baselineSeconds": 4,
+      "thinkSeconds": [
+        0.01,
+        0.05
+      ],
+      "refreshSeconds": [
+        1,
+        3
+      ]
+    },
+    "pageStartup": {
+      "model": "authenticated-cold-page-v1",
+      "requestsPerUser": 10,
+      "stepCounts": {
+        "startup_auth": 2,
+        "startup_notifications": 2,
+        "startup_session": 1,
+        "startup_event": 1,
+        "startup_layout": 1,
+        "startup_availability": 1,
+        "startup_checkouts": 1,
+        "startup_orders": 1
+      },
+      "dependencies": "router auth -> session -> [event, layout, availability] -> [recoverable checkouts, orders]; first successful auth -> notification; app auth -> notification",
+      "orderListLimit": 20
+    },
+    "sourceSha256": "653bbcf69399ef14f822e2ff4235332384062743072b93e3763632673a5b35b8",
+    "formalActiveUserTarget": 10000,
+    "mode": "smoke"
+  },
+  "runId": "phase17-current-u1",
+  "idempotencyNamespace": "phase17-current-u1",
+  "roundIndex": 0,
+  "windowIndex": 0,
+  "path": "formal",
+  "sessionCount": 1,
+  "controlOnly": false,
+  "scenarios": {
+    "main": {
+      "executor": "ramping-vus",
+      "exec": "online",
+      "startVUs": 0,
+      "stages": [
+        {
+          "target": 20,
+          "duration": "2s"
+        },
+        {
+          "target": 20,
+          "duration": "4s"
+        }
+      ],
+      "gracefulRampDown": "33s",
+      "gracefulStop": "33s"
+    },
+    "control_health": {
+      "executor": "constant-arrival-rate",
+      "exec": "control",
+      "rate": 2,
+      "timeUnit": "1s",
+      "duration": "13s",
+      "startTime": "0s",
+      "preAllocatedVUs": 36,
+      "gracefulStop": "33s"
+    },
+    "control_auth": {
+      "executor": "constant-arrival-rate",
+      "exec": "control",
+      "rate": 2,
+      "timeUnit": "1s",
+      "duration": "13s",
+      "startTime": "0s",
+      "preAllocatedVUs": 36,
+      "gracefulStop": "33s"
+    },
+    "control_availability": {
+      "executor": "constant-arrival-rate",
+      "exec": "control",
+      "rate": 2,
+      "timeUnit": "1s",
+      "duration": "13s",
+      "startTime": "0s",
+      "preAllocatedVUs": 36,
+      "gracefulStop": "33s"
+    },
+    "payment": {
+      "executor": "constant-arrival-rate",
+      "exec": "payment",
+      "rate": 2,
+      "timeUnit": "1s",
+      "duration": "7s",
+      "startTime": "0s",
+      "preAllocatedVUs": 28,
+      "gracefulStop": "33s"
+    }
+  },
+  "mapping": {
+    "main": {
+      "users": 20
+    },
+    "control_health": {
+      "count": 24,
+      "step": "health"
+    },
+    "control_auth": {
+      "count": 24,
+      "step": "auth"
+    },
+    "control_availability": {
+      "count": 24,
+      "step": "availability"
+    },
+    "payment": {
+      "count": 12
+    }
+  },
+  "plan": {
+    "main": null,
+    "control_health": 24,
+    "control_auth": 24,
+    "control_availability": 24,
+    "payment": 12
+  },
+  "loadSeconds": 6,
+  "workload": "phase14-online",
+  "shards": [
+    {
+      "shard": "0",
+      "segment": "0:1",
+      "sequence": "0,1",
+      "role": "main"
+    },
+    {
+      "shard": "1",
+      "segment": "0:1",
+      "sequence": "0,1",
+      "role": "probe"
+    }
+  ],
+  "sentinel": {
+    "sessionId": "perf-session-002-001",
+    "sessionSeatId": "perf-ss-002-001-000063",
+    "checkoutId": "CHK-ae4fd9fd-2beb-4118-9950-2b69d5235f79"
+  },
+  "releaseAtMs": 1789194811575
+}

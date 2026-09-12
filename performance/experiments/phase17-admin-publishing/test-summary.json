@@ -1,0 +1,36 @@
+{
+  "date": "2026-09-12",
+  "ctest": {
+    "passed": 34,
+    "total": 34,
+    "build": "Release C++20 BUILD_TESTING=ON"
+  },
+  "vitest": {
+    "passed": 203,
+    "total": 203,
+    "files": 25
+  },
+  "frontendBuild": true,
+  "performancePython": 233,
+  "phase17Schema": 6,
+  "phase17AuthZone": 5,
+  "phase17Venue": 4,
+  "phase17Publishing": 9,
+  "phase17VerifierNegative": 3,
+  "playwright": 5,
+  "phase11Stripe": 11,
+  "phase11Crash": 11,
+  "phase12Refund": 38,
+  "phase15MigrationReadReservationCheckout": 17,
+  "phase15Observation": 2,
+  "phase15ActualCrash": 1,
+  "phase16Pg": 5,
+  "phase16Redis": 11,
+  "phase16Http": 7,
+  "phase14FunctionalCorrectness": [
+    "G0",
+    "U1",
+    "U2"
+  ],
+  "capacityClaim": false
+}

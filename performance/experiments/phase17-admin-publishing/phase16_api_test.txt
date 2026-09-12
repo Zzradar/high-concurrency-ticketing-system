@@ -1,0 +1,12 @@
+test_argument_errors (phase16_api_test.AvailabilityApiTest) ... ok
+test_delta_dedup_pagination_and_bounded_trim (phase16_api_test.AvailabilityApiTest) ... ok
+test_generation_reset (phase16_api_test.AvailabilityApiTest) ... ok
+test_initialization_wait_timeout_and_corruption_rebuild (phase16_api_test.AvailabilityApiTest) ... ok
+test_legacy_snapshot_delta_zone_isolation (phase16_api_test.AvailabilityApiTest) ... ok
+test_ownership_and_hold_delta (phase16_api_test.AvailabilityApiTest) ... ok
+test_warm_delta_does_not_fetch_inventory (phase16_api_test.AvailabilityApiTest) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 5.542s
+
+OK

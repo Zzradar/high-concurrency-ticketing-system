@@ -1,0 +1,9 @@
+test_concurrent_same_key_arbitrates_before_ended_preliminary_rejection (phase15_reservation_test.ReservationSalesTest) ... ok
+test_new_request_rejected_and_idempotent_replay_survives_end (phase15_reservation_test.ReservationSalesTest) ... ok
+test_not_started_and_static_unavailable_roll_back_new_insert (phase15_reservation_test.ReservationSalesTest) ... ok
+test_seat_lock_wait_crosses_end_without_inventory_or_outbox_writes (phase15_reservation_test.ReservationSalesTest) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 10.593s
+
+OK

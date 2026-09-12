@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "phase15": {
+    "invalidEventWindow": 0,
+    "checkoutActiveKeyMismatch": 0,
+    "checkoutResultMismatch": 0,
+    "phase15DuplicateKeys": 0,
+    "phase15MissingOrder": 0,
+    "phase15OverlappingRights": 0,
+    "phase15WrongAmount": 0,
+    "phase15InventoryPointerMismatch": 0
+  },
+  "phase16AndOriginal": {
+    "passed": true,
+    "checkedRedisSeats": 5000,
+    "checks": {
+      "negativeFormalVersions": 0,
+      "outboxDuplicates": 0,
+      "outboxBacklog": 0,
+      "activeLeases": 0,
+      "perf-session-phase16:formalMismatch": 0,
+      "perf-session-phase16:extraFormalSeats": 0,
+      "perf-session-phase16:zoneMapMismatch": 0,
+      "perf-session-phase16:Zone 0:membership": 0,
+      "perf-session-phase16:Zone 0:summary": 0,
+      "perf-session-phase16:Zone 1:membership": 0,
+      "perf-session-phase16:Zone 1:summary": 0,
+      "perf-session-phase16:Zone 2:membership": 0,
+      "perf-session-phase16:Zone 2:summary": 0,
+      "perf-session-phase16:Zone 3:membership": 0,
+      "perf-session-phase16:Zone 3:summary": 0,
+      "perf-session-phase16:Zone 4:membership": 0,
+      "perf-session-phase16:Zone 4:summary": 0,
+      "existing:accepted_payment_mismatch": 0,
+      "existing:active_reservation_seat_mismatch": 0,
+      "existing:confirmed_state_mismatch": 0,
+      "existing:effective_seat_overlap": 0,
+      "existing:held_seat_owner_mismatch": 0,
+      "existing:multiple_processing_attempts": 0,
+      "existing:multiple_refunds": 0,
+      "existing:order_amount_mismatch": 0,
+      "existing:order_paid_at_mismatch": 0,
+      "existing:order_reservation_status_mismatch": 0,
+      "existing:refund_order_or_amount_mismatch": 0,
+      "existing:sold_state_mismatch": 0,
+      "existing:terminal_reservation_still_holds": 0,
+      "existing:unaccepted_success_refund_mismatch": 0
+    }
+  }
+}

@@ -1,14 +1,14 @@
 """Phase15 cross-table checks plus unchanged Phase16/original verifier."""
-import json,sys
+import os,json,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'backend/tests'))
 from phase15_test_support import sql,redis,until
 import phase16_verify
-OUTPUT=ROOT/'performance/experiments/phase15-sales-window'
+OUTPUT=Path(os.environ.get('PHASE15_OUTPUT',str(ROOT/'performance/experiments/phase15-sales-window')))
 def verify():
     phase16_verify.sql=sql;phase16_verify.redis=redis;phase16_verify.until=until
-    phase16_verify.BASE='http://127.0.0.1:18095';phase16_verify.OUTPUT=OUTPUT/'phase16-regression'
+    phase16_verify.BASE=os.environ.get('PHASE15_BASE_URL','http://127.0.0.1:18095');phase16_verify.OUTPUT=OUTPUT/'phase16-regression'
     previous=phase16_verify.verify()
     checks={}
     queries={
