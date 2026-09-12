@@ -326,3 +326,11 @@ if(BUILD_TESTING)
  target_link_libraries(phase17_config_unit PRIVATE Drogon::Drogon Threads::Threads)
  add_test(NAME phase17_config_unit COMMAND phase17_config_unit)
 endif()
+
+target_sources(ticketing_backend PRIVATE src/repositories/AdminEventRepository.cpp src/services/AdminEventService.cpp src/controllers/AdminEventController.cpp)
+
+if(BUILD_TESTING AND TICKETING_PHASE17_EXTERNAL_TESTS)
+ add_test(NAME phase17_venues COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase17_venue_test.py")
+ add_test(NAME phase17_publishing COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase17_publishing_test.py")
+ set_tests_properties(phase17_venues phase17_publishing PROPERTIES RUN_SERIAL TRUE LABELS integration)
+endif()

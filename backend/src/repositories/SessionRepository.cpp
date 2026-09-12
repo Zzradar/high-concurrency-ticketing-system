@@ -55,7 +55,7 @@ void SessionRepository::listByEventId(
         JOIN venues AS venue ON venue.id = session.venue_id
         LEFT JOIN session_seats AS inventory
             ON inventory.session_id = session.id
-        WHERE session.event_id = $1
+        WHERE session.event_id = $1 AND session.status <> 'DRAFT' AND event.status <> 'DRAFT'
         GROUP BY
             session.id,
             session.event_id,
@@ -108,7 +108,7 @@ void SessionRepository::eventExists(
     ErrorCallback onError) const
 {
     drogon::app().getDbClient("default")->execSqlAsync(
-        "SELECT EXISTS(SELECT 1 FROM events WHERE id = $1) AS found",
+        "SELECT EXISTS(SELECT 1 FROM events WHERE id = $1 AND status <> 'DRAFT') AS found",
         [onSuccess = std::move(onSuccess)](const drogon::orm::Result &result) {
             onSuccess(result.front()["found"].as<bool>());
         },
@@ -149,7 +149,7 @@ void SessionRepository::findById(
         JOIN events AS event ON event.id=session.event_id
         JOIN venues AS venue ON venue.id = session.venue_id
         LEFT JOIN session_seats AS inventory ON inventory.session_id = session.id
-        WHERE session.id = $1
+        WHERE session.id = $1 AND session.status <> 'DRAFT' AND event.status <> 'DRAFT'
         GROUP BY session.id, session.event_id, session.start_time,
                  session.gate_time, session.hall_name, session.status, venue.name,event.sales_starts_at,event.sales_ends_at
     )SQL";

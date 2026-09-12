@@ -25,7 +25,7 @@ void SeatRepository::listBySessionId(
         FROM session_seats AS inventory
         JOIN seats AS seat ON seat.id = inventory.seat_id
         JOIN venue_zones AS zone ON zone.id = seat.zone_id AND zone.venue_id = seat.venue_id
-        WHERE inventory.session_id = $1
+        WHERE inventory.session_id = $1 AND EXISTS(SELECT 1 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>'DRAFT' AND e.status<>'DRAFT')
         ORDER BY zone.sort_order ASC,
                  seat.row_no ASC,
                  seat.seat_no ASC,
@@ -83,7 +83,7 @@ void SeatRepository::listLayoutBySessionId(
         FROM session_seats AS inventory
         JOIN seats AS seat ON seat.id = inventory.seat_id
         JOIN venue_zones AS zone ON zone.id = seat.zone_id AND zone.venue_id = seat.venue_id
-        WHERE inventory.session_id = $1
+        WHERE inventory.session_id = $1 AND EXISTS(SELECT 1 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>'DRAFT' AND e.status<>'DRAFT')
         ORDER BY zone.sort_order ASC,
                  seat.row_no ASC,
                  seat.seat_no ASC,
@@ -130,7 +130,7 @@ void SeatRepository::listAvailabilityBySessionId(
     constexpr const char *sql = R"SQL(
         SELECT id, status
         FROM session_seats
-        WHERE session_id = $1
+        WHERE session_id = $1 AND EXISTS(SELECT 1 FROM sessions s WHERE s.id=$1 AND s.status<>'DRAFT' AND s.event_id IN (SELECT id FROM events WHERE status<>'DRAFT'))
         ORDER BY id ASC
     )SQL";
 
@@ -168,7 +168,7 @@ void SeatRepository::sessionExists(
     ErrorCallback onError) const
 {
     drogon::app().getDbClient("default")->execSqlAsync(
-        "SELECT EXISTS(SELECT 1 FROM sessions WHERE id = $1) AS found",
+        "SELECT EXISTS(SELECT 1 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>'DRAFT' AND e.status<>'DRAFT') AS found",
         [onSuccess = std::move(onSuccess)](const drogon::orm::Result &result) {
             onSuccess(result.front()["found"].as<bool>());
         },

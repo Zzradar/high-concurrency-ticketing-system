@@ -28,7 +28,7 @@ constexpr const char *kEventSelect = R"SQL(
 
     FROM events AS event
     JOIN venues AS venue ON venue.id = event.primary_venue_id
-    LEFT JOIN sessions AS session ON session.event_id = event.id
+    LEFT JOIN sessions AS session ON session.event_id = event.id AND session.status <> 'DRAFT'
 )SQL";
 
 constexpr const char *kEventGroupBy = R"SQL(
@@ -66,7 +66,7 @@ void EventRepository::listEvents(
     std::function<void(std::vector<EventRow>)> onSuccess,
     ErrorCallback onError) const
 {
-    const std::string sql = std::string{kEventSelect} + kEventGroupBy +
+    const std::string sql = std::string{kEventSelect} + " WHERE event.status <> 'DRAFT'" + kEventGroupBy +
                             " ORDER BY earliest_session ASC NULLS LAST, event.id ASC";
 
     drogon::app().getDbClient("default")->execSqlAsync(
@@ -93,7 +93,7 @@ void EventRepository::findEventById(
     ErrorCallback onError) const
 {
     const std::string sql = std::string{kEventSelect} +
-                            " WHERE event.id = $1" + kEventGroupBy;
+                            " WHERE event.id = $1 AND event.status <> 'DRAFT'" + kEventGroupBy;
 
     drogon::app().getDbClient("default")->execSqlAsync(
         sql,

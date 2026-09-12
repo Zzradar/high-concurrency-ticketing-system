@@ -314,7 +314,10 @@ void SeatAvailabilityReadModel::read(std::string session,std::string zone,std::s
     auto request=std::make_shared<Request>();
     request->session=std::move(session);request->zone=std::move(zone);request->owner=std::move(owner);
     request->generation=std::move(generation);request->since=std::move(since);request->reply=std::move(reply);
-    request->token=drogon::utils::getUuid();request->acquire();
+    request->token=drogon::utils::getUuid();
+    SeatRepository{}.sessionExists(request->session,[request](bool visible){
+        if(visible)request->acquire();else request->error("SESSION_NOT_FOUND");
+    },[request]{request->error("INTERNAL_ERROR");});
 }
 void SeatAvailabilityReadModel::apply(std::string session,std::string seat,std::string status,std::string version,Result result)
 {
