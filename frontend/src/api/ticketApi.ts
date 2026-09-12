@@ -1,3 +1,4 @@
+import type { SeatAvailabilitySyncOptions, SeatAvailabilitySyncResponse } from '../types'
 import axios from 'axios'
 import type {
   CheckoutSession,
@@ -375,6 +376,60 @@ async function mockGetSeatAvailability(
     sessionId,
     seats: seats.map(({ id, status }) => ({ id, status })),
   }
+}
+
+
+interface MockZoneLog {
+  generation: string
+  sequence: number
+  signatures: Map<string, string>
+  events: { sequence: number; id: string }[]
+}
+const mockZoneLogs = new Map<string, MockZoneLog>()
+async function mockSyncAvailability(sessionId: string, checkoutId: string | undefined, options: SeatAvailabilitySyncOptions): Promise<SeatAvailabilitySyncResponse> {
+  await wait()
+  const inventory = ensureSeats(sessionId)
+  const zoneSeats = inventory.filter(s => s.zone === options.zone)
+  if (!zoneSeats.length) throw new TicketApiError('区域不存在。', 'ZONE_NOT_FOUND')
+  if (!!options.generation !== !!options.since || options.since && !/^(0|[1-9]\d*)-(0|[1-9]\d*)$/.test(options.since)) throw new TicketApiError('同步参数无效。', 'INVALID_ARGUMENT')
+  const holds = new Map<string, string>()
+  for (const checkout of checkoutSessions.values()) {
+    if (checkout.sessionId === sessionId && ['SELECTING','SUBMITTING'].includes(checkout.status)) {
+      for (const id of checkout.seatIds) holds.set(id,checkout.id)
+    }
+  }
+  const own = checkoutId && checkoutSessions.get(checkoutId)?.userId === mockCurrentUser?.id && checkoutSessions.get(checkoutId)?.sessionId === sessionId ? checkoutId : undefined
+  const key = JSON.stringify([sessionId,options.zone])
+  let log = mockZoneLogs.get(key)
+  if (!log) {
+    log = { generation: 'mock-' + ++sequence, sequence: 1, signatures: new Map(), events: [] }
+    mockZoneLogs.set(key,log)
+  }
+  for (const seat of zoneSeats) {
+    const signature = seat.status + '|' + (holds.get(seat.id) ?? '')
+    if (log.signatures.has(seat.id) && log.signatures.get(seat.id) !== signature) log.events.push({sequence: ++log.sequence,id:seat.id})
+    log.signatures.set(seat.id,signature)
+  }
+  log.events = log.events.slice(-10000)
+  const zones = [...new Set(inventory.map(s => s.zone))].map(zone => {
+    const counts = {zone,total:0,available:0,held:0,sold:0}
+    for (const seat of inventory.filter(s => s.zone === zone)) {
+      counts.total++
+      if (seat.status === 'SOLD') counts.sold++
+      else if (seat.status === 'HELD' || holds.has(seat.id)) counts.held++
+      else counts.available++
+    }
+    return counts
+  })
+  const display = (seat: Seat): SeatAvailability => ({id:seat.id,status:seat.status !== 'AVAILABLE' ? seat.status : holds.has(seat.id) && holds.get(seat.id) !== own ? 'HELD' : 'AVAILABLE'})
+  const after = options.since ? Number(options.since.split('-')[0]) : 0
+  const reset = !!options.generation && (options.generation !== log.generation || after < (log.events.length === 10000 ? log.events[0]!.sequence : 1))
+  const base = { sessionId,zone:options.zone,generation:log.generation,cursor:log.sequence+'-0',reset,degraded:false,hasMore:false,zones }
+  if (!options.generation || reset) return {...base,mode:'snapshot',seats:zoneSeats.map(display)}
+  const pending = log.events.filter(e => e.sequence > after)
+  const page = pending.slice(0,1000)
+  const ids = new Set(page.map(e => e.id))
+  return {...base,mode:'delta',cursor:page.length ? page.at(-1)!.sequence+'-0' : options.since!,hasMore:pending.length>1000,changes:zoneSeats.filter(s => ids.has(s.id)).map(display)}
 }
 
 async function mockCreateReservation(sessionId: string, seatIds: string[]): Promise<ReservationResult> {
@@ -846,6 +901,26 @@ export function normalizeSeatAvailabilityResponse(
   return response.seats
 }
 
+function getSeatAvailability(sessionId: string, checkoutSessionId: string | undefined, options: SeatAvailabilitySyncOptions): Promise<SeatAvailabilitySyncResponse>
+function getSeatAvailability(sessionId: string, checkoutSessionId?: string): Promise<SeatAvailability[]>
+function getSeatAvailability(sessionId: string, checkoutSessionId?: string, options?: SeatAvailabilitySyncOptions): Promise<SeatAvailability[] | SeatAvailabilitySyncResponse>
+async function getSeatAvailability(
+    sessionId: string,
+    checkoutSessionId?: string,
+  options?: SeatAvailabilitySyncOptions,
+): Promise<SeatAvailability[] | SeatAvailabilitySyncResponse> {
+    if (options) return isMockMode ? mockSyncAvailability(sessionId,checkoutSessionId,options) : (await http.get<SeatAvailabilitySyncResponse>(seatMapPaths.availability(sessionId), { params: { ...options, checkoutSessionId } })).data
+    const response = isMockMode
+      ? await mockGetSeatAvailability(sessionId, checkoutSessionId)
+      : (
+          await http.get<SeatAvailabilityResponse>(
+            seatMapPaths.availability(sessionId),
+            buildSeatMapRequestConfig(checkoutSessionId),
+          )
+        ).data
+    return normalizeSeatAvailabilityResponse(sessionId, response)
+  }
+
 export const ticketApi = {
   async createRefund(orderId: string): Promise<CreateRefundResult> {
     if (isMockMode) return mockCreateRefund(orderId)
@@ -918,20 +993,7 @@ export const ticketApi = {
       : (await http.get<SeatLayoutResponse>(seatMapPaths.layout(sessionId))).data
     return normalizeSeatLayoutResponse(sessionId, response)
   },
-  async getSeatAvailability(
-    sessionId: string,
-    checkoutSessionId?: string,
-  ): Promise<SeatAvailability[]> {
-    const response = isMockMode
-      ? await mockGetSeatAvailability(sessionId, checkoutSessionId)
-      : (
-          await http.get<SeatAvailabilityResponse>(
-            seatMapPaths.availability(sessionId),
-            buildSeatMapRequestConfig(checkoutSessionId),
-          )
-        ).data
-    return normalizeSeatAvailabilityResponse(sessionId, response)
-  },
+  getSeatAvailability,
   async createReservation(sessionId: string, seatIds: string[]): Promise<ReservationResult> {
     if (isMockMode) return mockCreateReservation(sessionId, seatIds)
     return (
@@ -1031,6 +1093,7 @@ export const ticketApi = {
 }
 
 export function resetMockData() {
+  mockZoneLogs.clear()
   seatsBySession = new Map()
   reservations = new Map()
   orders = new Map()

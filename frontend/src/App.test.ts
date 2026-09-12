@@ -172,7 +172,7 @@ describe('Phase 9 application shell and routes', () => {
     expect(getSeatLayout).toHaveBeenCalledOnce()
     expect(getSeatLayout).toHaveBeenCalledWith('ses-concert-1001')
     expect(getSeatAvailability).toHaveBeenCalledOnce()
-    expect(getSeatAvailability).toHaveBeenCalledWith('ses-concert-1001')
+    expect(getSeatAvailability).toHaveBeenCalledWith('ses-concert-1001', undefined, expect.objectContaining({zone:expect.any(String)}))
     expect(getSeats).not.toHaveBeenCalled()
     wrapper.unmount()
   })
@@ -214,6 +214,7 @@ describe('Phase 9 application shell and routes', () => {
     expect(getSeatAvailability).toHaveBeenLastCalledWith(
       'ses-concert-1001',
       checkoutAvailabilityCall![1],
+      expect.objectContaining({zone:expect.any(String)}),
     )
     wrapper.unmount()
   })
@@ -230,12 +231,15 @@ describe('Phase 9 application shell and routes', () => {
     const snapshot = await availability.mock.results[0]!.value
     const targetId = wrapper.findComponent({ name: 'SeatSelectionView' }).props('seats').find((seat: { label: string }) => seat.label === 'A01').id
     if (fails) availability.mockRejectedValueOnce(new Error('offline'))
-    else availability.mockResolvedValueOnce(snapshot.map((seat: { id: string; status: string }) => ({ ...seat, status: seat.id === targetId ? 'HELD' : seat.status })))
+    else {
+      if (Array.isArray(snapshot) || snapshot.mode !== 'snapshot') throw new Error('Expected Zone Snapshot')
+      availability.mockResolvedValueOnce({...snapshot,seats:snapshot.seats.map((seat: {id:string;status: "AVAILABLE" | "HELD" | "SOLD"}) => ({...seat,status:seat.id===targetId?'HELD':seat.status}))})
+    }
     const before = availability.mock.calls.length
     await wrapper.get('button[aria-label="A01，可选，¥1,280"]').trigger('click')
     await flushPromises()
     expect(availability).toHaveBeenCalledTimes(before + 1)
-    expect(availability).toHaveBeenLastCalledWith('ses-concert-1001', undefined)
+    expect(availability).toHaveBeenLastCalledWith('ses-concert-1001', undefined, expect.objectContaining({zone:expect.any(String)}))
     expect(layout).toHaveBeenCalledOnce()
     expect(legacy).not.toHaveBeenCalled()
     expect(wrapper.findAll('.selected-seat')).toHaveLength(0)
@@ -251,7 +255,7 @@ describe('Phase 9 application shell and routes', () => {
     wrapper.unmount()
   })
 
-  it('does not poll seat availability and manual refresh makes exactly one contextual request', async () => {
+  it('pauses hidden availability polling and manual refresh makes one contextual request', async () => {
     await authState.login('demo', 'Ticketing123!')
     await router.push('/sessions/ses-concert-1001/seats')
     const availability = vi.spyOn(ticketApi, 'getSeatAvailability')
@@ -265,17 +269,20 @@ describe('Phase 9 application shell and routes', () => {
     const before = availability.mock.calls.length
     const checkoutId = availability.mock.calls.at(-1)![1]
     expect(checkoutId).toEqual(expect.any(String))
+    const hidden = vi.spyOn(document, 'hidden', 'get').mockReturnValue(true)
+    document.dispatchEvent(new Event('visibilitychange'))
     vi.useFakeTimers()
     try {
       await vi.advanceTimersByTimeAsync(16_000)
       expect(availability).toHaveBeenCalledTimes(before)
     } finally {
+      hidden.mockRestore()
       vi.useRealTimers()
     }
     await wrapper.get('button[aria-label="刷新座位状态"]').trigger('click')
     await flushPromises()
     expect(availability).toHaveBeenCalledTimes(before + 1)
-    expect(availability).toHaveBeenLastCalledWith('ses-concert-1001', checkoutId)
+    expect(availability).toHaveBeenLastCalledWith('ses-concert-1001', checkoutId, expect.objectContaining({zone:expect.any(String)}))
     expect(layout).toHaveBeenCalledOnce()
     expect(legacy).not.toHaveBeenCalled()
     wrapper.unmount()
@@ -307,7 +314,7 @@ describe('Phase 9 application shell and routes', () => {
     await wrapper.get('button[aria-label="A02，可选，¥1,280"]').trigger('click')
     await vi.waitFor(() => expect(wrapper.get('button[aria-label="A02，可选，¥1,280"]').attributes('disabled')).toBeUndefined())
     expect(availability).toHaveBeenCalledTimes(before + 1)
-    expect(availability).toHaveBeenLastCalledWith('ses-concert-1001', checkoutId)
+    expect(availability).toHaveBeenLastCalledWith('ses-concert-1001', checkoutId, expect.objectContaining({zone:expect.any(String)}))
     expect(layout).toHaveBeenCalledOnce()
     expect(legacy).not.toHaveBeenCalled()
     expect(wrapper.findAll('.selected-seat')).toHaveLength(1)

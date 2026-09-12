@@ -1,0 +1,8 @@
+{
+  "httpMilliseconds": 80.31640015542507,
+  "pgFullQueries": 1,
+  "pgExecutionMilliseconds": 7.353121999999999,
+  "initLuaMicroseconds": 50343,
+  "seats": 5000,
+  "returnedZoneSeats": 1000
+}

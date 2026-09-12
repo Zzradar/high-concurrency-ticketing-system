@@ -1,0 +1,299 @@
+[
+  {
+    "mode": "legacy",
+    "pgChanges": [
+      {
+        "query": "WITH claimed AS (\n SELECT id, CASE WHEN reconciliation_lease_until IS NOT NULL THEN $4 ELSE $5 END AS recovery_reason\n FROM refunds WHERE status=$6 AND provider_terminal_at IS NULL AND next_reconcile_at <= clock_timestamp()\n AND (reconciliation_lease_until IS NULL OR reconciliation_lease_until <= clock_timestamp())\n ORDER BY next_reconcile_at,id FOR UPDATE SKIP LOCKED LIMIT $1\n ), leased AS (UPDATE refunds r SET provider_retry_count=provider_retry_count+$7,\n reconciliation_lease_token=$3,reconciliation_lease_until=clock_timestamp()+INTERVAL $8,\n next_reconcile_at=clock_timestamp()+LEAST($2,power($9,LEAST(provider_retry_count,$10)))*INTERVAL $11\n FROM claimed WHERE r.id=claimed.id RETURNING r.*,claimed.recovery_reason)\n SELECT leased.*,a.provider_payment_id FROM leased JOIN payment_attempts a ON a.id=leased.payment_attempt_id",
+        "calls": 11
+      },
+      {
+        "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version",
+        "calls": 43
+      },
+      {
+        "query": "SELECT id, status\n        FROM session_seats\n        WHERE session_id = $1\n        ORDER BY id ASC",
+        "calls": 4000
+      },
+      {
+        "query": "WITH claimed AS (\n            SELECT id, provider, object_kind, provider_object_id, local_reference_id\n            FROM payment_provider_events\n            WHERE status = $2 AND next_retry_at <= clock_timestamp()\n            ORDER BY received_at\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), wake_payments AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_payment_id = COALESCE(attempt.provider_payment_id, claimed.provider_object_id),\n                next_reconcile_at = CASE WHEN attempt.status IN ($3,$4)\n                                         THEN clock_timestamp() ELSE $5 END\n            FROM claimed\n            WHERE claimed.object_kind = $6\n              AND claimed.local_reference_id = attempt.id\n              AND claimed.provider = attempt.provider\n              AND (attempt.provider_payment_id IS NULL\n                   OR attempt.provider_payment_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        ), wake_refunds AS (\n            UPDATE refunds AS refund\n            SET next_reconcile_at = CASE WHEN refund.status = $7\n                                         THEN clock_timestamp() ELSE $8 END\n            FROM claimed\n            WHERE claimed.object_kind = $9\n              AND claimed.local_reference_id = refund.id\n              AND claimed.provider = refund.provider\n              AND (refund.provider_refund_id IS NULL\n                   OR refund.provider_refund_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        )\n        UPDATE payment_provider_events AS event\n        SET status = $10, processed_at = clock_timestamp(), last_error = $11\n        FROM claimed\n        WHERE event.id = claimed.id\n          AND (event.provider_object_id IS NULL\n               OR event.id IN (SELECT id FROM wake_payments)\n               OR event.id IN (SELECT id FROM wake_refunds))",
+        "calls": 11
+      },
+      {
+        "query": "WITH claimed AS (\n            SELECT attempt.id,\n                   CASE WHEN attempt.provider_status IN ($4,$5)\n                        THEN $6\n                        WHEN attempt.next_reconcile_at IS NULL THEN $7\n                        WHEN attempt.reconciliation_lease_until IS NOT NULL THEN $8\n                        ELSE $9 END AS recovery_reason\n            FROM payment_attempts AS attempt\n            WHERE attempt.provider <> $10\n              AND attempt.status IN ($11, $12)\n              AND (attempt.reconciliation_lease_until IS NULL\n                   OR attempt.reconciliation_lease_until <= clock_timestamp())\n              AND (attempt.provider_status IN ($13,$14)\n                   OR attempt.next_reconcile_at IS NULL\n                   OR attempt.next_reconcile_at <= clock_timestamp())\n            ORDER BY (attempt.provider_status IN ($15,$16)) DESC NULLS LAST,\n                     attempt.next_reconcile_at NULLS FIRST, attempt.id\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), leased AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_retry_count = provider_retry_count + $17,\n                reconciliation_lease_token = $3,\n                reconciliation_lease_until = clock_timestamp() + INTERVAL $18,\n                next_reconcile_at = clock_timestamp() + LEAST($2, power($19, LEAST(provider_retry_count, $20))) * INTERVAL $21\n            FROM claimed WHERE attempt.id = claimed.id\n            RETURNING attempt.*, claimed.recovery_reason\n        )\n        SELECT leased.id, leased.order_id, leased.provider, leased.provider_payment_id,\n               ticket_order.total_amount, leased.currency, leased.recovery_reason\n        FROM leased JOIN orders AS ticket_order ON ticket_order.id = leased.order_id",
+        "calls": 11
+      },
+      {
+        "query": "SELECT id\n        FROM orders\n        WHERE status = $2\n          AND expires_at <= CURRENT_TIMESTAMP\n        ORDER BY expires_at ASC, id ASC\n        LIMIT $1",
+        "calls": 4
+      },
+      {
+        "query": "SELECT status, COUNT(*) AS count, COALESCE(MAX(EXTRACT($1 FROM clock_timestamp()-created_at)) FILTER (WHERE status=$2),$3) AS age FROM refunds GROUP BY status",
+        "calls": 11
+      }
+    ],
+    "resources": {
+      "phase16-api-backend": {
+        "meanCpuPercent": 276.7942857142857,
+        "peakCpuPercent": 338.78,
+        "memorySamples": [
+          "76.09MiB",
+          "76.38MiB",
+          "78.06MiB",
+          "78.39MiB",
+          "78.3MiB",
+          "78.66MiB",
+          "80.4MiB"
+        ]
+      },
+      "phase16-api-postgres": {
+        "meanCpuPercent": 166.44714285714286,
+        "peakCpuPercent": 221.58,
+        "memorySamples": [
+          "57.94MiB",
+          "59.34MiB",
+          "59.55MiB",
+          "60.07MiB",
+          "60.12MiB",
+          "60.27MiB",
+          "60.64MiB"
+        ]
+      },
+      "phase16-api-redis": {
+        "meanCpuPercent": 53.40428571428571,
+        "peakCpuPercent": 56.98,
+        "memorySamples": [
+          "14.02MiB",
+          "14.55MiB",
+          "14.57MiB",
+          "14.85MiB",
+          "15.14MiB",
+          "15.28MiB",
+          "15.33MiB"
+        ]
+      }
+    }
+  },
+  {
+    "mode": "snapshot",
+    "pgChanges": [
+      {
+        "query": "WITH claimed AS (\n SELECT id, CASE WHEN reconciliation_lease_until IS NOT NULL THEN $4 ELSE $5 END AS recovery_reason\n FROM refunds WHERE status=$6 AND provider_terminal_at IS NULL AND next_reconcile_at <= clock_timestamp()\n AND (reconciliation_lease_until IS NULL OR reconciliation_lease_until <= clock_timestamp())\n ORDER BY next_reconcile_at,id FOR UPDATE SKIP LOCKED LIMIT $1\n ), leased AS (UPDATE refunds r SET provider_retry_count=provider_retry_count+$7,\n reconciliation_lease_token=$3,reconciliation_lease_until=clock_timestamp()+INTERVAL $8,\n next_reconcile_at=clock_timestamp()+LEAST($2,power($9,LEAST(provider_retry_count,$10)))*INTERVAL $11\n FROM claimed WHERE r.id=claimed.id RETURNING r.*,claimed.recovery_reason)\n SELECT leased.*,a.provider_payment_id FROM leased JOIN payment_attempts a ON a.id=leased.payment_attempt_id",
+        "calls": 13
+      },
+      {
+        "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version",
+        "calls": 49
+      },
+      {
+        "query": "SELECT seat.zone,inventory.status,count(*) AS count FROM session_seats inventory\n            JOIN seats seat ON seat.id=inventory.seat_id WHERE inventory.session_id=$1\n            GROUP BY seat.zone,inventory.status ORDER BY min(seat.row_no),min(seat.seat_no),seat.zone",
+        "calls": 26
+      },
+      {
+        "query": "SELECT inventory.id,inventory.status FROM session_seats inventory\n            JOIN seats seat ON seat.id=inventory.seat_id\n            WHERE inventory.session_id=$1 AND seat.zone=$2 ORDER BY inventory.id",
+        "calls": 26
+      },
+      {
+        "query": "WITH claimed AS (\n            SELECT id, provider, object_kind, provider_object_id, local_reference_id\n            FROM payment_provider_events\n            WHERE status = $2 AND next_retry_at <= clock_timestamp()\n            ORDER BY received_at\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), wake_payments AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_payment_id = COALESCE(attempt.provider_payment_id, claimed.provider_object_id),\n                next_reconcile_at = CASE WHEN attempt.status IN ($3,$4)\n                                         THEN clock_timestamp() ELSE $5 END\n            FROM claimed\n            WHERE claimed.object_kind = $6\n              AND claimed.local_reference_id = attempt.id\n              AND claimed.provider = attempt.provider\n              AND (attempt.provider_payment_id IS NULL\n                   OR attempt.provider_payment_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        ), wake_refunds AS (\n            UPDATE refunds AS refund\n            SET next_reconcile_at = CASE WHEN refund.status = $7\n                                         THEN clock_timestamp() ELSE $8 END\n            FROM claimed\n            WHERE claimed.object_kind = $9\n              AND claimed.local_reference_id = refund.id\n              AND claimed.provider = refund.provider\n              AND (refund.provider_refund_id IS NULL\n                   OR refund.provider_refund_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        )\n        UPDATE payment_provider_events AS event\n        SET status = $10, processed_at = clock_timestamp(), last_error = $11\n        FROM claimed\n        WHERE event.id = claimed.id\n          AND (event.provider_object_id IS NULL\n               OR event.id IN (SELECT id FROM wake_payments)\n               OR event.id IN (SELECT id FROM wake_refunds))",
+        "calls": 13
+      },
+      {
+        "query": "WITH claimed AS (\n            SELECT attempt.id,\n                   CASE WHEN attempt.provider_status IN ($4,$5)\n                        THEN $6\n                        WHEN attempt.next_reconcile_at IS NULL THEN $7\n                        WHEN attempt.reconciliation_lease_until IS NOT NULL THEN $8\n                        ELSE $9 END AS recovery_reason\n            FROM payment_attempts AS attempt\n            WHERE attempt.provider <> $10\n              AND attempt.status IN ($11, $12)\n              AND (attempt.reconciliation_lease_until IS NULL\n                   OR attempt.reconciliation_lease_until <= clock_timestamp())\n              AND (attempt.provider_status IN ($13,$14)\n                   OR attempt.next_reconcile_at IS NULL\n                   OR attempt.next_reconcile_at <= clock_timestamp())\n            ORDER BY (attempt.provider_status IN ($15,$16)) DESC NULLS LAST,\n                     attempt.next_reconcile_at NULLS FIRST, attempt.id\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), leased AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_retry_count = provider_retry_count + $17,\n                reconciliation_lease_token = $3,\n                reconciliation_lease_until = clock_timestamp() + INTERVAL $18,\n                next_reconcile_at = clock_timestamp() + LEAST($2, power($19, LEAST(provider_retry_count, $20))) * INTERVAL $21\n            FROM claimed WHERE attempt.id = claimed.id\n            RETURNING attempt.*, claimed.recovery_reason\n        )\n        SELECT leased.id, leased.order_id, leased.provider, leased.provider_payment_id,\n               ticket_order.total_amount, leased.currency, leased.recovery_reason\n        FROM leased JOIN orders AS ticket_order ON ticket_order.id = leased.order_id",
+        "calls": 13
+      },
+      {
+        "query": "SELECT id\n        FROM orders\n        WHERE status = $2\n          AND expires_at <= CURRENT_TIMESTAMP\n        ORDER BY expires_at ASC, id ASC\n        LIMIT $1",
+        "calls": 5
+      },
+      {
+        "query": "SELECT status, COUNT(*) AS count, COALESCE(MAX(EXTRACT($1 FROM clock_timestamp()-created_at)) FILTER (WHERE status=$2),$3) AS age FROM refunds GROUP BY status",
+        "calls": 13
+      }
+    ],
+    "resources": {
+      "phase16-api-backend": {
+        "meanCpuPercent": 36.29625,
+        "peakCpuPercent": 46.32,
+        "memorySamples": [
+          "79.58MiB",
+          "80.31MiB",
+          "80.3MiB",
+          "80.62MiB",
+          "80.83MiB",
+          "80.88MiB",
+          "81.48MiB",
+          "81.52MiB"
+        ]
+      },
+      "phase16-api-postgres": {
+        "meanCpuPercent": 0.13625,
+        "peakCpuPercent": 0.19,
+        "memorySamples": [
+          "57.6MiB",
+          "57.74MiB",
+          "58.05MiB",
+          "58.07MiB",
+          "58.16MiB",
+          "58.23MiB",
+          "58MiB"
+        ]
+      },
+      "phase16-api-redis": {
+        "meanCpuPercent": 85.65,
+        "peakCpuPercent": 98.39,
+        "memorySamples": [
+          "12.49MiB",
+          "13.63MiB",
+          "14.36MiB",
+          "14.75MiB",
+          "15.32MiB",
+          "15.74MiB",
+          "15.89MiB",
+          "16.1MiB"
+        ]
+      }
+    }
+  },
+  {
+    "mode": "delta",
+    "pgChanges": [
+      {
+        "query": "WITH claimed AS (\n SELECT id, CASE WHEN reconciliation_lease_until IS NOT NULL THEN $4 ELSE $5 END AS recovery_reason\n FROM refunds WHERE status=$6 AND provider_terminal_at IS NULL AND next_reconcile_at <= clock_timestamp()\n AND (reconciliation_lease_until IS NULL OR reconciliation_lease_until <= clock_timestamp())\n ORDER BY next_reconcile_at,id FOR UPDATE SKIP LOCKED LIMIT $1\n ), leased AS (UPDATE refunds r SET provider_retry_count=provider_retry_count+$7,\n reconciliation_lease_token=$3,reconciliation_lease_until=clock_timestamp()+INTERVAL $8,\n next_reconcile_at=clock_timestamp()+LEAST($2,power($9,LEAST(provider_retry_count,$10)))*INTERVAL $11\n FROM claimed WHERE r.id=claimed.id RETURNING r.*,claimed.recovery_reason)\n SELECT leased.*,a.provider_payment_id FROM leased JOIN payment_attempts a ON a.id=leased.payment_attempt_id",
+        "calls": 12
+      },
+      {
+        "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version",
+        "calls": 48
+      },
+      {
+        "query": "WITH claimed AS (\n            SELECT id, provider, object_kind, provider_object_id, local_reference_id\n            FROM payment_provider_events\n            WHERE status = $2 AND next_retry_at <= clock_timestamp()\n            ORDER BY received_at\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), wake_payments AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_payment_id = COALESCE(attempt.provider_payment_id, claimed.provider_object_id),\n                next_reconcile_at = CASE WHEN attempt.status IN ($3,$4)\n                                         THEN clock_timestamp() ELSE $5 END\n            FROM claimed\n            WHERE claimed.object_kind = $6\n              AND claimed.local_reference_id = attempt.id\n              AND claimed.provider = attempt.provider\n              AND (attempt.provider_payment_id IS NULL\n                   OR attempt.provider_payment_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        ), wake_refunds AS (\n            UPDATE refunds AS refund\n            SET next_reconcile_at = CASE WHEN refund.status = $7\n                                         THEN clock_timestamp() ELSE $8 END\n            FROM claimed\n            WHERE claimed.object_kind = $9\n              AND claimed.local_reference_id = refund.id\n              AND claimed.provider = refund.provider\n              AND (refund.provider_refund_id IS NULL\n                   OR refund.provider_refund_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        )\n        UPDATE payment_provider_events AS event\n        SET status = $10, processed_at = clock_timestamp(), last_error = $11\n        FROM claimed\n        WHERE event.id = claimed.id\n          AND (event.provider_object_id IS NULL\n               OR event.id IN (SELECT id FROM wake_payments)\n               OR event.id IN (SELECT id FROM wake_refunds))",
+        "calls": 12
+      },
+      {
+        "query": "WITH claimed AS (\n            SELECT attempt.id,\n                   CASE WHEN attempt.provider_status IN ($4,$5)\n                        THEN $6\n                        WHEN attempt.next_reconcile_at IS NULL THEN $7\n                        WHEN attempt.reconciliation_lease_until IS NOT NULL THEN $8\n                        ELSE $9 END AS recovery_reason\n            FROM payment_attempts AS attempt\n            WHERE attempt.provider <> $10\n              AND attempt.status IN ($11, $12)\n              AND (attempt.reconciliation_lease_until IS NULL\n                   OR attempt.reconciliation_lease_until <= clock_timestamp())\n              AND (attempt.provider_status IN ($13,$14)\n                   OR attempt.next_reconcile_at IS NULL\n                   OR attempt.next_reconcile_at <= clock_timestamp())\n            ORDER BY (attempt.provider_status IN ($15,$16)) DESC NULLS LAST,\n                     attempt.next_reconcile_at NULLS FIRST, attempt.id\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), leased AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_retry_count = provider_retry_count + $17,\n                reconciliation_lease_token = $3,\n                reconciliation_lease_until = clock_timestamp() + INTERVAL $18,\n                next_reconcile_at = clock_timestamp() + LEAST($2, power($19, LEAST(provider_retry_count, $20))) * INTERVAL $21\n            FROM claimed WHERE attempt.id = claimed.id\n            RETURNING attempt.*, claimed.recovery_reason\n        )\n        SELECT leased.id, leased.order_id, leased.provider, leased.provider_payment_id,\n               ticket_order.total_amount, leased.currency, leased.recovery_reason\n        FROM leased JOIN orders AS ticket_order ON ticket_order.id = leased.order_id",
+        "calls": 12
+      },
+      {
+        "query": "SELECT id\n        FROM orders\n        WHERE status = $2\n          AND expires_at <= CURRENT_TIMESTAMP\n        ORDER BY expires_at ASC, id ASC\n        LIMIT $1",
+        "calls": 5
+      },
+      {
+        "query": "SELECT status, COUNT(*) AS count, COALESCE(MAX(EXTRACT($1 FROM clock_timestamp()-created_at)) FILTER (WHERE status=$2),$3) AS age FROM refunds GROUP BY status",
+        "calls": 12
+      }
+    ],
+    "resources": {
+      "phase16-api-backend": {
+        "meanCpuPercent": 11.20875,
+        "peakCpuPercent": 19.64,
+        "memorySamples": [
+          "79.22MiB",
+          "81.21MiB",
+          "81.28MiB",
+          "81.31MiB",
+          "81.3MiB",
+          "81.45MiB",
+          "81.59MiB",
+          "81.67MiB"
+        ]
+      },
+      "phase16-api-postgres": {
+        "meanCpuPercent": 0.10375000000000001,
+        "peakCpuPercent": 0.19,
+        "memorySamples": [
+          "57.84MiB",
+          "57.86MiB",
+          "57.96MiB",
+          "58.02MiB",
+          "58.04MiB",
+          "58.06MiB",
+          "58.09MiB",
+          "58.18MiB"
+        ]
+      },
+      "phase16-api-redis": {
+        "meanCpuPercent": 9.04875,
+        "peakCpuPercent": 14.85,
+        "memorySamples": [
+          "10.06MiB",
+          "10.07MiB",
+          "10.19MiB",
+          "10.83MiB",
+          "8.508MiB",
+          "9.305MiB",
+          "9.531MiB",
+          "9.875MiB"
+        ]
+      }
+    }
+  },
+  {
+    "mode": "controlled",
+    "pgChanges": [
+      {
+        "query": "WITH claimed AS (\n SELECT id, CASE WHEN reconciliation_lease_until IS NOT NULL THEN $4 ELSE $5 END AS recovery_reason\n FROM refunds WHERE status=$6 AND provider_terminal_at IS NULL AND next_reconcile_at <= clock_timestamp()\n AND (reconciliation_lease_until IS NULL OR reconciliation_lease_until <= clock_timestamp())\n ORDER BY next_reconcile_at,id FOR UPDATE SKIP LOCKED LIMIT $1\n ), leased AS (UPDATE refunds r SET provider_retry_count=provider_retry_count+$7,\n reconciliation_lease_token=$3,reconciliation_lease_until=clock_timestamp()+INTERVAL $8,\n next_reconcile_at=clock_timestamp()+LEAST($2,power($9,LEAST(provider_retry_count,$10)))*INTERVAL $11\n FROM claimed WHERE r.id=claimed.id RETURNING r.*,claimed.recovery_reason)\n SELECT leased.*,a.provider_payment_id FROM leased JOIN payment_attempts a ON a.id=leased.payment_attempt_id",
+        "calls": 11
+      },
+      {
+        "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version",
+        "calls": 45
+      },
+      {
+        "query": "WITH claimed AS (\n            SELECT id, provider, object_kind, provider_object_id, local_reference_id\n            FROM payment_provider_events\n            WHERE status = $2 AND next_retry_at <= clock_timestamp()\n            ORDER BY received_at\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), wake_payments AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_payment_id = COALESCE(attempt.provider_payment_id, claimed.provider_object_id),\n                next_reconcile_at = CASE WHEN attempt.status IN ($3,$4)\n                                         THEN clock_timestamp() ELSE $5 END\n            FROM claimed\n            WHERE claimed.object_kind = $6\n              AND claimed.local_reference_id = attempt.id\n              AND claimed.provider = attempt.provider\n              AND (attempt.provider_payment_id IS NULL\n                   OR attempt.provider_payment_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        ), wake_refunds AS (\n            UPDATE refunds AS refund\n            SET next_reconcile_at = CASE WHEN refund.status = $7\n                                         THEN clock_timestamp() ELSE $8 END\n            FROM claimed\n            WHERE claimed.object_kind = $9\n              AND claimed.local_reference_id = refund.id\n              AND claimed.provider = refund.provider\n              AND (refund.provider_refund_id IS NULL\n                   OR refund.provider_refund_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        )\n        UPDATE payment_provider_events AS event\n        SET status = $10, processed_at = clock_timestamp(), last_error = $11\n        FROM claimed\n        WHERE event.id = claimed.id\n          AND (event.provider_object_id IS NULL\n               OR event.id IN (SELECT id FROM wake_payments)\n               OR event.id IN (SELECT id FROM wake_refunds))",
+        "calls": 11
+      },
+      {
+        "query": "WITH claimed AS (\n            SELECT attempt.id,\n                   CASE WHEN attempt.provider_status IN ($4,$5)\n                        THEN $6\n                        WHEN attempt.next_reconcile_at IS NULL THEN $7\n                        WHEN attempt.reconciliation_lease_until IS NOT NULL THEN $8\n                        ELSE $9 END AS recovery_reason\n            FROM payment_attempts AS attempt\n            WHERE attempt.provider <> $10\n              AND attempt.status IN ($11, $12)\n              AND (attempt.reconciliation_lease_until IS NULL\n                   OR attempt.reconciliation_lease_until <= clock_timestamp())\n              AND (attempt.provider_status IN ($13,$14)\n                   OR attempt.next_reconcile_at IS NULL\n                   OR attempt.next_reconcile_at <= clock_timestamp())\n            ORDER BY (attempt.provider_status IN ($15,$16)) DESC NULLS LAST,\n                     attempt.next_reconcile_at NULLS FIRST, attempt.id\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), leased AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_retry_count = provider_retry_count + $17,\n                reconciliation_lease_token = $3,\n                reconciliation_lease_until = clock_timestamp() + INTERVAL $18,\n                next_reconcile_at = clock_timestamp() + LEAST($2, power($19, LEAST(provider_retry_count, $20))) * INTERVAL $21\n            FROM claimed WHERE attempt.id = claimed.id\n            RETURNING attempt.*, claimed.recovery_reason\n        )\n        SELECT leased.id, leased.order_id, leased.provider, leased.provider_payment_id,\n               ticket_order.total_amount, leased.currency, leased.recovery_reason\n        FROM leased JOIN orders AS ticket_order ON ticket_order.id = leased.order_id",
+        "calls": 11
+      },
+      {
+        "query": "SELECT id\n        FROM orders\n        WHERE status = $2\n          AND expires_at <= CURRENT_TIMESTAMP\n        ORDER BY expires_at ASC, id ASC\n        LIMIT $1",
+        "calls": 4
+      },
+      {
+        "query": "SELECT status, COUNT(*) AS count, COALESCE(MAX(EXTRACT($1 FROM clock_timestamp()-created_at)) FILTER (WHERE status=$2),$3) AS age FROM refunds GROUP BY status",
+        "calls": 11
+      }
+    ],
+    "resources": {
+      "phase16-api-backend": {
+        "meanCpuPercent": 10.67,
+        "peakCpuPercent": 12.39,
+        "memorySamples": [
+          "81.01MiB",
+          "81.35MiB",
+          "81.56MiB",
+          "81.59MiB",
+          "81.69MiB",
+          "81.7MiB",
+          "81MiB"
+        ]
+      },
+      "phase16-api-postgres": {
+        "meanCpuPercent": 0.14,
+        "peakCpuPercent": 0.21,
+        "memorySamples": [
+          "57.59MiB",
+          "57.62MiB",
+          "57.89MiB",
+          "57.8MiB",
+          "58.19MiB",
+          "58.46MiB",
+          "58.48MiB"
+        ]
+      },
+      "phase16-api-redis": {
+        "meanCpuPercent": 10.272857142857143,
+        "peakCpuPercent": 15.11,
+        "memorySamples": [
+          "10.05MiB",
+          "11.04MiB",
+          "9.484MiB",
+          "9.656MiB",
+          "9.938MiB",
+          "9.977MiB",
+          "9.996MiB"
+        ]
+      }
+    }
+  }
+]

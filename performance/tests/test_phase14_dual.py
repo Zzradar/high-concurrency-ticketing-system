@@ -136,8 +136,10 @@ class ConfigTests(unittest.TestCase):
             self.assertTrue(argv[-1].endswith('stats?stream=false&one-shot=true'))
             return json.dumps({'memory_stats':{'usage':100,'limit':1000,'stats':{'inactive_file':10}},
                                'cpu_stats':{'cpu_usage':{'total_usage':10},'system_cpu_usage':100,'online_cpus':8},'read':'now'}).encode()
-        with patch('subprocess.check_output',side_effect=command),patch('phase14_dual_sampling.HOST_PROGRAM','d={"time":1}'):
+        with patch('subprocess.check_output',side_effect=command),patch('phase14_dual_sampling.HOST_PROGRAM','d={"time":1}'),patch('phase14_memory.cgroup_memory',return_value={'containerId':item['Id']}) as memory:
             result=probe_host('load','phase14-formal-load',True)
+        memory.assert_called_once_with(item)
+        self.assertEqual(result['host']['generatorCgroups'],[{'containerId':item['Id']}])
         self.assertEqual(result['stats'][0]['MemPerc'],'9.0%')
         self.assertFalse(any('stats' in argv for argv in calls))
         self.assertTrue(all(argv[:2]==['sudo','-n'] for argv in calls))

@@ -711,3 +711,26 @@ Backend Attempt FAILED/SUCCEEDED 后统一销毁旧 Element、清 action 和旧�
 自动刷新成功后提示“所选座位刚被其他用户临时锁定，座位状态已刷新，请重新选择。”刷新失败后提示“所选座位刚被其他用户临时锁定，最新座位状态暂未取得，请点击‘刷新座位状态’后重试。”同时保留最后成功快照、合理的已选座位和非阻断警告；首次失败请求的新增选择不会被保存为成功结果。多座位请求可能因其他座位发生冲突，故显示始终取自完整动态快照。其他错误继续走通用处理，不推断为临时竞争。
 
 本轮不改变后端接口和临时占座语义，没有增加座位定时轮询、WebSocket（双向实时连接）、SSE（服务端事件推送）、增量协议或服务端缓存。根目录新增的真实端到端用例使用两个不同账户：竞争者先读取可选座位，持有者通过真实接口占座，竞争者点击旧快照后收到 409；测试检查动态请求只增加一次、页面禁用锁定座位、持有者是唯一新增成功会话，而 PostgreSQL 正式座位仍为 AVAILABLE。测试结束主动放弃持有者会话释放临时占座，不等待到期。
+
+
+## Phase16 Zone Snapshot / Delta（当前选座页）
+
+本节取代上文历史阶段“未增加轮询/增量协议”的当前行为说明。静态 seat-layout 仍全场加载，动态 Availability 首次只请求第一个真实 Zone。`GET /sessions/{id}/seat-availability?zone=...` 返回：
+
+```json
+{"sessionId":"S","zone":"A","mode":"snapshot","generation":"opaque","cursor":"123-0","reset":false,"degraded":false,"zones":[{"zone":"A","total":1,"available":1,"held":0,"sold":0}],"seats":[{"id":"seat1","status":"AVAILABLE"}]}
+```
+
+随后请求同一路径并带 `generation=opaque&since=123-0`：
+
+```json
+{"sessionId":"S","zone":"A","mode":"delta","generation":"opaque","cursor":"124-0","reset":false,"degraded":false,"hasMore":false,"zones":[{"zone":"A","total":1,"available":0,"held":1,"sold":0}],"changes":[{"id":"seat1","status":"HELD"}]}
+```
+
+zones 是全场各区公共汇总；seats/changes 只含目标区。认证且 checkoutSessionId 归属当前用户和场次时，该 owner 的临时 Hold 可见 AVAILABLE，正式 HELD/SOLD 始终优先；响应没有 owner/userId。可选 checkoutSessionId 不替代认证。
+
+无变化 changes=[] 且 cursor 不变；hasMore=true 立即从返回 cursor 继续。generation不匹配/日志裁剪返回完整 reset Snapshot。Redis不可用返回 degraded=true、reset=true、generation=null、cursor=null 的 PG Snapshot，下一次不能沿用旧游标。
+
+参数不成对/非法StreamID为400 INVALID_ARGUMENT；未知场次/区域为404 SESSION_NOT_FOUND/ZONE_NOT_FOUND；初始化等待耗尽为503 SEAT_AVAILABILITY_INITIALIZING，compute队列满为503 SEAT_MAP_BUSY。无zone仍返回原 `{sessionId,seats}`，兼容调用者不必迁移。
+
+页面每2s串行轮询，degraded5s；隐藏暂停，可见/focus恢复。区切换只加载该区，保留跨区已选；认证/Checkout上下文变化立即 Snapshot 当前及选中席所属区，并丢弃旧context响应。恢复会话的label来自静态layout。完整实现和验收见 [Phase16记录](phase16_availability_read_model_implementation.md)。

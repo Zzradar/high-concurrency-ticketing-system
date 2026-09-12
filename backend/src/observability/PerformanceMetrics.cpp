@@ -70,6 +70,8 @@ struct MetricsState
     std::shared_ptr<CounterCollector> refundConflicts;
     std::shared_ptr<CounterCollector> refundFailures;
     std::shared_ptr<GaugeCollector> refundAge;
+    std::shared_ptr<CounterCollector> availabilityEvents;
+    std::shared_ptr<HistogramCollector> availabilityDuration, availabilitySeats;
 };
 
 std::atomic<MetricsState *> seatMapMetrics{nullptr};
@@ -273,6 +275,9 @@ void PerformanceMetrics::registerWithApplication()
             "ticketing_refund_lifecycle_failures_total");
         state->refundAge = exporter->getCollector<drogon::monitoring::Gauge>(
             "ticketing_refund_processing_age_seconds");
+        state->availabilityEvents=exporter->getCollector<drogon::monitoring::Counter>("ticketing_availability_events_total");
+        state->availabilityDuration=exporter->getCollector<drogon::monitoring::Histogram>("ticketing_availability_duration_seconds");
+        state->availabilitySeats=exporter->getCollector<drogon::monitoring::Histogram>("ticketing_availability_returned_seats");
         if (!state->requests || !state->durations || !state->inFlight ||
             !state->passwordHashQueueDepth ||
             !state->passwordHashActiveWorkers ||
@@ -487,5 +492,14 @@ std::shared_ptr<SeatMapComputeObserver> PerformanceMetrics::seatMapComputeObserv
     // Safe to create before beginning advice publishes metrics; ordinary
     // configuration stays no-op. No collector registration from workers.
     return std::make_shared<SeatMapMetricsObserver>();
+}
+void PerformanceMetrics::availability(std::string_view operation,std::string_view result,double seconds,double seats)
+{
+    if(auto *s=seatMapMetrics.load(std::memory_order_acquire))
+    {
+        if(s->availabilityEvents)s->availabilityEvents->metric({std::string(operation),std::string(result)})->increment();
+        if(s->availabilityDuration)s->availabilityDuration->metric({std::string(operation)},kDurationBuckets,std::chrono::duration<double>{0},1)->observe(seconds);
+        if(s->availabilitySeats)s->availabilitySeats->metric({std::string(operation)},std::vector<double>{0,1,2,6,10,50,100,500,1000,5000},std::chrono::duration<double>{0},1)->observe(seats);
+    }
 }
 }  // namespace ticketing

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { ArrowLeft, CalendarDays, MapPin } from '@lucide/vue'
 import PageBreadcrumbs from '../components/PageBreadcrumbs.vue'
 import PageState from '../components/PageState.vue'
@@ -7,13 +7,16 @@ import SeatGrid from '../components/SeatGrid.vue'
 import RecoverableCheckoutPanel from '../components/RecoverableCheckoutPanel.vue'
 import SelectedSeats from '../components/SelectedSeats.vue'
 import { routeNames } from '../navigation'
-import type { CheckoutSession, Seat, TicketEvent, TicketSession } from '../types'
-import { countSeatStatuses, summarizeSeatZones } from '../utils/seatMap'
+import type { CheckoutSession, Seat, SeatStatic, SeatZoneAvailabilitySummary, TicketEvent, TicketSession } from '../types'
+import { countSeatStatuses } from '../utils/seatMap'
 
 const props = defineProps<{
   event: TicketEvent
   session: TicketSession
   seats: Seat[]
+  seatLayout: SeatStatic[]
+  activeZone: string
+  zoneSummaries: SeatZoneAvailabilitySummary[]
   selectedSeats: Seat[]
   selectedSeatIds: string[]
   checkoutSession: CheckoutSession | null
@@ -30,6 +33,7 @@ const props = defineProps<{
 }>()
 
 defineEmits<{
+  changeZone: [zone: string]
   back: []
   toggle: [seat: Seat]
   reserve: []
@@ -41,20 +45,12 @@ defineEmits<{
   retryConfirm: []
 }>()
 
-const activeZone = ref('')
-const zoneSummaries = computed(() => summarizeSeatZones(props.seats))
-const overallCounts = computed(() => countSeatStatuses(props.seats))
-const visibleSeats = computed(() =>
-  activeZone.value ? props.seats.filter((seat) => seat.zone === activeZone.value) : props.seats,
-)
+const overallCounts = computed(() => props.zoneSummaries.reduce((counts,zone) => ({
+  total:counts.total+zone.total,available:counts.available+zone.available,held:counts.held+zone.held,sold:counts.sold+zone.sold,
+}),{total:0,available:0,held:0,sold:0}))
+const visibleSeats = computed(() => props.seats)
 const visibleCounts = computed(() => countSeatStatuses(visibleSeats.value))
-const currentZoneName = computed(() => activeZone.value || '全部区域')
-
-watch(zoneSummaries, (zones) => {
-  if (activeZone.value && !zones.some((zone) => zone.zone === activeZone.value)) {
-    activeZone.value = ''
-  }
-})
+const currentZoneName = computed(() => props.activeZone)
 </script>
 
 <template>
@@ -92,20 +88,12 @@ watch(zoneSummaries, (zones) => {
       </div>
       <div class="zone-browser" role="group" aria-label="按座位区域浏览">
         <button
-          type="button"
-          :class="{ 'is-active': !activeZone }"
-          :aria-pressed="!activeZone"
-          @click="activeZone = ''"
-        >
-          <strong>全部</strong><span>可选 {{ overallCounts.available }} · 共 {{ overallCounts.total }}</span>
-        </button>
-        <button
           v-for="zone in zoneSummaries"
           :key="zone.zone"
           type="button"
           :class="{ 'is-active': activeZone === zone.zone }"
           :aria-pressed="activeZone === zone.zone"
-          @click="activeZone = zone.zone"
+          @click="$emit('changeZone', zone.zone)"
         >
           <strong>{{ zone.zone }}</strong><span>可选 {{ zone.available }} · 共 {{ zone.total }}</span>
         </button>
@@ -129,7 +117,7 @@ watch(zoneSummaries, (zones) => {
     <RecoverableCheckoutPanel
       v-else-if="recoverableCheckoutSessions.length"
       :sessions="recoverableCheckoutSessions"
-      :seats="seats"
+      :seats="seatLayout"
       @continue="$emit('continueCheckout', $event)"
       @abandon="$emit('abandonCheckout', $event)"
       @start-new="$emit('startNewCheckout')"

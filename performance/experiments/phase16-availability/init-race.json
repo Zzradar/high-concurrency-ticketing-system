@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "pgSnapshotSeats": 5000,
+  "preexistingHoldImported": true,
+  "postSnapshotHoldImported": true,
+  "initializingOutboxRetained": true,
+  "postPublicationProjectionConverged": true
+}

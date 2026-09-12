@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Clock3, RotateCcw, Trash2 } from '@lucide/vue'
-import type { CheckoutSession, Seat } from '../types'
+import type { CheckoutSession, SeatStatic } from '../types'
 
 const props = defineProps<{
   sessions: CheckoutSession[]
-  seats: Seat[]
+  seats: SeatStatic[]
 }>()
 
 defineEmits<{

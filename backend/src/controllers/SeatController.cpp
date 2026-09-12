@@ -1,3 +1,7 @@
+#include "services/SeatAvailabilityReadModel.h"
+#include "services/CheckoutOwnershipCache.h"
+#include <charconv>
+#include <cstdint>
 #include "controllers/SeatController.h"
 
 #include "common/ApiResponse.h"
@@ -77,6 +81,36 @@ void SeatController::listSeatAvailability(
     std::string sessionId) const
 {
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
+    if (request->getParameters().count("zone"))
+    {
+        const auto zone=request->getParameter("zone");
+        const auto generation=request->getParameter("generation");
+        const auto since=request->getParameter("since");
+        const bool hasGeneration=request->getParameters().count("generation");
+        const bool hasSince=request->getParameters().count("since");
+        auto validCursor=[](const std::string &value){
+            const auto split=value.find('-');
+            if(split==std::string::npos || split==0 || split+1==value.size())return false;
+            for(const auto part:{std::string_view(value).substr(0,split),std::string_view(value).substr(split+1)})
+            {
+                if(part.size()>1 && part.front()=='0')return false;
+                std::uint64_t number{};
+                const auto parsed=std::from_chars(part.data(),part.data()+part.size(),number);
+                if(parsed.ec!=std::errc{} || parsed.ptr!=part.data()+part.size())return false;
+            }
+            return true;
+        };
+        if(hasGeneration!=hasSince || (hasSince && (generation.empty() || !validCursor(since))))
+        {
+            (*callbackPtr)(ticketing::makeErrorResponse(drogon::k400BadRequest,"INVALID_ARGUMENT","generation and valid since must be supplied together"));
+            return;
+        }
+        resolveOwnCheckout(request,sessionId,
+            [sessionId,zone,generation,since,callbackPtr](std::string own){
+                ticketing::SeatAvailabilityReadModel::read(sessionId,zone,std::move(own),generation,since,*callbackPtr);
+            },[callbackPtr]{(*callbackPtr)(ticketing::makeErrorResponse(drogon::k500InternalServerError,"INTERNAL_ERROR","Internal server error"));});
+        return;
+    }
     resolveOwnCheckout(
         request, sessionId,
         [this, sessionId, callbackPtr](
@@ -121,18 +155,24 @@ void SeatController::resolveOwnCheckout(
                 onResolved({});
                 return;
             }
+            const auto userId=auth.session->userId;
+            auto onCacheHit=onResolved;
+            ticketing::CheckoutOwnershipCache::lookup(checkoutSessionId,userId,sessionId,std::move(onCacheHit),
+                [this,sessionId,checkoutSessionId,userId,onResolved=std::move(onResolved),onError=std::move(onError)]() mutable {
             checkoutRepository_.findByIdForUser(
                 drogon::app().getDbClient(), checkoutSessionId,
-                auth.session->userId,
-                [sessionId, checkoutSessionId,
+                userId,
+                [sessionId, checkoutSessionId, userId,
                  onResolved = std::move(onResolved)](
                     std::optional<ticketing::CheckoutSessionRecord> checkout) mutable {
                     const bool ownsRequestedSession =
                         checkout && checkout->value.sessionId == sessionId;
+                    if (ownsRequestedSession) ticketing::CheckoutOwnershipCache::store(checkoutSessionId,userId,sessionId);
                     onResolved(ownsRequestedSession ? checkoutSessionId
                                                     : std::string{});
                 },
                 std::move(onError));
+                });
         });
 }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authState, checkoutLocatorKey } from '../auth/authState'
 import { ticketApi, TicketApiError } from '../api/ticketApi'
@@ -7,9 +7,9 @@ import PageBreadcrumbs from '../components/PageBreadcrumbs.vue'
 import PageState from '../components/PageState.vue'
 import { routeNames, setPageTitle } from '../navigation'
 import { requestNotificationRefresh, showNotice } from '../uiSignals'
-import { mergeSeatSnapshot } from '../utils/seatMap'
+import { ZoneAvailabilityState } from '../utils/zoneAvailability'
 import SeatSelectionView from '../views/SeatSelectionView.vue'
-import type { CheckoutSession, Seat, SeatStatic, TicketEvent, TicketOrder, TicketSession } from '../types'
+import type { CheckoutSession, Seat, SeatStatic, TicketEvent, TicketOrder, TicketSession, SeatZoneAvailabilitySummary } from '../types'
 
 const route = useRoute()
 const router = useRouter()
@@ -31,6 +31,62 @@ const submitUncertain = ref(false)
 const error = ref('')
 const availabilityWarning = ref('')
 let pollingGeneration = 0
+const activeZone = ref('')
+const zoneSummaries = ref<SeatZoneAvailabilitySummary[]>([])
+let availability = new ZoneAvailabilityState([])
+let availabilityEpoch = 0
+let pageLoadEpoch = 0
+let availabilityTimer: ReturnType<typeof setTimeout> | undefined
+let ownContext = ''
+let disposed = false
+const zoneRequests = new Map<string, Promise<boolean>>()
+
+function stopAvailabilityTimer() {
+  if (availabilityTimer !== undefined) clearTimeout(availabilityTimer)
+  availabilityTimer = undefined
+}
+function scheduleAvailability() {
+  stopAvailabilityTimer()
+  if (disposed || document.hidden || !seatMapLoaded.value || !activeZone.value) return
+  const slow = availability.sync.get(activeZone.value)?.degraded
+  availabilityTimer = setTimeout(() => { void refreshSeats() }, slow ? 5000 : 2000)
+}
+async function syncZone(zone: string, force: boolean, epoch: number): Promise<boolean> {
+  while (zoneRequests.has(zone)) {
+    try { await zoneRequests.get(zone) } catch { /* next request may recover */ }
+  }
+  if (disposed || epoch !== availabilityEpoch || !session.value) return false
+  const sessionId = session.value.id
+  const owner = checkout.value?.id
+  const work = (async () => {
+    let more = true
+    while (more) {
+      const state = availability.sync.get(zone)
+      const cursor = !force && state?.generation && state.cursor ? {generation:state.generation,since:state.cursor} : {}
+      const response = await ticketApi.getSeatAvailability(sessionId,owner,{zone,...cursor})
+      if (disposed || epoch !== availabilityEpoch || session.value?.id !== sessionId) return false
+      if (response.sessionId !== sessionId || response.zone !== zone) throw new Error('Mismatched zone response')
+      availability.apply(response)
+      seats.value = availability.seats()
+      zoneSummaries.value = availability.summaries
+      more = response.hasMore
+      force = false
+    }
+    return true
+  })()
+  zoneRequests.set(zone,work)
+  try { return await work } finally { if (zoneRequests.get(zone) === work) zoneRequests.delete(zone) }
+}
+async function changeZone(zone: string) {
+  if (zone === activeZone.value) return
+  availabilityEpoch++
+  activeZone.value = zone
+  await refreshSeats()
+}
+function visibilityChanged() {
+  if (document.hidden) stopAvailabilityTimer()
+  else void refreshSeats()
+}
 
 const selectedSeats = computed(() => seats.value.filter((seat) => selectedSeatIds.value.includes(seat.id)))
 const editingDisabled = computed(() => refreshing.value || syncing.value || confirming.value || submittingPolling.value || checkout.value?.status !== 'SELECTING' && !!checkout.value)
@@ -47,21 +103,27 @@ function locatorClear() {
 }
 
 async function refreshSeats() {
-  if (!session.value || !seatMapLoaded.value) return false
+  if (!session.value || !seatMapLoaded.value || !activeZone.value || disposed) return false
+  stopAvailabilityTimer()
+  const context = (authState.currentUser.value?.id ?? '') + '|' + (checkout.value?.id ?? '')
+  const force = context !== ownContext
+  if (force) { ownContext = context; availabilityEpoch++; availability.sync.clear() }
+  const epoch = availabilityEpoch
+  const zones = new Set([activeZone.value])
+  if (force) for (const seat of seatLayout.value) {
+    if (selectedSeatIds.value.includes(seat.id)) zones.add(seat.zone)
+  }
   refreshing.value = true
   try {
-    const availability = await ticketApi.getSeatAvailability(
-      session.value.id,
-      checkout.value?.id,
-    )
-    seats.value = mergeSeatSnapshot(seatLayout.value, availability)
+    for (const zone of zones) if (!(await syncZone(zone,force,epoch))) return false
     availabilityWarning.value = ''
     return true
   } catch {
-    availabilityWarning.value = '座位状态暂未刷新，请稍后重试。'
+    if (epoch === availabilityEpoch) availabilityWarning.value = '座位状态暂未刷新，请稍后重试。'
     return false
   } finally {
-    refreshing.value = false
+    if (epoch === availabilityEpoch) refreshing.value = false
+    scheduleAvailability()
   }
 }
 
@@ -109,6 +171,9 @@ async function recoverCheckout() {
 }
 
 async function load() {
+  const loadEpoch = ++pageLoadEpoch
+  availabilityEpoch++
+  stopAvailabilityTimer()
   loading.value = true
   error.value = ''
   availabilityWarning.value = ''
@@ -117,25 +182,31 @@ async function load() {
   seats.value = []
   try {
     const sessionId = String(route.params.sessionId)
-    session.value = await ticketApi.getSession(sessionId)
-    const [loadedEvent, layout, availability] = await Promise.all([
+    const loadedSession = await ticketApi.getSession(sessionId)
+    if (disposed || loadEpoch !== pageLoadEpoch) return
+    session.value = loadedSession
+    const [loadedEvent, layout] = await Promise.all([
       ticketApi.getEvent(session.value.eventId),
       ticketApi.getSeatLayout(sessionId),
-      ticketApi.getSeatAvailability(sessionId),
     ])
-    const loadedSeats = mergeSeatSnapshot(layout, availability)
+    if (disposed || loadEpoch !== pageLoadEpoch) return
     event.value = loadedEvent
     seatLayout.value = layout
-    seats.value = loadedSeats
+    availability = new ZoneAvailabilityState(layout)
+    activeZone.value = layout[0]?.zone ?? ''
+    zoneSummaries.value = []
+    ownContext = ''
     seatMapLoaded.value = true
+    if (activeZone.value && !(await refreshSeats())) { seatMapLoaded.value = false; throw new Error('Initial zone unavailable') }
     setPageTitle(event.value.name + ' · 选座')
     await Promise.all([recoverCheckout(), refreshSessionOrders()])
   } catch (cause) {
+    if (disposed || loadEpoch !== pageLoadEpoch) return
     const resourceMissing = cause instanceof TicketApiError &&
       ['SESSION_NOT_FOUND', 'EVENT_NOT_FOUND'].includes(cause.code)
     error.value = resourceMissing ? cause.message : '座位图加载失败，请稍后重试。'
   } finally {
-    loading.value = false
+    if (loadEpoch === pageLoadEpoch) loading.value = false
   }
 }
 
@@ -276,6 +347,8 @@ async function abandon(value: CheckoutSession) {
 }
 
 async function handleFocus() {
+  if (document.hidden) return
+  await refreshSeats()
   requestNotificationRefresh()
   await refreshSessionOrders()
   if (checkout.value) {
@@ -286,11 +359,19 @@ async function handleFocus() {
 onMounted(() => {
   void load()
   window.addEventListener('focus', handleFocus)
+  document.addEventListener('visibilitychange', visibilityChanged)
 })
 onBeforeUnmount(() => {
+  disposed = true
+  pageLoadEpoch++
+  availabilityEpoch++
+  stopAvailabilityTimer()
+  document.removeEventListener('visibilitychange', visibilityChanged)
   pollingGeneration += 1
   window.removeEventListener('focus', handleFocus)
 })
+watch(() => authState.currentUser.value?.id, () => { void refreshSeats() })
+watch(() => route.params.sessionId, () => { pollingGeneration++; checkout.value = null; selectedSeatIds.value = []; void load() })
 </script>
 
 <template>
@@ -310,7 +391,8 @@ onBeforeUnmount(() => {
   </section>
   <SeatSelectionView
     v-if="event && session && seatMapLoaded"
-    :event="event" :session="session" :seats="seats" :selected-seats="selectedSeats"
+    :event="event" :session="session" :seats="seats.filter(seat => seat.zone === activeZone)"
+    :seat-layout="seatLayout" :active-zone="activeZone" :zone-summaries="zoneSummaries" @change-zone="changeZone" :selected-seats="selectedSeats"
     :selected-seat-ids="selectedSeatIds" :checkout-session="checkout"
     :recoverable-checkout-sessions="recoverable" :loading="loading"
     :refreshing="refreshing" :availability-warning="availabilityWarning"
