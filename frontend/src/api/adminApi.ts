@@ -12,7 +12,15 @@ export interface PublishPreview { eventId: string; status: string; publishable: 
 export interface AdminEventDetail extends Omit<AdminEventSummary, 'venueName'|'sessionCount'>, EventInput { dateRange: string; publishedAt: string|null; publishedBy: string|null; sessions: AdminSession[]; venue: AdminVenueDetail; readiness: PublishPreview; savedSessionId?: string }
 export interface PublishResult { disposition: 'PUBLISHED_NOW'|'ALREADY_PUBLISHED'; event: AdminEventDetail; inventory: {sessionCount:number;seatCountPerSession:number;sessionSeatCount:number} }
 const eventPath=(id:string)=>'/admin/events/'+encodeURIComponent(id)
+export interface AdmissionPolicy {
+ eventId:string; mode:'OFF'|'OBSERVE'|'ENFORCED'|'PAUSED'; policyVersion:number;
+ prequeueSeconds:number|null; maxActiveUsers:number|null; admissionRatePerSecond:number|null;
+ leaseSeconds:number|null; queueGeneration:string|null;
+}
+export interface AdmissionPolicyInput {mode:AdmissionPolicy['mode'];expectedPolicyVersion:number;prequeueSeconds:number;maxActiveUsers:number;admissionRatePerSecond:number;leaseSeconds:number}
 export const adminApi={
+ admissionPolicy:async(id:string)=>(await http.get<AdmissionPolicy>(eventPath(id)+'/admission-policy')).data,
+ saveAdmissionPolicy:async(id:string,body:AdmissionPolicyInput)=>(await http.put<AdmissionPolicy>(eventPath(id)+'/admission-policy',body)).data,
  venues:async()=> (await http.get<AdminVenueSummary[]>('/admin/venues')).data,
  venue:async(id:string)=>(await http.get<AdminVenueDetail>('/admin/venues/'+encodeURIComponent(id))).data,
  saveVenue:async(id:string|undefined,body:VenuePlan)=>(await (id?http.put<AdminVenueDetail>('/admin/venues/'+encodeURIComponent(id),body):http.post<AdminVenueDetail>('/admin/venues',body))).data,

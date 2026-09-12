@@ -136,6 +136,15 @@
     }
   ],
   "custom_config": {
+    "admission": {
+      "policy_refresh_ms": 2000,
+      "policy_limit": 10000,
+      "scheduler_batch": 64,
+      "scheduler_ms": 250,
+      "poll_ms": 2000,
+      "heartbeat_ms": 5000,
+      "presence_seconds": 30
+    },
     "admin_catalog": {
       "max_zones_per_venue": 32,
       "max_rows_per_zone": 200,

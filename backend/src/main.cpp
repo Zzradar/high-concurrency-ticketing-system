@@ -1,3 +1,4 @@
+#include "admission/AdmissionConfig.h"
 #include "workers/SeatAvailabilityProjectionWorker.h"
 #include "workers/OrderExpiryWorker.h"
 #include "workers/PaymentReconciliationWorker.h"
@@ -141,6 +142,7 @@ int main(int argc, char *argv[])
         ticketing::PaymentProviderFactory::validateConfiguration();
         ticketing::AuthConfig::validate();
         (void)ticketing::admin::limits();
+        (void)ticketing::admission::Config::parse(drogon::app().getCustomConfig()["admission"]);
         ticketing::PerformanceMetrics::registerWithApplication();
         const auto &computeConfig = drogon::app().getCustomConfig();
         const auto &computeWorkers = computeConfig["seat_map_compute_workers"];

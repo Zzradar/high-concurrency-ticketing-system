@@ -1,4 +1,5 @@
 #include "controllers/HealthController.h"
+#include "admission/AdmissionPolicy.h"
 
 #include <drogon/drogon.h>
 
@@ -14,8 +15,15 @@ void HealthController::health(
     auto database = drogon::app().getDbClient("default");
 
     database->execSqlAsync(
-        "SELECT 1",
-        [callbackPtr](const drogon::orm::Result &) {
+        "SELECT NOT EXISTS(SELECT 1 FROM event_admission_policies WHERE mode <> 'OFF') AS all_off",
+        [callbackPtr](const drogon::orm::Result &rows) {
+            if (!rows[0]["all_off"].as<bool>() && !ticketing::admission::secretAvailable()) {
+                Json::Value body;body["status"]="degraded";body["code"]="ADMISSION_SECRET_UNAVAILABLE";
+                auto response=drogon::HttpResponse::newHttpJsonResponse(body);
+                response->setStatusCode(drogon::k503ServiceUnavailable);
+                response->addHeader("Cache-Control","private, no-store");
+                (*callbackPtr)(response);return;
+            }
             Json::Value body;
             body["status"] = "ok";
             body["database"] = "up";

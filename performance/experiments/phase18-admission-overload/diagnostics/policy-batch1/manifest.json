@@ -1,0 +1,30 @@
+{
+  "status": "BLOCKED_NOT_DELIVERED",
+  "baselineSutSha": "ed51447154418e05ed9e4c49728f3eb114713db9",
+  "parentCommit": "fefa8c493e0046f6a4f6e3d60d5d7eeb167cf28e",
+  "candidateWasDirty": true,
+  "formalAB": false,
+  "failure": "OBSERVE -> PAUSED -> ENFORCED retains shadow generation",
+  "validation": {
+    "ctest": "35/35 passed",
+    "schema": "2/2 passed",
+    "policyHttp": "4 passed, 1 failed",
+    "phase17VenuePublishing": "13/13 passed",
+    "frontend": "269/269 passed",
+    "frontendBuild": "passed",
+    "performanceOffline": "240/240 passed",
+    "baselineEvidence": "7/7 passed"
+  },
+  "files": {
+    "backend\\src\\admission\\AdmissionConfig.h": "fd6eaf1382fc29d8f0a352e34eedb9641e4c11ecfe9d6a91930debae96b8dbf7",
+    "backend\\src\\admission\\AdmissionPolicy.cpp": "8583e007092a3038c020e29e2f16c7ee9d6b5b4b575cd6b33299ca5e1990ae14",
+    "backend\\src\\admission\\AdmissionPolicy.h": "e2d01d806f76e1df8064190972c8f999f7dd8cb064cddb3d1f052bbab0d916b8",
+    "backend/db/migrations/013_add_admission_control.sql": "619f5fa32be93c5c84bd0031965b91c9426c8e81da1b51bd08f1b9113995856e",
+    "backend/tests/phase18_policy_http_test.py": "dd3584153e791254d63691f88a69abe625a72850a06d112fcf30ba75085034dd",
+    "backend/tests/phase18_schema_test.py": "b4ce971fd4f82d3123bd55fc44691c465ade2e5c5c1875de29e8eabff4debb63"
+  },
+  "raw": {
+    "ctest.log": "ee0ba7a21d75e1c2e2431d5d21cefa17bcc33df21f2173722e28a228c9b36681",
+    "policy-http.log": "6b745a8a0f6eb552e00a1bdfa2d66824e60fa1da3eb300658a4e697cbddb0c73"
+  }
+}

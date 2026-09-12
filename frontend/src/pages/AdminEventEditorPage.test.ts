@@ -13,7 +13,7 @@ it('never sends invalid raw prices, sends exact cents, and roundtrips saved pric
  sessions:[{id:'s',status:'DRAFT',venueId:'v',hallName:'H',startTime:'2026-12-01T00:00:00Z',gateTime:'2026-11-30T23:00:00Z',prices:[{zoneId:'z',price:150}]}]}
  vi.spyOn(adminApi,'venues').mockResolvedValue([venue]);vi.spyOn(adminApi,'event').mockResolvedValue(detail)
  const save=vi.spyOn(adminApi,'prices').mockImplementation(async(_e,_s,prices)=>({...detail,sessions:[{...detail.sessions[0]!,prices}]}))
- const w=mount(Page,{global:{plugins:[router]}});await flushPromises()
+ const w=mount(Page,{global:{plugins:[router],stubs:{AdmissionPolicyEditor:true}}});await flushPromises()
  const input=w.get('input[inputmode="decimal"]')
  const button=w.findAll('button').find(b=>b.text()==='保存区域票价')!
  expect((input.element as HTMLInputElement).value).toBe('1.50')

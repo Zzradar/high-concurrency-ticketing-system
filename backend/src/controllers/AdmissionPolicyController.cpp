@@ -1,0 +1,15 @@
+#include "controllers/AdmissionPolicyController.h"
+#include "common/AuthContext.h"
+void AdmissionPolicyController::policy(const drogon::HttpRequestPtr &request,
+    ticketing::admin::Reply &&reply, std::string eventId) const {
+    const auto input=request->getJsonObject();
+    const auto body=input?*input:Json::Value{};
+    const auto user=ticketing::authenticatedUserId(request);
+    const bool update=request->method()==drogon::Put;
+    ticketing::admin::dispatch([eventId,body,user,update](const ticketing::admin::DB &db) {
+        return update?ticketing::admission::writePolicy(db,eventId,body,user)
+                     :ticketing::admission::readPolicy(db,eventId);
+    },[reply=std::move(reply)](const drogon::HttpResponsePtr &response) {
+        response->addHeader("Cache-Control","private, no-store"); reply(response);
+    });
+}

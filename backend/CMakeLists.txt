@@ -334,3 +334,12 @@ if(BUILD_TESTING AND TICKETING_PHASE17_EXTERNAL_TESTS)
  add_test(NAME phase17_publishing COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase17_publishing_test.py")
  set_tests_properties(phase17_venues phase17_publishing PROPERTIES RUN_SERIAL TRUE LABELS integration)
 endif()
+
+# Phase18 admission policy management (runtime enforcement follows in its own batch).
+target_sources(ticketing_backend PRIVATE src/admission/AdmissionPolicy.cpp src/controllers/AdmissionPolicyController.cpp)
+if(BUILD_TESTING)
+ add_executable(phase18_policy_unit tests/phase18_policy_unit.cpp src/admission/AdmissionPolicy.cpp src/admin/AdminCatalog.cpp src/services/SeatMapComputeExecutor.cpp src/security/Crypto.cpp)
+ target_include_directories(phase18_policy_unit PRIVATE src)
+ target_link_libraries(phase18_policy_unit PRIVATE Drogon::Drogon Threads::Threads OpenSSL::Crypto)
+ add_test(NAME phase18_policy_unit COMMAND phase18_policy_unit)
+endif()

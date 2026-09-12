@@ -1,0 +1,18 @@
+test_concurrent_create_and_update_one_winner_one_audit (__main__.PolicyHTTP) ... ok
+test_generation_transitions_and_normalized_audit (__main__.PolicyHTTP) ... ok
+test_missing_secret_rejects_activation_and_readiness (__main__.PolicyHTTP) ... ok
+test_off_auth_csrf_strict_input_and_synthetic_policy (__main__.PolicyHTTP) ... ok
+test_shadow_cannot_be_promoted_through_pause (__main__.PolicyHTTP) ... FAIL
+
+======================================================================
+FAIL: test_shadow_cannot_be_promoted_through_pause (__main__.PolicyHTTP)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_policy_http_test.py", line 72, in test_shadow_cannot_be_promoted_through_pause
+    self.assertNotEqual(generations[0],generations[1], 'PAUSED must not retain an OBSERVE shadow generation')
+AssertionError: 'd0d0d3f7fa1b42d19defd6ffa4473784' == 'd0d0d3f7fa1b42d19defd6ffa4473784' : PAUSED must not retain an OBSERVE shadow generation
+
+----------------------------------------------------------------------
+Ran 5 tests in 6.543s
+
+FAILED (failures=1)
