@@ -1,6 +1,6 @@
 test_3ds_grace_skips_expiry_then_times_out_and_refunds (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ... ok
-test_backend_restart_recovers_processing_payment (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ...  Container phase17-phase12-backend-1 Restarting 
- Container phase17-phase12-backend-1 Started 
+test_backend_restart_recovers_processing_payment (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ...  Container phase17-phase12-backend-1 Restarting
+ Container phase17-phase12-backend-1 Started
 ok
 test_card_only_request_and_provider_deadline (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ... ok
 test_create_response_lost_and_webhook_lost_recover_by_scan (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ... ok

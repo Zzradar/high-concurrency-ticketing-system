@@ -1033,3 +1033,11 @@ PROCESSING展示“完成前订单和座位权益仍然有效”；SUCCEEDED展�
 真实后端验证在独立 `ticketing-phase10a` 栈进行，前端代理端口为 18080，PostgreSQL 与 Redis 容器均健康。`e2e` 目录执行 `npm test -- --grep "different users"`，新增竞争测试 1/1 通过，耗时 9.9 秒。持有者 `perf-user-000005` 占用 `perf-ss-001-001-000002`，竞争者 `perf-user-000006` 在旧页面点击后收到真实 409 和临时占座错误码；页面只增加一次动态请求并将 R001-002 显示为锁定中，未新增静态或旧完整座位请求。数据库确认只有持有者新增成功会话，竞争者没有新增会话，正式座位仍为 AVAILABLE。测试主动放弃占座；随后只读检查确认持有者为 ABANDONED，座位无正式预订关联。
 
 真实全量 `e2e/npm test` 本轮未执行：运行前只读查询发现 `perf-ss-001-002-000001` 和 `perf-ss-001-004-000001` 已为 SOLD，且 demo 与原多客户端用户已有 RESERVED 会话，不满足既有全量用例的干净数据前提。本轮未重置、删除或重建任何数据库卷，也未改动标准开发栈，完整真实回归留待独立核验按单独授权准备环境。这一限制不能用模拟接口的通过结果替代。
+
+## Phase17 管理工作区
+
+CurrentUser.role 为 CUSTOMER | ADMIN，登录/me 同步该字段。账户菜单仅 ADMIN 显示入口；/admin/events、/admin/venues 及 new/:id 编辑页同时需要认证和 ADMIN。前端导航守卫不替代后端授权，数据库降权后的请求由后端实时拒绝。
+
+adminApi 复用 ticketApi 导出的同一 Axios http 实例，沿用 Cookie、CSRF、401 与错误归一化，没有完整 Mock Admin 数据库。四个管理页覆盖场馆列表、结构化 Seat Plan/连续行生成、活动/场次/分区价、Preview/Publish。frozen 禁止修改方案，pricingReset 提示重设价格，结构化 issues 关联场次/区域。金额元转整数分；adminDateTime 将 datetime-local 按北京时间解释并转 UTC，测试覆盖跨日和无效日期。
+
+Zone 是 Phase16 业务分区，页面仍仅渲染当前 Zone，跨区重复 A001 由不同 Seat ID 区分。5000/10000 席浏览器测量分别渲染 1000/2000 席，不声称生产容量。不建设 SVG/Canvas 编辑器。详见 [Phase17](phase17_admin_event_publishing_implementation.md)。

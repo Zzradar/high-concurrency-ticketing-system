@@ -975,3 +975,14 @@ PostgreSQL `SessionSeat.status = HELD` 才代表后端已经成功创建正式�
 ## Phase15 数据与接口补充
 
 Event持久化sales_starts_at/sales_ends_at，Session按start_time收紧有效截止；不新增或重定义静态ON_SALE/COMING_SOON/SOLD_OUT枚举。Event/Session DTO新增必需salesWindow，时间判定来自DB。Availability存量/增量模型不持久化SalesWindow。Checkout收口和Hold剩余TTL是时间准入的消费者；Order.expiresAt、支付尝试和Refund历史权利保持原含义。见[Phase15记录](phase15_sales_window_implementation.md)。
+
+## Phase17 对齐补充（优先于历史 seats.zone 描述）
+
+- 身份：app_users.role → UserRecord/AuthSessionRecord/AuthContext → 登录/me 的 role → CurrentUser.role；仅 CUSTOMER/ADMIN。
+- 场馆：Venue → venue_zones → seats.zone_id；旧 seats.zone 已移除。区域名称仍是公共 zone 字段，排序依据 sort_order；位置/label 唯一性包含 Zone。
+- 活动：Event DRAFT → Session DRAFT → session_zone_prices → Publish 原子生成 SessionSeat → Event/Session ON_SALE。date_range 从真实 Session 开始时间推导，published_at/published_by 记录发布。
+- 冻结：任意 SessionSeat 存在后 Seat Plan 不可替换；已发布 Session、Price、Event Venue/售票窗口不可修改，展示字段仍可修改。
+- 价格：草稿区价允许暂缺，发布必须覆盖每场每区且为正整数分；正式 SessionSeat.price 为原子物化结果。
+- 隔离：管理 DTO 包含 DRAFT/readiness，消费者 DTO 不增加管理字段；公共列表/猜 ID/交易入口都隔离 DRAFT。Phase15 window 和 Phase16 Zone Snapshot/Delta 继续有效。
+
+详细契约与真实回归见 [Phase17 实施记录](phase17_admin_event_publishing_implementation.md)。

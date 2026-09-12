@@ -742,3 +742,37 @@ zones 是全场各区公共汇总；seats/changes 只含目标区。认证且 ch
 POST /reservations、POST /checkout-sessions、非空PUT /checkout-sessions/{id}/seats、POST /checkout-sessions/{id}/confirm 的新准入可返回HTTP409 `SALES_NOT_STARTED`或`SALES_ENDED`。空替换可继续释放；RESERVED与已成功正式幂等结果不因停售失效。SUBMITTING确认沿用原key恢复，不能简单视作停售失败。现有订单仍按expiresAt支付。
 
 选座页仅服务端OPEN且静态可售时编辑；关闭窗口可展示一个Zone Snapshot并停止周期Delta。边界只刷新一次Session。明确售票错误清选择/locator、保留布局，不启动未知结果轮询；网络/5xx异常才恢复原会话。详见[Phase15实施与验证](phase15_sales_window_implementation.md)。
+
+## Phase17 Admin 契约（消费者契约保持独立）
+
+`CurrentUser.role: "CUSTOMER" | "ADMIN"` 是登录与 `/auth/me` 的必填字段。所有 `/admin/*` 均需 ADMIN Cookie Session；写操作使用现有 `X-CSRF-Token` 和 Origin。401 未认证，403 ADMIN_REQUIRED/CSRF_INVALID。
+
+| 方法/路径 | 请求与响应 |
+|---|---|
+| GET/POST /admin/venues | GET 摘要数组；POST VenuePlan → 201 VenueDetail |
+| GET/PUT /admin/venues/{id} | 详情 / 全量 VenuePlan 替换 → VenueDetail |
+| GET/POST /admin/events | GET 摘要数组；POST EventInput → 201 EventDetail |
+| GET/PUT /admin/events/{id} | 详情 / DRAFT 全量编辑 → EventDetail |
+| PATCH /admin/events/{id}/display | name/description/category/coverUrl 子集 → EventDetail |
+| POST /admin/events/{id}/sessions | SessionInput → 201 EventDetail，含 savedSessionId |
+| PUT/DELETE /admin/events/{id}/sessions/{sid} | SessionInput / 无 body → EventDetail |
+| PUT /admin/events/{id}/sessions/{sid}/prices | {prices:[{zoneId,price}]} → EventDetail |
+| GET /admin/events/{id}/publish-preview | PublishPreview |
+| POST /admin/events/{id}/publish | 无业务 body → PublishResult |
+
+```typescript
+type VenuePlan = {name:string; city:string; zones:{code:string;name:string;rows:{label:string;seatCount:number}[]}[]}
+type EventInput = {name:string;description:string;category:string;coverUrl:string;venueId:string;salesStartsAt:string;salesEndsAt:string}
+type SessionInput = {hallName:string;startTime:string;gateTime:string}
+type PublishResult = {disposition:'PUBLISHED_NOW'|'ALREADY_PUBLISHED';event:AdminEventDetail;inventory:{sessionCount:number;seatCountPerSession:number;sessionSeatCount:number}}
+```
+
+时间必须带 Z/明确偏移；price 为正整数分。VenueDetail 包含 id/name/city/totalSeats/zoneCount/frozen/zones，Zone 包含 id/code/name/sortOrder/seatCount/rows；替换返回 pricingReset。EventDetail 包含 EventInput、id/status/dateRange/publishedAt/publishedBy、sessions（含 prices）、venue、readiness。EventSummary 另有 venueName/sessionCount，不能把摘要假定为详情字段。
+
+Preview 包含 eventId/status/publishable/venue/sessionCount/expectedSessionSeatCount、sessions[{id,startTime,configuredZones,requiredZones}] 和 issues[{code,message,sessionId?,zoneId?}]。问题代码：NO_SESSIONS、VENUE_EMPTY、EVENT_WINDOW_ENDED、SESSION_START_NOT_FUTURE、SESSION_GATE_INVALID、SESSION_WINDOW_EMPTY、ZONE_PRICE_MISSING、ZONE_PRICE_INVALID、SESSION_VENUE_MISMATCH。
+
+404：VENUE_NOT_FOUND/EVENT_NOT_FOUND/SESSION_NOT_FOUND。409：VENUE_SEAT_PLAN_FROZEN/EVENT_NOT_EDITABLE/SESSION_NOT_EDITABLE/EVENT_VENUE_LOCKED/EVENT_NOT_PUBLISHABLE。400：INVALID_ARGUMENT。503：ADMIN_BUSY。发布失败后前端重新获取 Preview 展示具体问题。
+
+公开列表隐藏 DRAFT，公开详情/Seat/Availability 猜 ID 为 404；购票入口拒绝草稿。公开 zone 仍为人类可读名称、按 Zone sort_order 排序。跨 Zone 重复 A001 不代表同一 Seat，客户端必须使用 id。Seat Plan 全量替换清空草稿区价；任意 SessionSeat 存在后 frozen。发布仅使用 PG 原子事务，不写 Redis；已发布场次/价格/售票窗口冻结，纯展示字段可修改。
+
+完整边界、测试结果及规模限制见 [Phase17 实施记录](phase17_admin_event_publishing_implementation.md)。

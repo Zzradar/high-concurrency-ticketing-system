@@ -37,3 +37,11 @@
 
 当前不支持部分退款、退款失败后自动第二次退款、项目外 Dashboard 退款自动认领，
 以及 succeeded → failed 后续冲正。Stripe Sandbox 不是生产资金或真实银行结算证明。
+
+## Phase17 管理端真实演示
+
+使用真实后端，按 [Demo Seed](../backend/db/seeds/001_demo_seed.sql) 的本地 ADMIN 登录配置进入账户菜单“管理后台”。流程：场馆区域/连续行 → 活动草稿 → 场次与区价 → Preview → 发布；CUSTOMER 无需重启即可购票。Demo 身份只用于本地演示。
+
+Admin 请求复用原 Cookie/CSRF/401/错误处理，没有完整 Mock Admin 数据库。所有时间输入按北京时间解释；场馆 frozen、价格重置和结构化发布问题直接展示。既有消费者页面仍只渲染当前 Zone。
+
+独立浏览器门禁在本目录执行 `npx playwright test -c playwright.phase17.config.ts`；先运行 `python performance/scripts/phase17_scale.py`（仓库根目录）准备规模夹具，再执行完整 5 项。它连接 18117 的专用真实后端，Vite 使用 5177。完整结果见 [Phase17 实施记录](../docs/phase17_admin_event_publishing_implementation.md)。

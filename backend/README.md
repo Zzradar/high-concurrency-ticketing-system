@@ -75,3 +75,11 @@ ctest --test-dir build --output-on-failure
 
 本地 Demo 账号：`demo / Ticketing123!`（CUSTOMER）、`admin / Ticketing123!`（ADMIN）。
 Demo 管理员只供本地演示，生产部署不得使用此 Seed 作为管理员 provisioning 方案。
+
+## Phase17 本地管理员发布
+
+Demo Seed 提供 ADMIN/CUSTOMER；用户名与登录配置见 [Demo Seed](db/seeds/001_demo_seed.sql)，仅供本地演示。Fresh DB 按 initdb 顺序运行 migration001–012 后 Seed；旧库必须先升级012，不能只替换应用而保留旧 seats.zone。
+
+管理员通过 `/admin/venues` 配置结构化区域和行，再创建 Event DRAFT、Session 和 Zone Price，Preview 无问题后原子发布。发布不写 Redis；消费者无需重启即可看见新活动。任何正式 SessionSeat 存在后 Seat Plan frozen；发布后只允许改展示信息。
+
+完整 API、认证、事务锁序与真实门禁见 [Phase17 实施记录](../docs/phase17_admin_event_publishing_implementation.md)。5000/10000 席是数据规模特征，不是生产 SLA；不包含多租户、动态票价或图形座位编辑器。
