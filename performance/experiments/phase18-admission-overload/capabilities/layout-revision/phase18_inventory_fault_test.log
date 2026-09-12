@@ -1,0 +1,7 @@
+test_inventory_timeout_rolls_back_and_cools_scheduler (phase18_inventory_fault_test.InventoryFault) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 11.068s
+
+OK
+inventory limit=1 peak=1 drained=0; second request=503; first database timeout=500; rollback=0 checkouts/2 available; cooldown blocks release then resumes; financial/recovery=200

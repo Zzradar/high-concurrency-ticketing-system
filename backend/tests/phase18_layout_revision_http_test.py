@@ -113,4 +113,3 @@ class LayoutRevisionHTTP(unittest.TestCase):
   status,body,h=self.get(other,'*');self.assertEqual(status,404);self.assertNotIn('etag',h)
 
 if __name__=='__main__':unittest.main(verbosity=2)
-

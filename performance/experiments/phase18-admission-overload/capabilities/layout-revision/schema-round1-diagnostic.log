@@ -1,0 +1,17 @@
+F....
+======================================================================
+FAIL: test_fresh_bulk_5000_10000_and_multi_session_once (phase18_layout_revision_schema_test.LayoutRevisionSchema)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_layout_revision_schema_test.py", line 41, in test_fresh_bulk_5000_10000_and_multi_session_once
+    self.sql("INSERT INTO session_seats(id,session_id,seat_id,venue_id,status,price) SELECT id||'-copy','"+copy+"',seat_id,venue_id,status,price FROM session_seats WHERE session_id='"+sid+"'")
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_schema_test.py", line 9, in sql
+    self.assertEqual(p.returncode==0,ok,p.stderr)
+AssertionError: False != True : ERROR:  new row for relation "session_seats" violates check constraint "session_seats_hold_pointer_check"
+DETAIL:  Failing row contains (ses-basketball-2001-A03-copy, ses-basketball-2001-copy, seat-venue-pudong-sports-center-A03, venue-pudong-sports-center, HELD, 88000, null, 2026-09-12 18:59:08.456319+00, 0).
+
+
+----------------------------------------------------------------------
+Ran 5 tests in 35.317s
+
+FAILED (failures=1)

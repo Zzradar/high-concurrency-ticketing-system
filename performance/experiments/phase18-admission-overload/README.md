@@ -1,3 +1,5 @@
+**Correction in progress:** the former final After SUT `4dd48c1` and its after/ results are invalidated by the ETag defect. All old raw bytes are preserved. [After status](AFTER_STATUS.json) is authoritative; a new complete after-v2 is required. Earlier completion statements below are historical.
+
 **Phase18 delivery complete; awaiting independent re-verification.** See [final report](FINAL_REPORT.md), [after evidence](after/README.md), and [delivery manifest](phase18-delivery.json). The text below is the historical Stage0 report; statements about absent after evidence or test counts describe that earlier delivery only. Both Stage0 manifests and baseline raw evidence remain unchanged.
 
 # Phase18 Stage0: exact baseline and browser fixture

@@ -1,0 +1,36 @@
+-- compiler: GNU
+-- Trantor using SSL library: OpenSSL
+-- c-ares found!
+-- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE) 
+-- Found std::filesystem
+-- use c++20
+-- jsoncpp version:1.9.5
+-- yaml-cpp not used
+-- Found UUID: /usr/lib/x86_64-linux-gnu/libuuid.so
+-- Brotli found
+-- pg inc: /usr/include/postgresql
+-- libpq inc path:/usr/include/postgresql
+-- libpq lib:/usr/lib/x86_64-linux-gnu/libpq.so
+-- The libpq supports batch mode
+-- MySql was not found.
+-- sqlite3 was not found.
+-- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE) 
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /phase18-build
+[  1%] Built target stripe_config_unit
+[ 16%] Built target trantor
+[ 18%] Built target stripe_webhook_verifier_unit
+[ 20%] Built target password_hash_executor_unit
+[ 21%] Built target seat_map_compute_executor_unit
+[ 23%] Built target seat_display_status_unit
+[ 24%] Built target phase14_observation_unit
+[ 25%] Built target phase18_bulkhead_unit
+[ 60%] Built target drogon
+[ 62%] Built target phase17_config_unit
+[ 64%] Built target phase18_policy_unit
+[ 64%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/SeatAvailabilityReadModel.cpp.o
+[ 64%] Building CXX object CMakeFiles/ticketing_backend.dir/src/admission/RedisAdmissionStore.cpp.o
+[ 64%] Building CXX object CMakeFiles/ticketing_backend.dir/src/admission/TrafficControl.cpp.o
+[ 65%] Linking CXX executable ticketing_backend
+[100%] Built target ticketing_backend

@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_direct_price_changes_body_and_validator (phase18_layout_revision_http_test.LayoutRevisionHTTP)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_layout_revision_http_test.py", line 13, in test_direct_price_changes_body_and_validator
+    self.assertNotEqual(new['etag'],old,'Direct PostgreSQL price correction must change ETag')
+AssertionError: 'W/"seat-layout-v1-7ebadfcb725c25eb1dcf9b8bc64f701344485cd075468dd0324d2dce6faab8b6"' == 'W/"seat-layout-v1-7ebadfcb725c25eb1dcf9b8bc64f701344485cd075468dd0324d2dce6faab8b6"' : Direct PostgreSQL price correction must change ETag
+
+----------------------------------------------------------------------
+Ran 1 test in 2.144s
+
+FAILED (failures=1)

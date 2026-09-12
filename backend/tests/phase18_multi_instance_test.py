@@ -1,8 +1,10 @@
 """Two real API processes and schedulers; same configured HMAC, PostgreSQL and Redis."""
 import os,subprocess,time,unittest,uuid,hashlib,concurrent.futures,urllib.request
 os.environ['PHASE18_BASE_URL']=os.environ['TICKETING_BASE_URL']
-os.environ['PHASE18_POSTGRES_CONTAINER']='phase18-financial-postgres-1'
-os.environ['PHASE18_REDIS_CONTAINER']='phase18-financial-redis-1'
+project=os.environ.get('COMPOSE_PROJECT_NAME','phase18-financial')
+assert project.startswith('phase18-')
+os.environ['PHASE18_POSTGRES_CONTAINER']=project+'-postgres-1'
+os.environ['PHASE18_REDIS_CONTAINER']=project+'-redis-1'
 import phase18_admission_http_test as f
 from auth_test_support import AuthenticatedClient,test_user_values,username_for_user
 # Existing assertions use postgres superuser transport; this separate Compose fixture uses ticketing.

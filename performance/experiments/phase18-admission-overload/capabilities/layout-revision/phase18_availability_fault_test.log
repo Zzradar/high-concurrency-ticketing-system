@@ -1,0 +1,10 @@
+test_cold_projector_initializer_redis_and_pg_rollback (phase18_availability_fault_test.AvailabilityFault) ... cold singleflight PASS
+projector crash PASS
+initializer crash PASS
+Redis outage, namespace reset, PostgreSQL rollback PASS
+ok
+
+----------------------------------------------------------------------
+Ran 1 test in 37.523s
+
+OK

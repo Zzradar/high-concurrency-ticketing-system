@@ -1,0 +1,19 @@
+test_a_terminal_retrieved_crash_before_local_commit (__main__.CrashWindowIntegrationTest) ... ok
+test_b_final_transaction_rolls_back_once_and_inbox_handoff_survives (__main__.CrashWindowIntegrationTest) ... ok
+test_c_exact_legacy_p1_null_schedule (__main__.CrashWindowIntegrationTest) ... ok
+test_c_future_schedule_does_not_hide_terminal_evidence (__main__.CrashWindowIntegrationTest) ... ok
+test_d_timed_out_expired_late_success (__main__.CrashWindowIntegrationTest) ... ok
+test_e_crash_before_refund_obligation_commit (__main__.CrashWindowIntegrationTest) ... ok
+test_existing_checks_still_reject_illegal_half_states (__main__.CrashWindowIntegrationTest) ... ok
+test_f_refund_atomic_sql_rollback_then_restart (__main__.CrashWindowIntegrationTest) ... ok
+test_g_refund_claim_crash_lease_expiry_recovery (__main__.CrashWindowIntegrationTest) ... Case G: due/no lease -> committed claim -> retrieve -> terminal SQL at gate
+Case G: SIGKILL 137 -> DB rollback/locks gone -> old lease retained and expired
+Case G: reclaim -> fresh retrieve -> SUCCEEDED/exactly one notification/lease cleared; verifiers=0
+ok
+test_payment_fallback_retrieves_and_rejects_each_identity_mismatch (__main__.CrashWindowIntegrationTest) ... ok
+test_stripe_terminal_failure_is_atomic_and_keeps_order_retryable (__main__.CrashWindowIntegrationTest) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 190.778s
+
+OK

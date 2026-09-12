@@ -1,0 +1,6 @@
+Bulk 5000/10000: each INSERT/UPDATE causes one revision write per affected Session; shared-seat change targets two Sessions.
+......
+----------------------------------------------------------------------
+Ran 6 tests in 43.692s
+
+OK

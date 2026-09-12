@@ -1,0 +1,33 @@
+Conditional layout: five 304, empty bodies, full-layout SQL delta=0; unchanged 200 body hash=269680bc4d89082cb8989649112aaf172a25c4d5a612eb63414c7686a1b2ea15
+...F..F..
+======================================================================
+FAIL: test_batch_and_transaction_failures_are_atomic (phase18_layout_revision_http_test.LayoutRevisionHTTP)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_layout_revision_http_test.py", line 60, in test_batch_and_transaction_failures_are_atomic
+    self.assertEqual(self.get(self.s)[1:],before);self.assertEqual(self.revision(),r)
+AssertionError: Tuples differ: (b'{"[672 chars]c0ebf80ae92d6c6ad4"', 'date': 'Sat, 12 Sep 2026 18:56:07 GMT'}) != (b'{"[672 chars]c0ebf80ae92d6c6ad4"', 'date': 'Sat, 12 Sep 2026 18:56:06 GMT'})
+
+First differing element 1:
+{'con[287 chars]4c0ebf80ae92d6c6ad4"', 'date': 'Sat, 12 Sep 2026 18:56:07 GMT'}
+{'con[287 chars]4c0ebf80ae92d6c6ad4"', 'date': 'Sat, 12 Sep 2026 18:56:06 GMT'}
+
+Diff is 927 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_noop_dynamic_and_unrepresented_fields_do_not_bump (phase18_layout_revision_http_test.LayoutRevisionHTTP)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_layout_revision_http_test.py", line 50, in test_noop_dynamic_and_unrepresented_fields_do_not_bump
+    fixture.sql("UPDATE session_seats SET price=price,status=status,version=version+1 WHERE session_id='"+self.s+"'; UPDATE sessions SET hall_name=hall_name||' changed' WHERE id='"+self.s+"'; UPDATE seats SET seat_label=seat_label WHERE id IN(SELECT seat_id FROM session_seats WHERE session_id='"+self.s+"')")
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_admission_http_test.py", line 9, in sql
+    if p.returncode:raise AssertionError(p.stderr)
+AssertionError: ERROR:  column "version" does not exist
+LINE 1: ...ssion_seats SET price=price,status=status,version=version+1 ...
+                                                             ^
+
+
+----------------------------------------------------------------------
+Ran 9 tests in 36.038s
+
+FAILED (failures=2)

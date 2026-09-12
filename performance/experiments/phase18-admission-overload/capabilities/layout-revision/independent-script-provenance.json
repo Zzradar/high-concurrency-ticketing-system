@@ -1,0 +1,4 @@
+{
+  "originalSha256": "b5504db7f128bf014aca7aebcf7e68a6083d8cc92613914b5cea80c615b228d5",
+  "adaptation": "Only checkout root, output directory and Phase18-owned transport endpoints changed; original mutation, finally restoration and all assertions retained."
+}

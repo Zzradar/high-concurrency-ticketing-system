@@ -1,0 +1,13 @@
+{
+  "after": {
+    "status": "SUPERSEDED_INVALIDATED_BY_ETAG_DEFECT",
+    "sutSha": "4dd48c177516caf950103ce3f7751cc0fb056029",
+    "manifestSha256": "b1585c91e4cdb4e3aae915dc75552fb8ad2b591dd00fdf02d62af2716a7ac369",
+    "reason": "Direct PostgreSQL representation changes could retain v1 ETag and return stale 304; old after is historical evidence only."
+  },
+  "replacement": {
+    "directory": "after-v2",
+    "status": "PENDING_NEW_SOURCE_FREEZE_AND_COMPLETE_COLLECTION"
+  },
+  "baselineUnchanged": true
+}

@@ -19,3 +19,9 @@ performance/experiments/phase18-admission-overload/comparison.json text eol=lf
 performance/experiments/phase18-admission-overload/resource-and-payload-comparison.json text eol=lf
 performance/experiments/phase18-admission-overload/after-phase18-verifier.json text eol=lf
 performance/experiments/phase18-admission-overload/phase18-delivery.json text eol=lf
+
+# Revision correction status is a new derived artifact, not old raw evidence.
+performance/experiments/phase18-admission-overload/AFTER_STATUS.json text eol=lf
+
+# Preserve original captured revision-regression terminal padding.
+performance/experiments/phase18-admission-overload/capabilities/layout-revision/*.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
