@@ -2,6 +2,7 @@
 import { ArrowRight, CalendarDays, MapPin } from '@lucide/vue'
 import { computed, ref, watch } from 'vue'
 import { ticketApi } from '../api/ticketApi'
+import { isSalesWindow } from '../utils/eventContract'
 import { useSalesWindow } from '../utils/salesWindow'
 import type { TicketEvent } from '../types'
 
@@ -27,7 +28,7 @@ defineEmits<{ select: [event: TicketEvent] }>()
         <p class="eyebrow">{{ event.city }} · {{ event.status === 'ON_SALE' ? '在售活动' : '即将推出' }}</p>
         <h2>{{ event.name }}</h2>
         <p>{{ label }}</p>
-        <small>开售 {{ current.salesWindow.startsAt }} · 截止 {{ current.salesWindow.endsAt }}</small>
+        <small v-if="isSalesWindow(current.salesWindow)">开售 {{ current.salesWindow.startsAt }} · 截止 {{ current.salesWindow.endsAt }}</small>
         <p class="event-card__description">{{ event.description }}</p>
       </div>
       <dl class="event-card__meta">

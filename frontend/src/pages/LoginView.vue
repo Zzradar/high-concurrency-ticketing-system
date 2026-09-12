@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const showDemoCredentials = import.meta.env.DEV || import.meta.env.VITE_USE_MOCK_API === 'true'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authState } from '../auth/authState'
@@ -37,7 +38,7 @@ async function submit() {
       <label>密码<input v-model="password" name="password" type="password" autocomplete="current-password" maxlength="1024" required /></label>
       <p v-if="error" class="message-banner message-banner--error" role="alert">{{ error }}</p>
       <button class="primary-button" type="submit" :disabled="busy">{{ busy ? '正在登录…' : '登录' }}</button>
-      <small>开发演示账号：demo / Ticketing123!</small>
+      <small v-if="showDemoCredentials">开发演示账号：demo / Ticketing123!</small>
     </form>
   </main>
 </template>

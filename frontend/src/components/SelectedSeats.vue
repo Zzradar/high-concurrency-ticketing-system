@@ -113,7 +113,7 @@ const totalAmount = computed(() =>
       正在后台同步最新选座…
     </p>
     <p class="selection-panel__hint">
-      提交后将由服务端原子锁定全部座位，任一座位不可用则整单失败。
+      若有座位已不可选，本次预订不会完成，请重新选择。
     </p>
   </aside>
 </template>

@@ -21,19 +21,19 @@ defineEmits<{
     <PageBreadcrumbs :items="[{ label: '活动' }]" />
     <section class="page-intro">
       <div>
-        <p class="eyebrow">CURATED EVENTS · SHANGHAI</p>
+        <p class="eyebrow">CURATED EVENTS · TICKET TRACE</p>
         <h1>这一场，值得亲临。</h1>
-        <p>从演出到决赛，选择你期待的现场。座位库存将在提交时由服务端最终确认。</p>
+        <p>从演出到赛事，查看近期活动，选择合适的场次和座位。</p>
       </div>
       <div class="intro-note">
         <Sparkles :size="19" aria-hidden="true" />
-        <span><strong>本周精选</strong>2 场活动正在售票</span>
+        <span><strong>本周精选</strong>{{ loading ? '正在加载活动' : events.length ? `共 ${events.length} 场活动可浏览` : '暂无可浏览活动' }}</span>
       </div>
     </section>
 
     <section aria-labelledby="event-list-title">
       <div class="section-heading">
-        <h2 id="event-list-title">正在售票</h2>
+        <h2 id="event-list-title">可浏览活动</h2>
         <span>{{ events.length }} 场活动</span>
       </div>
       <div v-if="loading" class="event-list" aria-label="正在加载活动">
@@ -42,7 +42,7 @@ defineEmits<{
       <PageState
         v-else-if="!events.length"
         eyebrow="EVENTS"
-        title="暂无在售活动"
+        title="暂无可浏览活动"
         description="当前没有可浏览的活动，请稍后再来看看。"
         action-label="重新加载"
         @action="$emit('refresh')"

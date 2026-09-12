@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { resetMockData, setMockLatency, ticketApi } from '../api/ticketApi'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { resetMockData, setMockLatency, ticketApi, TicketApiError } from '../api/ticketApi'
 import { authState, checkoutLocatorKey } from './authState'
 
 describe('authenticated account state', () => {
@@ -26,4 +26,23 @@ describe('authenticated account state', () => {
     await authState.logout()
     expect(sessionStorage.getItem('ticketing.checkout.U-1001')).toBeNull()
   })
+})
+
+afterEach(()=>vi.restoreAllMocks())
+for(const [name,error,confirmed] of [
+ ['success',null,true],['401',new TicketApiError('expired','UNAUTHENTICATED',401),true],
+ ['timeout',new Error('timeout'),false],['network',new Error('Network Error'),false],
+] as const) it(`logout ${name} clears state and does not restore the server session`,async()=>{
+ setMockLatency(0);await authState.login('demo','Ticketing123!')
+ const logout=vi.spyOn(ticketApi,'logout');if(error)logout.mockRejectedValue(error)
+ const me=vi.spyOn(ticketApi,'me')
+ expect(await authState.logout()).toEqual({confirmed})
+ expect(authState.currentUser.value).toBeNull();expect(await authState.ensureAuthLoaded()).toBeNull();expect(me).not.toHaveBeenCalled()
+})
+it('ignores an in-flight me result after logout',async()=>{
+ await authState.login('demo','Ticketing123!');const user=authState.currentUser.value!
+ let resolve!:(value:typeof user)=>void
+ vi.spyOn(ticketApi,'me').mockReturnValue(new Promise(r=>{resolve=r}))
+ const pending=authState.refreshMe();await authState.logout();resolve(user);await pending
+ expect(authState.currentUser.value).toBeNull()
 })

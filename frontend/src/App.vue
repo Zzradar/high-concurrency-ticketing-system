@@ -71,10 +71,13 @@ async function openNotification(notification: UserNotification) {
 
 async function logout() {
   accountOpen.value = false
-  await authState.logout()
+  const result = await authState.logout()
   notifications.value = []
   notificationsOpen.value = false
-  await router.push({ name: routeNames.login })
+  await router.replace({ name: routeNames.login })
+  if (!result.confirmed) {
+    window.dispatchEvent(new CustomEvent('ticketing:notice', { detail: '退出请求未确认，请检查网络后重试' }))
+  }
 }
 
 function handleNotice(event: Event) {
@@ -153,6 +156,6 @@ onBeforeUnmount(() => {
     </header>
     <RouterView />
     <Transition name="toast"><div v-if="notice" class="toast-message" role="status"><TicketCheck :size="18" />{{ notice }}</div></Transition>
-    <footer class="site-footer"><span>票迹 Ticket Trace · 高并发票务预订系统 MVP</span><span>正式座位状态由服务端与 PostgreSQL 事务保证</span></footer>
+    <footer class="site-footer"><span>票迹 Ticket Trace</span><span>发现活动 · 选择场次 · 在线选座</span></footer>
   </div>
 </template>

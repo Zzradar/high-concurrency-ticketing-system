@@ -1,4 +1,5 @@
 import { computed, onBeforeUnmount, ref, watch, type Ref } from 'vue'
+import { isSalesWindow } from './eventContract'
 import type { SalesWindow } from '../types'
 
 export function salesWindowAt(startsAt: string, endsAt: string, now: number): SalesWindow {
@@ -15,7 +16,7 @@ export function useSalesWindow(window: Ref<SalesWindow | undefined>, refresh: ()
   const visited = new Set<string>()
   const label = computed(() => {
     const value = window.value
-    if (!value) return '售票时间待确认'
+    if (!isSalesWindow(value)) return '售票信息暂不可用'
     if (value.state === 'ENDED') return '售票已结束'
     const boundary = Date.parse(value.state === 'NOT_STARTED' ? value.startsAt : value.endsAt)
     const seconds = Math.max(0, Math.ceil((boundary - now.value) / 1000))
@@ -23,7 +24,7 @@ export function useSalesWindow(window: Ref<SalesWindow | undefined>, refresh: ()
   })
   watch(window, value => {
     if (timer) clearInterval(timer)
-    if (!value) return
+    if (!isSalesWindow(value)) return
     offset = Date.parse(value.evaluatedAt) - Date.now()
     now.value = Date.now() + offset
     if (value.state === 'ENDED') return

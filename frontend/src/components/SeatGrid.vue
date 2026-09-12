@@ -75,7 +75,7 @@ watch(
 
     <div class="seat-map-note">
       <Armchair :size="18" aria-hidden="true" />
-      {{ editingDisabled ? '正在同步座位状态，暂时无法编辑' : '座位状态以提交预订时服务端的最终确认为准' }}
+      {{ editingDisabled ? '正在同步座位状态，暂时无法编辑' : '座位是否预订成功，请以提交结果为准。' }}
     </div>
   </section>
 </template>

@@ -1,3 +1,4 @@
+import { isTicketEvent } from '../utils/eventContract'
 import { salesWindowAt } from '../utils/salesWindow'
 import type { SeatAvailabilitySyncOptions, SeatAvailabilitySyncResponse } from '../types'
 import axios from 'axios'
@@ -1001,7 +1002,11 @@ export const ticketApi = {
   },
   async getEvents(): Promise<TicketEvent[]> {
     if (isMockMode) return mockGetEvents()
-    return (await http.get<TicketEvent[]>('/events')).data
+    const data: unknown = (await http.get<unknown>('/events')).data
+    if (!Array.isArray(data) || !data.every(isTicketEvent)) {
+      throw new TicketApiError('活动信息暂不可用，请稍后重试。', 'INVALID_EVENT_RESPONSE')
+    }
+    return data
   },
   async getEvent(eventId: string): Promise<TicketEvent> {
     if (isMockMode) {
@@ -1010,7 +1015,11 @@ export const ticketApi = {
       if (!event) throw new TicketApiError('活动不存在。', 'EVENT_NOT_FOUND')
       return clone(currentEvent(event))
     }
-    return (await http.get<TicketEvent>('/events/' + eventId)).data
+    const data: unknown = (await http.get<unknown>('/events/' + eventId)).data
+    if (!isTicketEvent(data) || data.id !== eventId) {
+      throw new TicketApiError('活动信息暂不可用，请稍后重试。', 'INVALID_EVENT_RESPONSE')
+    }
+    return data
   },
   async getSessions(eventId: string): Promise<TicketSession[]> {
     if (isMockMode) return mockGetSessions(eventId)

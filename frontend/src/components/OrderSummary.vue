@@ -105,7 +105,7 @@ onBeforeUnmount(() => {
 
     <div class="order-assurance">
       <ShieldCheck :size="18" aria-hidden="true" />
-      <span>数据库事务保护</span>
+      <span>预订信息</span>
       <small>订单、预订与座位状态同步更新</small>
     </div>
   </section>

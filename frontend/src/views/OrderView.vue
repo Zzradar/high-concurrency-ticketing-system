@@ -99,7 +99,7 @@ defineEmits<{
     <section v-if="isMockMode && order.status === 'PENDING_PAYMENT'" class="demo-control">
       <div>
         <Hourglass :size="18" aria-hidden="true" />
-        <span><strong>演示工具</strong>无需等待 15 分钟，模拟服务端处理超时订单。</span>
+        <span><strong>演示工具</strong>无需等待 15 分钟，立即演示订单到期后的状态。</span>
       </div>
       <button type="button" :disabled="refreshing" @click="$emit('expire')">模拟订单超时</button>
     </section>
