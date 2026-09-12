@@ -1,0 +1,18 @@
+test_redis_outage_preserves_replay_and_off_while_new_formal_work_fails_closed (__main__.AdmissionHTTP) ... ok
+test_runtime_loss_rotates_generation_without_reusing_qualification (__main__.AdmissionHTTP) ... ok
+test_shadow_cannot_access_formal_status_availability_or_new_stock (__main__.AdmissionHTTP) ... FAIL
+test_stable_status_has_zero_auth_sql_and_logout_revokes_cache (__main__.AdmissionHTTP) ... ok
+test_status_is_read_only_and_strict_auth_still_protects_inventory (__main__.AdmissionHTTP) ... ok
+
+======================================================================
+FAIL: test_shadow_cannot_access_formal_status_availability_or_new_stock (__main__.AdmissionHTTP)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_admission_http_test.py", line 63, in test_shadow_cannot_access_formal_status_availability_or_new_stock
+    self.assertEqual(self.u.request('/reservations',method='POST',body=body,headers={'Idempotency-Key':'formal-'+uuid.uuid4().hex})[0],201)
+AssertionError: 400 != 201
+
+----------------------------------------------------------------------
+Ran 5 tests in 27.117s
+
+FAILED (failures=1)

@@ -1,0 +1,29 @@
+{
+  "cold": {
+    "requests": 48,
+    "concurrency": 8,
+    "fullPgQueries": 1,
+    "totalSessionSeats": 5000
+  },
+  "projectorCrash": {
+    "exitCode": 86,
+    "duplicateChanges": 0,
+    "outboxDrained": true
+  },
+  "initializerCrash": {
+    "exitCode": 87,
+    "newGeneration": true
+  },
+  "redisOutage": {
+    "authoritativeDegradedSnapshot": true,
+    "outboxPreserved": true,
+    "recovered": true
+  },
+  "namespaceReset": {
+    "newGeneration": true
+  },
+  "postgresRollback": {
+    "inventoryPreserved": true,
+    "outboxRows": 0
+  }
+}

@@ -1,0 +1,32 @@
+REGRESSION MODULE phase15_migration_test
+test_actual_public_read_queries (phase15_migration_test.SalesMigrationTest) ... ok
+test_fresh_seed_and_original_invariants (phase15_migration_test.SalesMigrationTest) ... ok
+test_half_open_microsecond_boundaries_and_empty_window (phase15_migration_test.SalesMigrationTest) ... ok
+test_upgrade_backfill_and_constraints (phase15_migration_test.SalesMigrationTest) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 10.563s
+
+OK
+REGRESSION MODULE phase17_schema_test
+test_actual_compose_initdb_mounts_and_verifiers (phase17_schema_test.FreshComposeTest) ... ok
+test_backfill_orders_by_real_first_pair_and_preserves_unusual_names (phase17_schema_test.SchemaTest) ... ok
+test_blank_legacy_names_are_distinct_deterministic_and_collision_safe (phase17_schema_test.SchemaTest) ... ok
+test_constraints_duplicate_labels_and_price_cascades (phase17_schema_test.SchemaTest) ... ok
+test_failed_upgrade_rolls_back_all_changes (phase17_schema_test.SchemaTest) ... ok
+test_fresh_seed_all_verifiers_and_formal_fields (phase17_schema_test.SchemaTest) ... ok
+test_performance_generator_and_replacement_use_normalized_zones (phase17_schema_test.SchemaTest) ... ok
+test_upgrade_preserves_every_seat_and_deterministic_zone_identity (phase17_schema_test.SchemaTest) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 26.871s
+
+OK
+REGRESSION MODULE phase18_schema_test
+test_fresh_constraints_and_policy_occ (phase18_schema_test.AdmissionSchema) ... ok
+test_upgrade_preserves_business_and_absent_policy_is_off (phase18_schema_test.AdmissionSchema) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 12.253s
+
+OK

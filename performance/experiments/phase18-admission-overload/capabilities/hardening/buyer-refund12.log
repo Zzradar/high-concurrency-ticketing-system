@@ -1,0 +1,43 @@
+test_buyer_provider_success_then_process_crash_recovers (__main__.BuyerRefundTest) ... ok
+test_concurrent_requests_create_one_obligation_and_provider_object (__main__.BuyerRefundTest) ... ok
+test_currency_comes_from_historical_attempt (__main__.BuyerRefundTest) ... ok
+test_duplicate_effective_owner_rolls_back (__main__.BuyerRefundTest) ... ok
+test_each_terminal_write_failure_rolls_back_whole_transaction (__main__.BuyerRefundTest) ... ok
+test_eligibility_and_existing_first_after_deadline (__main__.BuyerRefundTest) ... ok
+test_expired_idempotency_key_recovers_existing_refund (__main__.BuyerRefundTest) ... ok
+test_http_400_amount_too_large_invalid_request_error (__main__.BuyerRefundTest) ... ok
+test_http_400_charge_already_refunded_invalid_request_error (__main__.BuyerRefundTest) ... ok
+test_http_400_unknown_idempotency_error (__main__.BuyerRefundTest) ... ok
+test_http_400_unknown_invalid_request_error (__main__.BuyerRefundTest) ... ok
+test_http_401_invalid_api_key_authentication_error (__main__.BuyerRefundTest) ... ok
+test_http_403_permission_permission_error (__main__.BuyerRefundTest) ... ok
+test_http_429_rate_limit_rate_limit_error (__main__.BuyerRefundTest) ... ok
+test_http_500_unknown_api_error (__main__.BuyerRefundTest) ... ok
+test_immediate_failed_and_canceled (__main__.BuyerRefundTest) ... ok
+test_match_on_later_page (__main__.BuyerRefundTest) ... ok
+test_nonpaid_and_closed_window (__main__.BuyerRefundTest) ... ok
+test_null_sold_pointer_full_atomic_refund_and_reuse (__main__.BuyerRefundTest) ... ok
+test_old_worker_fenced_before_seats_after_resale (__main__.BuyerRefundTest) ... ok
+test_owner_body_and_missing_accepted_attempt (__main__.BuyerRefundTest) ... ok
+test_pending_failed_and_requires_action_keep_rights (__main__.BuyerRefundTest) ... ok
+test_refund_webhook_only_wakes_no_identity_binding (__main__.BuyerRefundTest) ... ok
+test_response_loss_recovers_without_second_post (__main__.BuyerRefundTest) ... ok
+test_retrieve_mismatch_never_completes (__main__.BuyerRefundTest) ... ok
+test_scan_amount (__main__.BuyerRefundTest) ... ok
+test_scan_currency (__main__.BuyerRefundTest) ... ok
+test_scan_empty_more (__main__.BuyerRefundTest) ... ok
+test_scan_invalid (__main__.BuyerRefundTest) ... ok
+test_scan_invalid_json (__main__.BuyerRefundTest) ... ok
+test_scan_missing_cursor (__main__.BuyerRefundTest) ... ok
+test_scan_multiple (__main__.BuyerRefundTest) ... ok
+test_scan_order_id (__main__.BuyerRefundTest) ... ok
+test_scan_page_cap (__main__.BuyerRefundTest) ... ok
+test_scan_payment_intent (__main__.BuyerRefundTest) ... ok
+test_scan_repeat_cursor (__main__.BuyerRefundTest) ... ok
+test_should_retry_header_wins_over_auth_status (__main__.BuyerRefundTest) ... ok
+test_wrong_seat_state_rolls_back (__main__.BuyerRefundTest) ... ok
+
+----------------------------------------------------------------------
+Ran 38 tests in 337.218s
+
+OK

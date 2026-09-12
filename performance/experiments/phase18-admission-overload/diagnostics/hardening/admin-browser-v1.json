@@ -1,0 +1,98 @@
+{
+  "purpose": "Admin policy native UI capability; not OFF A/B",
+  "environment": {
+    "playwright": "1.63.0",
+    "executable": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+    "product": "Edg/152.0.4191.66",
+    "args": [
+      "--disable-field-trial-config",
+      "--disable-background-networking",
+      "--disable-background-timer-throttling",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-back-forward-cache",
+      "--disable-breakpad",
+      "--disable-client-side-phishing-detection",
+      "--disable-component-extensions-with-background-pages",
+      "--disable-component-update",
+      "--no-default-browser-check",
+      "--disable-default-apps",
+      "--disable-dev-shm-usage",
+      "--disable-edgeupdater",
+      "--disable-extensions",
+      "--disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion",
+      "--enable-features=CDPScreenshotNewSurface",
+      "--allow-pre-commit-input",
+      "--disable-hang-monitor",
+      "--disable-ipc-flooding-protection",
+      "--disable-popup-blocking",
+      "--disable-prompt-on-repost",
+      "--disable-renderer-backgrounding",
+      "--disable-updater-scheduler",
+      "--force-color-profile=srgb",
+      "--metrics-recording-only",
+      "--no-first-run",
+      "--password-store=basic",
+      "--use-mock-keychain",
+      "--no-service-autorun",
+      "--export-tagged-pdf",
+      "--disable-search-engine-choice-screen",
+      "--unsafely-disable-devtools-self-xss-warnings",
+      "--edge-skip-compat-layer-relaunch",
+      "--disable-infobars",
+      "--disable-search-engine-choice-screen",
+      "--disable-sync",
+      "--enable-unsafe-swiftshader",
+      "--no-sandbox",
+      "--user-data-dir=PROFILE",
+      "--remote-debugging-port=0",
+      "about:blank"
+    ],
+    "resolution": "Official msedge channel verified in diagnostics; headed; one context and two same-window pages; noDefaults=true"
+  },
+  "checks": [
+    "Admin UI persists modes and preserves/rotates formal/shadow generation correctly"
+  ],
+  "responses": [
+    {
+      "at": 1789230738720,
+      "status": 200,
+      "mode": "OBSERVE",
+      "version": 2,
+      "generation": "7135ef40625e54994e134a57d53c2dae"
+    },
+    {
+      "at": 1789230738761,
+      "status": 200,
+      "mode": "PAUSED",
+      "version": 3,
+      "generation": "9742640cb1275eb6843f32e2ee06e421"
+    },
+    {
+      "at": 1789230738812,
+      "status": 200,
+      "mode": "ENFORCED",
+      "version": 4,
+      "generation": "9742640cb1275eb6843f32e2ee06e421"
+    },
+    {
+      "at": 1789230738859,
+      "status": 200,
+      "mode": "OFF",
+      "version": 5,
+      "generation": "9742640cb1275eb6843f32e2ee06e421"
+    },
+    {
+      "at": 1789230738905,
+      "status": 200,
+      "mode": "ENFORCED",
+      "version": 6,
+      "generation": "7f5a34d0d1af0a5d2aa4fd49b6c9d3c0"
+    }
+  ],
+  "passed": false,
+  "error": {
+    "message": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('策略已被其他管理员修改，请重新加载后再保存', { exact: true }) to be visible\u001b[22m\n",
+    "stack": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('策略已被其他管理员修改，请重新加载后再保存', { exact: true }) to be visible\u001b[22m\n\n    at D:\\Documents\\vscode\\high-concurrency-ticketing-system-phase18\\performance\\experiments\\phase18-admission-overload\\capabilities\\hardening\\admin-browser.mjs:38:229"
+  }
+}

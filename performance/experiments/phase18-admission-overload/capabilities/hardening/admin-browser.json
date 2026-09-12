@@ -1,0 +1,95 @@
+{
+  "purpose": "Admin policy native UI capability; not OFF A/B",
+  "environment": {
+    "playwright": "1.63.0",
+    "executable": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+    "product": "Edg/152.0.4191.66",
+    "args": [
+      "--disable-field-trial-config",
+      "--disable-background-networking",
+      "--disable-background-timer-throttling",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-back-forward-cache",
+      "--disable-breakpad",
+      "--disable-client-side-phishing-detection",
+      "--disable-component-extensions-with-background-pages",
+      "--disable-component-update",
+      "--no-default-browser-check",
+      "--disable-default-apps",
+      "--disable-dev-shm-usage",
+      "--disable-edgeupdater",
+      "--disable-extensions",
+      "--disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion",
+      "--enable-features=CDPScreenshotNewSurface",
+      "--allow-pre-commit-input",
+      "--disable-hang-monitor",
+      "--disable-ipc-flooding-protection",
+      "--disable-popup-blocking",
+      "--disable-prompt-on-repost",
+      "--disable-renderer-backgrounding",
+      "--disable-updater-scheduler",
+      "--force-color-profile=srgb",
+      "--metrics-recording-only",
+      "--no-first-run",
+      "--password-store=basic",
+      "--use-mock-keychain",
+      "--no-service-autorun",
+      "--export-tagged-pdf",
+      "--disable-search-engine-choice-screen",
+      "--unsafely-disable-devtools-self-xss-warnings",
+      "--edge-skip-compat-layer-relaunch",
+      "--disable-infobars",
+      "--disable-search-engine-choice-screen",
+      "--disable-sync",
+      "--enable-unsafe-swiftshader",
+      "--no-sandbox",
+      "--user-data-dir=PROFILE",
+      "--remote-debugging-port=0",
+      "about:blank"
+    ],
+    "resolution": "Official msedge channel verified in diagnostics; headed; one context and two same-window pages; noDefaults=true"
+  },
+  "checks": [
+    "Admin UI persists modes and preserves/rotates formal/shadow generation correctly",
+    "OCC conflict disables stale save and explicit reload restores current version"
+  ],
+  "responses": [
+    {
+      "at": 1789230876495,
+      "status": 200,
+      "mode": "OBSERVE",
+      "version": 2,
+      "generation": "a140d936d57f4004f27b423b53b6c512"
+    },
+    {
+      "at": 1789230876576,
+      "status": 200,
+      "mode": "PAUSED",
+      "version": 3,
+      "generation": "5b6c3defced919ce71692d04e262fa98"
+    },
+    {
+      "at": 1789230876633,
+      "status": 200,
+      "mode": "ENFORCED",
+      "version": 4,
+      "generation": "5b6c3defced919ce71692d04e262fa98"
+    },
+    {
+      "at": 1789230876713,
+      "status": 200,
+      "mode": "OFF",
+      "version": 5,
+      "generation": "5b6c3defced919ce71692d04e262fa98"
+    },
+    {
+      "at": 1789230876780,
+      "status": 200,
+      "mode": "ENFORCED",
+      "version": 6,
+      "generation": "a6522392e3cbb3cc5039b9091d8c2f42"
+    }
+  ],
+  "passed": true
+}

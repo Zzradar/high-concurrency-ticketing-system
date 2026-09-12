@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "checks": {
+    "policyAuditMismatch": 0,
+    "auditHistoryGap": 0,
+    "auditVersionMismatch": 0,
+    "namespaceNotRotated": 0,
+    "formalPositionDiscarded": 0,
+    "invalidAuditActor": 0,
+    "redisNamespaceMismatch": 0,
+    "duplicateQualification": 0,
+    "missingKeyTTL": 0
+  },
+  "policiesChecked": 2,
+  "limits": [
+    "Read-only convergence check: run after workers settle; Redis checks apply only to published policies before effective sales end.",
+    "Capacity decreases retain existing leases; historical peak bound is verified by concurrency tests, not inferred from current maxActiveUsers.",
+    "Retired generations may remain until their TTL expires."
+  ]
+}

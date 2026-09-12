@@ -1,0 +1,14 @@
+test_committed_order_recovers_after_crash_and_sales_end (__main__.CheckoutCrash) ... ERROR
+
+======================================================================
+ERROR: test_committed_order_recovers_after_crash_and_sales_end (__main__.CheckoutCrash)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_checkout_crash_test.py", line 10, in test_committed_order_recovers_after_crash_and_sales_end
+    fixture=CheckoutSalesTest();fixture.setUp();self.addCleanup(fixture.doCleanups)
+NameError: name 'CheckoutSalesTest' is not defined
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (errors=1)

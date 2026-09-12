@@ -4,3 +4,5 @@ performance/phase14/load-main-memory.json text eol=lf
 
 # Preserve Phase18 capability raw evidence independently of formal A/B.
 performance/experiments/phase18-admission-overload/capabilities/** -text whitespace=cr-at-eol
+
+performance/experiments/phase18-admission-overload/diagnostics/hardening/** -text

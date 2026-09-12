@@ -1,0 +1,7 @@
+test_duplicate_join_and_release_are_atomic_across_two_apis (__main__.MultiInstance) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 10.355s
+
+OK
+two API instances, two schedulers, PG pool budget=8; duplicate joins=16 -> one position; nine unique positions minus five leaves=4; maxActiveUsers=1 observed peak=1

@@ -1,0 +1,9 @@
+test_conditional_body_sql_and_distinct_identity (__main__.LayoutHTTP) ... ok
+test_draft_and_absent_never_validate_even_with_forged_redis (__main__.LayoutHTTP) ... ok
+test_snapshot_delta_poll_hints_and_dynamic_no_store (__main__.LayoutHTTP) ... ok
+Conditional layout: five 304, empty bodies, full-layout SQL delta=0; unchanged 200 body hash=1fc0c95c7e068d5d1db27222e8b5f6dc3af8faa4e3cf17d352e42248c29e6448
+
+----------------------------------------------------------------------
+Ran 3 tests in 8.036s
+
+OK

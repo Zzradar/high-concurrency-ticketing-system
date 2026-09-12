@@ -1,0 +1,12 @@
+test_expiry_cannot_be_revived_by_get_or_heartbeat (__main__.WaitingRoom) ... ok
+test_parallel_scheduler_capacity_and_rate (__main__.WaitingRoom) ... ok
+test_preopen_ended_leave_and_short_lua_failure (__main__.WaitingRoom) ... ok
+test_repeated_join_multi_tab_and_read_only_status (__main__.WaitingRoom) ... ok
+test_runtime_cooldown_keeps_positions_and_resumes_with_distinct_reason (__main__.WaitingRoom) ... ok
+test_shadow_stale_version_pause_and_missing_runtime (__main__.WaitingRoom) ... ok
+test_stable_prequeue_order_then_fifo (__main__.WaitingRoom) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 32.868s
+
+OK

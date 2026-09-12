@@ -1,0 +1,7 @@
+16 authenticated users x 8 events = 128 joins; bounded Phase18 series counts [31, 31, 31, 31, 31, 31, 31, 31]
+test_many_events_and_users_keep_fixed_label_series (__main__.MetricsHTTP) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 21.104s
+
+OK

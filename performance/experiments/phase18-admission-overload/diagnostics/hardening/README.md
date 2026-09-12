@@ -1,0 +1,5 @@
+# CLOSED diagnostics
+
+All files here are excluded from formal baseline, after and deployment qualification. They preserve closed failures: original Phase16 cross-session fixture missing (added only in Phase18 DB, original assertions unchanged); new security test reused its reservation body variable (fixed local variable); crash fixture imported a class then deleted it (local import fixed); legacy capacity tests selected Redis array index zero (now exact named original pools plus independent traffic pool); Admin OCC error used raw Axios shape instead of normalized TicketApiError (both tested, native UI passes); Policy test reset PostgreSQL versions without retiring its prior Redis runtime marker (fixture now retires exact test namespaces; monotonic version fence and strict verifier remain intact).
+
+Successful replacements are in ../../capabilities/hardening. The prior checkpoint is historical diagnostics, not a deployable candidate. No Stage0 raw evidence, frozen protocol, old migration or pushed history was changed.

@@ -1,0 +1,16 @@
+test_real_namespace_audit_and_rollback_negative (__main__.Verifier) ... FAIL
+
+======================================================================
+FAIL: test_real_namespace_audit_and_rollback_negative (__main__.Verifier)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_verifier_test.py", line 10, in test_real_namespace_audit_and_rollback_negative
+    f.until(lambda:v.verify()['passed'])
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_admission_http_test.py", line 22, in until
+    raise AssertionError('Phase18 isolated convergence timeout')
+AssertionError: Phase18 isolated convergence timeout
+
+----------------------------------------------------------------------
+Ran 1 test in 19.946s
+
+FAILED (failures=1)

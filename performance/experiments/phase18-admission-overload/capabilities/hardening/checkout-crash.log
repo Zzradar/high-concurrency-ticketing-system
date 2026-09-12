@@ -1,0 +1,7 @@
+actual exit=88 after formal commit; SUBMITTING persisted; after sales end confirm=200, same order, exactly one order
+test_committed_order_recovers_after_crash_and_sales_end (__main__.CheckoutCrash) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 6.114s
+
+OK
