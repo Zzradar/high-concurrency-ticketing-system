@@ -1,3 +1,4 @@
+#include "common/SeatReadConfig.h"
 #include "observability/PerformanceMetrics.h"
 #include <cstdlib>
 #include "services/SeatAvailabilityReadModel.h"
@@ -180,6 +181,8 @@ struct Request : std::enable_shared_from_this<Request>
                         seat["status"]=displaySeatStatus(formal,owner.empty()?std::nullopt:std::optional(owner),self->owner);
                         body[field].append(std::move(seat));
                     }
+                    const auto polling=SeatReadConfig::parse(drogon::app().getCustomConfig()["seat_read"]);
+                    body["pollAfterMs"]=body["hasMore"].asBool()?0:result.at(1)=="snapshot"?polling.snapshotMs:count?polling.changedMs:polling.emptyMs;
                     PerformanceMetrics::availability("sync",result.at(1),std::chrono::duration<double>(std::chrono::steady_clock::now()-self->started).count(),count);
                     if(result.at(4)=="1")PerformanceMetrics::availability("reset",result.at(6));
                     self->respond(drogon::HttpResponse::newHttpJsonResponse(body));
@@ -225,6 +228,7 @@ struct Request : std::enable_shared_from_this<Request>
                 Json::Value body;
                 body["sessionId"]=self->session; body["zone"]=self->zone; body["mode"]="snapshot";
                 body["reset"]=true; body["degraded"]=true; body["hasMore"]=false;
+                body["pollAfterMs"]=SeatReadConfig::parse(drogon::app().getCustomConfig()["seat_read"]).degradedMs;
                 body["generation"]=Json::nullValue; body["cursor"]=Json::nullValue;
                 body["seats"]=Json::Value(Json::arrayValue); body["zones"]=Json::Value(Json::arrayValue);
                 for(std::size_t i=0;i<rows.size();++i)

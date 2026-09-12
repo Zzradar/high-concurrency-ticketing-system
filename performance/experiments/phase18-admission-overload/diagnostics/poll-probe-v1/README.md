@@ -1,0 +1,1 @@
+CLOSED: capability probe only, not baseline or after. Native visibility passed and maximum in-flight was one, but a delayed focus event started a second restoration Snapshot. The page now deduplicates using actual hidden/visible and focus state; regression reproduces an 80 ms delayed focus. These raw records are diagnostic, not deployable-release evidence.

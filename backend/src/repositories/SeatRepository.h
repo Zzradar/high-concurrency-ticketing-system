@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <functional>
 #include <string>
 #include <vector>
@@ -54,6 +55,9 @@ class SeatRepository
         const std::string &sessionId,
         std::function<void(std::vector<SeatAvailabilityRow>)> onSuccess,
         ErrorCallback onError) const;
+
+    void publicLayoutIdentity(const std::string &sessionId,
+        std::function<void(std::optional<std::string>)> onSuccess,ErrorCallback onError) const;
 
     void sessionExists(
         const std::string &sessionId,

@@ -242,6 +242,7 @@ interface SeatAvailabilitySyncBase {
   reset: boolean
   degraded: boolean
   hasMore: boolean
+  pollAfterMs: number
   zones: SeatZoneAvailabilitySummary[]
 }
 export interface SeatAvailabilitySnapshotResponse extends SeatAvailabilitySyncBase {

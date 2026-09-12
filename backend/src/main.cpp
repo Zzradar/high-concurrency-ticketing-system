@@ -1,3 +1,4 @@
+#include "common/SeatReadConfig.h"
 #include "admission/TrafficControl.h"
 #include "admission/AdmissionService.h"
 #include "admission/AdmissionRuntime.h"
@@ -145,6 +146,7 @@ int main(int argc, char *argv[])
         ticketing::PaymentProviderFactory::validateConfiguration();
         ticketing::AuthConfig::validate();
         ticketing::admission::TrafficControl::configure();
+    (void)ticketing::SeatReadConfig::parse(drogon::app().getCustomConfig()["seat_read"]);
         (void)ticketing::admin::limits();
         (void)ticketing::admission::Config::parse(drogon::app().getCustomConfig()["admission"]);
         ticketing::PerformanceMetrics::registerWithApplication();
@@ -174,6 +176,9 @@ int main(int argc, char *argv[])
             paymentBatchSize, paymentInterval, paymentMaxBackoff);
         auto checkoutReconciliation =
             std::make_shared<ticketing::CheckoutSessionService>();
+        drogon::app().registerPreSendingAdvice([](const drogon::HttpRequestPtr &,const drogon::HttpResponsePtr &response){
+            if(response->getHeader("Cache-Control").empty())response->addHeader("Cache-Control","private, no-store");
+        });
         drogon::app().registerBeginningAdvice(
             [availabilityWorker, expiryWorker,
              checkoutReconciliation,

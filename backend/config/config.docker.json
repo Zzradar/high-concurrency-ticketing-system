@@ -56,6 +56,7 @@
     "client_max_memory_body_size": "64K"
   },
   "custom_config": {
+    "seat_read": {"layout_max_age_seconds":60,"layout_stale_seconds":15,"snapshot_poll_ms":2000,"changed_poll_ms":2000,"empty_poll_ms":5000,"degraded_poll_ms":10000},
     "traffic_control": {
       "bulkheads": {
             "PUBLIC_STATIC_READ": 16,

@@ -1,3 +1,5 @@
+#include "common/HttpCache.h"
+#include "common/SeatReadConfig.h"
 #include "admission/TrafficControl.h"
 #include "admission/AdmissionService.h"
 #include "admission/AdmissionRuntime.h"
@@ -48,8 +50,20 @@ void SeatController::listSeatLayout(
     if(!trafficReply)return;
     callback=std::move(*trafficReply);
 
-    (void)request;
     auto callbackPtr = std::make_shared<HttpCallback>(std::move(callback));
+    ticketing::SeatRepository{}.publicLayoutIdentity(sessionId,
+      [this,request,sessionId,callbackPtr](std::optional<std::string> tag){
+       if(!tag){(*callbackPtr)(ticketing::makeErrorResponse(drogon::k404NotFound,"SESSION_NOT_FOUND","Session not found"));return;}
+       const auto config=ticketing::SeatReadConfig::parse(drogon::app().getCustomConfig()["seat_read"]);
+       const auto cache="public, max-age="+std::to_string(config.maxAge)+", stale-while-revalidate="+std::to_string(config.staleWhileRevalidate);
+       auto cachedReply=std::make_shared<HttpCallback>([callbackPtr,tag,cache](const drogon::HttpResponsePtr &response){
+        if(response->statusCode()==drogon::k200OK||response->statusCode()==drogon::k304NotModified){response->addHeader("ETag",*tag);response->addHeader("Cache-Control",cache);response->addHeader("Vary","Accept-Encoding");}
+        (*callbackPtr)(response);
+       });
+       if(ticketing::ifNoneMatch(request->getHeader("If-None-Match"),*tag)){
+        auto response=drogon::HttpResponse::newHttpResponse();response->setStatusCode(drogon::k304NotModified);(*cachedReply)(response);return;
+       }
+       auto callbackPtr=cachedReply;
     service_.listSeatLayout(
         sessionId,
         [sessionId, callbackPtr](
@@ -81,6 +95,7 @@ void SeatController::listSeatLayout(
                 drogon::k503ServiceUnavailable, "SEAT_MAP_BUSY",
                 "Seat map compute capacity exhausted"));
         });
+      },[callbackPtr]{(*callbackPtr)(ticketing::makeErrorResponse(drogon::k500InternalServerError,"INTERNAL_ERROR","Layout metadata unavailable"));});
 }
 
 void SeatController::listSeatAvailabilityAuthorized(

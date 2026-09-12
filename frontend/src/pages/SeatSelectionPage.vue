@@ -8,6 +8,7 @@ import PageState from '../components/PageState.vue'
 import { routeNames, setPageTitle } from '../navigation'
 import { requestNotificationRefresh, showNotice } from '../uiSignals'
 import { useSalesWindow } from '../utils/salesWindow'
+import { nextPollDelay } from '../utils/pollingPolicy'
 import { ZoneAvailabilityState } from '../utils/zoneAvailability'
 import SeatSelectionView from '../views/SeatSelectionView.vue'
 import type { CheckoutSession, Seat, SeatStatic, TicketEvent, TicketOrder, TicketSession, SeatZoneAvailabilitySummary } from '../types'
@@ -41,6 +42,20 @@ let availabilityTimer: ReturnType<typeof setTimeout> | undefined
 let ownContext = ''
 let disposed = false
 const zoneRequests = new Map<string, Promise<boolean>>()
+let refreshWork: Promise<boolean> | undefined
+let queuedRefresh = false
+let queuedSnapshot = false
+let activeRefreshEpoch = -1
+let activeSnapshot = false
+let wasHidden = document.hidden
+let focusNeedsRead = true
+function handleBlur() { focusNeedsRead = true }
+let foregroundTimer: ReturnType<typeof setTimeout> | undefined
+let pollAfterMs = 2000
+let emptyStreak = 0
+let errorStreak = 0
+let retryAfterMs: number | undefined
+function resetPolling() { emptyStreak = 0; errorStreak = 0; retryAfterMs = undefined; pollAfterMs = 2000 }
 const salesOpen = computed(() => session.value?.salesWindow.state === 'OPEN' && session.value.status === 'ON_SALE' && event.value?.status === 'ON_SALE')
 const { label: salesLabel } = useSalesWindow(computed(() => session.value?.salesWindow), refreshSalesSession)
 async function refreshSalesSession() {
@@ -79,29 +94,35 @@ function stopAvailabilityTimer() {
 function scheduleAvailability() {
   stopAvailabilityTimer()
   if (disposed || document.hidden || !salesOpen.value || !seatMapLoaded.value || !activeZone.value) return
-  const slow = availability.sync.get(activeZone.value)?.degraded
-  availabilityTimer = setTimeout(() => { void refreshSeats() }, slow ? 5000 : 2000)
+  if (refreshWork) return
+  availabilityTimer = setTimeout(() => { void refreshSeats(false) }, nextPollDelay({pollAfterMs,emptyStreak,errorStreak,retryAfterMs}))
 }
 async function syncZone(zone: string, force: boolean, epoch: number): Promise<boolean> {
   while (zoneRequests.has(zone)) {
     try { await zoneRequests.get(zone) } catch { /* next request may recover */ }
   }
-  if (disposed || epoch !== availabilityEpoch || !session.value) return false
+  if (disposed || document.hidden || epoch !== availabilityEpoch || !session.value) return false
   const sessionId = session.value.id
   const owner = checkout.value?.id
   const work = (async () => {
     let more = true
     while (more) {
+      if (document.hidden || disposed || epoch !== availabilityEpoch) return false
       const state = availability.sync.get(zone)
       const cursor = !force && state?.generation && state.cursor ? {generation:state.generation,since:state.cursor} : {}
       const response = await ticketApi.getSeatAvailability(sessionId,owner,{zone,...cursor})
       if (disposed || epoch !== availabilityEpoch || session.value?.id !== sessionId) return false
       if (response.sessionId !== sessionId || response.zone !== zone) throw new Error('Mismatched zone response')
+      if (response.hasMore && response.cursor === cursor.since) throw new Error('Availability cursor did not advance')
       availability.apply(response)
+      pollAfterMs = response.pollAfterMs
+      errorStreak = 0; retryAfterMs = undefined
+      emptyStreak = response.mode === 'delta' && response.changes.length === 0 ? Math.min(6,emptyStreak+1) : 0
       seats.value = availability.seats()
       zoneSummaries.value = availability.summaries
       more = response.hasMore
       force = false
+      if (more) await new Promise<void>(resolve => setTimeout(resolve,0))
     }
     return true
   })()
@@ -114,9 +135,13 @@ async function changeZone(zone: string) {
   activeZone.value = zone
   await refreshSeats()
 }
+function requestForeground() {
+  if (disposed || document.hidden || foregroundTimer !== undefined) return
+  foregroundTimer = setTimeout(() => { foregroundTimer=undefined; void refreshSeats(true) },0)
+}
 function visibilityChanged() {
-  if (document.hidden) stopAvailabilityTimer()
-  else void refreshSeats()
+  if (document.hidden) { wasHidden=true; focusNeedsRead=true; stopAvailabilityTimer(); if(foregroundTimer!==undefined)clearTimeout(foregroundTimer);foregroundTimer=undefined }
+  else if (wasHidden) { wasHidden=false; focusNeedsRead=false; requestForeground() }
 }
 
 const selectedSeats = computed(() => seats.value.filter((seat) => selectedSeatIds.value.includes(seat.id)))
@@ -133,28 +158,50 @@ function locatorClear() {
   if (key) sessionStorage.removeItem(key)
 }
 
-async function refreshSeats() {
-  if (!session.value || !seatMapLoaded.value || !activeZone.value || disposed) return false
+async function refreshSeats(authoritative = true): Promise<boolean> {
+  if (!session.value || !seatMapLoaded.value || !activeZone.value || disposed || document.hidden) return false
   stopAvailabilityTimer()
   const context = (authState.currentUser.value?.id ?? '') + '|' + (checkout.value?.id ?? '')
-  const force = context !== ownContext
-  if (force) { ownContext = context; availabilityEpoch++; availability.sync.clear() }
-  const epoch = availabilityEpoch
-  const zones = new Set([activeZone.value])
-  if (force) for (const seat of seatLayout.value) {
-    if (selectedSeatIds.value.includes(seat.id)) zones.add(seat.zone)
+  const changed = context !== ownContext
+  if (changed) { ownContext = context; availabilityEpoch++; availability.sync.clear() }
+  if (authoritative || changed) resetPolling()
+  if (refreshWork) {
+    if (activeRefreshEpoch !== availabilityEpoch || ((authoritative || changed) && !activeSnapshot)) {
+      queuedRefresh = true; queuedSnapshot ||= authoritative || changed
+    }
+    return refreshWork
   }
-  refreshing.value = true
-  try {
-    for (const zone of zones) if (!(await syncZone(zone,force,epoch))) return false
-    availabilityWarning.value = ''
-    return true
-  } catch {
-    if (epoch === availabilityEpoch) availabilityWarning.value = '座位状态暂未刷新，请稍后重试。'
-    return false
-  } finally {
-    if (epoch === availabilityEpoch) refreshing.value = false
-    scheduleAvailability()
+  queuedSnapshot ||= authoritative || changed
+  refreshWork = (async () => {
+    let succeeded = false
+    do {
+      queuedRefresh = false
+      const force = queuedSnapshot; queuedSnapshot = false
+      const epoch = availabilityEpoch
+      activeRefreshEpoch=epoch; activeSnapshot=force
+      const zones = new Set([activeZone.value])
+      if (force) for (const seat of seatLayout.value) if (selectedSeatIds.value.includes(seat.id)) zones.add(seat.zone)
+      refreshing.value = true
+      try {
+        succeeded = true
+        for (const zone of zones) if (!(await syncZone(zone,force,epoch))) { succeeded=false; break }
+        if (epoch === availabilityEpoch && succeeded) availabilityWarning.value = ''
+      } catch (cause) {
+        succeeded = false
+        if (epoch === availabilityEpoch) {
+          errorStreak=Math.min(5,errorStreak+1)
+          retryAfterMs=cause instanceof TicketApiError?cause.retryAfterMs:undefined
+          availabilityWarning.value = '座位状态暂未刷新，请稍后重试。'
+        }
+      }
+      // Yield after completion before another queued request; never overlap browser requests.
+      if (queuedRefresh && !disposed && !document.hidden) await new Promise<void>(resolve=>setTimeout(resolve,0))
+    } while (queuedRefresh && !disposed && !document.hidden)
+    return succeeded
+  })()
+  try { return await refreshWork } finally {
+    refreshWork=undefined; refreshing.value=false
+    if (!disposed) scheduleAvailability()
   }
 }
 
@@ -382,27 +429,31 @@ async function abandon(value: CheckoutSession) {
 
 async function handleFocus() {
   if (document.hidden) return
-  await Promise.all([refreshSalesSession().catch(() => { /* existing state remains authoritative */ }), refreshSeats()])
+  if (wasHidden || focusNeedsRead) { wasHidden=false; focusNeedsRead=false; requestForeground() }
+  await refreshSalesSession().catch(() => { /* existing state remains authoritative */ })
   requestNotificationRefresh()
   await refreshSessionOrders()
   if (checkout.value) {
-    try { await activate(await ticketApi.getCheckoutSession(checkout.value.id)) } catch { /* best effort */ }
+    try { const fresh=await ticketApi.getCheckoutSession(checkout.value.id); if(checkout.value && (fresh.revision!==checkout.value.revision || fresh.status!==checkout.value.status))await activate(fresh) } catch { /* best effort */ }
   }
 }
 
 onMounted(() => {
   void load()
   window.addEventListener('focus', handleFocus)
+  window.addEventListener('blur', handleBlur)
   document.addEventListener('visibilitychange', visibilityChanged)
 })
 onBeforeUnmount(() => {
   disposed = true
+  if (foregroundTimer !== undefined) clearTimeout(foregroundTimer)
   pageLoadEpoch++
   availabilityEpoch++
   stopAvailabilityTimer()
   document.removeEventListener('visibilitychange', visibilityChanged)
   pollingGeneration += 1
   window.removeEventListener('focus', handleFocus)
+  window.removeEventListener('blur', handleBlur)
 })
 watch(() => authState.currentUser.value?.id, () => { void refreshSeats() })
 watch(() => route.params.sessionId, () => { pollingGeneration++; checkout.value = null; selectedSeatIds.value = []; void load() })
@@ -435,7 +486,7 @@ watch(() => route.params.sessionId, () => { pollingGeneration++; checkout.value 
     :confirming="confirming" :submitting-polling="submittingPolling"
     :submit-uncertain="submitUncertain" :editing-disabled="editingDisabled"
     @back="router.push({ name: routeNames.eventSessions, params: { eventId: session.eventId } })" @toggle="toggleSeat"
-    @reserve="confirmCheckout" @refresh="refreshSeats" @clear="clearSeats"
+    @reserve="confirmCheckout" @refresh="refreshSeats(true)" @clear="clearSeats"
     @continue-checkout="activate" @abandon-checkout="abandon"
     @start-new-checkout="recoverable = []" @retry-confirm="confirmCheckout"
   />

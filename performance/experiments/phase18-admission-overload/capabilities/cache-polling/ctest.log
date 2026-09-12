@@ -1,0 +1,78 @@
+Internal ctest changing into directory: /phase18-build
+Test project /phase18-build
+      Start  1: phase12_source_contract
+ 1/36 Test  #1: phase12_source_contract ....................   Passed    0.10 sec
+      Start  2: schema_contract
+ 2/36 Test  #2: schema_contract ............................   Passed    0.10 sec
+      Start  3: read_api_source_contract
+ 3/36 Test  #3: read_api_source_contract ...................   Passed    0.09 sec
+      Start  4: phase3_schema_contract
+ 4/36 Test  #4: phase3_schema_contract .....................   Passed    0.10 sec
+      Start  5: reservation_source_contract
+ 5/36 Test  #5: reservation_source_contract ................   Passed    0.11 sec
+      Start  6: order_source_contract
+ 6/36 Test  #6: order_source_contract ......................   Passed    0.10 sec
+      Start  7: order_expiry_source_contract
+ 7/36 Test  #7: order_expiry_source_contract ...............   Passed    0.11 sec
+      Start  8: phase5_schema_contract
+ 8/36 Test  #8: phase5_schema_contract .....................   Passed    0.08 sec
+      Start  9: checkout_session_source_contract
+ 9/36 Test  #9: checkout_session_source_contract ...........   Passed    0.14 sec
+      Start 10: seat_hold_source_contract
+10/36 Test #10: seat_hold_source_contract ..................   Passed    0.09 sec
+      Start 11: seat_split_source_contract
+11/36 Test #11: seat_split_source_contract .................   Passed    0.15 sec
+      Start 12: phase8_schema_contract
+12/36 Test #12: phase8_schema_contract .....................   Passed    0.10 sec
+      Start 13: order_lifecycle_source_contract
+13/36 Test #13: order_lifecycle_source_contract ............   Passed    0.14 sec
+      Start 14: payment_source_contract
+14/36 Test #14: payment_source_contract ....................   Passed    0.15 sec
+      Start 15: phase9_auth_schema_contract
+15/36 Test #15: phase9_auth_schema_contract ................   Passed    0.11 sec
+      Start 16: auth_core_source_contract
+16/36 Test #16: auth_core_source_contract ..................   Passed    0.11 sec
+      Start 17: auth_http_source_contract
+17/36 Test #17: auth_http_source_contract ..................   Passed    0.11 sec
+      Start 18: authenticated_routes_source_contract
+18/36 Test #18: authenticated_routes_source_contract .......   Passed    0.12 sec
+      Start 19: order_recovery_source_contract
+19/36 Test #19: order_recovery_source_contract .............   Passed    0.08 sec
+      Start 20: operation_disposition_source_contract
+20/36 Test #20: operation_disposition_source_contract ......   Passed    0.12 sec
+      Start 21: performance_metrics_source_contract
+21/36 Test #21: performance_metrics_source_contract ........   Passed    0.11 sec
+      Start 22: phase11_payment_provider_source_contract
+22/36 Test #22: phase11_payment_provider_source_contract ...   Passed    0.12 sec
+      Start 23: phase11_schema_contract
+23/36 Test #23: phase11_schema_contract ....................   Passed    0.07 sec
+      Start 24: stripe_config_unit
+24/36 Test #24: stripe_config_unit .........................   Passed    0.00 sec
+      Start 25: stripe_webhook_verifier_unit
+25/36 Test #25: stripe_webhook_verifier_unit ...............   Passed    0.00 sec
+      Start 26: password_hash_executor_unit
+26/36 Test #26: password_hash_executor_unit ................   Passed    0.10 sec
+      Start 27: seat_map_compute_executor_unit
+27/36 Test #27: seat_map_compute_executor_unit .............   Passed    0.00 sec
+      Start 28: seat_display_status_unit
+28/36 Test #28: seat_display_status_unit ...................   Passed    0.00 sec
+      Start 29: phase14_observation_unit
+29/36 Test #29: phase14_observation_unit ...................   Passed    0.00 sec
+      Start 30: phase14_metrics_source_contract
+30/36 Test #30: phase14_metrics_source_contract ............   Passed    0.15 sec
+      Start 31: phase16_source_contract
+31/36 Test #31: phase16_source_contract ....................   Passed    0.16 sec
+      Start 32: phase15_source_contract
+32/36 Test #32: phase15_source_contract ....................   Passed    0.09 sec
+      Start 33: phase17_source_contract
+33/36 Test #33: phase17_source_contract ....................   Passed    0.10 sec
+      Start 34: phase17_config_unit
+34/36 Test #34: phase17_config_unit ........................   Passed    0.01 sec
+      Start 35: phase18_policy_unit
+35/36 Test #35: phase18_policy_unit ........................   Passed    0.01 sec
+      Start 36: phase18_bulkhead_unit
+36/36 Test #36: phase18_bulkhead_unit ......................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 36
+
+Total Test time (real) =   3.19 sec

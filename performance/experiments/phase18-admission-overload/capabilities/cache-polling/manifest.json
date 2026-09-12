@@ -1,0 +1,38 @@
+{
+  "kind": "capability only; not frozen OFF A/B",
+  "baseCommit": "fd94946731b559173c81a93ca4a1e882e0fe9909",
+  "sourceLFNormalizedSha256": {
+    "backend/config/config.docker.json": "1f503e10c5f576453a770f287ecf15cd6039163c9425bd6c50ec6aa04ec18922",
+    "backend/config/config.json": "a9a47e50f42429ea472e2a2c22e1695efb9d6df23cd01884e2b404bdfdce32f2",
+    "backend/config/config.performance.json": "e044d0654a5aa1cba952da32a20d0ca2d676b2144be4fa8b6520252aac79adc2",
+    "backend/config/config.performance.no_metrics.json": "bdb07ebcd09494702355c8d3b21af7a3d20e80bdbbf0645abcb439e9ca434d7e",
+    "backend/config/config.phase14.json": "86c4197ea30906e8397371f04964ac7cdce04c38b088ba931667fd008c0e0bf1",
+    "backend/src/controllers/SeatController.cpp": "341fdfa510b25d4eb59bdafeea8e2bf56876ed9093abb067d3d7e10d4058ac77",
+    "backend/src/main.cpp": "4e7bb9587231778dde177cca8d0e1eac92a1380dc607da84a22dc1977f5746de",
+    "backend/src/repositories/SeatRepository.cpp": "7db8dfb4169e51f5a9fcbaf67934c4f56354adb0e31db2792d38acdad7e1b4e0",
+    "backend/src/repositories/SeatRepository.h": "e026d46d6b160b5e5992f6bdd974bba0202d721697a82bed370e612b7aff5a01",
+    "backend/src/services/SeatAvailabilityReadModel.cpp": "6d8c1cb928a560c0d432a90928fcefe4983a136736a705196de9847f5dbcb6ec",
+    "backend/tests/phase18_policy_unit.cpp": "c31d870d3a435670e78033cdb5e62f0ae764b80213497008c60e441d36682277",
+    "frontend/src/api/ticketApi.ts": "d590c6348e2ecdbbb03d124b72da77763da990ef106d0f25622c2762c9877014",
+    "frontend/src/pages/SeatSelectionPage.phase16.test.ts": "09abeecbc122e32111ba5f687889f662fb1e3220f3b4cb4b9b0970c27e59a6e3",
+    "frontend/src/pages/SeatSelectionPage.vue": "ffcefeb4a7c62a9399d08a4d12e53c688ca0dfdaafe8b132cca038b4d1d98d59",
+    "frontend/src/types.ts": "1cfaadc48befcf1cf60ba8303efc10ddef2a0407d4fc23c81770b6a1509f6c73",
+    "frontend/src/utils/zoneAvailability.test.ts": "9b5fc598d1c1ab4c4352c7b2b7317df30eaf0880efc5d85e4ba89bf1005336a6",
+    "backend/src/common/HttpCache.h": "d7b8953cf9f14444435cb1a8f79663751f7dcae39af0fff748ffd69621c92c1b",
+    "backend/src/common/SeatReadConfig.h": "9ada174256bd77f6221dff22ab090911f8934cedb8f21a31973ac28a0852b0ce",
+    "backend/tests/phase18_layout_http_test.py": "5dffef03ae3d6889eefb4127f4aac2f807810ad0f3b39f05b69ec4a0b9d595dd",
+    "frontend/src/utils/availabilityContract.ts": "c11f615d3882524b8bd7dd2392298151717cab8ff4b11ed332a1fe69a806fd04",
+    "frontend/src/utils/pollingPolicy.test.ts": "1f1d1d8720cdebe762860fe9efc67eb8b9f899371d35ef24b9f438ed9b505cee",
+    "frontend/src/utils/pollingPolicy.ts": "82ca0b30d44f626a755ab214716e7dcfd5f84d39ed1aa700b4f10e02831becda"
+  },
+  "raw": {
+    "browser.json": "2e6e49d7096b17d847b2e4a2afb7584ba5ca5220a4603476cf628fe4e3737585",
+    "browser.json.browser.log": "1d15804d18a313c472a235e1afa09a9b3a38cbf56b132f14113106515ac5a234",
+    "ctest.log": "a0c55947d23d83b33226d8459662dc3f580a3479bd936f86d465dea6072b6439",
+    "http.log": "2255b9ef3d1b28969cc3df6425eaf704dc9031cbed53b16739f2ec66379b3d9d",
+    "long-hidden.mjs": "151fa7a95d2f2b55621ccd9624194a361d61bf631d3a7e829ff27122d0da4408"
+  },
+  "baselineSutSha": "ed51447154418e05ed9e4c49728f3eb114713db9",
+  "deliveryManifestSha256": "19f394034d74e027a19e62f3e61f2ab82c9806b542604d666dc24d948640f338",
+  "baselineManifestSha256": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402"
+}

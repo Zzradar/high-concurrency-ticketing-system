@@ -1,3 +1,5 @@
+import { isAvailabilitySync } from '../utils/availabilityContract'
+import { retryHint } from '../utils/pollingPolicy'
 import { isTicketEvent } from '../utils/eventContract'
 import { salesWindowAt } from '../utils/salesWindow'
 import type { SeatAvailabilitySyncOptions, SeatAvailabilitySyncResponse } from '../types'
@@ -29,16 +31,19 @@ import { normalizeLegacySeatSnapshot } from '../utils/seatMap'
 export class TicketApiError extends Error {
   readonly code: string
   readonly status?: number
+  readonly retryAfterMs?: number
 
-  constructor(message: string, code: string, status?: number) {
+  constructor(message: string, code: string, status?: number, retryAfterMs?: number) {
     super(message)
     this.name = 'TicketApiError'
     this.code = code
     this.status = status
+    this.retryAfterMs = retryAfterMs
   }
 }
 
 interface ApiErrorPayload {
+  retryAfterMs?: unknown
   code?: unknown
   message?: unknown
 }
@@ -57,7 +62,7 @@ export function normalizeApiError(error: unknown): unknown {
   const code = error.response?.data?.code
   const message = error.response?.data?.message
   if (typeof code === 'string' && typeof message === 'string') {
-    return new TicketApiError(message, code, error.response?.status)
+    return new TicketApiError(message, code, error.response?.status, retryHint(error.response?.data?.retryAfterMs,error.response?.headers?.['retry-after']))
   }
 
   return error
@@ -463,12 +468,12 @@ async function mockSyncAvailability(sessionId: string, checkoutId: string | unde
   const display = (seat: Seat): SeatAvailability => ({id:seat.id,status:seat.status !== 'AVAILABLE' ? seat.status : holds.has(seat.id) && holds.get(seat.id) !== own ? 'HELD' : 'AVAILABLE'})
   const after = options.since ? Number(options.since.split('-')[0]) : 0
   const reset = !!options.generation && (options.generation !== log.generation || after < (log.events.length === 10000 ? log.events[0]!.sequence : 1))
-  const base = { sessionId,zone:options.zone,generation:log.generation,cursor:log.sequence+'-0',reset,degraded:false,hasMore:false,zones }
+  const base = { sessionId,zone:options.zone,generation:log.generation,cursor:log.sequence+'-0',reset,degraded:false,hasMore:false,pollAfterMs:2000,zones }
   if (!options.generation || reset) return {...base,mode:'snapshot',seats:zoneSeats.map(display)}
   const pending = log.events.filter(e => e.sequence > after)
   const page = pending.slice(0,1000)
   const ids = new Set(page.map(e => e.id))
-  return {...base,mode:'delta',cursor:page.length ? page.at(-1)!.sequence+'-0' : options.since!,hasMore:pending.length>1000,changes:zoneSeats.filter(s => ids.has(s.id)).map(display)}
+  return {...base,mode:'delta',cursor:page.length ? page.at(-1)!.sequence+'-0' : options.since!,hasMore:pending.length>1000,pollAfterMs:pending.length>1000?0:ids.size?2000:5000,changes:zoneSeats.filter(s => ids.has(s.id)).map(display)}
 }
 
 async function mockCreateReservation(sessionId: string, seatIds: string[]): Promise<ReservationResult> {
@@ -959,7 +964,12 @@ async function getSeatAvailability(
     checkoutSessionId?: string,
   options?: SeatAvailabilitySyncOptions,
 ): Promise<SeatAvailability[] | SeatAvailabilitySyncResponse> {
-    if (options) return isMockMode ? mockSyncAvailability(sessionId,checkoutSessionId,options) : (await http.get<SeatAvailabilitySyncResponse>(seatMapPaths.availability(sessionId), { params: { ...options, checkoutSessionId } })).data
+    if (options) {
+      const response: unknown = isMockMode ? await mockSyncAvailability(sessionId,checkoutSessionId,options) : (await http.get<unknown>(seatMapPaths.availability(sessionId), { params: { ...options, checkoutSessionId } })).data
+      if (!isAvailabilitySync(response)) throw new TicketApiError('座位状态响应无效。','INVALID_AVAILABILITY_RESPONSE')
+      assertSeatSnapshotSession(sessionId,response.sessionId)
+      return response
+    }
     const response = isMockMode
       ? await mockGetSeatAvailability(sessionId, checkoutSessionId)
       : (

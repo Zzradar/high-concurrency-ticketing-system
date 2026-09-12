@@ -1,3 +1,4 @@
+#include "security/Crypto.h"
 #include "repositories/SeatRepository.h"
 #include "observability/PerformanceMetrics.h"
 
@@ -7,6 +8,19 @@
 
 namespace ticketing
 {
+void SeatRepository::publicLayoutIdentity(const std::string &sessionId,
+    std::function<void(std::optional<std::string>)> onSuccess,ErrorCallback onError) const {
+    // Published layout identity is immutable under Phase17. Visibility always comes from PG.
+    drogon::app().getDbClient("default")->execSqlAsync(
+        "SELECT s.id,s.venue_id,(extract(epoch FROM s.created_at)*1000000)::bigint created,coalesce((extract(epoch FROM e.published_at)*1000000)::bigint,0) published FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>'DRAFT' AND e.status<>'DRAFT'",
+        [onSuccess=std::move(onSuccess)](const drogon::orm::Result &rows){
+            if(rows.empty()){onSuccess(std::nullopt);return;}
+            std::string identity="seat-layout-v1";
+            for(const auto key:{"id","venue_id","created","published"}){const auto value=rows[0][key].as<std::string>();identity+=std::to_string(value.size())+":"+value;}
+            onSuccess("W/\"seat-layout-v1-"+sha256Hex(identity)+"\"");
+        },[onError=std::move(onError)](const drogon::orm::DrogonDbException &){onError();},sessionId);
+}
+
 void SeatRepository::listBySessionId(
     const std::string &sessionId,
     std::function<void(std::vector<SeatRow>)> onSuccess,

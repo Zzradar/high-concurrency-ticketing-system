@@ -1,3 +1,5 @@
+#include "common/SeatReadConfig.h"
+#include "common/HttpCache.h"
 #include "admission/TrafficConfig.h"
 #include "admission/AdmissionPolicy.h"
 #include <iostream>
@@ -18,6 +20,11 @@ int main() {
     for(auto name:resourceNames)for(auto bad:{Json::Value{},Json::Value(true),Json::Value("16"),Json::Value(16.0),Json::Value(0),Json::Value(257)}){
       auto invalid=traffic;invalid["bulkheads"][name]=bad;try{TrafficConfig::parse(invalid);return 9;}catch(const std::invalid_argument &){}
     }
+    for(auto bad:{Json::Value(true),Json::Value("60"),Json::Value(60.0),Json::Value(-1),Json::Value(601)}){
+      Json::Value invalid;invalid["layout_max_age_seconds"]=bad;try{ticketing::SeatReadConfig::parse(invalid);return 10;}catch(const std::invalid_argument &){}
+    }
+    for(auto tag:{"W/\"tag\"","\"tag\""," * ","\"other\", W/\"tag\""," W/\"a,b\", \"tag\""})if(!ticketing::ifNoneMatch(tag,"W/\"tag\""))return 11;
+    for(auto tag:{"","tag","\"other\"","\"tag\",","\"tag\" garbage","*, \"tag\"","\"tag\", ","\"unterminated"})if(ticketing::ifNoneMatch(tag,"W/\"tag\""))return 12;
     const std::string modes[]={"OFF","OBSERVE","PAUSED","ENFORCED"};
     const int spaces[]={0,1,2,2};
     for(int i=0;i<4;++i)for(int j=0;j<4;++j)

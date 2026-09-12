@@ -5,7 +5,7 @@ import type { SeatAvailabilitySnapshotResponse, SeatStatic } from '../types'
 
 const layout: SeatStatic[] = ['A','B'].flatMap(zone => [1,2].map(number => ({id:zone+number,sessionId:'S',label:zone+number,row:zone,number,zone,price:100})))
 const snapshot = (zone: string): SeatAvailabilitySnapshotResponse => ({
-  sessionId:'S',zone,mode:'snapshot',generation:'g1',cursor:'1-0',reset:false,degraded:false,hasMore:false,
+  sessionId:'S',zone,mode:'snapshot',generation:'g1',cursor:'1-0',reset:false,degraded:false,hasMore:false,pollAfterMs:2000,
   zones:[{zone,total:2,available:2,held:0,sold:0}],seats:layout.filter(s=>s.zone===zone).map(s=>({id:s.id,status:'AVAILABLE'})),
 })
 describe('ZoneAvailabilityState', () => {
