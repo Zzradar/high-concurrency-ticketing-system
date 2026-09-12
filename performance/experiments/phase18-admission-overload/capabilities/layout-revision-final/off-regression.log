@@ -1,0 +1,117 @@
+REGRESSION MODULE phase15_reservation_test
+test_concurrent_same_key_arbitrates_before_ended_preliminary_rejection (phase15_reservation_test.ReservationSalesTest) ... ok
+test_new_request_rejected_and_idempotent_replay_survives_end (phase15_reservation_test.ReservationSalesTest) ... ok
+test_not_started_and_static_unavailable_roll_back_new_insert (phase15_reservation_test.ReservationSalesTest) ... ok
+test_seat_lock_wait_crosses_end_without_inventory_or_outbox_writes (phase15_reservation_test.ReservationSalesTest) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 10.695s
+
+OK
+REGRESSION MODULE phase15_checkout_test
+test_checkout_create_both_closed_states_no_hold (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_millisecond_ttl_bounded_by_window_and_default (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_natural_expiry_converges_phase16_derived_model (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_replace_rejection_preserves_revision_and_ttl_empty_release_allowed (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_selecting_confirm_closes_and_releases_hold (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_submitting_formal_replay_and_reserved_confirm_after_end (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_submitting_without_formal_result_closes_with_fenced_key (phase15_checkout_test.CheckoutSalesTest) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 27.654s
+
+OK
+REGRESSION MODULE phase15_read_api_test
+test_effective_end_clamped_to_session_and_last_session (phase15_read_api_test.SalesReadApiTest) ... ok
+test_time_states_and_static_independence (phase15_read_api_test.SalesReadApiTest) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 2.342s
+
+OK
+REGRESSION MODULE phase15_observation_test
+test_fixed_gate_count_independent_of_seat_count_and_replay_has_zero (phase15_observation_test.ObservationTest) ... ok
+test_only_external_entrypoint_is_counted_once (phase15_observation_test.ObservationTest) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 8.235s
+
+OK
+REGRESSION MODULE phase16_migration_test
+test_claim_skip_locked_and_stale_lease_ack (phase16_migration_test.MigrationTest) ... ok
+test_constraints_and_outbox_failure_roll_back_inventory (phase16_migration_test.MigrationTest) ... ok
+test_defaults_and_existing_schema (phase16_migration_test.MigrationTest) ... ok
+test_lifecycle_noop_and_exact_events (phase16_migration_test.MigrationTest) ... ok
+test_multi_seat_and_rollback (phase16_migration_test.MigrationTest) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 17.966s
+
+OK
+REGRESSION MODULE phase16_read_model_test
+test_cold_5000_and_latest_hold_at_publish (phase16_read_model_test.ReadModelTest) ... ok
+test_corrupt_model_does_not_partially_write_hold (phase16_read_model_test.ReadModelTest) ... ok
+test_dedupe_paging_no_change_and_trim (phase16_read_model_test.ReadModelTest) ... ok
+test_defer_no_model_generation_and_zone (phase16_read_model_test.ReadModelTest) ... ok
+test_expiry_and_extension_formal_precedence (phase16_read_model_test.ReadModelTest) ... ok
+test_large_versions_do_not_round_through_lua_double (phase16_read_model_test.ReadModelTest) ... ok
+test_numeric_summary_corruption_cannot_fail_after_original_hold_write (phase16_read_model_test.ReadModelTest) ... ok
+test_owner_change_emits_even_when_public_stays_held (phase16_read_model_test.ReadModelTest) ... ok
+test_prepare_ensure_abort_finalize_release (phase16_read_model_test.ReadModelTest) ... ok
+test_projection_versions_public_unchanged_still_delta (phase16_read_model_test.ReadModelTest) ... ok
+test_stale_initializer_cannot_publish (phase16_read_model_test.ReadModelTest) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 35.931s
+
+OK
+REGRESSION MODULE phase16_api_test
+test_argument_errors (phase16_api_test.AvailabilityApiTest) ... ok
+test_delta_dedup_pagination_and_bounded_trim (phase16_api_test.AvailabilityApiTest) ... ok
+test_generation_reset (phase16_api_test.AvailabilityApiTest) ... ok
+test_initialization_wait_timeout_and_corruption_rebuild (phase16_api_test.AvailabilityApiTest) ... ok
+test_legacy_snapshot_delta_zone_isolation (phase16_api_test.AvailabilityApiTest) ... ok
+test_ownership_and_hold_delta (phase16_api_test.AvailabilityApiTest) ... ok
+test_warm_delta_does_not_fetch_inventory (phase16_api_test.AvailabilityApiTest) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 5.776s
+
+OK
+REGRESSION MODULE phase17_venue_test
+test_backend_permissions (phase17_venue_test.VenueTest) ... ok
+test_create_detail_list_and_set_based_seats (phase17_venue_test.VenueTest) ... ok
+test_invalid_inputs_and_limits (phase17_venue_test.VenueTest) ... ok
+test_replace_resets_draft_prices_and_frozen_rejects (phase17_venue_test.VenueTest) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 2.153s
+
+OK
+REGRESSION MODULE phase17_publishing_test
+test_concurrent_publish_is_exactly_once (phase17_publishing_test.PublishingTest) ... ok
+test_draft_hidden_at_every_public_entry_and_checkout (phase17_publishing_test.PublishingTest) ... ok
+test_dynamic_published_order_expires_and_inventory_converges (phase17_publishing_test.PublishingTest) ... ok
+test_future_window_published_but_checkout_blocked_and_ended_rejected (phase17_publishing_test.PublishingTest) ... ok
+test_multiple_sessions_publish_counts_prices_and_audit (phase17_publishing_test.PublishingTest) ... ok
+test_plan_replace_races_publish_without_partial_inventory (phase17_publishing_test.PublishingTest) ... ok
+test_preview_partial_prices_and_validation (phase17_publishing_test.PublishingTest) ... ok
+test_publish_does_not_depend_on_redis (phase17_publishing_test.PublishingTest) ... ok
+test_update_failure_rolls_back_inventory_and_audit (phase17_publishing_test.PublishingTest) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 19.899s
+
+OK
+REGRESSION MODULE payment_integration_test
+test_cancel_during_processing_keeps_attempt_and_late_success_refunds (payment_integration_test.PaymentIntegrationTest) ... ok
+test_checkout_stays_reserved_and_notification_ownership_is_enforced (payment_integration_test.PaymentIntegrationTest) ... ok
+test_concurrent_start_reuses_attempt_and_success_is_atomic (payment_integration_test.PaymentIntegrationTest) ... ok
+test_late_success_expires_without_reviving_inventory (payment_integration_test.PaymentIntegrationTest) ... ok
+test_simulation_processing_grace_remains_ten_seconds (payment_integration_test.PaymentIntegrationTest) ... ok
+test_timed_out_attempt_can_refund_after_another_attempt_is_accepted (payment_integration_test.PaymentIntegrationTest) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 32.082s
+
+OK

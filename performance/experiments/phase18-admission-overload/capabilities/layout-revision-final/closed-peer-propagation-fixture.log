@@ -1,0 +1,14 @@
+test_duplicate_join_and_release_are_atomic_across_two_apis (__main__.MultiInstance) ... FAIL
+
+======================================================================
+FAIL: test_duplicate_join_and_release_are_atomic_across_two_apis (__main__.MultiInstance)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_multi_instance_test.py", line 54, in test_duplicate_join_and_release_are_atomic_across_two_apis
+    self.assertEqual(sum(f.redis('ZCARD',root+s) for s in ['prequeue','waiting','active']),4)
+AssertionError: 5 != 4
+
+----------------------------------------------------------------------
+Ran 1 test in 11.408s
+
+FAILED (failures=1)

@@ -1,0 +1,10 @@
+test_cached_admin_is_downgraded_on_next_request_without_extra_query (phase17_http_test.AuthRoleTest) ... ok
+test_login_me_rbac_and_csrf (phase17_http_test.AuthRoleTest) ... ok
+test_missing_and_invalid_cached_role_reload_from_database (phase17_http_test.AuthRoleTest) ... ok
+test_duplicate_a001_cold_snapshot_delta_summary_and_fallback (phase17_http_test.ZoneCompatibilityTest) ... ok
+test_legacy_demo_names_and_order (phase17_http_test.ZoneCompatibilityTest) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 8.839s
+
+OK

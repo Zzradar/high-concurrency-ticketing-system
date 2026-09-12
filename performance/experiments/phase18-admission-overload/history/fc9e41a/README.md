@@ -1,0 +1,1 @@
+Historical delivery invalidated by the ETag defect. Original report and manifest bytes are preserved. Manifest artifact paths resolve against the experiment root, except FINAL_REPORT.md relocated into this history directory. after/ remains at its original path and all original bytes remain unchanged. Current delivery is ../../phase18-delivery.json.

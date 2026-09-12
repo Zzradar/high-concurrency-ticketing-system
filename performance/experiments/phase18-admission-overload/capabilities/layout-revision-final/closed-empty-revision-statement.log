@@ -1,0 +1,17 @@
+test_targeting_and_noop (phase18_layout_revision_schema_test.LayoutRevisionSchema) ... FAIL
+
+======================================================================
+FAIL: test_targeting_and_noop (phase18_layout_revision_schema_test.LayoutRevisionSchema)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_layout_revision_schema_test.py", line 58, in test_targeting_and_noop
+    self.assertEqual(self.sql('SELECT count(*) FROM revision_statements'),'0','No-op and dynamic changes must not execute even an empty revision UPDATE')
+AssertionError: '4' != '0'
+- 4
++ 0
+ : No-op and dynamic changes must not execute even an empty revision UPDATE
+
+----------------------------------------------------------------------
+Ran 1 test in 6.359s
+
+FAILED (failures=1)

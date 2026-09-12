@@ -1,0 +1,18 @@
+test_cached_admin_is_downgraded_on_next_request_without_extra_query (__main__.AuthRoleTest) ... ok
+test_login_me_rbac_and_csrf (__main__.AuthRoleTest) ... ok
+test_missing_and_invalid_cached_role_reload_from_database (__main__.AuthRoleTest) ... ok
+test_duplicate_a001_cold_snapshot_delta_summary_and_fallback (__main__.ZoneCompatibilityTest) ... FAIL
+test_legacy_demo_names_and_order (__main__.ZoneCompatibilityTest) ... ok
+
+======================================================================
+FAIL: test_duplicate_a001_cold_snapshot_delta_summary_and_fallback (__main__.ZoneCompatibilityTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase17_http_test.py", line 111, in test_duplicate_a001_cold_snapshot_delta_summary_and_fallback
+    status,snap,_=read(zone);self.assertEqual(status,200);self.assertTrue(snap['degraded'])
+AssertionError: 503 != 200
+
+----------------------------------------------------------------------
+Ran 5 tests in 7.959s
+
+FAILED (failures=1)

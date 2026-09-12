@@ -1,0 +1,6 @@
+test_real_namespace_audit_and_rollback_negative (phase18_verifier_test.Verifier) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 13.939s
+
+OK

@@ -1,0 +1,8 @@
+ Network phase18-financial-etag-final_default Creating 
+ Network phase18-financial-etag-final_default Creating 
+ Network phase18-financial-etag-final_default Error Error response from daemon: all predefined address pools have been fully subnetted
+ network:default failed to create network phase18-financial-etag-final_default: Error response from daemon: all predefined address pools have been fully subnetted 
+ Container phase18-financial-etag-final-fake-stripe-1 Creating 
+ Container phase18-financial-etag-final-redis-1 Creating 
+ Container phase18-financial-etag-final-postgres-1 Creating 
+failed to create network phase18-financial-etag-final_default: Error response from daemon: all predefined address pools have been fully subnetted

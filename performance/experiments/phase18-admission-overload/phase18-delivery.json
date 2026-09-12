@@ -1,14 +1,25 @@
 {
   "status": "COMPLETE_AWAITING_INDEPENDENT_REVERIFICATION",
   "baselineSutSha": "ed51447154418e05ed9e4c49728f3eb114713db9",
-  "afterSutSha": "4dd48c177516caf950103ce3f7751cc0fb056029",
-  "reviewedStage0EvidenceCommit": "fefa8c493e0046f6a4f6e3d60d5d7eeb167cf28e",
+  "afterSutSha": "6807a01516a75cf834ca1fac46fb1ac9abcdc53e",
+  "afterDirectory": "after-v2",
+  "measurementRole": "AFTER_V2",
   "branch": "phase18/admission-overload-control",
   "frozenManifests": {
     "manifest.json": "19f394034d74e027a19e62f3e61f2ab82c9806b542604d666dc24d948640f338",
     "baseline/manifest.json": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402"
   },
-  "afterManifestSha256": "b1585c91e4cdb4e3aae915dc75552fb8ad2b591dd00fdf02d62af2716a7ac369",
+  "afterManifestSha256": "67c848d55a499ec4d9fd898c2f34eb0fe6434e4bbd0926ebf68f4270b1117b33",
+  "invalidatedAfter": {
+    "status": "SUPERSEDED_INVALIDATED_BY_ETAG_DEFECT",
+    "sutSha": "4dd48c177516caf950103ce3f7751cc0fb056029",
+    "manifestSha256": "b1585c91e4cdb4e3aae915dc75552fb8ad2b591dd00fdf02d62af2716a7ac369",
+    "reason": "Direct PostgreSQL representation changes could retain v1 ETag and return stale 304; old after is historical evidence only."
+  },
+  "archivedPriorDelivery": {
+    "path": "history/fc9e41a/phase18-delivery.json",
+    "sha256": "3526dd8424d4ae9a6f33959d2840e8643a480d7d4a07f61ecc960ee65e10fc59"
+  },
   "protocolHashes": {
     "browser-environment.json": "6fa7aafb6dc3d8e4206a387d846edb4301feb56e7d2c52765c185833ee5932ed",
     "browser.mjs": "b7739573cdc4f103d587f64584fbaff6041f3bd62d82d9ebe15a06eda9d0a274",
@@ -24,38 +35,42 @@
     "playwright": "1.63.0",
     "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c"
   },
+  "formalAbPassed": true,
+  "analysis": {
+    "commit": "f654886f0467e684ba926663bbe4bc3d0857977c",
+    "gitBlobSha256": {
+      "performance/scripts/phase18_revision_analysis.py": "c8f0b2e30d7c2bb7faaff91f317a471cbe60ab61ac3b6d531f8d2623a82b1137",
+      "performance/scripts/phase18_ab_gate.py": "107db6ea29d831536e751507f0d1dbe242b0100093024cf2efcb349b07b8adf2"
+    }
+  },
   "artifacts": {
     "manifest.json": "19f394034d74e027a19e62f3e61f2ab82c9806b542604d666dc24d948640f338",
     "baseline/manifest.json": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402",
     "after/manifest.json": "b1585c91e4cdb4e3aae915dc75552fb8ad2b591dd00fdf02d62af2716a7ac369",
-    "comparison.json": "f298b7234bb825f163a68db4ee710ba3f6994d79d4c0de0c0f2f2e13f898b4f9",
-    "resource-and-payload-comparison.json": "c59fd4ffc64567e32877e03e7cf298b029a8eccb952bb0016c8329136751defe",
-    "after-phase18-verifier.json": "b8cd62d3cddcd45d19f71f5847120d18c4ef99963adacb74573caef5483c14ae",
-    "FINAL_REPORT.md": "2b0ef28c175bfe72411cd03a8a7dec54e61bf2eb8783f60eeba290c38866be72",
-    "after/README.md": "5cb86d5a27d9e23dcbf3e883462cb68de8eca07cdcc3af47ce5a5b3f5ecd3d3b",
-    "capabilities/cache-polling/manifest.json": "fe9340814262ad8a155c9e0276f2c90a1299daa2444c834f41b2152da835cab7",
-    "capabilities/final-hidden/manifest.json": "3b283f28d402f078f01bc35b36d6ccfcbad53bc96136376d64319bd68022f0fa",
-    "capabilities/hardening/manifest.json": "b16dd7abd93f2ca7e7cafbf63d81ec0ea763331449ae48f0e76f41b7fa03dfd1",
-    "capabilities/traffic-control/manifest.json": "7b9733d7488dfed697837e3386e283de51928566c136eea07b6d8b383e5f1c4b",
-    "capabilities/waiting-room/manifest.json": "2b9a6d2a819f6f13742088e673ce5ff2dfe2c90558f449d9bb5d1b3f1cf4fc08",
-    "capabilities/waiting-ui/manifest.json": "7b6ff41f54c7a766750704d7f1791a8f954ce5c60daf33cd1bfda0d3eed46f9a",
-    "capabilities/delivery-checks/ab-gate.json": "8706f05fa6395be3a43f412b269d4c7bba7ea5e52774d680896656e0971f20ea",
-    "capabilities/delivery-checks/performance-tests.log": "5c40ca615768508a3298fca61ee75b976b557a25a1d8ca20b95aa047de1a786c",
-    "capabilities/delivery-checks/README.md": "17291577a97e3c8d5c0e5e9b1491a97a50fcdb54ad929ff7f7fd9261072addd2"
+    "after-v2/manifest.json": "67c848d55a499ec4d9fd898c2f34eb0fe6434e4bbd0926ebf68f4270b1117b33",
+    "AFTER_STATUS.json": "7b7bcedd7c383b9da54a194f777c2db4f2f2234f461b68892ea8ecc447afa712",
+    "FINAL_REPORT.md": "5855aba913470431de736edf6affbeb7d5db1b6757188ad003b3158b2dd20324",
+    "README.md": "e9526bd56b27467416cfe0ffd92515f336637baf8bb8da8b82cf280bd2a60ec6",
+    "comparison-v2.json": "e158ba69da4db5cda0da4471f0994329511066305ab0c4ad31790ff75a04a15b",
+    "resource-and-payload-comparison-v2.json": "fb58bc6f6d8be5ce19e7f4bf63ee28e11b26b5b7279115320dacae2d6c0aec0a",
+    "query-feature-comparison-v2.json": "046dac57ce1c078998376c334ddec0a875bc2e48129160ac4cf460e8d9932dd7",
+    "after-v2-phase18-verifier.json": "a15d159893c1a73d81d584bb2430f8fce6987ff861056131892cb6395674ce21",
+    "history/fc9e41a/phase18-delivery.json": "3526dd8424d4ae9a6f33959d2840e8643a480d7d4a07f61ecc960ee65e10fc59",
+    "history/fc9e41a/FINAL_REPORT.md": "2b0ef28c175bfe72411cd03a8a7dec54e61bf2eb8783f60eeba290c38866be72",
+    "capabilities/layout-revision-final/manifest.json": "e49dff9fb20ccaebd9f7e8915c375e5ff0cb7197e5e1f844be61af94acb6b659",
+    "capabilities/final-hidden-v2/manifest.json": "6d09a3ff79e068808ca987a543906e443ff162cd52326973a4e96bc3dcc08e76"
   },
-  "formalAbPassed": true,
-  "scope": "OFF matched protocol; capabilities separate; post-SUT delivery changes are documentation/evidence/tests only",
-  "limitations": [
-    "One identical OFF trial on a shared host, not production SLA.",
-    "PostgreSQL rows are returned rows from pg_stat_statements, not physical buffer-page scans.",
-    "OBSERVE/ENFORCED capability results are excluded from OFF improvements.",
-    "The frozen protocol retains its historical STAGE0_VALID manifest label; this comparison identifies the after SUT separately.",
-    "Latency results are mixed; total Layout SQL and browser Snapshot bytes increase.",
-    "Runtime policy propagation and shared authentication pool limits are documented in FINAL_REPORT.md."
-  ],
   "deliveryValidation": {
-    "performanceTests": 245,
-    "failed": 0,
+    "performanceTests": 253,
+    "ctest": 36,
+    "vitest": 288,
     "strictAbGate": true
-  }
+  },
+  "limitations": [
+    "Not production SLA; single shared-host OFF trial.",
+    "Actual k6 requests differ: 121 baseline versus 120 after, with identical offered settings.",
+    "Returned SQL rows are not physical scans; browser bytes are decoded bodies, not wire traffic.",
+    "Ordinary Layout/Delta latencies and metadata/registry cost can regress.",
+    "OBSERVE/ENFORCED and extended hidden gates are separate capability evidence."
+  ]
 }

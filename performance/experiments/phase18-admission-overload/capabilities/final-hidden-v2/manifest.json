@@ -1,0 +1,14 @@
+{
+  "sourceSutSha": "6807a01516a75cf834ca1fac46fb1ac9abcdc53e",
+  "passed": true,
+  "script": {
+    "path": "capabilities/cache-polling/long-hidden.mjs",
+    "sha256": "151fa7a95d2f2b55621ccd9624194a361d61bf631d3a7e829ff27122d0da4408"
+  },
+  "files": {
+    "browser.json": "438881eb41f061227df60b355594f0d752dcdcdf699675a90172eed064213373",
+    "browser.json.browser.log": "301e97916dcba6faee607396e0a2562ca57228039d4683d02fb71271ba8603b9",
+    "README.md": "957031f5afbcc6d949bc067b79c830913b1a695bcf866844f102c634c695bf8a",
+    "run.log": "5c1dd3f71ac8242a7218b4746ba1a87d61b904aec1aa5b2981edfbac769ccf3a"
+  }
+}

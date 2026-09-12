@@ -1,0 +1,12 @@
+test_batch_and_transaction_failures_are_atomic (phase18_layout_revision_http_test.LayoutRevisionHTTP) ... ok
+test_concurrent_body_tag_snapshot (phase18_layout_revision_http_test.LayoutRevisionHTTP) ... ok
+test_direct_price_changes_body_and_validator (phase18_layout_revision_http_test.LayoutRevisionHTTP) ... ok
+test_noop_dynamic_and_unrepresented_fields_do_not_bump (phase18_layout_revision_http_test.LayoutRevisionHTTP) ... ok
+test_session_relationship_identity_and_cross_venue (phase18_layout_revision_http_test.LayoutRevisionHTTP) ... ok
+test_static_columns_and_inventory_membership (phase18_layout_revision_http_test.LayoutRevisionHTTP) ... ok
+test_v1_gzip_and_empty_layout (phase18_layout_revision_http_test.LayoutRevisionHTTP) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 32.753s
+
+OK

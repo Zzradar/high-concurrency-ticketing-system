@@ -1,0 +1,10 @@
+test_redis_outage_preserves_replay_and_off_while_new_formal_work_fails_closed (phase18_admission_http_test.AdmissionHTTP) ... ok
+test_runtime_loss_rotates_generation_without_reusing_qualification (phase18_admission_http_test.AdmissionHTTP) ... ok
+test_shadow_cannot_access_formal_status_availability_or_new_stock (phase18_admission_http_test.AdmissionHTTP) ... ok
+test_stable_status_has_zero_auth_sql_and_logout_revokes_cache (phase18_admission_http_test.AdmissionHTTP) ... ok
+test_status_is_read_only_and_strict_auth_still_protects_inventory (phase18_admission_http_test.AdmissionHTTP) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 28.812s
+
+OK

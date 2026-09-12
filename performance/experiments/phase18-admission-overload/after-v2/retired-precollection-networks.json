@@ -1,0 +1,14 @@
+[
+  {
+    "name": "phase18after2-data",
+    "id": "ebb2364a6a8f1997b830c0f86e62d8d8b6b50ce9dd262d105ffcdd1d2c4b66c5",
+    "activeEndpoints": 0,
+    "purpose": "Unused precollection/finished Phase18 regression network only; volumes and containers retained"
+  },
+  {
+    "name": "phase18after2-ingress",
+    "id": "6aabdcb4716ccf9acc9a35b1818b675eaa89a1b09c3c62d76f48cad207c9fe37",
+    "activeEndpoints": 0,
+    "purpose": "Unused precollection/finished Phase18 regression network only; volumes and containers retained"
+  }
+]

@@ -1,0 +1,280 @@
+{
+  "passed": true,
+  "baselineSutSha": "ed51447154418e05ed9e4c49728f3eb114713db9",
+  "afterSutSha": "6807a01516a75cf834ca1fac46fb1ac9abcdc53e",
+  "frozenManifests": {
+    "manifest.json": "19f394034d74e027a19e62f3e61f2ab82c9806b542604d666dc24d948640f338",
+    "baseline/manifest.json": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402"
+  },
+  "baselineManifestSha256": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402",
+  "afterManifestSha256": "67c848d55a499ec4d9fd898c2f34eb0fe6434e4bbd0926ebf68f4270b1117b33",
+  "protocolHashes": {
+    "browser-environment.json": "6fa7aafb6dc3d8e4206a387d846edb4301feb56e7d2c52765c185833ee5932ed",
+    "browser.mjs": "b7739573cdc4f103d587f64584fbaff6041f3bd62d82d9ebe15a06eda9d0a274",
+    "k6.js": "f0520f15e52939ac8e0b6e9c873838ab605b3a45a779202ddd4f9e3e6f310e2d",
+    "nginx.conf": "05155eff6174b7fff341d76cf8032f2d68b36e5bfe173fc630608343a8469b66",
+    "protocol.py": "4b35b1dd707718dc5bba570598fdc8d202ed32bd4a40a1281871bffc989a96b5",
+    "seed.py": "9786864e0bc876ca88b415240593aa8f83d4e01746423ec3b501a02577ae6b80",
+    "stats.py": "3970ca8b0bc7583c1912152e9ff975fcbbbee371837d066171d54c8d2174ce8c",
+    "test_stats.py": "02d00379d8155e5e944fb04da796b1a79dda38bc36fa0953f1d3940aba83703a"
+  },
+  "layoutAndAvailability": [
+    {
+      "seats": 5000,
+      "beforeLayout": {
+        "first": {
+          "count": 1,
+          "errorRate": 0.0,
+          "p50Ms": 61.066800029948354,
+          "p95Ms": 61.066800029948354,
+          "p99Ms": 61.066800029948354
+        },
+        "ordinary": {
+          "count": 20,
+          "errorRate": 0.0,
+          "p50Ms": 38.01240003667772,
+          "p95Ms": 55.05650001578033,
+          "p99Ms": 88.74180004931986
+        },
+        "conditional": {
+          "count": 20,
+          "errorRate": 0.0,
+          "p50Ms": 37.14100015349686,
+          "p95Ms": 57.32559994794428,
+          "p99Ms": 60.05850015208125
+        }
+      },
+      "afterLayout": {
+        "first": {
+          "count": 1,
+          "errorRate": 0.0,
+          "p50Ms": 47.24960005842149,
+          "p95Ms": 47.24960005842149,
+          "p99Ms": 47.24960005842149
+        },
+        "ordinary": {
+          "count": 20,
+          "errorRate": 0.0,
+          "p50Ms": 48.08779992163181,
+          "p95Ms": 66.48199982009828,
+          "p99Ms": 80.62359993346035
+        },
+        "conditional": {
+          "count": 20,
+          "errorRate": 0.0,
+          "p50Ms": 3.7418000865727663,
+          "p95Ms": 27.826699893921614,
+          "p99Ms": 28.2795000821352
+        }
+      },
+      "beforePayload": 499636,
+      "afterPayload": 499636,
+      "beforeGzipWire": 28696,
+      "afterGzipWire": 28696,
+      "beforeSnapshot": {
+        "count": 20,
+        "errorRate": 0.0,
+        "p50Ms": 15.101199969649315,
+        "p95Ms": 31.230099964886904,
+        "p99Ms": 33.421500120311975
+      },
+      "afterSnapshot": {
+        "count": 20,
+        "errorRate": 0.0,
+        "p50Ms": 30.059699900448322,
+        "p95Ms": 34.09040020778775,
+        "p99Ms": 34.115799935534596
+      },
+      "beforeDelta": {
+        "count": 20,
+        "errorRate": 0.0,
+        "p50Ms": 5.51320007070899,
+        "p95Ms": 7.867499953135848,
+        "p99Ms": 32.22250007092953
+      },
+      "afterDelta": {
+        "count": 20,
+        "errorRate": 0.0,
+        "p50Ms": 14.913199935108423,
+        "p95Ms": 28.32990000024438,
+        "p99Ms": 28.471400029957294
+      },
+      "beforeSql": [
+        {
+          "kind": "fullLayout",
+          "query": "SELECT\n            inventory.id,\n            seat.seat_label,\n            seat.row_no,\n            seat.seat_no,\n            zone.name AS zone,\n            inventory.price\n        FROM session_seats AS inventory\n        JOIN seats AS seat ON seat.id = inventory.seat_id\n        JOIN venue_zones AS zone ON zone.id = seat.zone_id AND zone.venue_id = seat.venue_id\n        WHERE inventory.session_id = $1 AND EXISTS(SELECT $2 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>$3 AND e.status<>$4)\n        ORDER BY zone.sort_order ASC,\n                 seat.row_no ASC,\n                 seat.seat_no ASC,\n                 inventory.id ASC",
+          "calls": 42,
+          "returnedRows": 210000
+        }
+      ],
+      "afterSql": [
+        {
+          "kind": "fullLayout",
+          "query": "SELECT layout_identity.*, layout_rows.*\n        FROM (\n            SELECT s.id layout_session_id,s.venue_id,\n                (extract($2 FROM s.created_at)*$3)::bigint created,\n                coalesce((extract($4 FROM e.published_at)*$5)::bigint,$6) published,\n                r.revision layout_revision\n            FROM sessions s JOIN events e ON e.id=s.event_id\n            JOIN session_layout_revisions r ON r.session_id=s.id\n            WHERE s.id=$1 AND s.status<>$7 AND e.status<>$8\n        ) AS layout_identity\n        LEFT JOIN LATERAL (\n            SELECT inventory.id,seat.seat_label,seat.row_no,seat.seat_no,\n                   zone.name AS zone,inventory.price,zone.sort_order\n            FROM session_seats AS inventory\n            JOIN seats AS seat ON seat.id=inventory.seat_id\n            JOIN venue_zones AS zone ON zone.id=seat.zone_id AND zone.venue_id=seat.venue_id\n            WHERE inventory.session_id=layout_identity.layout_session_id\n        ) AS layout_rows ON $9\n        ORDER BY layout_rows.sort_order,layout_rows.row_no,layout_rows.seat_no,layout_rows.id",
+          "calls": 22,
+          "returnedRows": 110000
+        },
+        {
+          "kind": "layoutIdentity",
+          "query": "SELECT s.id layout_session_id,s.venue_id,(extract($2 FROM s.created_at)*$3)::bigint created,coalesce((extract($4 FROM e.published_at)*$5)::bigint,$6) published,r.revision layout_revision FROM sessions s JOIN events e ON e.id=s.event_id JOIN session_layout_revisions r ON r.session_id=s.id WHERE s.id=$1 AND s.status<>$7 AND e.status<>$8",
+          "calls": 42,
+          "returnedRows": 42
+        }
+      ]
+    },
+    {
+      "seats": 10000,
+      "beforeLayout": {
+        "first": {
+          "count": 1,
+          "errorRate": 0.0,
+          "p50Ms": 102.72299987263978,
+          "p95Ms": 102.72299987263978,
+          "p99Ms": 102.72299987263978
+        },
+        "ordinary": {
+          "count": 20,
+          "errorRate": 0.0,
+          "p50Ms": 78.18139996379614,
+          "p95Ms": 115.95959984697402,
+          "p99Ms": 133.61949985846877
+        },
+        "conditional": {
+          "count": 20,
+          "errorRate": 0.0,
+          "p50Ms": 76.03099988773465,
+          "p95Ms": 92.22220000810921,
+          "p99Ms": 92.77139999903738
+        }
+      },
+      "afterLayout": {
+        "first": {
+          "count": 1,
+          "errorRate": 0.0,
+          "p50Ms": 90.43239988386631,
+          "p95Ms": 90.43239988386631,
+          "p99Ms": 90.43239988386631
+        },
+        "ordinary": {
+          "count": 20,
+          "errorRate": 0.0,
+          "p50Ms": 91.38150000944734,
+          "p95Ms": 102.16609993949533,
+          "p99Ms": 102.437200024724
+        },
+        "conditional": {
+          "count": 20,
+          "errorRate": 0.0,
+          "p50Ms": 3.5403999499976635,
+          "p95Ms": 20.833299960941076,
+          "p99Ms": 26.76980011165142
+        }
+      },
+      "beforePayload": 1009237,
+      "afterPayload": 1009237,
+      "beforeGzipWire": 56831,
+      "afterGzipWire": 56831,
+      "beforeSnapshot": {
+        "count": 20,
+        "errorRate": 0.0,
+        "p50Ms": 31.09599999152124,
+        "p95Ms": 44.94430008344352,
+        "p99Ms": 45.048899948596954
+      },
+      "afterSnapshot": {
+        "count": 20,
+        "errorRate": 0.0,
+        "p50Ms": 20.811399910598993,
+        "p95Ms": 43.54470013640821,
+        "p99Ms": 43.819300131872296
+      },
+      "beforeDelta": {
+        "count": 20,
+        "errorRate": 0.0,
+        "p50Ms": 4.901499953120947,
+        "p95Ms": 24.204199900850654,
+        "p99Ms": 27.12209988385439
+      },
+      "afterDelta": {
+        "count": 20,
+        "errorRate": 0.0,
+        "p50Ms": 14.890100108459592,
+        "p95Ms": 27.30580000206828,
+        "p99Ms": 27.761799981817603
+      },
+      "beforeSql": [
+        {
+          "kind": "fullLayout",
+          "query": "SELECT\n            inventory.id,\n            seat.seat_label,\n            seat.row_no,\n            seat.seat_no,\n            zone.name AS zone,\n            inventory.price\n        FROM session_seats AS inventory\n        JOIN seats AS seat ON seat.id = inventory.seat_id\n        JOIN venue_zones AS zone ON zone.id = seat.zone_id AND zone.venue_id = seat.venue_id\n        WHERE inventory.session_id = $1 AND EXISTS(SELECT $2 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>$3 AND e.status<>$4)\n        ORDER BY zone.sort_order ASC,\n                 seat.row_no ASC,\n                 seat.seat_no ASC,\n                 inventory.id ASC",
+          "calls": 42,
+          "returnedRows": 420000
+        }
+      ],
+      "afterSql": [
+        {
+          "kind": "fullLayout",
+          "query": "SELECT layout_identity.*, layout_rows.*\n        FROM (\n            SELECT s.id layout_session_id,s.venue_id,\n                (extract($2 FROM s.created_at)*$3)::bigint created,\n                coalesce((extract($4 FROM e.published_at)*$5)::bigint,$6) published,\n                r.revision layout_revision\n            FROM sessions s JOIN events e ON e.id=s.event_id\n            JOIN session_layout_revisions r ON r.session_id=s.id\n            WHERE s.id=$1 AND s.status<>$7 AND e.status<>$8\n        ) AS layout_identity\n        LEFT JOIN LATERAL (\n            SELECT inventory.id,seat.seat_label,seat.row_no,seat.seat_no,\n                   zone.name AS zone,inventory.price,zone.sort_order\n            FROM session_seats AS inventory\n            JOIN seats AS seat ON seat.id=inventory.seat_id\n            JOIN venue_zones AS zone ON zone.id=seat.zone_id AND zone.venue_id=seat.venue_id\n            WHERE inventory.session_id=layout_identity.layout_session_id\n        ) AS layout_rows ON $9\n        ORDER BY layout_rows.sort_order,layout_rows.row_no,layout_rows.seat_no,layout_rows.id",
+          "calls": 22,
+          "returnedRows": 220000
+        },
+        {
+          "kind": "layoutIdentity",
+          "query": "SELECT s.id layout_session_id,s.venue_id,(extract($2 FROM s.created_at)*$3)::bigint created,coalesce((extract($4 FROM e.published_at)*$5)::bigint,$6) published,r.revision layout_revision FROM sessions s JOIN events e ON e.id=s.event_id JOIN session_layout_revisions r ON r.session_id=s.id WHERE s.id=$1 AND s.status<>$7 AND e.status<>$8",
+          "calls": 42,
+          "returnedRows": 42
+        }
+      ]
+    }
+  ],
+  "beforeBrowser": {
+    "nativeHiddenAt": 1789215545293,
+    "nativeRestoredAt": 1789215555356,
+    "hiddenDurationMs": 10063,
+    "requestStartsByPhase": {
+      "visible": 30,
+      "hidden": 0,
+      "restored": 6
+    },
+    "restoreFirstRequestMs": 4,
+    "restoredSnapshots": 0,
+    "networkMaxInflight": 2,
+    "totalRequests": 36
+  },
+  "afterBrowser": {
+    "nativeHiddenAt": 1789241936305,
+    "nativeRestoredAt": 1789241946366,
+    "hiddenDurationMs": 10061,
+    "requestStartsByPhase": {
+      "visible": 5,
+      "hidden": 0,
+      "restored": 3
+    },
+    "restoreFirstRequestMs": 18,
+    "restoredSnapshots": 1,
+    "networkMaxInflight": 1,
+    "totalRequests": 8
+  },
+  "beforeK6": {
+    "avg": 2.4383154297520666,
+    "min": 1.739088,
+    "med": 2.26331,
+    "max": 8.94414,
+    "p(90)": 2.831369,
+    "p(95)": 3.291461
+  },
+  "afterK6": {
+    "max": 6.563668,
+    "p(90)": 2.9445130000000006,
+    "p(95)": 3.2464983999999997,
+    "avg": 2.375125408333333,
+    "min": 1.699145,
+    "med": 2.1895505
+  },
+  "resourceSamples": 43,
+  "limitations": [
+    "One identical OFF trial on a shared host, not production SLA.",
+    "PostgreSQL rows are returned rows from pg_stat_statements, not physical buffer-page scans.",
+    "OBSERVE/ENFORCED capability results are excluded from OFF improvements.",
+    "The frozen protocol retains its historical STAGE0_VALID manifest label; this comparison identifies the after SUT separately."
+  ]
+}

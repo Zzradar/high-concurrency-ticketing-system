@@ -1,0 +1,61 @@
+{
+  "status": "COMPLETE_AWAITING_INDEPENDENT_REVERIFICATION",
+  "baselineSutSha": "ed51447154418e05ed9e4c49728f3eb114713db9",
+  "afterSutSha": "4dd48c177516caf950103ce3f7751cc0fb056029",
+  "reviewedStage0EvidenceCommit": "fefa8c493e0046f6a4f6e3d60d5d7eeb167cf28e",
+  "branch": "phase18/admission-overload-control",
+  "frozenManifests": {
+    "manifest.json": "19f394034d74e027a19e62f3e61f2ab82c9806b542604d666dc24d948640f338",
+    "baseline/manifest.json": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402"
+  },
+  "afterManifestSha256": "b1585c91e4cdb4e3aae915dc75552fb8ad2b591dd00fdf02d62af2716a7ac369",
+  "protocolHashes": {
+    "browser-environment.json": "6fa7aafb6dc3d8e4206a387d846edb4301feb56e7d2c52765c185833ee5932ed",
+    "browser.mjs": "b7739573cdc4f103d587f64584fbaff6041f3bd62d82d9ebe15a06eda9d0a274",
+    "k6.js": "f0520f15e52939ac8e0b6e9c873838ab605b3a45a779202ddd4f9e3e6f310e2d",
+    "nginx.conf": "05155eff6174b7fff341d76cf8032f2d68b36e5bfe173fc630608343a8469b66",
+    "protocol.py": "4b35b1dd707718dc5bba570598fdc8d202ed32bd4a40a1281871bffc989a96b5",
+    "seed.py": "9786864e0bc876ca88b415240593aa8f83d4e01746423ec3b501a02577ae6b80",
+    "stats.py": "3970ca8b0bc7583c1912152e9ff975fcbbbee371837d066171d54c8d2174ce8c",
+    "test_stats.py": "02d00379d8155e5e944fb04da796b1a79dda38bc36fa0953f1d3940aba83703a"
+  },
+  "browser": {
+    "edge": "152.0.4191.66",
+    "playwright": "1.63.0",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c"
+  },
+  "artifacts": {
+    "manifest.json": "19f394034d74e027a19e62f3e61f2ab82c9806b542604d666dc24d948640f338",
+    "baseline/manifest.json": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402",
+    "after/manifest.json": "b1585c91e4cdb4e3aae915dc75552fb8ad2b591dd00fdf02d62af2716a7ac369",
+    "comparison.json": "f298b7234bb825f163a68db4ee710ba3f6994d79d4c0de0c0f2f2e13f898b4f9",
+    "resource-and-payload-comparison.json": "c59fd4ffc64567e32877e03e7cf298b029a8eccb952bb0016c8329136751defe",
+    "after-phase18-verifier.json": "b8cd62d3cddcd45d19f71f5847120d18c4ef99963adacb74573caef5483c14ae",
+    "FINAL_REPORT.md": "2b0ef28c175bfe72411cd03a8a7dec54e61bf2eb8783f60eeba290c38866be72",
+    "after/README.md": "5cb86d5a27d9e23dcbf3e883462cb68de8eca07cdcc3af47ce5a5b3f5ecd3d3b",
+    "capabilities/cache-polling/manifest.json": "fe9340814262ad8a155c9e0276f2c90a1299daa2444c834f41b2152da835cab7",
+    "capabilities/final-hidden/manifest.json": "3b283f28d402f078f01bc35b36d6ccfcbad53bc96136376d64319bd68022f0fa",
+    "capabilities/hardening/manifest.json": "b16dd7abd93f2ca7e7cafbf63d81ec0ea763331449ae48f0e76f41b7fa03dfd1",
+    "capabilities/traffic-control/manifest.json": "7b9733d7488dfed697837e3386e283de51928566c136eea07b6d8b383e5f1c4b",
+    "capabilities/waiting-room/manifest.json": "2b9a6d2a819f6f13742088e673ce5ff2dfe2c90558f449d9bb5d1b3f1cf4fc08",
+    "capabilities/waiting-ui/manifest.json": "7b6ff41f54c7a766750704d7f1791a8f954ce5c60daf33cd1bfda0d3eed46f9a",
+    "capabilities/delivery-checks/ab-gate.json": "8706f05fa6395be3a43f412b269d4c7bba7ea5e52774d680896656e0971f20ea",
+    "capabilities/delivery-checks/performance-tests.log": "5c40ca615768508a3298fca61ee75b976b557a25a1d8ca20b95aa047de1a786c",
+    "capabilities/delivery-checks/README.md": "17291577a97e3c8d5c0e5e9b1491a97a50fcdb54ad929ff7f7fd9261072addd2"
+  },
+  "formalAbPassed": true,
+  "scope": "OFF matched protocol; capabilities separate; post-SUT delivery changes are documentation/evidence/tests only",
+  "limitations": [
+    "One identical OFF trial on a shared host, not production SLA.",
+    "PostgreSQL rows are returned rows from pg_stat_statements, not physical buffer-page scans.",
+    "OBSERVE/ENFORCED capability results are excluded from OFF improvements.",
+    "The frozen protocol retains its historical STAGE0_VALID manifest label; this comparison identifies the after SUT separately.",
+    "Latency results are mixed; total Layout SQL and browser Snapshot bytes increase.",
+    "Runtime policy propagation and shared authentication pool limits are documented in FINAL_REPORT.md."
+  ],
+  "deliveryValidation": {
+    "performanceTests": 245,
+    "failed": 0,
+    "strictAbGate": true
+  }
+}

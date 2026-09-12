@@ -1,0 +1,1 @@
+Valid replacement OFF measurement at SUT 6807a01516a75cf834ca1fac46fb1ac9abcdc53e. See ../FINAL_REPORT.md and ../phase18-delivery.json. Historical STAGE0_VALID in the frozen runner manifest is retained without editing; this directory is AFTER_V2. Old after/ is invalidated and preserved.

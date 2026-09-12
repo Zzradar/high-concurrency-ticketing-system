@@ -25,3 +25,14 @@ performance/experiments/phase18-admission-overload/AFTER_STATUS.json text eol=lf
 
 # Preserve original captured revision-regression terminal padding.
 performance/experiments/phase18-admission-overload/capabilities/layout-revision/*.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+
+# Preserve replacement and archived evidence bytes.
+performance/experiments/phase18-admission-overload/after-v2/** -text whitespace=cr-at-eol
+performance/experiments/phase18-admission-overload/after-v2/*.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+performance/experiments/phase18-admission-overload/history/** -text whitespace=cr-at-eol
+performance/experiments/phase18-admission-overload/capabilities/layout-revision-final/**/*.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+performance/experiments/phase18-admission-overload/README.md text eol=lf
+performance/experiments/phase18-admission-overload/comparison-v2.json text eol=lf
+performance/experiments/phase18-admission-overload/resource-and-payload-comparison-v2.json text eol=lf
+performance/experiments/phase18-admission-overload/query-feature-comparison-v2.json text eol=lf
+performance/experiments/phase18-admission-overload/after-v2-phase18-verifier.json text eol=lf

@@ -1,0 +1,27 @@
+
+> frontend@0.0.0 build
+> vue-tsc -b && vite build
+
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 1969 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                 0.96 kB │ gzip:  0.57 kB
+dist/assets/adminApi-BzpU8YTP.css               2.40 kB │ gzip:  0.90 kB
+dist/assets/index-BEyvCYky.css                 30.54 kB │ gzip:  6.91 kB
+dist/assets/adminDateTime-D-syJO9q.js           0.80 kB │ gzip:  0.50 kB
+dist/assets/AdminEventListPage-DKbe_hXo.js      1.26 kB │ gzip:  0.73 kB
+dist/assets/AdminVenueListPage-Bew2NI_t.js      1.37 kB │ gzip:  0.82 kB
+dist/assets/adminApi-D5cVGy_c.js                2.98 kB │ gzip:  1.55 kB
+dist/assets/WaitingRoomPage-DB-ugbDT.js         4.25 kB │ gzip:  2.10 kB
+dist/assets/AdminVenueEditorPage-lz64tfPH.js    5.26 kB │ gzip:  2.10 kB
+dist/assets/AdminEventEditorPage-aMRxyCBY.js   12.52 kB │ gzip:  4.84 kB
+dist/assets/index-aoJiY5Nd.js                 241.42 kB │ gzip: 85.08 kB
+
+✓ built in 4.13s
+[PLUGIN_TIMINGS] Your build spent 13% of 4.1s inside plugin hooks (549ms).
+Not measurable — 1 hook whose calls overlap, so elapsed time covers work other calls were doing. Profile with `node --cpu-prof`:
+  - vite:css transform (4 calls)
+See https://rolldown.rs/reference/InputOptions.checks#plugintimings for more details.
+

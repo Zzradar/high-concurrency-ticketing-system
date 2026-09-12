@@ -7,7 +7,13 @@
   },
   "replacement": {
     "directory": "after-v2",
-    "status": "PENDING_NEW_SOURCE_FREEZE_AND_COMPLETE_COLLECTION"
+    "status": "VALID_COMPLETE_AWAITING_INDEPENDENT_REVERIFICATION",
+    "sutSha": "6807a01516a75cf834ca1fac46fb1ac9abcdc53e",
+    "manifestSha256": "67c848d55a499ec4d9fd898c2f34eb0fe6434e4bbd0926ebf68f4270b1117b33"
   },
-  "baselineUnchanged": true
+  "baselineUnchanged": true,
+  "archivedPriorDeliveryManifest": {
+    "path": "history/fc9e41a/phase18-delivery.json",
+    "sha256": "3526dd8424d4ae9a6f33959d2840e8643a480d7d4a07f61ecc960ee65e10fc59"
+  }
 }
