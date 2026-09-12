@@ -1,4 +1,5 @@
 import { http } from './ticketApi'
+import { requireAdmissionPolicy } from '../utils/admissionPolicyContract'
 export interface AdminRow { label: string; seatCount: number }
 export interface AdminZone { id: string; code: string; name: string; sortOrder: number; seatCount: number; rows: AdminRow[] }
 export interface AdminVenueSummary { id: string; name: string; city: string; totalSeats: number; zoneCount: number; frozen: boolean }
@@ -19,8 +20,8 @@ export interface AdmissionPolicy {
 }
 export interface AdmissionPolicyInput {mode:AdmissionPolicy['mode'];expectedPolicyVersion:number;prequeueSeconds:number;maxActiveUsers:number;admissionRatePerSecond:number;leaseSeconds:number}
 export const adminApi={
- admissionPolicy:async(id:string)=>(await http.get<AdmissionPolicy>(eventPath(id)+'/admission-policy')).data,
- saveAdmissionPolicy:async(id:string,body:AdmissionPolicyInput)=>(await http.put<AdmissionPolicy>(eventPath(id)+'/admission-policy',body)).data,
+ admissionPolicy:async(id:string)=>requireAdmissionPolicy((await http.get<unknown>(eventPath(id)+'/admission-policy')).data,id),
+ saveAdmissionPolicy:async(id:string,body:AdmissionPolicyInput)=>requireAdmissionPolicy((await http.put<unknown>(eventPath(id)+'/admission-policy',body)).data,id),
  venues:async()=> (await http.get<AdminVenueSummary[]>('/admin/venues')).data,
  venue:async(id:string)=>(await http.get<AdminVenueDetail>('/admin/venues/'+encodeURIComponent(id))).data,
  saveVenue:async(id:string|undefined,body:VenuePlan)=>(await (id?http.put<AdminVenueDetail>('/admin/venues/'+encodeURIComponent(id),body):http.post<AdminVenueDetail>('/admin/venues',body))).data,

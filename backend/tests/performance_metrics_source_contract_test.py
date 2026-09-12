@@ -40,6 +40,7 @@ class PerformanceMetricsSourceContractTest(unittest.TestCase):
         self.assertEqual(
             set(by_name),
             {
+                "ticketing_availability_poll_interval_seconds",
                 "ticketing_traffic_peak_inflight",
                 "ticketing_admission_runtime_pauses_total",
                 "ticketing_admission_decisions_total",

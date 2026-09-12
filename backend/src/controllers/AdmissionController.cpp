@@ -7,7 +7,10 @@ namespace {
 void handle(const drogon::HttpRequestPtr &r,ticketing::admin::Reply reply,std::string event,const char *op) {
  std::string generation;
  try {
-  if(r->method()==drogon::Get)generation=r->getParameter("queueGeneration");
+  if(r->method()==drogon::Get){
+   for(const auto &[key,value]:r->getParameters())ticketing::admin::require(key=="queueGeneration");
+   generation=r->getParameter("queueGeneration");
+  }
   else if(!r->body().empty()) {
    const auto json=r->getJsonObject();ticketing::admin::require(bool(json));
    ticketing::admin::fields(*json,{"queueGeneration"});

@@ -359,7 +359,7 @@ target_sources(ticketing_backend PRIVATE src/admission/AdmissionService.cpp src/
 
 option(TICKETING_PHASE18_EXTERNAL_TESTS "Register explicit isolated Phase18 PostgreSQL/Redis/HTTP gates" OFF)
 if(BUILD_TESTING AND TICKETING_PHASE18_EXTERNAL_TESTS)
- foreach(gate schema policy_http waiting_room admission_http)
+ foreach(gate schema policy_http waiting_room admission_http token_bucket traffic_http public_contract layout_http metrics_http verifier)
   add_test(NAME phase18_${gate} COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase18_${gate}_test.py")
   set_tests_properties(phase18_${gate} PROPERTIES RUN_SERIAL TRUE LABELS integration)
  endforeach()

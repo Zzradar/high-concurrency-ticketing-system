@@ -36,7 +36,7 @@ class Phase14MetricsContracts(unittest.TestCase):
         self.assertIn('getLoop()->runEvery',source)
         config=json.loads((ROOT/'config/config.phase14.json').read_text(encoding='utf-8'))
         labels={x for item in config['plugins'][0]['config']['collectors'] if item['name']!='ticketing_sales_window_rejections_total' for x in item['labels']}
-        self.assertTrue(labels <= {'flow','client','operation','outcome','method','route','status_class','stage','provider','object_kind','status','source','reason','recovery_reason','mode','scope','request_class','resource'})
+        self.assertTrue(labels <= {'flow','client','operation','outcome','method','route','status_class','stage','provider','object_kind','status','source','reason','recovery_reason','mode','scope','request_class','resource','result_class'})
         sales=next(x for x in config['plugins'][0]['config']['collectors'] if x['name']=='ticketing_sales_window_rejections_total')
         self.assertEqual(sales['labels'],['entrypoint','reason'])
         self.assertNotIn('hasAvailableConnections',source)

@@ -1,3 +1,4 @@
+import {TicketApiError} from '../../api/ticketApi'
 import {mount,flushPromises,enableAutoUnmount} from '@vue/test-utils'
 import {afterEach,it,expect,vi} from 'vitest'
 import Editor from './AdmissionPolicyEditor.vue'
@@ -18,9 +19,9 @@ it('loads synthetic OFF without inventing capacities; saves strict values and ex
  expect(save).toHaveBeenCalledWith('e',{mode:'OFF',expectedPolicyVersion:0,prequeueSeconds:0,maxActiveUsers:10,admissionRatePerSecond:2,leaseSeconds:30})
  expect(w.text()).toContain('当前版本：1')
 })
-it('requires explicit reload after OCC conflict and does not retry a PUT',async()=>{
+it.each([new TicketApiError('Conflict','POLICY_VERSION_CONFLICT',409),{response:{data:{code:'POLICY_VERSION_CONFLICT'}}}])('requires explicit reload after OCC conflict and does not retry a PUT (%s)',async(error)=>{
  const load=vi.spyOn(adminApi,'admissionPolicy').mockResolvedValue(off)
- const save=vi.spyOn(adminApi,'saveAdmissionPolicy').mockRejectedValue({response:{data:{code:'POLICY_VERSION_CONFLICT'}}})
+ const save=vi.spyOn(adminApi,'saveAdmissionPolicy').mockRejectedValue(error)
  const w=mount(Editor,{props:{eventId:'e'}});await flushPromises();await fill(w);await w.get('form').trigger('submit');await flushPromises()
  expect(save).toHaveBeenCalledTimes(1);expect(w.get('fieldset').attributes('disabled')).toBeDefined()
  expect(w.text()).toContain('其他管理员修改')

@@ -65,6 +65,7 @@
       "config": {
         "path": "/metrics",
         "collectors": [
+{"name": "ticketing_availability_poll_interval_seconds", "help": "Last server polling hint in seconds by finite result class", "type": "gauge", "labels": ["result_class"]},
 {"name": "ticketing_traffic_peak_inflight", "help": "Phase18 observed bounded request concurrency high water", "type": "gauge", "labels": ["request_class"]},
 {"name":"ticketing_admission_runtime_pauses_total","type":"counter","help":"Event cooldown publications","labels":[]},
           {"name": "ticketing_admission_decisions_total", "help": "Phase18 bounded ticketing_admission_decisions_total", "type": "counter", "labels": ["mode", "outcome", "request_class"]},

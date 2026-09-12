@@ -45,3 +45,8 @@
 Admin 请求复用原 Cookie/CSRF/401/错误处理，没有完整 Mock Admin 数据库。所有时间输入按北京时间解释；场馆 frozen、价格重置和结构化发布问题直接展示。既有消费者页面仍只渲染当前 Zone。
 
 独立浏览器门禁在本目录执行 `npx playwright test -c playwright.phase17.config.ts`；先运行 `python performance/scripts/phase17_scale.py`（仓库根目录）准备规模夹具，再执行完整 5 项。它连接 18117 的专用真实后端，Vite 使用 5177。完整结果见 [Phase17 实施记录](../docs/phase17_admin_event_publishing_implementation.md)。
+
+
+## Phase18 Waiting Room 与轮询
+
+真实 API 模式支持安全登录回跳、显式加入、RESET 重入、独立租约心跳与 Admin OCC 重载。Availability 和排队轮询均串行、后台停止、前台权威同步，使用有界服务端建议与退避。默认 Mock 仍保持 OFF 演示。完整类型、缓存及恢复边界见 [Phase18 实施说明](../docs/phase18_admission_overload_control.md)。

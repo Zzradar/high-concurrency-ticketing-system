@@ -53,6 +53,8 @@ class AdmissionHTTP(unittest.TestCase):
   self.assertEqual(self.u.request('/checkout-sessions',method='POST',body=body)[1]['code'],'ADMISSION_REQUIRED')
   self.assertEqual(anonymous_request('/sessions/'+self.s+'/seat-layout')[0],200)
   self.assertEqual(self.u.request(self.path,method='POST',body={'userId':'another'})[0],400)
+  for query in ['userId=another','score=1','time=1']:
+   status,error,_=self.u.request(self.path+'?'+query);self.assertEqual(status,400,error);self.assertEqual(error['code'],'INVALID_ARGUMENT')
   self.assertEqual(self.u.request(self.path,method='POST',csrf=False)[0],403)
   joined=self.u.request(self.path,method='POST')[1];self.assertEqual(joined['state'],'PAUSED')
   resumed=self.policy('ENFORCED');self.assertEqual(resumed['queueGeneration'],formal['queueGeneration'])

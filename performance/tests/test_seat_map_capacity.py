@@ -22,7 +22,8 @@ class CapacityTests(unittest.TestCase):
         for section, key, value in [('db_clients', 'number_of_connections', 8),
                                     ('redis_clients', 'timeout', 1)]:
             changed = copy.deepcopy(config)
-            changed[section][0][key] = value
+            target = next(item for item in changed[section] if item['name'] == ('seat_holds' if section == 'redis_clients' else 'default'))
+            target[key] = value
             with self.assertRaises(RuntimeError): capacity.validate_config(changed)
 
     def fixture(self):

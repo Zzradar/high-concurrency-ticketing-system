@@ -2,6 +2,7 @@
 import {ref,watch,onBeforeUnmount} from 'vue'
 import {adminApi,type AdmissionPolicy} from '../../api/adminApi'
 import {admissionInteger} from '../../utils/admissionPolicyInput'
+import {TicketApiError} from '../../api/ticketApi'
 const props=defineProps<{eventId:string}>()
 const policy=ref<AdmissionPolicy>(),busy=ref(false),error=ref(''),notice=ref(''),conflict=ref(false)
 const mode=ref<AdmissionPolicy['mode']>('OFF')
@@ -14,7 +15,7 @@ async function save(){if(!policy.value)return;busy.value=true;error.value='';not
  try{const body={mode:mode.value,expectedPolicyVersion:policy.value.policyVersion,
  prequeueSeconds:admissionInteger(raw.value.prequeueSeconds,0,86400),maxActiveUsers:admissionInteger(raw.value.maxActiveUsers,1,1000000),
  admissionRatePerSecond:admissionInteger(raw.value.admissionRatePerSecond,1,100000),leaseSeconds:admissionInteger(raw.value.leaseSeconds,10,3600)}
- const p=await adminApi.saveAdmissionPolicy(props.eventId,body);if(e===epoch){accept(p);notice.value='准入策略已保存'}}catch(ex){if(e===epoch){const code=(ex as {response?:{data?:{code?:string}}}).response?.data?.code;conflict.value=code==='POLICY_VERSION_CONFLICT';error.value=conflict.value?'策略已被其他管理员修改，请重新加载后再保存':ex instanceof Error?ex.message:'准入策略保存失败'}}finally{if(e===epoch)busy.value=false}}
+ const p=await adminApi.saveAdmissionPolicy(props.eventId,body);if(e===epoch){accept(p);notice.value='准入策略已保存'}}catch(ex){if(e===epoch){const code=ex instanceof TicketApiError?ex.code:(ex as {response?:{data?:{code?:string}}}).response?.data?.code;conflict.value=code==='POLICY_VERSION_CONFLICT';error.value=conflict.value?'策略已被其他管理员修改，请重新加载后再保存':ex instanceof Error?ex.message:'准入策略保存失败'}}finally{if(e===epoch)busy.value=false}}
 watch(()=>props.eventId,()=>{policy.value=undefined;notice.value='';void load()},{immediate:true})
 onBeforeUnmount(()=>{epoch++})
 </script>

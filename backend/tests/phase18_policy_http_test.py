@@ -10,6 +10,16 @@ def sql(q):
 class PolicyHTTP(unittest.TestCase):
  def setUp(self):
   self.e=sql('SELECT id FROM events ORDER BY id LIMIT 1');self.path='/admin/events/'+self.e+'/admission-policy'
+  # This test resets PostgreSQL policy versions between cases. Retire exactly those
+  # fixture Redis namespaces too, otherwise the monotonic version fence correctly
+  # rejects the artificial lower versions left by the SQL-only reset.
+  import hashlib
+  redis_container=os.environ['PHASE18_REDIS_CONTAINER'];assert redis_container.startswith('phase18-')
+  for event,generation in (line.split('|') for line in sql('SELECT event_id,queue_generation FROM event_admission_policies').splitlines()):
+   root='ticketing:admission:{evt:'+hashlib.sha256(event.encode()).hexdigest()+'}:'
+   keys=[root+'runtime']+[root+generation+':'+suffix for suffix in ['prequeue','waiting','presence','active','heartbeat','sequence','release','pause']]
+   result=subprocess.run(['docker','exec',redis_container,'redis-cli','DEL',*keys],capture_output=True,text=True)
+   self.assertEqual(result.returncode,0,result.stderr)
   sql('DELETE FROM admission_policy_audit;DELETE FROM event_admission_policies;')
   self.a=AuthenticatedClient('admin');self.a.login()
   self.body=dict(mode='OFF',prequeueSeconds=0,maxActiveUsers=10,admissionRatePerSecond=2,leaseSeconds=30,expectedPolicyVersion=0)

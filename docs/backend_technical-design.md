@@ -1062,3 +1062,8 @@ migration012 将 Venue → Zone → Seat 规范化，删除 seats.zone；Seat �
 AdminCatalog 使用独立有界工作执行器，Venue 创建通过 generate_series 集合式插入。Seat Plan 替换持 Venue 行锁，存在 SessionSeat 即 frozen；否则清空关联 DRAFT 价格并返回 pricingReset。所有 Session/Price 变更先 Event 锁再 Venue 锁；Publish 在相同锁序下重新校验、一条 INSERT SELECT 生成全库存、检查行数、变更状态/审计并原子提交。回复等待提交成功，Redis 不参与发布事务。
 
 公共列表/详情和所有购票入口隔离 DRAFT。Phase16 ready cache 前也查可见性，no-change Delta 增加一次小型可见性查询而非全场库存查询；公开 Zone 使用 name/sort_order，支持跨 Zone 相同 A001。Phase15 售票窗口继续控制预订。发布后仅展示字段可修改，不提供多租户、动态图形方案或动态票价。详见 [Phase17 实施与真实证据](phase17_admin_event_publishing_implementation.md)。
+
+
+## Phase18 准入和资源保护
+
+策略默认 OFF；临时排队资格、双层 Token Bucket、独立业务舱壁和公开 Layout 条件缓存保持 PostgreSQL 权威与金融恢复旁路。协议、配置边界、API 语义与真实故障证据见 [Phase18 实施说明](phase18_admission_overload_control.md)。

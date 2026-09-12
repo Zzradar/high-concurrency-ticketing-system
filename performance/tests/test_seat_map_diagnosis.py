@@ -121,7 +121,7 @@ class DiagnosisTests(unittest.TestCase):
         self.assertIn('*temporaryHoldOwner != ownCheckoutSessionId', overlay)
         config = json.loads((ROOT / "backend/config/config.performance.json").read_text())
         self.assertEqual(config["db_clients"][0]["number_of_connections"], 4)
-        self.assertEqual([item["number_of_connections"] for item in config["redis_clients"]], [2, 2])
+        self.assertEqual({item["name"]: item["number_of_connections"] for item in config["redis_clients"]}, {"seat_holds": 2, "auth_sessions": 2, "traffic_control": 2})
 
 
 if __name__ == "__main__":
