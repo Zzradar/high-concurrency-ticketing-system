@@ -30,6 +30,12 @@ struct SeatLayoutRow
     std::int64_t price{};
 };
 
+struct SeatLayoutSnapshot
+{
+    std::string etag;
+    std::vector<SeatLayoutRow> seats;
+};
+
 struct SeatAvailabilityRow
 {
     std::string id;
@@ -48,7 +54,7 @@ class SeatRepository
 
     void listLayoutBySessionId(
         const std::string &sessionId,
-        std::function<void(std::vector<SeatLayoutRow>)> onSuccess,
+        std::function<void(std::optional<SeatLayoutSnapshot>)> onSuccess,
         ErrorCallback onError) const;
 
     void listAvailabilityBySessionId(

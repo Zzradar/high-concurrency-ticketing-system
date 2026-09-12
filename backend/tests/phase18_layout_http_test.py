@@ -11,7 +11,7 @@ class LayoutHTTP(unittest.TestCase):
   with r:return r.status,r.read(),dict((k.lower(),v) for k,v in r.headers.items())
  def test_conditional_body_sql_and_distinct_identity(self):
   status,body,headers=self.get(self.s);self.assertEqual(status,200)
-  tag=headers['etag'];self.assertRegex(tag,r'^W/"seat-layout-v1-[0-9a-f]{64}"$');self.assertNotIn(self.s,tag)
+  tag=headers['etag'];self.assertRegex(tag,r'^W/"seat-layout-v2-[0-9a-f]{64}"$');self.assertNotIn(self.s,tag)
   self.assertIn('public, max-age=60',headers['cache-control']);self.assertIn('Accept-Encoding',headers['vary'])
   self.assertNotIn('immutable',headers['cache-control'])
   before=fixture.sql("SELECT coalesce(sum(calls),0)::bigint FROM pg_stat_statements WHERE query LIKE '%FROM session_seats AS inventory%' AND query LIKE '%seat.seat_label%' AND query NOT ILIKE '%pg_stat_statements%'")

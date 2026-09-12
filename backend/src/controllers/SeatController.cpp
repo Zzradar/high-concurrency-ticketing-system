@@ -56,17 +56,14 @@ void SeatController::listSeatLayout(
        if(!tag){(*callbackPtr)(ticketing::makeErrorResponse(drogon::k404NotFound,"SESSION_NOT_FOUND","Session not found"));return;}
        const auto config=ticketing::SeatReadConfig::parse(drogon::app().getCustomConfig()["seat_read"]);
        const auto cache="public, max-age="+std::to_string(config.maxAge)+", stale-while-revalidate="+std::to_string(config.staleWhileRevalidate);
-       auto cachedReply=std::make_shared<HttpCallback>([callbackPtr,tag,cache](const drogon::HttpResponsePtr &response){
-        if(response->statusCode()==drogon::k200OK||response->statusCode()==drogon::k304NotModified){response->addHeader("ETag",*tag);response->addHeader("Cache-Control",cache);response->addHeader("Vary","Accept-Encoding");}
-        (*callbackPtr)(response);
-       });
        if(ticketing::ifNoneMatch(request->getHeader("If-None-Match"),*tag)){
-        auto response=drogon::HttpResponse::newHttpResponse();response->setStatusCode(drogon::k304NotModified);(*cachedReply)(response);return;
+        auto response=drogon::HttpResponse::newHttpResponse();response->setStatusCode(drogon::k304NotModified);
+        response->addHeader("ETag",*tag);response->addHeader("Cache-Control",cache);response->addHeader("Vary","Accept-Encoding");
+        (*callbackPtr)(response);return;
        }
-       auto callbackPtr=cachedReply;
     service_.listSeatLayout(
         sessionId,
-        [sessionId, callbackPtr](
+        [sessionId, callbackPtr, cache](
             ticketing::SeatService::LayoutResult seats) {
             if (!seats)
             {
@@ -80,10 +77,12 @@ void SeatController::listSeatLayout(
             Json::Value body;
             body["sessionId"] = sessionId;
             body["seats"] = Json::Value{Json::arrayValue};
-            for (const auto &seat : *seats) body["seats"].append(seat.toJson());
+            for (const auto &seat : seats->seats) body["seats"].append(seat.toJson());
             Metrics::observeSeatMap(Metrics::SeatMapStage::LayoutJsonBuild,
                                     started);
-            (*callbackPtr)(drogon::HttpResponse::newHttpJsonResponse(body));
+            auto response=drogon::HttpResponse::newHttpJsonResponse(body);
+            response->addHeader("ETag",seats->etag);response->addHeader("Cache-Control",cache);response->addHeader("Vary","Accept-Encoding");
+            (*callbackPtr)(response);
         },
         [callbackPtr] {
             (*callbackPtr)(ticketing::makeErrorResponse(

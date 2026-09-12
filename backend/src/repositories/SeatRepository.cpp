@@ -8,16 +8,24 @@
 
 namespace ticketing
 {
+namespace {
+std::string layoutTag(const drogon::orm::Row &row) {
+    std::string identity="seat-layout-v2";
+    for(const auto key:{"layout_session_id","venue_id","created","published","layout_revision"}) {
+        const auto value=row[key].as<std::string>();
+        identity+=std::to_string(value.size())+":"+value;
+    }
+    return "W/\"seat-layout-v2-"+sha256Hex(identity)+"\"";
+}
+}
 void SeatRepository::publicLayoutIdentity(const std::string &sessionId,
     std::function<void(std::optional<std::string>)> onSuccess,ErrorCallback onError) const {
-    // Published layout identity is immutable under Phase17. Visibility always comes from PG.
+    // Visibility and validator share one PostgreSQL statement snapshot.
     drogon::app().getDbClient("default")->execSqlAsync(
-        "SELECT s.id,s.venue_id,(extract(epoch FROM s.created_at)*1000000)::bigint created,coalesce((extract(epoch FROM e.published_at)*1000000)::bigint,0) published FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>'DRAFT' AND e.status<>'DRAFT'",
+        "SELECT s.id layout_session_id,s.venue_id,(extract(epoch FROM s.created_at)*1000000)::bigint created,coalesce((extract(epoch FROM e.published_at)*1000000)::bigint,0) published,r.revision layout_revision FROM sessions s JOIN events e ON e.id=s.event_id JOIN session_layout_revisions r ON r.session_id=s.id WHERE s.id=$1 AND s.status<>'DRAFT' AND e.status<>'DRAFT'",
         [onSuccess=std::move(onSuccess)](const drogon::orm::Result &rows){
             if(rows.empty()){onSuccess(std::nullopt);return;}
-            std::string identity="seat-layout-v1";
-            for(const auto key:{"id","venue_id","created","published"}){const auto value=rows[0][key].as<std::string>();identity+=std::to_string(value.size())+":"+value;}
-            onSuccess("W/\"seat-layout-v1-"+sha256Hex(identity)+"\"");
+            onSuccess(layoutTag(rows[0]));
         },[onError=std::move(onError)](const drogon::orm::DrogonDbException &){onError();},sessionId);
 }
 
@@ -83,25 +91,29 @@ void SeatRepository::listBySessionId(
 
 void SeatRepository::listLayoutBySessionId(
     const std::string &sessionId,
-    std::function<void(std::vector<SeatLayoutRow>)> onSuccess,
+    std::function<void(std::optional<SeatLayoutSnapshot>)> onSuccess,
     ErrorCallback onError) const
 {
     constexpr const char *sql = R"SQL(
-        SELECT
-            inventory.id,
-            seat.seat_label,
-            seat.row_no,
-            seat.seat_no,
-            zone.name AS zone,
-            inventory.price
-        FROM session_seats AS inventory
-        JOIN seats AS seat ON seat.id = inventory.seat_id
-        JOIN venue_zones AS zone ON zone.id = seat.zone_id AND zone.venue_id = seat.venue_id
-        WHERE inventory.session_id = $1 AND EXISTS(SELECT 1 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>'DRAFT' AND e.status<>'DRAFT')
-        ORDER BY zone.sort_order ASC,
-                 seat.row_no ASC,
-                 seat.seat_no ASC,
-                 inventory.id ASC
+        SELECT layout_identity.*, layout_rows.*
+        FROM (
+            SELECT s.id layout_session_id,s.venue_id,
+                (extract(epoch FROM s.created_at)*1000000)::bigint created,
+                coalesce((extract(epoch FROM e.published_at)*1000000)::bigint,0) published,
+                r.revision layout_revision
+            FROM sessions s JOIN events e ON e.id=s.event_id
+            JOIN session_layout_revisions r ON r.session_id=s.id
+            WHERE s.id=$1 AND s.status<>'DRAFT' AND e.status<>'DRAFT'
+        ) AS layout_identity
+        LEFT JOIN LATERAL (
+            SELECT inventory.id,seat.seat_label,seat.row_no,seat.seat_no,
+                   zone.name AS zone,inventory.price,zone.sort_order
+            FROM session_seats AS inventory
+            JOIN seats AS seat ON seat.id=inventory.seat_id
+            JOIN venue_zones AS zone ON zone.id=seat.zone_id AND zone.venue_id=seat.venue_id
+            WHERE inventory.session_id=layout_identity.layout_session_id
+        ) AS layout_rows ON true
+        ORDER BY layout_rows.sort_order,layout_rows.row_no,layout_rows.seat_no,layout_rows.id
     )SQL";
 
     const auto started = PerformanceMetrics::seatMapStart();
@@ -109,10 +121,13 @@ void SeatRepository::listLayoutBySessionId(
         sql,
         [started, onSuccess = std::move(onSuccess)](
             const drogon::orm::Result &result) {
-            std::vector<SeatLayoutRow> seats;
+            if(result.empty()){onSuccess(std::nullopt);return;}
+            SeatLayoutSnapshot snapshot{layoutTag(result[0]),{}};
+            auto &seats=snapshot.seats;
             seats.reserve(result.size());
             for (const auto &row : result)
             {
+                if(row["id"].isNull())continue; // Visible empty Layout still carries its snapshot tag.
                 seats.push_back(SeatLayoutRow{
                     .id = row["id"].as<std::string>(),
                     .label = row["seat_label"].as<std::string>(),
@@ -125,7 +140,7 @@ void SeatRepository::listLayoutBySessionId(
             PerformanceMetrics::observeSeatMap(
                 PerformanceMetrics::SeatMapStage::LayoutDbFetchAndMaterialize,
                 started);
-            onSuccess(std::move(seats));
+            onSuccess(std::move(snapshot));
         },
         [onError = std::move(onError)](
             const drogon::orm::DrogonDbException &error) {

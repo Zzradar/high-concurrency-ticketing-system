@@ -167,41 +167,19 @@ void SeatService::listSeatLayout(
 
     repository_.listLayoutBySessionId(
         sessionId,
-        [sessionId, onSuccess = std::move(onSuccess), errorPtr, executor,
-         onBusy = std::move(onBusy), repository = repository_](
-            std::vector<SeatLayoutRow> rows) mutable {
-            if (!rows.empty())
-            {
-                try
-                {
-                    const bool accepted = executor->trySubmit(
-                        [rows = std::move(rows),
-                         onSuccess = std::move(onSuccess)]() mutable {
-                            std::vector<SeatLayout> seats;
-                            seats.reserve(rows.size());
-                            for (auto &row : rows)
-                            {
-                                seats.push_back(toLayoutDto(std::move(row)));
-                            }
-                            onSuccess(std::move(seats));
-                        },
-                        [errorPtr] { (*errorPtr)(); });
-                    if (!accepted) onBusy();
-                }
-                catch (...)
-                {
-                    (*errorPtr)();
-                }
-                return;
-            }
-
-            repository.sessionExists(
-                sessionId,
-                [onSuccess = std::move(onSuccess)](bool exists) mutable {
-                    if (!exists) onSuccess(std::nullopt);
-                    else onSuccess(std::vector<SeatLayout>{});
-                },
-                [errorPtr] { (*errorPtr)(); });
+        [onSuccess = std::move(onSuccess), errorPtr, executor,
+         onBusy = std::move(onBusy)](std::optional<SeatLayoutSnapshot> snapshot) mutable {
+            if (!snapshot) { onSuccess(std::nullopt); return; }
+            try {
+                const bool accepted = executor->trySubmit(
+                    [snapshot=std::move(*snapshot),onSuccess=std::move(onSuccess)]() mutable {
+                        LayoutSnapshot result{std::move(snapshot.etag),{}};
+                        result.seats.reserve(snapshot.seats.size());
+                        for(auto &row:snapshot.seats)result.seats.push_back(toLayoutDto(std::move(row)));
+                        onSuccess(std::move(result));
+                    },[errorPtr] { (*errorPtr)(); });
+                if(!accepted)onBusy();
+            } catch (...) { (*errorPtr)(); }
         },
         [errorPtr] { (*errorPtr)(); });
 }

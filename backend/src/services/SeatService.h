@@ -17,7 +17,8 @@ class SeatService
   public:
     using ErrorCallback = std::function<void()>;
     using SeatsResult = std::optional<std::vector<Seat>>;
-    using LayoutResult = std::optional<std::vector<SeatLayout>>;
+    struct LayoutSnapshot { std::string etag; std::vector<SeatLayout> seats; };
+    using LayoutResult = std::optional<LayoutSnapshot>;
     using AvailabilityResult = std::optional<std::vector<SeatAvailability>>;
 
     // Configure once before app.run(); main owns shutdown, callbacks share ownership.

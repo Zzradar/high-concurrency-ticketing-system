@@ -44,14 +44,17 @@ class SeatSplitSourceContractTest(unittest.TestCase):
         layout = repository.split(
             "void SeatRepository::listLayoutBySessionId", 1
         )[1].split("void SeatRepository::listAvailabilityBySessionId", 1)[0]
-        select_list = layout.split("SELECT", 1)[1].split("FROM", 1)[0]
+        select_list = layout.split("SELECT inventory.id", 1)[1].split("FROM session_seats", 1)[0]
+        select_list = "inventory.id" + select_list
+        self.assertIn("r.revision layout_revision", layout)
+        self.assertIn("LEFT JOIN LATERAL", layout)
         self.assertNotIn("status", select_list)
         for field in ("inventory.id", "seat.seat_label", "seat.row_no",
                       "seat.seat_no", "zone.name AS zone", "inventory.price"):
             self.assertIn(field, select_list)
         self.assertIn("JOIN seats", layout)
         self.assertIn("JOIN venue_zones", layout)
-        self.assertIn("ORDER BY zone.sort_order", layout)
+        self.assertIn("ORDER BY layout_rows.sort_order,layout_rows.row_no,layout_rows.seat_no,layout_rows.id", layout)
 
     def test_shared_overlay_and_capacity_guard_are_reused(self) -> None:
         service = read("src/services/SeatService.cpp")
