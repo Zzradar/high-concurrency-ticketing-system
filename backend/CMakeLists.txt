@@ -317,3 +317,12 @@ if(BUILD_TESTING AND TICKETING_PHASE17_EXTERNAL_TESTS)
     add_test(NAME phase17_http COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase17_http_test.py")
     set_tests_properties(phase17_schema phase17_http PROPERTIES RUN_SERIAL TRUE LABELS integration)
 endif()
+
+target_sources(ticketing_backend PRIVATE src/admin/AdminCatalog.cpp src/repositories/AdminVenueRepository.cpp src/services/AdminVenueService.cpp src/controllers/AdminVenueController.cpp)
+
+if(BUILD_TESTING)
+ add_executable(phase17_config_unit tests/phase17_config_unit.cpp src/admin/AdminCatalog.cpp src/services/SeatMapComputeExecutor.cpp)
+ target_include_directories(phase17_config_unit PRIVATE src)
+ target_link_libraries(phase17_config_unit PRIVATE Drogon::Drogon Threads::Threads)
+ add_test(NAME phase17_config_unit COMMAND phase17_config_unit)
+endif()

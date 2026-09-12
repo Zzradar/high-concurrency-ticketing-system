@@ -254,6 +254,13 @@
     }
   ],
   "custom_config": {
+    "admin_catalog": {
+      "max_zones_per_venue": 32,
+      "max_rows_per_zone": 200,
+      "max_seats_per_row": 500,
+      "max_seats_per_venue": 20000,
+      "max_sessions_per_event": 20
+    },
     "seat_availability_read_model": {
       "init_lock_seconds": 15,
       "init_wait_milliseconds": 1000,

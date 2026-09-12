@@ -6,6 +6,7 @@
 #include "services/SeatService.h"
 #include "payments/PaymentProvider.h"
 #include "security/AuthConfig.h"
+#include "admin/AdminCatalog.h"
 #include "observability/PerformanceMetrics.h"
 
 #include <drogon/drogon.h>
@@ -139,6 +140,7 @@ int main(int argc, char *argv[])
         ticketing::SeatHoldService::validateConfiguration();
         ticketing::PaymentProviderFactory::validateConfiguration();
         ticketing::AuthConfig::validate();
+        (void)ticketing::admin::limits();
         ticketing::PerformanceMetrics::registerWithApplication();
         const auto &computeConfig = drogon::app().getCustomConfig();
         const auto &computeWorkers = computeConfig["seat_map_compute_workers"];
