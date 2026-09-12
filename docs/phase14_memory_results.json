@@ -1,0 +1,1126 @@
+{
+  "scope": "Phase14 one-shot 3 GiB memory qualification; no formal core runs",
+  "sourceHead": "90af2fd82c54bf048163d8012e15942bc340668d",
+  "sourceTree": "6bb75918d4b2efbdbadeda7f85702caa617e17a4",
+  "runId": "phase14-formal-run-20260912T023405Z-668bff",
+  "qualification": {
+    "kind": "memory_qualification",
+    "status": "fail",
+    "formalCapacity": false,
+    "errors": [
+      "120-second qualification observation incomplete",
+      "Load host memory >=80%",
+      "main 0 final trend unavailable or >5 percentage points",
+      "main 0 peak >=80%",
+      "main 1 final trend unavailable or >5 percentage points",
+      "main 1 peak >=80%",
+      "main 2 final trend unavailable or >5 percentage points",
+      "main 2 peak >=80%",
+      "main 3 final trend unavailable or >5 percentage points",
+      "main 3 peak >=80%"
+    ],
+    "peaks": {
+      "0": 0.9280052185058594,
+      "1": 0.8921457926432291,
+      "2": 0.8731435139973959,
+      "3": 0.8741289774576823
+    },
+    "last30SecondsGrowthFraction": {
+      "0": null,
+      "1": null,
+      "2": null,
+      "3": null
+    },
+    "observedBusinessSamples": 81,
+    "businessWindowSeconds": 120,
+    "fingerprint": {
+      "git": {
+        "load": {
+          "head": "90af2fd82c54bf048163d8012e15942bc340668d",
+          "tree": "6bb75918d4b2efbdbadeda7f85702caa617e17a4",
+          "branch": "main",
+          "worktree": "",
+          "diffCheck": 0
+        },
+        "sut": {
+          "head": "90af2fd82c54bf048163d8012e15942bc340668d",
+          "tree": "6bb75918d4b2efbdbadeda7f85702caa617e17a4",
+          "branch": "main",
+          "worktree": "",
+          "diffCheck": 0
+        }
+      },
+      "controlHead": "90af2fd82c54bf048163d8012e15942bc340668d",
+      "controlTree": "6bb75918d4b2efbdbadeda7f85702caa617e17a4",
+      "officialOriginHead": "90af2fd82c54bf048163d8012e15942bc340668d",
+      "targetsSha256": "653bbcf69399ef14f822e2ff4235332384062743072b93e3763632673a5b35b8",
+      "image": {
+        "id": "sha256:c099a97fea4f60a7e3d26139770a552cb2a91304526978d5c65daab7df01b00c",
+        "platform": "linux/amd64",
+        "configurationSha256": "50028ac19f0fe8923bd1ff716a04ec0414b631d5fdca343554098ce5a5ef5a99"
+      },
+      "datasetManifestSha256": "204a79cffb06853039ab467f5b94380394c62e31b9f0be920d44883e103e2345",
+      "inputs": {
+        "dataset.sql": "946e3c113e25796bb2d936cd0db7d5023a8dde43902b63d990814c5c058e1b19",
+        "sessions.json": "08b3a64db368a49e0efddfbf1d822bb74d3e837634216e2b74733e95872eb670",
+        "workload-seats.json": "e6f57daba50bc1721709e6c18ae0d35a334e8bc4432e41ae45c41afd1e139242",
+        "workload-users.json": "558cf37c447656a65450ec2725f9d76e49edfe69eaa7df4ff207f30c900576b0"
+      },
+      "snapshotSha256": "229b078d8f8062f0c2d5e33efa1dedb7ce66ae9a0de46584cb5f1ac62c9b1cef",
+      "databaseBaselineSha256": "282e4d3c417071c484afa3fce2d91b49acf1ccdfca9db6a0f50899f554530685",
+      "topology": {
+        "mode": "dual",
+        "sutRole": "phase14-sut",
+        "loadRole": "phase14-load",
+        "sutProject": "phase14-formal-sut",
+        "loadProject": "phase14-formal-load",
+        "portSource": "targets.environment.localPort",
+        "privateAddressValidated": true,
+        "addressSha256": "82ed5832ab5b0ed51058624e4abc3b5e6622b0962ff980222bf04fc7ab3719fc",
+        "fingerprint": "1fa967e7e0230318f83781be4c313367ce424790b388985add4db69081a9e82b"
+      }
+    },
+    "runId": "phase14-formal-run-20260912T023405Z-668bff",
+    "stopReasons": [
+      "invalid generator memory",
+      "k6 exit 105",
+      "k6 exit 105",
+      "k6 exit 105",
+      "k6 exit 105",
+      "k6 exit 105"
+    ]
+  },
+  "effectiveLimits": {
+    "4": {
+      "containerId": "1b9a7ea36c4791b9bca40884c41723ccfb97692823db37dd322e298187a2bd28",
+      "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-4",
+      "runId": "phase14-formal-run-20260912T023405Z-668bff",
+      "inspectLimit": 2147483648,
+      "cgroupLimit": 2147483648,
+      "rawBytes": 313458688,
+      "inactiveFileBytes": 8192,
+      "workingBytes": 313450496,
+      "fraction": 0.14596176147460938,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      }
+    },
+    "3": {
+      "containerId": "2dde8d32e8e51bfc3a2d5eddba526786fc3129c896883c017764eb472f04f46b",
+      "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-3",
+      "runId": "phase14-formal-run-20260912T023405Z-668bff",
+      "inspectLimit": 3221225472,
+      "cgroupLimit": 3221225472,
+      "rawBytes": 1162895360,
+      "inactiveFileBytes": 20480,
+      "workingBytes": 1162874880,
+      "fraction": 0.3610038757324219,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      }
+    },
+    "2": {
+      "containerId": "cdbe7bcdbc0ce6ea750d0376ea2e4094baeae6a7e8e91c2a27835a1085940fb0",
+      "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-2",
+      "runId": "phase14-formal-run-20260912T023405Z-668bff",
+      "inspectLimit": 3221225472,
+      "cgroupLimit": 3221225472,
+      "rawBytes": 1151328256,
+      "inactiveFileBytes": 16384,
+      "workingBytes": 1151311872,
+      "fraction": 0.35741424560546875,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      }
+    },
+    "1": {
+      "containerId": "51a01a3f9db12916850fd4e17f69dc8a4ba720cdd7f7ec9cdf52be7ec354de42",
+      "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-1",
+      "runId": "phase14-formal-run-20260912T023405Z-668bff",
+      "inspectLimit": 3221225472,
+      "cgroupLimit": 3221225472,
+      "rawBytes": 1215086592,
+      "inactiveFileBytes": 12288,
+      "workingBytes": 1215074304,
+      "fraction": 0.3772087097167969,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      }
+    },
+    "0": {
+      "containerId": "20b03bdfbc69ae41a8180e48c7799e17225912f83b059b538b17c3395e3d112e",
+      "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-0",
+      "runId": "phase14-formal-run-20260912T023405Z-668bff",
+      "inspectLimit": 3221225472,
+      "cgroupLimit": 3221225472,
+      "rawBytes": 1170075648,
+      "inactiveFileBytes": 12288,
+      "workingBytes": 1170063360,
+      "fraction": 0.3632354736328125,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      }
+    }
+  },
+  "runtimeMemoryManifest": {
+    "oldBytes": 2147483648,
+    "mainBytes": 3221225472,
+    "probeBytes": 2147483648,
+    "baseComposeSha256": "c5125f4535f702ede2c222aa435822e729aaadcc70a919459b7435d7ee62ad58",
+    "overrideSha256": "3cae4dcc909951d764ec5434c9824dced574244b020bb876497c9878f5da427e",
+    "renderedSha256": "73903203d538256ed64eaf56ad7031f857784512826d56ab675aff1e9a7130fe"
+  },
+  "previousDiagnosis": {
+    "sourceRunId": "phase14-formal-u1-20260911T172711Z-f6fa49",
+    "sourceCommit": "a169350b5ec61a6f9f077a80e7af7bfeca92d239",
+    "formula": "working = usage - inactive_file; fraction = working / cgroup limit",
+    "source": "retained Docker Engine memory_stats (cgroup counters); exited-container cgroup directory not available",
+    "shards": {
+      "0": {
+        "role": "main",
+        "peak": {
+          "relativeSeconds": 28.0348904132843,
+          "rawBytes": 1940971520,
+          "inactiveFileBytes": 5181440,
+          "workingBytes": 1935790080,
+          "limit": 2147483648,
+          "fraction": 0.9014225006103516
+        },
+        "beforeRelease": {
+          "relativeSeconds": -0.9672043323516846,
+          "rawBytes": 1167241216,
+          "inactiveFileBytes": 20480,
+          "workingBytes": 1167220736,
+          "limit": 2147483648,
+          "fraction": 0.5435295104980469
+        },
+        "last": {
+          "relativeSeconds": 28.0348904132843,
+          "rawBytes": 1940971520,
+          "inactiveFileBytes": 5181440,
+          "workingBytes": 1935790080,
+          "limit": 2147483648,
+          "fraction": 0.9014225006103516
+        }
+      },
+      "1": {
+        "role": "main",
+        "peak": {
+          "relativeSeconds": 28.0348904132843,
+          "rawBytes": 1910943744,
+          "inactiveFileBytes": 5136384,
+          "workingBytes": 1905807360,
+          "limit": 2147483648,
+          "fraction": 0.8874607086181641
+        },
+        "beforeRelease": {
+          "relativeSeconds": -0.9672043323516846,
+          "rawBytes": 1199685632,
+          "inactiveFileBytes": 20480,
+          "workingBytes": 1199665152,
+          "limit": 2147483648,
+          "fraction": 0.5586376190185547
+        },
+        "last": {
+          "relativeSeconds": 28.0348904132843,
+          "rawBytes": 1910943744,
+          "inactiveFileBytes": 5136384,
+          "workingBytes": 1905807360,
+          "limit": 2147483648,
+          "fraction": 0.8874607086181641
+        }
+      },
+      "2": {
+        "role": "main",
+        "peak": {
+          "relativeSeconds": 28.0348904132843,
+          "rawBytes": 1907146752,
+          "inactiveFileBytes": 5128192,
+          "workingBytes": 1902018560,
+          "limit": 2147483648,
+          "fraction": 0.8856964111328125
+        },
+        "beforeRelease": {
+          "relativeSeconds": -0.9672043323516846,
+          "rawBytes": 1149087744,
+          "inactiveFileBytes": 28672,
+          "workingBytes": 1149059072,
+          "limit": 2147483648,
+          "fraction": 0.5350723266601562
+        },
+        "last": {
+          "relativeSeconds": 28.0348904132843,
+          "rawBytes": 1907146752,
+          "inactiveFileBytes": 5128192,
+          "workingBytes": 1902018560,
+          "limit": 2147483648,
+          "fraction": 0.8856964111328125
+        }
+      },
+      "3": {
+        "role": "main",
+        "peak": {
+          "relativeSeconds": 28.0348904132843,
+          "rawBytes": 1842413568,
+          "inactiveFileBytes": 5099520,
+          "workingBytes": 1837314048,
+          "limit": 2147483648,
+          "fraction": 0.8555660247802734
+        },
+        "beforeRelease": {
+          "relativeSeconds": -0.9672043323516846,
+          "rawBytes": 1163313152,
+          "inactiveFileBytes": 24576,
+          "workingBytes": 1163288576,
+          "limit": 2147483648,
+          "fraction": 0.5416984558105469
+        },
+        "last": {
+          "relativeSeconds": 28.0348904132843,
+          "rawBytes": 1842413568,
+          "inactiveFileBytes": 5099520,
+          "workingBytes": 1837314048,
+          "limit": 2147483648,
+          "fraction": 0.8555660247802734
+        }
+      },
+      "4": {
+        "role": "probe",
+        "peak": {
+          "relativeSeconds": 28.0348904132843,
+          "rawBytes": 368349184,
+          "inactiveFileBytes": 2408448,
+          "workingBytes": 365940736,
+          "limit": 2147483648,
+          "fraction": 0.17040443420410156
+        },
+        "beforeRelease": {
+          "relativeSeconds": -0.9672043323516846,
+          "rawBytes": 305012736,
+          "inactiveFileBytes": 20480,
+          "workingBytes": 304992256,
+          "limit": 2147483648,
+          "fraction": 0.14202308654785156
+        },
+        "last": {
+          "relativeSeconds": 28.0348904132843,
+          "rawBytes": 368349184,
+          "inactiveFileBytes": 2408448,
+          "workingBytes": 365940736,
+          "limit": 2147483648,
+          "fraction": 0.17040443420410156
+        }
+      }
+    },
+    "host": {
+      "memoryTotalBytes": 15801126912,
+      "memoryAvailableBytes": 6438182912,
+      "memoryFraction": 0.5925491297009589
+    }
+  },
+  "baselineReferences": {
+    "kind": "memory-delta-baseline",
+    "qualification": "/srv/phase14/repo/performance/results/phase14-formal-qualify-20260911T162841Z-910b33/qualification.json",
+    "sourceBefore": "edf4c7e734ec33b91b700b4c1af104855d41acad",
+    "fingerprint": {
+      "git": {
+        "load": {
+          "head": "90af2fd82c54bf048163d8012e15942bc340668d",
+          "tree": "6bb75918d4b2efbdbadeda7f85702caa617e17a4",
+          "branch": "main",
+          "worktree": "",
+          "diffCheck": 0
+        },
+        "sut": {
+          "head": "90af2fd82c54bf048163d8012e15942bc340668d",
+          "tree": "6bb75918d4b2efbdbadeda7f85702caa617e17a4",
+          "branch": "main",
+          "worktree": "",
+          "diffCheck": 0
+        }
+      },
+      "controlHead": "90af2fd82c54bf048163d8012e15942bc340668d",
+      "controlTree": "6bb75918d4b2efbdbadeda7f85702caa617e17a4",
+      "officialOriginHead": "90af2fd82c54bf048163d8012e15942bc340668d",
+      "targetsSha256": "653bbcf69399ef14f822e2ff4235332384062743072b93e3763632673a5b35b8",
+      "image": {
+        "id": "sha256:c099a97fea4f60a7e3d26139770a552cb2a91304526978d5c65daab7df01b00c",
+        "platform": "linux/amd64",
+        "configurationSha256": "50028ac19f0fe8923bd1ff716a04ec0414b631d5fdca343554098ce5a5ef5a99"
+      },
+      "datasetManifestSha256": "204a79cffb06853039ab467f5b94380394c62e31b9f0be920d44883e103e2345",
+      "inputs": {
+        "dataset.sql": "946e3c113e25796bb2d936cd0db7d5023a8dde43902b63d990814c5c058e1b19",
+        "sessions.json": "08b3a64db368a49e0efddfbf1d822bb74d3e837634216e2b74733e95872eb670",
+        "workload-seats.json": "e6f57daba50bc1721709e6c18ae0d35a334e8bc4432e41ae45c41afd1e139242",
+        "workload-users.json": "558cf37c447656a65450ec2725f9d76e49edfe69eaa7df4ff207f30c900576b0"
+      },
+      "snapshotSha256": "229b078d8f8062f0c2d5e33efa1dedb7ce66ae9a0de46584cb5f1ac62c9b1cef",
+      "databaseBaselineSha256": "282e4d3c417071c484afa3fce2d91b49acf1ccdfca9db6a0f50899f554530685",
+      "topology": {
+        "mode": "dual",
+        "sutRole": "phase14-sut",
+        "loadRole": "phase14-load",
+        "sutProject": "phase14-formal-sut",
+        "loadProject": "phase14-formal-load",
+        "portSource": "targets.environment.localPort",
+        "privateAddressValidated": true,
+        "addressSha256": "82ed5832ab5b0ed51058624e4abc3b5e6622b0962ff980222bf04fc7ab3719fc",
+        "fingerprint": "1fa967e7e0230318f83781be4c313367ce424790b388985add4db69081a9e82b"
+      }
+    },
+    "originalEvidence": [
+      {
+        "root": "/srv/phase14/repo/performance/results/phase14-formal-qualify-20260911T162841Z-910b33",
+        "hashes": {
+          "qualification.json": "4744d36ec630ccfaa2d2030a62c3a4ad96330de267314916c924b95f5afb1031"
+        }
+      },
+      {
+        "root": "/srv/phase14/repo/performance/results/phase14-formal-fd-delta-20260911T172521Z-b5ed15",
+        "hashes": {
+          "delta-qualification.json": "82943c6ada497c31fa8e9ff49b0bcef67783c468afff8c86394b52c09a071bfc"
+        }
+      },
+      {
+        "root": "/srv/phase14/repo/performance/results/phase14-formal-fd-deploy-20260911T172454Z-c10108",
+        "hashes": {
+          "fd-original-role-compose.json": "75f14e990d211f2bb80af9a2242f304a33b4e61628fbb51aae76e87a3e82df36",
+          "fd-override.json": "52cd400a0ddda4aee21ecd4c6f5ce8182fe898a575fe17d875f9d731871ce408",
+          "fd-rendered-role-compose.json": "45dcbda79b9bd5b1fdc230653eae0b585a44370daab8a00ecc1bdda703cb28a4",
+          "fd-compose-hashes.json": "75af468050e4784e3f085549ebe6d778afbdf80c58b8c6d7541d8d5bbb3992df",
+          "fd-process-before-connection-check.json": "9d4684d64ce648333ca9544b81ee02d505f352aa5da3939d4a24e4001daee38d",
+          "connection-check.json": "ab5ea2e8da1daa1d869bb8e4cf9f58efc1768a94fbafcbe888575d40e5eb7468",
+          "preflight.json": "06876172702330047717021625b8ddce006a737f1f6a6968e70e312785af4b9d",
+          "new-invariants.json": "61ee1f387ab2b9e48089c71c4233889d526b2ddf51d6d4455620c12413889619"
+        }
+      },
+      {
+        "root": "/srv/phase14/repo/performance/results/phase14-formal-run-20260911T154259Z-1bdd48",
+        "runId": "phase14-formal-run-20260911T154259Z-1bdd48",
+        "hashes": {
+          "g0.json": "5f14864bdd87208ce704d14b8c875b25e75cc78521c3a518b08eee60ed3f8914",
+          "sampling-overhead.json": "a0a851678d5f4806b838856c38e138df67d3e666c8c7ec085e6a3defdd8f79c6"
+        }
+      },
+      {
+        "root": "/srv/phase14/repo/performance/results/phase14-smoke-campaign-20260911T154821Z-7afd20",
+        "runId": "phase14-smoke-campaign-20260911T154821Z-7afd20",
+        "hashes": {
+          "campaign.json": "b09766a74778000c750ee1152e739946888dbd378dbf3962f140a40b627e6745",
+          "checkpoint.jsonl": "b75ed5f69fe6f807aaed270d10b20ba8232579b716939355aa7c941fe8614022",
+          "plan.json": "abb946da55e6c87f3d4a1904f24f5f173a776cdca209735711adeee8c0460e30"
+        }
+      },
+      {
+        "root": "/srv/phase14/repo/performance/results/phase14-formal-init-only-20260911T154039Z-c7bb97",
+        "hashes": {
+          "init-qualification.json": "f0e655709da69033309def62a4628445c1b6dfd649d61b3ba6c0752670ac0371"
+        }
+      }
+    ],
+    "fdQuickCheck": {
+      "soft": 65535,
+      "hard": 65535,
+      "open": 385,
+      "fraction": 0.005874723430228122,
+      "containerId": "529ead9f477d6575050ec39e1ff48dab149e46457ecdc1d103c2aadb5a73f568",
+      "startedAt": "2026-09-12T02:33:05.35776896Z",
+      "dockerUlimits": [
+        {
+          "Name": "nofile",
+          "Hard": 65535,
+          "Soft": 65535
+        }
+      ],
+      "errorTimestamps": [],
+      "logWindowSeconds": 5
+    },
+    "mainMemoryBytes": 3221225472,
+    "probeMemoryBytes": 2147483648,
+    "startedAt": 1789180382.3655694,
+    "workDeadlineAt": 1789192982.3655694,
+    "hardDeadlineAt": 1789194782.3655694,
+    "root": "/srv/phase14/repo/performance/results/phase14-formal-memory-deploy-20260912T023255Z-8aa4cd",
+    "estimatedHours": 4
+  },
+  "businessReleaseAt": 1789180907.851,
+  "lastSampleAt": 1789180987.889093,
+  "lastHttpAt": 1789180988.566567,
+  "observedFragmentSeconds": 80.71556687355042,
+  "initializationSeconds": 17.807608642578124,
+  "admittedMainUsers": 1681,
+  "httpRequestsByScenario": {
+    "main": 20068,
+    "control_health": 162,
+    "control_auth": 162,
+    "payment": 1652,
+    "control_availability": 162
+  },
+  "httpStatusCounts": {
+    "200": 21257,
+    "201": 787,
+    "202": 162
+  },
+  "diagnosticRps": 275.11421724619834,
+  "mainDiagnosticRps": 248.62614211009225,
+  "formalThroughput": null,
+  "formalBusinessFailureRate": null,
+  "httpLatencyMs": {
+    "all": {
+      "count": 22206,
+      "p50": 2.8400205,
+      "p95": 52.66797975,
+      "p99": 69.20317845000001,
+      "max": 144.087435
+    },
+    "main": {
+      "count": 20068,
+      "p50": 2.7548505,
+      "p95": 53.64863654999997,
+      "p99": 69.7575423999999,
+      "max": 144.087435
+    },
+    "probes": {
+      "count": 2138,
+      "p50": 3.1739265000000003,
+      "p95": 40.03312904999998,
+      "p99": 56.249199870000055,
+      "max": 90.933122
+    }
+  },
+  "classificationCounts": {
+    "business_success": 27404.0,
+    "business_conflict": 0,
+    "capacity_rejection": 0,
+    "system_error": 0,
+    "unexpected_contract": 0
+  },
+  "delivery": {
+    "main": {
+      "planned": null,
+      "started": 1993.0,
+      "completed": 312.0,
+      "interrupted": 1681.0
+    },
+    "control_health": {
+      "planned": 4080,
+      "started": 162.0,
+      "completed": 162.0,
+      "interrupted": 0.0
+    },
+    "control_auth": {
+      "planned": 4080,
+      "started": 162.0,
+      "completed": 162.0,
+      "interrupted": 0.0
+    },
+    "control_availability": {
+      "planned": 4080,
+      "started": 162.0,
+      "completed": 162.0,
+      "interrupted": 0.0
+    },
+    "payment": {
+      "planned": 3480,
+      "started": 162.0,
+      "completed": 153.0,
+      "interrupted": 9.0
+    }
+  },
+  "dropped": 0,
+  "stopReasons": [
+    "invalid generator memory",
+    "k6 exit 105",
+    "k6 exit 105",
+    "k6 exit 105",
+    "k6 exit 105",
+    "k6 exit 105"
+  ],
+  "memory": {
+    "0": {
+      "role": "main",
+      "cgroupPeak": {
+        "time": 1789180987.889093,
+        "relativeSeconds": 80.0380928516388,
+        "containerId": "20b03bdfbc69ae41a8180e48c7799e17225912f83b059b538b17c3395e3d112e",
+        "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-0",
+        "runId": "phase14-formal-run-20260912T023405Z-668bff",
+        "inspectLimit": 3221225472,
+        "cgroupLimit": 3221225472,
+        "rawBytes": 3004346368,
+        "inactiveFileBytes": 15032320,
+        "workingBytes": 2989314048,
+        "fraction": 0.9280052185058594,
+        "events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        }
+      },
+      "lastAvailable30SecondsGrowth": 0.15711186726888027,
+      "enginePeakFraction": 0.9279251098632812
+    },
+    "1": {
+      "role": "main",
+      "cgroupPeak": {
+        "time": 1789180986.8890183,
+        "relativeSeconds": 79.03801822662354,
+        "containerId": "51a01a3f9db12916850fd4e17f69dc8a4ba720cdd7f7ec9cdf52be7ec354de42",
+        "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-1",
+        "runId": "phase14-formal-run-20260912T023405Z-668bff",
+        "inspectLimit": 3221225472,
+        "cgroupLimit": 3221225472,
+        "rawBytes": 2889072640,
+        "inactiveFileBytes": 15269888,
+        "workingBytes": 2873802752,
+        "fraction": 0.8921457926432291,
+        "events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        }
+      },
+      "lastAvailable30SecondsGrowth": 0.12287928263346348,
+      "enginePeakFraction": 0.8921457926432292
+    },
+    "2": {
+      "role": "main",
+      "cgroupPeak": {
+        "time": 1789180987.889093,
+        "relativeSeconds": 80.0380928516388,
+        "containerId": "cdbe7bcdbc0ce6ea750d0376ea2e4094baeae6a7e8e91c2a27835a1085940fb0",
+        "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-2",
+        "runId": "phase14-formal-run-20260912T023405Z-668bff",
+        "inspectLimit": 3221225472,
+        "cgroupLimit": 3221225472,
+        "rawBytes": 2827890688,
+        "inactiveFileBytes": 15298560,
+        "workingBytes": 2812592128,
+        "fraction": 0.8731435139973959,
+        "events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        }
+      },
+      "lastAvailable30SecondsGrowth": 0.1475502014160155,
+      "enginePeakFraction": 0.8731193542480469
+    },
+    "3": {
+      "role": "main",
+      "cgroupPeak": {
+        "time": 1789180987.889093,
+        "relativeSeconds": 80.0380928516388,
+        "containerId": "2dde8d32e8e51bfc3a2d5eddba526786fc3129c896883c017764eb472f04f46b",
+        "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-3",
+        "runId": "phase14-formal-run-20260912T023405Z-668bff",
+        "inspectLimit": 3221225472,
+        "cgroupLimit": 3221225472,
+        "rawBytes": 2831073280,
+        "inactiveFileBytes": 15306752,
+        "workingBytes": 2815766528,
+        "fraction": 0.8741289774576823,
+        "events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        }
+      },
+      "lastAvailable30SecondsGrowth": 0.1341445922851564,
+      "enginePeakFraction": 0.8741734822591145
+    },
+    "4": {
+      "role": "probe",
+      "cgroupPeak": {
+        "time": 1789180987.889093,
+        "relativeSeconds": 80.0380928516388,
+        "containerId": "1b9a7ea36c4791b9bca40884c41723ccfb97692823db37dd322e298187a2bd28",
+        "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-4",
+        "runId": "phase14-formal-run-20260912T023405Z-668bff",
+        "inspectLimit": 2147483648,
+        "cgroupLimit": 2147483648,
+        "rawBytes": 429027328,
+        "inactiveFileBytes": 6451200,
+        "workingBytes": 422576128,
+        "fraction": 0.19677734375,
+        "events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        }
+      },
+      "lastAvailable30SecondsGrowth": 0.022373962402343767,
+      "enginePeakFraction": 0.19676589965820312
+    }
+  },
+  "hostResources": {
+    "load": {
+      "cpuPeak": 0.5610034207525656,
+      "memoryPeak": 0.8395236847269238,
+      "totalMemoryBytes": 15801126912,
+      "availableMemoryMinimumBytes": 2535706624,
+      "diskFreeMinimumBytes": 43999088640,
+      "networkErrors": false
+    },
+    "sut": {
+      "cpuPeak": 0.7704280155642024,
+      "memoryPeak": 0.0811815961699428,
+      "totalMemoryBytes": 15801126912,
+      "availableMemoryMinimumBytes": 14518366208,
+      "diskFreeMinimumBytes": 94920192000,
+      "networkErrors": false
+    }
+  },
+  "safetyFlags": {
+    "oom": false,
+    "restarted": false,
+    "swapping": false,
+    "fdExhausted": false,
+    "networkExhausted": false
+  },
+  "fd": {
+    "soft": 65535,
+    "hard": 65535,
+    "peak": 5153,
+    "peakFraction": 0.07862973983367666,
+    "errors": []
+  },
+  "originalCorrectness": {
+    "passed": false,
+    "errors": [
+      "payment terminal reconciliation failed"
+    ],
+    "global": {
+      "accepted_payment_mismatch": 0,
+      "active_reservation_seat_mismatch": 0,
+      "confirmed_state_mismatch": 0,
+      "effective_seat_overlap": 0,
+      "held_seat_owner_mismatch": 0,
+      "multiple_processing_attempts": 0,
+      "multiple_refunds": 0,
+      "order_amount_mismatch": 0,
+      "order_paid_at_mismatch": 0,
+      "order_reservation_status_mismatch": 0,
+      "refund_order_or_amount_mismatch": 0,
+      "sold_state_mismatch": 0,
+      "terminal_reservation_still_holds": 0,
+      "unaccepted_success_refund_mismatch": 0
+    },
+    "scoped": {
+      "mainOrders": {
+        "orders": 219,
+        "users": 219,
+        "reservations": 219,
+        "wrong_seat_count": 0
+      },
+      "checkoutOwnership": {
+        "mismatch": 0
+      },
+      "loginSessions": {
+        "sessions": 0,
+        "users": 0,
+        "uniqueDigests": 0
+      },
+      "paymentTerminal": {
+        "orders": 162,
+        "paid": 162,
+        "invalid": 0
+      }
+    }
+  },
+  "restoration": {
+    "snapshotSha256": "229b078d8f8062f0c2d5e33efa1dedb7ce66ae9a0de46584cb5f1ac62c9b1cef",
+    "before": {
+      "tables": {
+        "app_users": "dd5f0652380b546a6a91792bd8024348",
+        "checkout_session_seats": "011362b821f5347bcca739b8bd82b58a",
+        "checkout_sessions": "3b6c4737d703e6009f520f583db23386",
+        "events": "acab6d038808d75d5baddb05c68d747c",
+        "orders": "87b9ec531c79522b4a4270dd1f6ffcb2",
+        "payment_attempts": "4d6e60b97a5ee02685a4a4658931ce13",
+        "payment_provider_events": "d41d8cd98f00b204e9800998ecf8427e",
+        "refunds": "d41d8cd98f00b204e9800998ecf8427e",
+        "reservation_session_seats": "1103c6a5d10d5f0be54586696b347de0",
+        "reservations": "7be8290749e53dcac82dc95e06e05fb1",
+        "seats": "c0df422c3fde40dfa0e68258430b8c13",
+        "session_seats": "6b463bf3d5e52653eea8e8cc27c41806",
+        "sessions": "6ee6f0beaa3f1af5372eda9d42e2ef62",
+        "user_notifications": "4096898e61dccc88e59dda122331bd28",
+        "user_sessions": "5ffdc240a2c29beedd52d9ce795eb1a4",
+        "venues": "860dd643b945b88dd92122963336390d"
+      },
+      "sha256": "4c2169b071d0eb8bab45abea2cb60f7131b1f9eba99835b041f5b681703b9b5a"
+    },
+    "after": {
+      "tables": {
+        "app_users": "dd5f0652380b546a6a91792bd8024348",
+        "checkout_session_seats": "d41d8cd98f00b204e9800998ecf8427e",
+        "checkout_sessions": "d41d8cd98f00b204e9800998ecf8427e",
+        "events": "acab6d038808d75d5baddb05c68d747c",
+        "orders": "d41d8cd98f00b204e9800998ecf8427e",
+        "payment_attempts": "d41d8cd98f00b204e9800998ecf8427e",
+        "payment_provider_events": "d41d8cd98f00b204e9800998ecf8427e",
+        "refunds": "d41d8cd98f00b204e9800998ecf8427e",
+        "reservation_session_seats": "d41d8cd98f00b204e9800998ecf8427e",
+        "reservations": "d41d8cd98f00b204e9800998ecf8427e",
+        "seats": "c0df422c3fde40dfa0e68258430b8c13",
+        "session_seats": "082308119b5a4671b71b32799dc8c0f6",
+        "sessions": "6ee6f0beaa3f1af5372eda9d42e2ef62",
+        "user_notifications": "d41d8cd98f00b204e9800998ecf8427e",
+        "user_sessions": "487c6d65e588dc9e3db06424e98ab61f",
+        "venues": "860dd643b945b88dd92122963336390d"
+      },
+      "sha256": "31baa298d90a8df76133ad1833e3475f79c08cf992b91cdeddbaa44f7b52cf16"
+    },
+    "baseline": {
+      "tables": {
+        "app_users": "dd5f0652380b546a6a91792bd8024348",
+        "checkout_session_seats": "d41d8cd98f00b204e9800998ecf8427e",
+        "checkout_sessions": "d41d8cd98f00b204e9800998ecf8427e",
+        "events": "acab6d038808d75d5baddb05c68d747c",
+        "orders": "d41d8cd98f00b204e9800998ecf8427e",
+        "payment_attempts": "d41d8cd98f00b204e9800998ecf8427e",
+        "payment_provider_events": "d41d8cd98f00b204e9800998ecf8427e",
+        "refunds": "d41d8cd98f00b204e9800998ecf8427e",
+        "reservation_session_seats": "d41d8cd98f00b204e9800998ecf8427e",
+        "reservations": "d41d8cd98f00b204e9800998ecf8427e",
+        "seats": "c0df422c3fde40dfa0e68258430b8c13",
+        "session_seats": "082308119b5a4671b71b32799dc8c0f6",
+        "sessions": "6ee6f0beaa3f1af5372eda9d42e2ef62",
+        "user_notifications": "d41d8cd98f00b204e9800998ecf8427e",
+        "user_sessions": "487c6d65e588dc9e3db06424e98ab61f",
+        "venues": "860dd643b945b88dd92122963336390d"
+      },
+      "sha256": "31baa298d90a8df76133ad1833e3475f79c08cf992b91cdeddbaa44f7b52cf16"
+    },
+    "redisDbsize": 0,
+    "passed": true
+  },
+  "finalInvariants": {
+    "passed": true,
+    "global": {
+      "accepted_payment_mismatch": 0,
+      "active_reservation_seat_mismatch": 0,
+      "confirmed_state_mismatch": 0,
+      "effective_seat_overlap": 0,
+      "held_seat_owner_mismatch": 0,
+      "multiple_processing_attempts": 0,
+      "multiple_refunds": 0,
+      "order_amount_mismatch": 0,
+      "order_paid_at_mismatch": 0,
+      "order_reservation_status_mismatch": 0,
+      "refund_order_or_amount_mismatch": 0,
+      "sold_state_mismatch": 0,
+      "terminal_reservation_still_holds": 0,
+      "unaccepted_success_refund_mismatch": 0
+    }
+  },
+  "finalFingerprint": {
+    "tables": {
+      "app_users": "dd5f0652380b546a6a91792bd8024348",
+      "checkout_session_seats": "d41d8cd98f00b204e9800998ecf8427e",
+      "checkout_sessions": "d41d8cd98f00b204e9800998ecf8427e",
+      "events": "acab6d038808d75d5baddb05c68d747c",
+      "orders": "d41d8cd98f00b204e9800998ecf8427e",
+      "payment_attempts": "d41d8cd98f00b204e9800998ecf8427e",
+      "payment_provider_events": "d41d8cd98f00b204e9800998ecf8427e",
+      "refunds": "d41d8cd98f00b204e9800998ecf8427e",
+      "reservation_session_seats": "d41d8cd98f00b204e9800998ecf8427e",
+      "reservations": "d41d8cd98f00b204e9800998ecf8427e",
+      "seats": "c0df422c3fde40dfa0e68258430b8c13",
+      "session_seats": "082308119b5a4671b71b32799dc8c0f6",
+      "sessions": "6ee6f0beaa3f1af5372eda9d42e2ef62",
+      "user_notifications": "d41d8cd98f00b204e9800998ecf8427e",
+      "user_sessions": "487c6d65e588dc9e3db06424e98ab61f",
+      "venues": "860dd643b945b88dd92122963336390d"
+    },
+    "sha256": "31baa298d90a8df76133ad1833e3475f79c08cf992b91cdeddbaa44f7b52cf16"
+  },
+  "redis": {
+    "used_memoryPeak": 9002696.0,
+    "connected_clientsPeak": 5.0,
+    "blocked_clientsPeak": 0.0,
+    "instantaneous_ops_per_secPeak": 809.0,
+    "keyspace_hitsDelta": 27138,
+    "keyspace_missesDelta": 15354904,
+    "rejected_connectionsDelta": 0,
+    "evicted_keysDelta": 0,
+    "total_error_repliesDelta": 0
+  },
+  "postgres": {
+    "valid": true,
+    "database": {
+      "numbackends": 0,
+      "xact_commit": 41821,
+      "xact_rollback": 0,
+      "blks_read": 272,
+      "blks_hit": 11767624,
+      "tup_returned": 42816232,
+      "tup_fetched": 32652720,
+      "tup_inserted": 5687,
+      "tup_updated": 3995,
+      "tup_deleted": 1407,
+      "conflicts": 0,
+      "temp_files": 0,
+      "temp_bytes": 0,
+      "deadlocks": 0,
+      "blk_read_time": 2.6729999999997744,
+      "blk_write_time": 6.574999999999818,
+      "session_time": 926331.6720000058,
+      "active_time": 79458.46200000006,
+      "idle_in_transaction_time": 3239.227,
+      "sessions": 369,
+      "sessions_abandoned": 0,
+      "sessions_fatal": 0,
+      "sessions_killed": 0
+    },
+    "topStatements": [
+      {
+        "identity": {
+          "queryid": -5628695834181976288
+        },
+        "delta": {
+          "calls": 3098,
+          "total_exec_time": 36225.69237500001,
+          "rows": 15490000,
+          "shared_blks_hit": 5101994,
+          "shared_blks_read": 0,
+          "temp_blks_written": 0
+        }
+      },
+      {
+        "identity": {
+          "queryid": -455704000372811774
+        },
+        "delta": {
+          "calls": 1681,
+          "total_exec_time": 22408.043927000024,
+          "rows": 8405000,
+          "shared_blks_hit": 2872744,
+          "shared_blks_read": 0,
+          "temp_blks_written": 0
+        }
+      },
+      {
+        "identity": {
+          "queryid": -3777772599989396074
+        },
+        "delta": {
+          "calls": 1681,
+          "total_exec_time": 6127.383009000004,
+          "rows": 1681,
+          "shared_blks_hit": 2771788,
+          "shared_blks_read": 84,
+          "temp_blks_written": 0
+        }
+      }
+    ]
+  },
+  "formalMatrix": {
+    "scope": "Phase14鏍稿績姝ｅ紡鐭╅樀",
+    "runs": [
+      {
+        "index": 0,
+        "case": "U1",
+        "arguments": {
+          "round": 0
+        },
+        "status": "not_run",
+        "reason": "memory qualification failed"
+      },
+      {
+        "index": 1,
+        "case": "U2",
+        "arguments": {
+          "round": 0
+        },
+        "status": "not_run",
+        "reason": "memory qualification failed"
+      },
+      {
+        "index": 2,
+        "case": "O1",
+        "arguments": {
+          "window": 0
+        },
+        "status": "not_run",
+        "reason": "memory qualification failed"
+      },
+      {
+        "index": 3,
+        "case": "O1",
+        "arguments": {
+          "window": 1
+        },
+        "status": "not_run",
+        "reason": "memory qualification failed"
+      },
+      {
+        "index": 4,
+        "case": "O1",
+        "arguments": {
+          "window": 2
+        },
+        "status": "not_run",
+        "reason": "memory qualification failed"
+      },
+      {
+        "index": 5,
+        "case": "H1",
+        "arguments": {
+          "path": "temporary",
+          "repeat": 0
+        },
+        "status": "not_run",
+        "reason": "memory qualification failed"
+      },
+      {
+        "index": 6,
+        "case": "H1",
+        "arguments": {
+          "path": "formal",
+          "repeat": 0
+        },
+        "status": "not_run",
+        "reason": "memory qualification failed"
+      },
+      {
+        "index": 7,
+        "case": "H3",
+        "arguments": {
+          "path": "formal"
+        },
+        "status": "not_run",
+        "reason": "memory qualification failed"
+      },
+      {
+        "index": 8,
+        "case": "L2",
+        "arguments": {
+          "control_only": true
+        },
+        "status": "not_run",
+        "reason": "memory qualification failed"
+      },
+      {
+        "index": 9,
+        "case": "L2",
+        "arguments": {
+          "control_only": false
+        },
+        "status": "not_run",
+        "reason": "memory qualification failed"
+      }
+    ]
+  },
+  "cleanup": {
+    "status": "pass",
+    "completedAt": 1789181230.4186883,
+    "services": {
+      "status": "pass",
+      "startedAt": 1789180382.3655694,
+      "stoppedAt": 1789181152.3006115,
+      "elapsedSeconds": 769.9350423812866,
+      "containers": {
+        "load": {
+          "containersPreserved": 1067,
+          "running": 0,
+          "oomContainers": 0,
+          "restartedContainers": 0
+        },
+        "sut": {
+          "containersPreserved": 6,
+          "running": 0,
+          "oomContainers": 0,
+          "restartedContainers": 0
+        }
+      },
+      "volumes": {
+        "load": [],
+        "sut": [
+          "phase14-formal-sut_postgres",
+          "phase14-formal-sut_prometheus"
+        ]
+      },
+      "imagesPreserved": true,
+      "historicalEvidencePreserved": true,
+      "reason": "One-shot 3 GiB memory qualification failed; no formal core scenarios started; restored baseline preserved",
+      "root": "/srv/phase14/repo/performance/results/phase14-formal-memory-shutdown-20260912T024530Z-6a89d9"
+    },
+    "ssh": {
+      "sut": {
+        "removedAuthorizations": 1,
+        "otherLinesPreserved": 1
+      },
+      "load": {
+        "finishedAt": 1789181163.329834,
+        "negativeAuthenticationCheck": true,
+        "removedDedicatedFiles": [
+          "phase14_sut_ed25519",
+          "phase14_sut_ed25519.pub",
+          "phase14_known_hosts"
+        ],
+        "removedConfigBlock": true,
+        "remainingPrivateKey": false
+      }
+    }
+  },
+  "collection": {
+    "archiveBytes": 4514988,
+    "sha256": "674533d4280c60a29a17d9e34908e89a8a0a97a4bba8b10f37160bdf781857d5",
+    "files": 191,
+    "localRoot": "performance\\results\\phase14-memory-analysis\\round"
+  },
+  "finalDelivery": {
+    "windowsMemoryTests": 6,
+    "linuxMemoryTests": 6,
+    "linuxComposePassed": true,
+    "windowsReportTests": 3,
+    "linuxReportTests": "blocked_before_start",
+    "serverFinalSync": "blocked",
+    "lastVerifiedServerHead": "90af2fd82c54bf048163d8012e15942bc340668d",
+    "reason": "Both management SSH connections closed by remote host before key exchange after confirmed service and credential cleanup",
+    "productionChanges": false
+  }
+}

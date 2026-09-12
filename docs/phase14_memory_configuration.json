@@ -1,0 +1,186 @@
+{
+  "sourceHead": "90af2fd82c54bf048163d8012e15942bc340668d",
+  "manifest": {
+    "oldBytes": 2147483648,
+    "mainBytes": 3221225472,
+    "probeBytes": 2147483648,
+    "baseComposeSha256": "c5125f4535f702ede2c222aa435822e729aaadcc70a919459b7435d7ee62ad58",
+    "overrideSha256": "3cae4dcc909951d764ec5434c9824dced574244b020bb876497c9878f5da427e",
+    "renderedSha256": "73903203d538256ed64eaf56ad7031f857784512826d56ab675aff1e9a7130fe"
+  },
+  "renderedBasePlusMemory": {
+    "name": "phase14-formal-load",
+    "networks": {
+      "default": {
+        "name": "phase14-formal-load_default",
+        "ipam": {}
+      }
+    },
+    "services": {
+      "k6": {
+        "cpus": 4,
+        "command": null,
+        "entrypoint": null,
+        "image": "grafana/k6:2.2.0",
+        "mem_limit": "3221225472",
+        "networks": {
+          "default": null
+        },
+        "volumes": [
+          {
+            "type": "bind",
+            "source": "/srv/phase14/repo/performance/k6",
+            "target": "/scripts",
+            "read_only": true,
+            "bind": {
+              "create_host_path": true
+            }
+          },
+          {
+            "type": "bind",
+            "source": "/srv/phase14/repo/performance/generated/phase14/dual-formal-v3",
+            "target": "/data",
+            "read_only": true,
+            "bind": {
+              "create_host_path": true
+            }
+          },
+          {
+            "type": "bind",
+            "source": "/srv/phase14/repo/performance/results",
+            "target": "/results",
+            "bind": {
+              "create_host_path": true
+            }
+          }
+        ],
+        "working_dir": "/scripts"
+      },
+      "noop": {
+        "cpus": 2,
+        "command": null,
+        "entrypoint": null,
+        "image": "nginx:1.28-alpine",
+        "mem_limit": "134217728",
+        "networks": {
+          "default": null
+        },
+        "ulimits": {
+          "nofile": {
+            "soft": 16384,
+            "hard": 16384
+          }
+        },
+        "volumes": [
+          {
+            "type": "bind",
+            "source": "/srv/phase14/repo/performance/phase14/noop.conf",
+            "target": "/etc/nginx/nginx.conf",
+            "read_only": true,
+            "bind": {
+              "create_host_path": true
+            }
+          }
+        ]
+      }
+    }
+  },
+  "effectiveLimits": {
+    "4": {
+      "containerId": "1b9a7ea36c4791b9bca40884c41723ccfb97692823db37dd322e298187a2bd28",
+      "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-4",
+      "runId": "phase14-formal-run-20260912T023405Z-668bff",
+      "inspectLimit": 2147483648,
+      "cgroupLimit": 2147483648,
+      "rawBytes": 313458688,
+      "inactiveFileBytes": 8192,
+      "workingBytes": 313450496,
+      "fraction": 0.14596176147460938,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      }
+    },
+    "3": {
+      "containerId": "2dde8d32e8e51bfc3a2d5eddba526786fc3129c896883c017764eb472f04f46b",
+      "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-3",
+      "runId": "phase14-formal-run-20260912T023405Z-668bff",
+      "inspectLimit": 3221225472,
+      "cgroupLimit": 3221225472,
+      "rawBytes": 1162895360,
+      "inactiveFileBytes": 20480,
+      "workingBytes": 1162874880,
+      "fraction": 0.3610038757324219,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      }
+    },
+    "2": {
+      "containerId": "cdbe7bcdbc0ce6ea750d0376ea2e4094baeae6a7e8e91c2a27835a1085940fb0",
+      "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-2",
+      "runId": "phase14-formal-run-20260912T023405Z-668bff",
+      "inspectLimit": 3221225472,
+      "cgroupLimit": 3221225472,
+      "rawBytes": 1151328256,
+      "inactiveFileBytes": 16384,
+      "workingBytes": 1151311872,
+      "fraction": 0.35741424560546875,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      }
+    },
+    "1": {
+      "containerId": "51a01a3f9db12916850fd4e17f69dc8a4ba720cdd7f7ec9cdf52be7ec354de42",
+      "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-1",
+      "runId": "phase14-formal-run-20260912T023405Z-668bff",
+      "inspectLimit": 3221225472,
+      "cgroupLimit": 3221225472,
+      "rawBytes": 1215086592,
+      "inactiveFileBytes": 12288,
+      "workingBytes": 1215074304,
+      "fraction": 0.3772087097167969,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      }
+    },
+    "0": {
+      "containerId": "20b03bdfbc69ae41a8180e48c7799e17225912f83b059b538b17c3395e3d112e",
+      "name": "phase14-formal-sut-k6-phase14-formal-run-20260912T023405Z-668bff-0",
+      "runId": "phase14-formal-run-20260912T023405Z-668bff",
+      "inspectLimit": 3221225472,
+      "cgroupLimit": 3221225472,
+      "rawBytes": 1170075648,
+      "inactiveFileBytes": 12288,
+      "workingBytes": 1170063360,
+      "fraction": 0.3632354736328125,
+      "events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      }
+    }
+  },
+  "note": "Actual launch additionally retained the unchanged copied-source volume overlay."
+}
