@@ -33,11 +33,11 @@ end
 for index, key in ipairs(KEYS) do
   local value = redis.call('GET', key)
   if index <= added_count then
-    redis.call('SET', key, owner .. '|' .. target_revision, 'EX', ttl)
+    redis.call('SET', key, owner .. '|' .. target_revision, 'PX', ttl)
   elseif not value then
-    redis.call('SET', key, owner .. '|' .. base_revision, 'EX', ttl)
+    redis.call('SET', key, owner .. '|' .. base_revision, 'PX', ttl)
   else
-    redis.call('EXPIRE', key, ttl)
+    redis.call('PEXPIRE', key, ttl)
   end
 end
 return 1
@@ -88,9 +88,9 @@ for _, key in ipairs(KEYS) do
 end
 for _, key in ipairs(KEYS) do
   if redis.call('GET', key) then
-    redis.call('EXPIRE', key, ttl)
+    redis.call('PEXPIRE', key, ttl)
   else
-    redis.call('SET', key, owner .. '|' .. revision, 'EX', ttl)
+    redis.call('SET', key, owner .. '|' .. revision, 'PX', ttl)
   end
 end
 return 1
@@ -222,6 +222,12 @@ int SeatHoldService::ttlSeconds()
     return static_cast<int>(value.asInt64());
 }
 
+std::int64_t SeatHoldService::defaultTtlMilliseconds()
+{
+    // ttlSeconds validates <= INT_MAX; widen before multiplying to avoid int overflow.
+    return static_cast<std::int64_t>(ttlSeconds()) * 1000;
+}
+
 std::string SeatHoldService::keyFor(
     const std::string &sessionId,
     const std::string &sessionSeatId)
@@ -236,8 +242,10 @@ void SeatHoldService::prepare(
     const std::vector<std::string> &retainedSeatIds,
     std::int64_t baseRevision,
     std::int64_t targetRevision,
+    std::int64_t ttlMilliseconds,
     Completion completion) const
 {
+    if (ttlMilliseconds <= 0) { completion(SeatHoldOutcome::Unavailable); return; }
     if (addedSeatIds.empty() && retainedSeatIds.empty())
     {
         completion(SeatHoldOutcome::Applied);
@@ -251,7 +259,7 @@ void SeatHoldService::prepare(
         executeWithKeys(
             kPrepareScript,
             keysFor(sessionId, allSeatIds),
-            arguments({checkoutSessionId, std::to_string(addedSeatIds.size()), std::to_string(baseRevision), std::to_string(targetRevision), std::to_string(ttlSeconds())}),
+            arguments({checkoutSessionId, std::to_string(addedSeatIds.size()), std::to_string(baseRevision), std::to_string(targetRevision), std::to_string(ttlMilliseconds)}),
             [done](const drogon::nosql::RedisResult &result) {
                 try
                 {
@@ -331,8 +339,10 @@ void SeatHoldService::ensure(
     const std::string &checkoutSessionId,
     const std::vector<std::string> &seatIds,
     std::int64_t revision,
+    std::int64_t ttlMilliseconds,
     Completion completion) const
 {
+    if (ttlMilliseconds <= 0) { completion(SeatHoldOutcome::Unavailable); return; }
     if (seatIds.empty())
     {
         completion(SeatHoldOutcome::Applied);
@@ -344,7 +354,7 @@ void SeatHoldService::ensure(
         executeWithKeys(
             kEnsureScript,
             keysFor(sessionId, seatIds),
-            arguments({checkoutSessionId, std::to_string(revision), std::to_string(ttlSeconds())}),
+            arguments({checkoutSessionId, std::to_string(revision), std::to_string(ttlMilliseconds)}),
             [done](const drogon::nosql::RedisResult &result) {
                 try
                 {

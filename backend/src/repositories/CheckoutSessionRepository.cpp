@@ -433,6 +433,20 @@ void CheckoutSessionRepository::resetSelecting(
         idempotencyKey);
 }
 
+void CheckoutSessionRepository::abandonSubmitting(
+    const TransactionPtr &transaction,const std::string &checkoutSessionId,const std::string &idempotencyKey,
+    std::function<void(std::optional<std::string>)> onSuccess,ErrorCallback onError) const
+{
+    const std::string sql="UPDATE checkout_sessions SET status='ABANDONED', active_confirm_idempotency_key=NULL, "
+        "updated_at=CURRENT_TIMESTAMP WHERE id=$1 AND status='SUBMITTING' AND active_confirm_idempotency_key=$2 "
+        "RETURNING TO_CHAR(updated_at AT TIME ZONE 'UTC',"+std::string{kTimestampFormat}+") AS updated_at";
+    transaction->execSqlAsync(sql,[onSuccess=std::move(onSuccess)](const drogon::orm::Result &rows){
+        onSuccess(rows.empty()?std::nullopt:std::optional<std::string>{rows.front()["updated_at"].as<std::string>()});
+    },[onError=std::move(onError)](const drogon::orm::DrogonDbException &error){
+        logDatabaseError("Failed to close submitting checkout after sales window",error);onError();
+    },checkoutSessionId,idempotencyKey);
+}
+
 void CheckoutSessionRepository::setAbandoned(
     const TransactionPtr &transaction,
     const std::string &checkoutSessionId,

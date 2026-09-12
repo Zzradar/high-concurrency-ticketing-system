@@ -89,6 +89,9 @@ class CheckoutSessionRepository
                         const std::string &idempotencyKey,
                         std::function<void(std::optional<std::string>)> onSuccess,
                         ErrorCallback onError) const;
+    void abandonSubmitting(const TransactionPtr &transaction,
+                           const std::string &checkoutSessionId,const std::string &idempotencyKey,
+                           std::function<void(std::optional<std::string>)> onSuccess,ErrorCallback onError) const;
     void setAbandoned(const TransactionPtr &transaction,
                       const std::string &checkoutSessionId,
                       std::function<void(std::optional<std::string>)> onSuccess,

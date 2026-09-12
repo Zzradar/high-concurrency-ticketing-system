@@ -22,7 +22,7 @@ class Phase14MetricsContracts(unittest.TestCase):
             s=path.read_text(encoding='utf-8')
             self.assertNotRegex(s,r'->newTransactionAsync\(')
             sites.extend(re.findall(r'Phase14Metrics::newTransactionAsync\(',s))
-        self.assertEqual(len(sites),12)
+        self.assertEqual(len(sites),13)  # Includes the fenced Phase15 SUBMITTING close transaction.
         for name in ('SeatHoldService','AuthSessionCache','LoginRateLimiter'):
             s=(ROOT/f'src/services/{name}.cpp').read_text(encoding='utf-8')
             self.assertNotIn('->execCommandAsync(',s)

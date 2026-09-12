@@ -45,6 +45,8 @@ class ReadModelTest(unittest.TestCase):
         return self.script('apply',seat,status,version,10)
 
     def hold(self, operation, seats, *args):
+        # Legacy Phase16 test fixtures express TTL in seconds; production Lua now uses milliseconds.
+        if operation in ("Prepare", "Ensure"): args=(*args[:-1],int(args[-1]*1000))
         source = (ROOT/'src/services/SeatHoldService.cpp').read_text()
         original = re.search(r'k' + operation + r'Script = R"lua\((.*?)\)lua";',source,re.S).group(1)
         script = ('local originalKeys = KEYS\nlocal KEYS = {string.gsub(string.match(KEYS[1], "^(.*}):"), "seat%-hold:", "seat-availability:", 1)}\n'

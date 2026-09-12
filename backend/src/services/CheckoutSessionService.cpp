@@ -5,6 +5,7 @@
 #include <drogon/utils/Utilities.h>
 
 #include <algorithm>
+#include <cstdlib>
 #include <iterator>
 #include <limits>
 #include <set>
@@ -21,6 +22,7 @@ struct CheckoutSessionService::CreateState
     CheckoutSessionRecord record;
     CheckoutSessionRepository::TransactionPtr transaction;
     Completion completion;
+    std::int64_t holdTtlMilliseconds{};
     bool redisPrepareAttempted{false};
     bool finished{false};
 };
@@ -39,6 +41,7 @@ struct CheckoutSessionService::ReplaceState
     CheckoutSessionRecord record;
     CheckoutSessionRepository::TransactionPtr transaction;
     Completion completion;
+    std::int64_t holdTtlMilliseconds{};
     bool redisPrepareAttempted{false};
     bool finished{false};
 };
@@ -80,6 +83,18 @@ struct CheckoutSessionService::AbandonState
 
 namespace
 {
+std::optional<CheckoutSessionOutcome> salesFailure(const SessionSalesGate &gate)
+{
+    if(!gate.staticallyAvailable())return CheckoutSessionOutcome::SessionNotAvailable;
+    if(gate.state==SalesWindowState::NotStarted)return CheckoutSessionOutcome::SalesNotStarted;
+    if(gate.state==SalesWindowState::Ended || gate.remainingMilliseconds<=0)return CheckoutSessionOutcome::SalesEnded;
+    return std::nullopt;
+}
+bool salesWindowFailure(CheckoutSessionOutcome outcome)
+{
+    return outcome==CheckoutSessionOutcome::SalesNotStarted || outcome==CheckoutSessionOutcome::SalesEnded;
+}
+
 std::optional<std::vector<std::string>> normalizeSeatIds(
     const Json::Value &seats,
     std::size_t minimum)
@@ -192,24 +207,13 @@ void CheckoutSessionService::createValidateUser(
 void CheckoutSessionService::createValidateSession(
     const std::shared_ptr<CreateState> &state) const
 {
-    repository_.findSessionStatus(
-        state->transaction,
-        state->sessionId,
-        [this, state](std::optional<std::string> status) {
-            if (!status)
-            {
-                failCreate(state, CheckoutSessionOutcome::SessionNotFound);
-                return;
-            }
-            if (*status != "ON_SALE")
-            {
-                failCreate(state,
-                           CheckoutSessionOutcome::SessionNotAvailable);
-                return;
-            }
+    salesWindowRepository_.readSessionGate(state->transaction,state->sessionId,
+        [this,state](std::optional<SessionSalesGate> gate){
+            if(!gate){failCreate(state,CheckoutSessionOutcome::SessionNotFound);return;}
+            if(auto failure=salesFailure(*gate)){failCreate(state,*failure);return;}
+            state->holdTtlMilliseconds=std::min(SeatHoldService::defaultTtlMilliseconds(),gate->remainingMilliseconds);
             createValidateSeats(state);
-        },
-        [this, state] { failCreate(state, CheckoutSessionOutcome::InternalError); });
+        },[this,state]{failCreate(state,CheckoutSessionOutcome::InternalError);});
 }
 
 void CheckoutSessionService::createValidateSeats(
@@ -241,6 +245,7 @@ void CheckoutSessionService::createPrepareHolds(
         {},
         0,
         0,
+        state->holdTtlMilliseconds,
         [this, state](SeatHoldOutcome outcome) {
             if (outcome == SeatHoldOutcome::Conflict)
             {
@@ -435,6 +440,17 @@ void CheckoutSessionService::replacePrepareHolds(
         replaceDeleteSeats(state);
         return;
     }
+    salesWindowRepository_.readSessionGate(state->transaction,state->record.value.sessionId,
+        [this,state](std::optional<SessionSalesGate> gate){
+            if(!gate){failReplace(state,CheckoutSessionOutcome::SessionNotFound);return;}
+            if(auto failure=salesFailure(*gate)){failReplace(state,*failure);return;}
+            state->holdTtlMilliseconds=std::min(SeatHoldService::defaultTtlMilliseconds(),gate->remainingMilliseconds);
+            replaceWriteHolds(state);
+        },[this,state]{failReplace(state,CheckoutSessionOutcome::InternalError);});
+}
+
+void CheckoutSessionService::replaceWriteHolds(const std::shared_ptr<ReplaceState> &state) const
+{
     state->redisPrepareAttempted = true;
     seatHoldService_.prepare(
         state->record.value.sessionId,
@@ -443,6 +459,7 @@ void CheckoutSessionService::replacePrepareHolds(
         state->retainedSeatIds,
         state->expectedRevision,
         state->targetRevision,
+        state->holdTtlMilliseconds,
         [this, state](SeatHoldOutcome outcome) {
             if (outcome == SeatHoldOutcome::Conflict)
             {
@@ -733,19 +750,77 @@ void CheckoutSessionService::confirmLoadSeats(
 void CheckoutSessionService::confirmEnsureHolds(
     const std::shared_ptr<ConfirmState> &state) const
 {
-    seatHoldService_.ensure(
-        state->record.value.sessionId,
-        state->checkoutSessionId,
-        state->record.value.seatIds,
-        state->record.value.revision,
-        [this, state](SeatHoldOutcome outcome) {
-            if (outcome == SeatHoldOutcome::Conflict)
-            {
-                failConfirm(state, CheckoutSessionOutcome::TemporarySeatConflict);
-                return;
+    salesWindowRepository_.readSessionGate(state->transaction,state->record.value.sessionId,
+        [this,state](std::optional<SessionSalesGate> gate){
+            if(!gate){failConfirm(state,CheckoutSessionOutcome::SessionNotFound);return;}
+            if(auto failure=salesFailure(*gate)){
+                if(!salesWindowFailure(*failure)){failConfirm(state,*failure);return;}
+                state->businessFailure=*failure;closeSelectingAfterSalesWindow(state);return;
             }
-            freezeConfirm(state);
+            const auto ttl=std::min(SeatHoldService::defaultTtlMilliseconds(),gate->remainingMilliseconds);
+            seatHoldService_.ensure(state->record.value.sessionId,state->checkoutSessionId,
+                state->record.value.seatIds,state->record.value.revision,ttl,
+                [this,state](SeatHoldOutcome outcome){
+                    if(outcome==SeatHoldOutcome::Conflict){failConfirm(state,CheckoutSessionOutcome::TemporarySeatConflict);return;}
+                    freezeConfirm(state);
+                });
+        },[state]{failConfirm(state,CheckoutSessionOutcome::InternalError);});
+}
+
+void CheckoutSessionService::closeSelectingAfterSalesWindow(const std::shared_ptr<ConfirmState> &state) const
+{
+    repository_.setAbandoned(state->transaction,state->checkoutSessionId,
+        [this,state](std::optional<std::string> at){
+            if(!at){failConfirm(state,CheckoutSessionOutcome::InternalError);return;}
+            closeSalesWindowCommit(state);
+        },[state]{failConfirm(state,CheckoutSessionOutcome::InternalError);});
+}
+
+void CheckoutSessionService::closeSubmittingAfterSalesWindow(const std::shared_ptr<ConfirmState> &state) const
+{
+    Phase14Metrics::newTransactionAsync(drogon::app().getDbClient("default"),Phase14Metrics::Flow::Checkout,
+        [this,state](const CheckoutSessionRepository::TransactionPtr &tx){
+            if(!tx){failConfirm(state,CheckoutSessionOutcome::InternalError);return;}
+            state->transaction=tx;
+            repository_.lockByIdForUser(tx,state->checkoutSessionId,state->userId,
+                [this,state](std::optional<CheckoutSessionRecord> current){
+                    if(!current){failConfirm(state,CheckoutSessionOutcome::InternalError);return;}
+                    if(current->value.status=="RESERVED"){
+                        state->transaction->rollback();state->transaction.reset();state->finished=true;
+                        auto completion=std::move(state->completion);
+                        resolveRecord(std::move(*current),CheckoutSessionOutcome::Confirmed,
+                            [completion=std::move(completion)](CheckoutSessionResult result)mutable{
+                                result.disposition="ALREADY_CONFIRMED";completion(std::move(result));});return;
+                    }
+                    if(current->value.status=="ABANDONED"){
+                        state->transaction->rollback();state->transaction.reset();
+                        failConfirm(state,state->businessFailure);return;
+                    }
+                    if(current->value.status!="SUBMITTING" || !current->activeConfirmIdempotencyKey ||
+                       *current->activeConfirmIdempotencyKey!=state->idempotencyKey){
+                        failConfirm(state,CheckoutSessionOutcome::InternalError);return;
+                    }
+                    repository_.abandonSubmitting(state->transaction,state->checkoutSessionId,state->idempotencyKey,
+                        [this,state](std::optional<std::string> at){
+                            if(!at){failConfirm(state,CheckoutSessionOutcome::InternalError);return;}
+                            closeSalesWindowCommit(state);
+                        },[state]{failConfirm(state,CheckoutSessionOutcome::InternalError);});
+                },[state]{failConfirm(state,CheckoutSessionOutcome::InternalError);});
         });
+}
+
+void CheckoutSessionService::closeSalesWindowCommit(const std::shared_ptr<ConfirmState> &state) const
+{
+    auto tx=state->transaction;
+    tx->setCommitCallback([this,state](bool committed){
+        if(!committed){failConfirm(state,CheckoutSessionOutcome::InternalError);return;}
+        seatHoldService_.release(state->record.value.sessionId,state->checkoutSessionId,state->record.value.seatIds,
+            [state](SeatHoldOutcome){
+                state->finished=true;auto completion=std::move(state->completion);
+                completion({state->businessFailure,std::nullopt});
+            });
+    });
+    state->transaction.reset();tx.reset();
 }
 
 void CheckoutSessionService::freezeConfirm(
@@ -795,13 +870,15 @@ void CheckoutSessionService::runFormalReservation(
                 result.value)
             {
                 state->formalResult = std::move(*result.value);
+                if(result.outcome==CreateReservationOutcome::Created && std::getenv("PHASE15_FAULT_AFTER_FORMAL_COMMIT"))std::_Exit(88);
                 finalizeReserved(state);
                 return;
             }
             if (auto outcome = checkoutBusinessFailure(result.outcome))
             {
                 state->businessFailure = *outcome;
-                resetAfterBusinessFailure(state);
+                if(salesWindowFailure(*outcome))closeSubmittingAfterSalesWindow(state);
+                else resetAfterBusinessFailure(state);
                 return;
             }
             failConfirm(state, CheckoutSessionOutcome::InternalError);
