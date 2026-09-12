@@ -20,6 +20,10 @@ compose={'services':{
  'backend':{'image':'phase14-engineering-build:20260910-v3','entrypoint':['stdbuf','-oL', '/sut/ticketing_backend'],'command':['/sut/config.json'],'working_dir':'/tmp','ports':['127.0.0.1:18186:8080'],'volumes':[str(BINARY)+':/sut/ticketing_backend:ro',str(OUT/'config.json')+':/sut/config.json:ro'],'cpus':2,'mem_limit':'1g','pids_limit':256,'depends_on':{'postgres':{'condition':'service_healthy'},'redis':{'condition':'service_started'},'fake-stripe':{'condition':'service_started'}},'environment':{k:'${'+k+'}' for k in ['TICKETING_PAYMENT_PROVIDER','STRIPE_SECRET_KEY','STRIPE_WEBHOOK_SECRET','TICKETING_ADMISSION_HMAC_SECRET','STRIPE_PROCESSING_GRACE_SECONDS']}}
 }}
 compose['services']['backend']['environment'].update(STRIPE_API_BASE_URL='http://fake-stripe:18081',STRIPE_HTTP_TIMEOUT_SECONDS='15',STRIPE_CURRENCY='cny')
+network=os.environ.get('PHASE18_FINANCIAL_NETWORK')
+if network:
+ assert network.startswith('phase18')
+ compose['networks']={'default':{'external':True,'name':network}}
 Path(env['COMPOSE_FILE']).write_text(json.dumps(compose),encoding='utf-8')
 def run(args,log):
  with (OUT/log).open('w',encoding='utf-8') as stream:
