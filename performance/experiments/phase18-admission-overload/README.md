@@ -1,3 +1,5 @@
+**Phase18 delivery complete; awaiting independent re-verification.** See [final report](FINAL_REPORT.md), [after evidence](after/README.md), and [delivery manifest](phase18-delivery.json). The text below is the historical Stage0 report; statements about absent after evidence or test counts describe that earlier delivery only. Both Stage0 manifests and baseline raw evidence remain unchanged.
+
 # Phase18 Stage0: exact baseline and browser fixture
 
 Status: Stage0 complete; Phase18 business changes have not started. Only `baseline/` is eligible for a later A/B comparison. Everything in `diagnostics/`, and the previous external checkpoint, is excluded.

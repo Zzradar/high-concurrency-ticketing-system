@@ -1,0 +1,56 @@
+
+> frontend@0.0.0 test
+> vitest run --run --reporter=default --reporter=json --outputFile=C:\Users\a12\AppData\Local\Temp/phase18-after-final/frontend-tests.json
+
+
+ RUN  v4.1.11 D:/Documents/vscode/high-concurrency-ticketing-system-phase18/frontend
+
+ ✓ src/utils/admissionPolling.test.ts (4 tests) 13ms
+ ✓ src/views/SeatSelectionView.test.ts (4 tests) 83ms
+ ✓ src/utils/seatMap.test.ts (6 tests) 7ms
+ ✓ src/api/refundMock.test.ts (5 tests) 29ms
+ ✓ src/api/eventContract.test.ts (19 tests) 88ms
+ ✓ src/refundContract.test.ts (2 tests) 73ms
+ ✓ src/utils/zoneAvailability.test.ts (6 tests) 129ms
+ ✓ src/api/refundApi.test.ts (9 tests) 135ms
+ ✓ src/components/admin/AdmissionPolicyEditor.test.ts (4 tests) 85ms
+ ✓ src/api/salesWindow.test.ts (2 tests) 20ms
+ ✓ src/router.test.ts (5 tests) 10ms
+ ✓ src/utils/pollingPolicy.test.ts (4 tests) 4ms
+ ✓ src/pages/SeatSelectionPage.phase15.test.ts (4 tests) 382ms
+ ✓ src/pages/WaitingRoomPage.test.ts (6 tests) 439ms
+ ✓ src/hostingFallback.test.ts (2 tests) 6ms
+ ✓ src/pages/OrderPage.refund.test.ts (44 tests) 731ms
+ ✓ src/payments/stripeClient.test.ts (4 tests) 15ms
+ ✓ src/api/ticketApi.test.ts (19 tests) 1268ms
+stderr | src/pages/AdminEventEditorPage.test.ts > never sends invalid raw prices, sends exact cents, and roundtrips saved prices
+[Vue Router warn]: No match found for location with path "/admin/events"
+[Vue Router warn]: No match found for location with path "/admin/venues"
+[Vue Router warn]: No match found for location with path "/events"
+
+ ✓ src/pages/SeatSelectionPage.phase16.test.ts (8 tests) 842ms
+ ✓ src/auth/authState.test.ts (7 tests) 198ms
+ ✓ src/pages/OrderPage.test.ts (41 tests) 1107ms
+ ✓ src/pages/AdminEventEditorPage.test.ts (1 test) 189ms
+ ✓ src/components/SessionCard.sales.test.ts (1 test) 55ms
+ ✓ src/admin.test.ts (3 tests) 20ms
+ ✓ src/components/SeatItem.test.ts (3 tests) 20ms
+ ✓ src/utils/admissionPolicyContract.test.ts (2 tests) 8ms
+ ✓ src/utils/adminMoney.test.ts (33 tests) 9ms
+ ✓ src/utils/adminDateTime.test.ts (3 tests) 17ms
+ ✓ src/payments/paymentReturn.test.ts (2 tests) 3ms
+ ✓ src/utils/salesWindow.test.ts (1 test) 3ms
+ ✓ src/utils/refundMoney.test.ts (2 tests) 3ms
+ ✓ src/utils/money.test.ts (2 tests) 3ms
+ ✓ src/utils/admissionPolicyInput.test.ts (1 test) 5ms
+ ✓ src/views/EventListView.test.ts (1 test) 69ms
+ ✓ src/pages/LoginView.test.ts (3 tests) 34ms
+ ✓ src/App.test.ts (25 tests) 2500ms
+     ✓ recovers existing checkout without duplicate refresh (false, false, SEAT_TEMPORARILY_HELD)  357ms
+
+ Test Files  36 passed (36)
+      Tests  288 passed (288)
+   Start at  01:07:56
+   Duration  13.25s (transform 10.23s, setup 1.08s, import 37.96s, tests 8.60s, environment 120.32s)
+
+JSON report written to C:/Users/a12/AppData/Local/Temp/phase18-after-final/frontend-tests.json

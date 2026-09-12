@@ -1,0 +1,15 @@
+{
+  "sourceSutSha": "4dd48c177516caf950103ce3f7751cc0fb056029",
+  "passed": true,
+  "purpose": "Separate three-longest-poll-period native hidden gate; not formal A/B",
+  "script": {
+    "path": "capabilities/cache-polling/long-hidden.mjs",
+    "sha256": "151fa7a95d2f2b55621ccd9624194a361d61bf631d3a7e829ff27122d0da4408"
+  },
+  "files": {
+    "browser.json": "70c95a83c789156a9ec1ba81aee9d838aeaa5f10b8110a1bab09b45cf8840ad3",
+    "browser.json.browser.log": "62dd0ed00bc40386c47f54cdafcdc62a366961ce548e08368f1fd3646763f66a",
+    "README.md": "7db96ee8991ad079f1edc65d963bd41f94893d98f008798ffb6cc6c17896e5e6",
+    "run.log": "e64ba1967ab283bb4cd00fb5545bbdd52227999bb21d2e8bcd5ab1e2e4951676"
+  }
+}

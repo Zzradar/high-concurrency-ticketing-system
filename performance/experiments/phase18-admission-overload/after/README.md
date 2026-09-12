@@ -1,1 +1,1 @@
-No after measurement exists. Do not infer a Phase18 improvement from baseline alone.
+Official after evidence is complete at SUT `4dd48c177516caf950103ce3f7751cc0fb056029`. See [final report](../FINAL_REPORT.md), [comparison](../comparison.json) and [delivery manifest](../phase18-delivery.json). The frozen runner historical STAGE0_VALID label is preserved byte-for-byte; this directory is the after side, not a new baseline. All manifest-listed raw files are immutable evidence.

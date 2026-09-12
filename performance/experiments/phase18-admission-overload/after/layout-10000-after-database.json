@@ -1,0 +1,1149 @@
+{
+  "at": "2026-09-12T17:13:47.915208+00:00",
+  "pg": [
+    {
+      "queryid": "12025915966097380",
+      "query": "ALTER TABLE payment_attempts ADD COLUMN currency TEXT",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.960439
+    },
+    {
+      "queryid": "1646719904329246902",
+      "query": "INSERT INTO venue_zones(id,venue_id,code,name,sort_order) SELECT $1||i,$2,$3||i,$4||i,i FROM generate_series($5,$6) i",
+      "calls": 2,
+      "rows": 10,
+      "total_exec_time": 1.929641
+    },
+    {
+      "queryid": "2760941771979807692",
+      "query": "INSERT INTO session_seats (\r\n    id, session_id, seat_id, venue_id, status, price, current_reservation_id\r\n)\r\nSELECT\r\n    session.id || $1 || seat.seat_label,\r\n    session.id,\r\n    seat.id,\r\n    session.venue_id,\r\n    CASE\r\n        WHEN seat.seat_label IN ($2, $3, $4, $5) THEN $6\r\n        WHEN seat.seat_label IN ($7, $8, $9, $10, $11) THEN $12\r\n        ELSE $13\r\n    END,\r\n    CASE\r\n        WHEN session.id LIKE $14 THEN\r\n            CASE\r\n                WHEN seat.row_no IN ($15, $16) THEN $17\r\n                WHEN seat.row_no IN ($18, $19) THEN $20\r\n                ELSE $21\r\n            END\r\n        ELSE\r\n            CASE\r\n                WHEN seat.row_no IN ($22, $23) THEN $24\r\n                WHEN seat.row_no IN ($25, $26) THEN $27\r\n                ELSE $28\r\n            END\r\n    END,\r\n    CASE\r\n        WHEN seat.seat_label IN ($29, $30, $31, $32)\r\n            THEN $33 || session.id\r\n        ELSE $34\r\n    END\r\nFROM sessions AS session\r\nJOIN seats AS seat ON seat.venue_id = session.venue_id",
+      "calls": 1,
+      "rows": 300,
+      "total_exec_time": 11.419241999999999
+    },
+    {
+      "queryid": "-2377612969854808679",
+      "query": "SELECT $3 FROM ONLY \"public\".\"reservations\" x WHERE \"id\" OPERATOR(pg_catalog.=) $1 AND \"user_id\" OPERATOR(pg_catalog.=) $2 FOR KEY SHARE OF x",
+      "calls": 10,
+      "rows": 10,
+      "total_exec_time": 0.094762
+    },
+    {
+      "queryid": "-8200901861543121808",
+      "query": "SELECT s.id,s.venue_id,(extract($2 FROM s.created_at)*$3)::bigint created,coalesce((extract($4 FROM e.published_at)*$5)::bigint,$6) published FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>$7 AND e.status<>$8",
+      "calls": 84,
+      "rows": 84,
+      "total_exec_time": 7.017329
+    },
+    {
+      "queryid": "-6253278913299375129",
+      "query": "INSERT INTO reservations (id, user_id, session_id, status, expires_at, created_at)\r\nSELECT\r\n    $1 || session.id,\r\n    $2,\r\n    session.id,\r\n    $3,\r\n    CURRENT_TIMESTAMP + INTERVAL $4,\r\n    CURRENT_TIMESTAMP\r\nFROM sessions AS session\r\nUNION ALL\r\nSELECT\r\n    $5 || session.id,\r\n    $6,\r\n    session.id,\r\n    $7,\r\n    CURRENT_TIMESTAMP + INTERVAL $8,\r\n    CURRENT_TIMESTAMP\r\nFROM sessions AS session",
+      "calls": 1,
+      "rows": 10,
+      "total_exec_time": 1.6137199999999998
+    },
+    {
+      "queryid": "3007583838346396574",
+      "query": "SELECT status, COUNT(*) AS count, COALESCE(MAX(EXTRACT($1 FROM clock_timestamp()-created_at)) FILTER (WHERE status=$2),$3) AS age FROM refunds GROUP BY status",
+      "calls": 6,
+      "rows": 0,
+      "total_exec_time": 0.03566
+    },
+    {
+      "queryid": "-5763132164521489989",
+      "query": "INSERT INTO sessions(id,event_id,venue_id,hall_name,start_time,gate_time,status) VALUES($1,$2,$3,$4,$5,$6,$7)",
+      "calls": 2,
+      "rows": 2,
+      "total_exec_time": 1.1539130000000002
+    },
+    {
+      "queryid": "-5513708556112874139",
+      "query": "CREATE TABLE app_users (\r\n    id            TEXT PRIMARY KEY,\r\n    display_name  TEXT NOT NULL,\r\n    created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 4.914231
+    },
+    {
+      "queryid": "-4580323024898652374",
+      "query": "CREATE INDEX user_notifications_user_read_idx\r\n    ON user_notifications(user_id, read_at)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 1.884477
+    },
+    {
+      "queryid": "-5973784271827916294",
+      "query": "CREATE DATABASE \"ticketing\"",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 39.580652
+    },
+    {
+      "queryid": "3467210450885606902",
+      "query": "SELECT xact_commit,xact_rollback,deadlocks,numbackends FROM pg_stat_database WHERE datname=$1",
+      "calls": 5,
+      "rows": 5,
+      "total_exec_time": 0.325531
+    },
+    {
+      "queryid": "9108211826536074702",
+      "query": "ALTER TABLE refunds\r\n    ADD COLUMN reconciliation_lease_until TIMESTAMPTZ,\r\n    ADD COLUMN reconciliation_lease_token TEXT,\r\n    ADD CONSTRAINT refunds_lease_shape_check CHECK (\r\n        (reconciliation_lease_until IS NULL) = (reconciliation_lease_token IS NULL)\r\n    )",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.503495
+    },
+    {
+      "queryid": "-1535046602631956030",
+      "query": "ALTER TABLE reservations\r\n    ADD CONSTRAINT reservations_user_idempotency_unique\r\n    UNIQUE (user_id, idempotency_key)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 4.185296
+    },
+    {
+      "queryid": "-7838660773548539943",
+      "query": "CREATE INDEX seat_availability_outbox_expired_lease_idx ON seat_availability_outbox(lease_until, id) WHERE lease_until IS NOT NULL",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.771129
+    },
+    {
+      "queryid": "5476942193719565240",
+      "query": "EXISTS (SELECT $1 FROM seats WHERE zone_id IS NULL)",
+      "calls": 1,
+      "rows": 1,
+      "total_exec_time": 0.004117
+    },
+    {
+      "queryid": "3376976660515820482",
+      "query": "CREATE INDEX payment_provider_events_pending_idx\r\n    ON payment_provider_events(status, next_retry_at)\r\n    WHERE status = 'PENDING'",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.283593
+    },
+    {
+      "queryid": "96374021132083717",
+      "query": "SELECT fk.\"zone_id\", fk.\"venue_id\" FROM ONLY \"public\".\"seats\" fk LEFT OUTER JOIN ONLY \"public\".\"venue_zones\" pk ON ( pk.\"id\" OPERATOR(pg_catalog.=) fk.\"zone_id\" AND pk.\"venue_id\" OPERATOR(pg_catalog.=) fk.\"venue_id\") WHERE pk.\"id\" IS NULL AND (fk.\"zone_id\" IS NOT NULL AND fk.\"venue_id\" IS NOT NULL)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.0028150000000000002
+    },
+    {
+      "queryid": "-915950101655372284",
+      "query": "CREATE INDEX user_sessions_user_created_idx\r\n    ON user_sessions(user_id, created_at DESC)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.483023
+    },
+    {
+      "queryid": "6244862610747950703",
+      "query": "CREATE FUNCTION advance_seat_formal_version() RETURNS TRIGGER LANGUAGE plpgsql AS $$\r\nBEGIN\r\n    NEW.formal_version := OLD.formal_version + 1;\r\n    RETURN NEW;\r\nEND;\r\n$$",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.847038
+    },
+    {
+      "queryid": "839504491547015798",
+      "query": "INSERT INTO sessions (\r\n    id, event_id, venue_id, hall_name, start_time, gate_time, status\r\n) VALUES\r\n    ($1, $2, $3, $4,\r\n     $5, $6, $7),\r\n    ($8, $9, $10, $11,\r\n     $12, $13, $14),\r\n    ($15, $16, $17, $18,\r\n     $19, $20, $21),\r\n    ($22, $23, $24, $25,\r\n     $26, $27, $28),\r\n    ($29, $30, $31, $32,\r\n     $33, $34, $35)",
+      "calls": 1,
+      "rows": 5,
+      "total_exec_time": 0.650407
+    },
+    {
+      "queryid": "5527239559008916019",
+      "query": "SELECT application_name,state,wait_event_type,wait_event,count(*) FROM pg_stat_activity WHERE datname=$1 GROUP BY 1,2,3,4",
+      "calls": 8,
+      "rows": 17,
+      "total_exec_time": 1.2073089999999997
+    },
+    {
+      "queryid": "-7775890845862695866",
+      "query": "CREATE INDEX reservations_active_expiry_idx\r\n    ON reservations(expires_at)\r\n    WHERE status = 'ACTIVE'",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.26272
+    },
+    {
+      "queryid": "4718996131032352990",
+      "query": "ALTER TABLE payment_attempts ALTER COLUMN currency SET NOT NULL,\r\n    ADD CONSTRAINT payment_attempts_currency_check CHECK (currency ~ '^[a-z]{3}$')",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.859673
+    },
+    {
+      "queryid": "8554357368106837280",
+      "query": "ALTER TABLE seats ADD CONSTRAINT seats_zone_venue_fk\r\n    FOREIGN KEY (zone_id, venue_id) REFERENCES venue_zones(id, venue_id)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.913693
+    },
+    {
+      "queryid": "-3916697668078644838",
+      "query": "CREATE INDEX orders_pending_expiry_idx\r\n    ON orders(expires_at)\r\n    WHERE status = 'PENDING_PAYMENT'",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 1.984917
+    },
+    {
+      "queryid": "4615153270094080307",
+      "query": "ALTER TABLE admission_policy_audit ADD CONSTRAINT admission_audit_actor_check\r\n CHECK ((actor_kind='ADMIN' AND administrator_id IS NOT NULL) OR\r\n        (actor_kind='SYSTEM' AND administrator_id IS NULL AND action='RESET_GENERATION'))",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.201231
+    },
+    {
+      "queryid": "-2348552040203170830",
+      "query": "ALTER TABLE user_notifications DROP CONSTRAINT user_notifications_type_check,\r\n    ADD CONSTRAINT user_notifications_type_check CHECK (type IN (\r\n        'ORDER_CREATED','PAYMENT_SUCCEEDED','ORDER_CANCELLED','ORDER_EXPIRED',\r\n        'AUTO_REFUND_COMPLETED','AUTO_REFUND_FAILED','REFUND_COMPLETED','REFUND_FAILED'))",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.496546
+    },
+    {
+      "queryid": "7911002058943960455",
+      "query": "SELECT $1 FROM pg_database WHERE datname = $2",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.013371
+    },
+    {
+      "queryid": "2503476379781593835",
+      "query": "CREATE TABLE reservations (\r\n    id          TEXT PRIMARY KEY,\r\n    user_id     TEXT NOT NULL REFERENCES app_users(id),\r\n    session_id  TEXT NOT NULL REFERENCES sessions(id),\r\n    status      TEXT NOT NULL,\r\n    expires_at  TIMESTAMPTZ NOT NULL,\r\n    created_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    CONSTRAINT reservations_status_check\r\n        CHECK (status IN ('ACTIVE', 'CONFIRMED', 'CANCELLED', 'EXPIRED')),\r\n    CONSTRAINT reservations_expiry_check CHECK (expires_at > created_at),\r\n    CONSTRAINT reservations_id_session_unique UNIQUE (id, session_id),\r\n    CONSTRAINT reservations_id_user_unique UNIQUE (id, user_id)\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 11.420192
+    },
+    {
+      "queryid": "-7596827902166165667",
+      "query": "CREATE INDEX reservation_session_seats_seat_idx\r\n    ON reservation_session_seats(session_seat_id)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.411986
+    },
+    {
+      "queryid": "6875882276660517461",
+      "query": "CREATE INDEX session_seats_current_reservation_idx\r\n    ON session_seats(current_reservation_id)\r\n    WHERE current_reservation_id IS NOT NULL",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 1.822746
+    },
+    {
+      "queryid": "344830392161629980",
+      "query": "CREATE UNIQUE INDEX refunds_one_buyer_per_order_idx ON refunds(order_id) WHERE source = 'BUYER'",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 4.748087
+    },
+    {
+      "queryid": "4423020905001752283",
+      "query": "INSERT INTO orders (\r\n    id, user_id, reservation_id, status, total_amount,\r\n    expires_at, created_at, paid_at\r\n)\r\nSELECT\r\n    $1 || reservation.session_id,\r\n    reservation.user_id,\r\n    reservation.id,\r\n    $2,\r\n    SUM(item.reserved_price),\r\n    reservation.expires_at,\r\n    reservation.created_at,\r\n    $3\r\nFROM reservations AS reservation\r\nJOIN reservation_session_seats AS item ON item.reservation_id = reservation.id\r\nWHERE reservation.status = $4\r\nGROUP BY reservation.id, reservation.session_id, reservation.user_id,\r\n         reservation.expires_at, reservation.created_at\r\nUNION ALL\r\nSELECT\r\n    $5 || reservation.session_id,\r\n    reservation.user_id,\r\n    reservation.id,\r\n    $6,\r\n    SUM(item.reserved_price),\r\n    reservation.expires_at,\r\n    reservation.created_at,\r\n    reservation.created_at\r\nFROM reservations AS reservation\r\nJOIN reservation_session_seats AS item ON item.reservation_id = reservation.id\r\nWHERE reservation.status = $7\r\nGROUP BY reservation.id, reservation.session_id, reservation.user_id,\r\n         reservation.expires_at, reservation.created_at",
+      "calls": 1,
+      "rows": 10,
+      "total_exec_time": 1.44895
+    },
+    {
+      "queryid": "4230494192867157618",
+      "query": "ALTER TABLE app_users\r\n    ADD COLUMN username TEXT,\r\n    ADD COLUMN password_hash TEXT,\r\n    ADD COLUMN status TEXT",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.835988
+    },
+    {
+      "queryid": "-2204632695169087565",
+      "query": "WITH claimed AS (\n            SELECT id, provider, object_kind, provider_object_id, local_reference_id\n            FROM payment_provider_events\n            WHERE status = $2 AND next_retry_at <= clock_timestamp()\n            ORDER BY received_at\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), wake_payments AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_payment_id = COALESCE(attempt.provider_payment_id, claimed.provider_object_id),\n                next_reconcile_at = CASE WHEN attempt.status IN ($3,$4)\n                                         THEN clock_timestamp() ELSE $5 END\n            FROM claimed\n            WHERE claimed.object_kind = $6\n              AND claimed.local_reference_id = attempt.id\n              AND claimed.provider = attempt.provider\n              AND (attempt.provider_payment_id IS NULL\n                   OR attempt.provider_payment_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        ), wake_refunds AS (\n            UPDATE refunds AS refund\n            SET next_reconcile_at = CASE WHEN refund.status = $7\n                                         THEN clock_timestamp() ELSE $8 END\n            FROM claimed\n            WHERE claimed.object_kind = $9\n              AND claimed.local_reference_id = refund.id\n              AND claimed.provider = refund.provider\n              AND (refund.provider_refund_id IS NULL\n                   OR refund.provider_refund_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        )\n        UPDATE payment_provider_events AS event\n        SET status = $10, processed_at = clock_timestamp(), last_error = $11\n        FROM claimed\n        WHERE event.id = claimed.id\n          AND (event.provider_object_id IS NULL\n               OR event.id IN (SELECT id FROM wake_payments)\n               OR event.id IN (SELECT id FROM wake_refunds))",
+      "calls": 6,
+      "rows": 0,
+      "total_exec_time": 0.13046399999999997
+    },
+    {
+      "queryid": "4471928628552927094",
+      "query": "UPDATE events AS event SET sales_ends_at=COALESCE(\r\n    (SELECT MAX(session.start_time) FROM sessions AS session WHERE session.event_id=event.id),\r\n    event.created_at + INTERVAL $1)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.003685
+    },
+    {
+      "queryid": "3566647737502545865",
+      "query": "SELECT e.id,e.status,\n  (extract($2 FROM e.sales_starts_at)*$3)::bigint starts,\n  (extract($4 FROM LEAST(e.sales_ends_at,coalesce((SELECT max(s.start_time) FROM sessions s WHERE s.event_id=e.id),e.sales_ends_at)))*$5)::bigint ends,\n  p.mode,p.queue_generation,p.policy_version,p.prequeue_seconds,p.max_active_users,p.admission_rate_per_second,p.lease_seconds,\n  r.generation initialized_generation FROM events e LEFT JOIN event_admission_policies p ON p.event_id=e.id\n  LEFT JOIN admission_runtime_generations r ON r.event_id=e.id ORDER BY e.id LIMIT $1::integer",
+      "calls": 6,
+      "rows": 24,
+      "total_exec_time": 0.5620329999999999
+    },
+    {
+      "queryid": "5041606275673885142",
+      "query": "CREATE UNIQUE INDEX refunds_provider_refund_unique_idx\r\n    ON refunds(provider, provider_refund_id)\r\n    WHERE provider_refund_id IS NOT NULL",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 4.222161
+    },
+    {
+      "queryid": "2021361996570692384",
+      "query": "ALTER TABLE events ADD COLUMN sales_starts_at TIMESTAMPTZ,\r\n                   ADD COLUMN sales_ends_at TIMESTAMPTZ",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.856707
+    },
+    {
+      "queryid": "4532821348967595726",
+      "query": "CREATE UNIQUE INDEX payment_attempts_one_processing_per_order_idx\r\n    ON payment_attempts(order_id)\r\n    WHERE status = 'PROCESSING'",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.487153
+    },
+    {
+      "queryid": "-8067568644980280717",
+      "query": "ALTER TABLE events ADD COLUMN published_by TEXT REFERENCES app_users(id)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.65528
+    },
+    {
+      "queryid": "-8576727510816239596",
+      "query": "SELECT $2 FROM ONLY \"public\".\"app_users\" x WHERE \"id\" OPERATOR(pg_catalog.=) $1 FOR KEY SHARE OF x",
+      "calls": 22,
+      "rows": 22,
+      "total_exec_time": 0.166501
+    },
+    {
+      "queryid": "4608249098601065829",
+      "query": "ALTER TABLE admission_policy_audit ADD COLUMN actor_kind TEXT NOT NULL DEFAULT 'ADMIN'\r\n CHECK (actor_kind IN ('ADMIN','SYSTEM'))",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.578723
+    },
+    {
+      "queryid": "2438753443205274583",
+      "query": "ALTER TABLE payment_attempts\r\n    ALTER COLUMN scheduled_complete_at DROP NOT NULL,\r\n    DROP CONSTRAINT payment_attempts_schedule_check,\r\n    ADD COLUMN provider TEXT NOT NULL DEFAULT 'simulation',\r\n    ADD COLUMN provider_payment_id TEXT,\r\n    ADD COLUMN provider_status TEXT,\r\n    ADD COLUMN provider_last_sync_at TIMESTAMPTZ,\r\n    ADD COLUMN provider_terminal_at TIMESTAMPTZ,\r\n    ADD COLUMN provider_retry_count INTEGER NOT NULL DEFAULT 0,\r\n    ADD COLUMN next_reconcile_at TIMESTAMPTZ,\r\n    ADD CONSTRAINT payment_attempts_schedule_check CHECK (\r\n        scheduled_complete_at IS NULL OR scheduled_complete_at >= started_at\r\n    ),\r\n    ADD CONSTRAINT payment_attempts_provider_retry_check CHECK (provider_retry_count >= 0),\r\n    ADD CONSTRAINT payment_attempts_provider_terminal_check CHECK (\r\n        provider_terminal_at IS NULL OR status IN ('SUCCEEDED', 'FAILED')\r\n    )",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 5.682215
+    },
+    {
+      "queryid": "-9035761452899776810",
+      "query": "INSERT INTO events (\r\n    id, primary_venue_id, name, description, status,\r\n    category, cover_url, date_range, sales_starts_at, sales_ends_at\r\n) VALUES\r\n    (\r\n        $1,\r\n        $2,\r\n        $3,\r\n        $4,\r\n        $5,\r\n        $6,\r\n        $7,\r\n        $8, $9, $10\r\n    ),\r\n    (\r\n        $11,\r\n        $12,\r\n        $13,\r\n        $14,\r\n        $15,\r\n        $16,\r\n        $17,\r\n        $18, $19, $20\r\n    )",
+      "calls": 1,
+      "rows": 2,
+      "total_exec_time": 0.611907
+    },
+    {
+      "queryid": "8924170453771387869",
+      "query": "INSERT INTO app_users(id,display_name,username,password_hash,status,role) SELECT $1||i,$2||i,$3||i,password_hash,$4,$5 FROM app_users CROSS JOIN generate_series($6,$7) i WHERE username=$8",
+      "calls": 1,
+      "rows": 8,
+      "total_exec_time": 0.159108
+    },
+    {
+      "queryid": "-6190869689659712033",
+      "query": "CREATE INDEX sessions_event_start_idx ON sessions(event_id, start_time)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.865627
+    },
+    {
+      "queryid": "-4439582823536598642",
+      "query": "INSERT INTO session_zone_prices(session_id,zone_id,venue_id,price) SELECT $1,id,$2,$3 FROM venue_zones WHERE venue_id=$4",
+      "calls": 2,
+      "rows": 10,
+      "total_exec_time": 1.276948
+    },
+    {
+      "queryid": "-1305314913904155178",
+      "query": "CREATE INDEX seats_venue_row_number_idx ON seats(venue_id, row_no, seat_no)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.431165
+    },
+    {
+      "queryid": "-578917653474181661",
+      "query": "INSERT INTO events(id,primary_venue_id,name,description,status,category,cover_url,date_range,sales_starts_at,sales_ends_at,published_at,published_by)\r\nVALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
+      "calls": 2,
+      "rows": 2,
+      "total_exec_time": 1.364468
+    },
+    {
+      "queryid": "2998795499968057968",
+      "query": "CREATE TABLE refunds (\r\n    id                  TEXT PRIMARY KEY,\r\n    payment_attempt_id  TEXT NOT NULL UNIQUE,\r\n    order_id            TEXT NOT NULL,\r\n    amount              BIGINT NOT NULL,\r\n    reason              TEXT NOT NULL,\r\n    created_at          TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    refunded_at         TIMESTAMPTZ NOT NULL,\r\n    CONSTRAINT refunds_attempt_order_fk\r\n        FOREIGN KEY (payment_attempt_id, order_id)\r\n        REFERENCES payment_attempts(id, order_id),\r\n    CONSTRAINT refunds_order_fk\r\n        FOREIGN KEY (order_id) REFERENCES orders(id),\r\n    CONSTRAINT refunds_amount_positive_check CHECK (amount > 0),\r\n    CONSTRAINT refunds_reason_check CHECK (reason IN (\r\n        'ORDER_CANCELLED_BEFORE_PAYMENT_CONFIRMATION',\r\n        'ORDER_EXPIRED_BEFORE_PAYMENT_CONFIRMATION',\r\n        'DUPLICATE_LATE_PAYMENT',\r\n        'PAYMENT_NOT_ACCEPTED'\r\n    ))\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 8.784048
+    },
+    {
+      "queryid": "-8249447931799823156",
+      "query": "CREATE INDEX checkout_sessions_submitting_idx\r\n    ON checkout_sessions(updated_at, id)\r\n    WHERE status = 'SUBMITTING'",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.483646
+    },
+    {
+      "queryid": "-878141585885263352",
+      "query": "ALTER TABLE payment_attempts\r\n    ADD COLUMN reconciliation_lease_until TIMESTAMPTZ,\r\n    ADD COLUMN reconciliation_lease_token TEXT,\r\n    ADD CONSTRAINT payment_attempts_lease_shape_check CHECK (\r\n        (reconciliation_lease_until IS NULL) = (reconciliation_lease_token IS NULL)\r\n    )",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 1.728523
+    },
+    {
+      "queryid": "3514493642546968389",
+      "query": "ALTER TABLE events ADD CONSTRAINT events_status_check CHECK (status IN ('DRAFT', 'ON_SALE', 'COMING_SOON'))",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.221919
+    },
+    {
+      "queryid": "-5125787147942266495",
+      "query": "UPDATE seats s SET zone_id = z.id FROM phase17_legacy_zones z\r\nWHERE z.venue_id = s.venue_id AND z.raw_zone = s.zone",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.007531
+    },
+    {
+      "queryid": "3788484617439181150",
+      "query": "CREATE TABLE venue_zones (\r\n    id TEXT PRIMARY KEY,\r\n    venue_id TEXT NOT NULL REFERENCES venues(id),\r\n    code TEXT NOT NULL CHECK (btrim(code) <> ''),\r\n    name TEXT NOT NULL CHECK (btrim(name) <> ''),\r\n    sort_order INTEGER NOT NULL CHECK (sort_order >= 0),\r\n    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    UNIQUE (venue_id, code),\r\n    UNIQUE (venue_id, name),\r\n    UNIQUE (venue_id, sort_order),\r\n    UNIQUE (id, venue_id)\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 20.013464
+    },
+    {
+      "queryid": "8647808264793162338",
+      "query": "CREATE INDEX session_seats_session_status_idx\r\n    ON session_seats(session_id, status)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 1.823621
+    },
+    {
+      "queryid": "6740093345241740597",
+      "query": "EXISTS (SELECT $1 FROM payment_attempts WHERE currency IS NULL)\r\n       OR EXISTS (SELECT $2 FROM refunds WHERE currency IS NULL)",
+      "calls": 1,
+      "rows": 1,
+      "total_exec_time": 0.0055049999999999995
+    },
+    {
+      "queryid": "-621355038703387952",
+      "query": "UPDATE payment_attempts\r\nSET provider_terminal_at = COALESCE(completed_at, timed_out_at, created_at),\r\n    provider_status = lower(status)\r\nWHERE status IN ($1, $2)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.00345
+    },
+    {
+      "queryid": "-1630807671294855908",
+      "query": "INSERT INTO seats(id,venue_id,zone_id,row_no,seat_no,seat_label)\r\nSELECT $1||lpad(i::text,$2,$3),$4,$5||((i-$6)/$7),lpad(((i-$8)/$9)::text,$10,$11),(i-$12)%$13+$14,$15||lpad(i::text,$16,$17) FROM generate_series($18,$19) i",
+      "calls": 2,
+      "rows": 15000,
+      "total_exec_time": 502.04397400000005
+    },
+    {
+      "queryid": "8915100324007264593",
+      "query": "SELECT $2 FROM ONLY \"public\".\"venues\" x WHERE \"id\" OPERATOR(pg_catalog.=) $1 FOR KEY SHARE OF x",
+      "calls": 15147,
+      "rows": 15147,
+      "total_exec_time": 77.12601999999977
+    },
+    {
+      "queryid": "-860487464400081589",
+      "query": "SELECT $2 FROM ONLY \"public\".\"events\" x WHERE \"id\" OPERATOR(pg_catalog.=) $1 FOR KEY SHARE OF x",
+      "calls": 7,
+      "rows": 7,
+      "total_exec_time": 0.046745
+    },
+    {
+      "queryid": "4741605857101317734",
+      "query": "CREATE TABLE payment_attempts (\r\n    id                     TEXT PRIMARY KEY,\r\n    order_id               TEXT NOT NULL REFERENCES orders(id),\r\n    status                 TEXT NOT NULL,\r\n    started_at             TIMESTAMPTZ NOT NULL,\r\n    processing_deadline    TIMESTAMPTZ NOT NULL,\r\n    scheduled_complete_at  TIMESTAMPTZ NOT NULL,\r\n    completed_at           TIMESTAMPTZ,\r\n    timed_out_at           TIMESTAMPTZ,\r\n    accepted_at            TIMESTAMPTZ,\r\n    failure_reason         TEXT,\r\n    created_at             TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    CONSTRAINT payment_attempts_status_check\r\n        CHECK (status IN ('PROCESSING', 'SUCCEEDED', 'FAILED', 'TIMED_OUT')),\r\n    CONSTRAINT payment_attempts_deadline_check\r\n        CHECK (processing_deadline > started_at),\r\n    CONSTRAINT payment_attempts_schedule_check\r\n        CHECK (scheduled_complete_at >= started_at),\r\n    CONSTRAINT payment_attempts_state_shape_check CHECK (\r\n        (status = 'PROCESSING'\r\n            AND completed_at IS NULL\r\n            AND timed_out_at IS NULL\r\n            AND accepted_at IS NULL\r\n            AND failure_reason IS NULL)\r\n        OR (status = 'TIMED_OUT'\r\n            AND completed_at IS NULL\r\n            AND timed_out_at IS NOT NULL\r\n            AND accepted_at IS NULL\r\n            AND failure_reason IS NULL)\r\n        OR (status = 'FAILED'\r\n            AND completed_at IS NOT NULL\r\n            AND accepted_at IS NULL\r\n            AND failure_reason IS NOT NULL)\r\n        OR (status = 'SUCCEEDED'\r\n            AND completed_at IS NOT NULL\r\n            AND failure_reason IS NULL)\r\n    ),\r\n    CONSTRAINT payment_attempts_accepted_status_check\r\n        CHECK (accepted_at IS NULL OR status = 'SUCCEEDED'),\r\n    CONSTRAINT payment_attempts_id_order_unique UNIQUE (id, order_id)\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 12.535561
+    },
+    {
+      "queryid": "4088098424156227299",
+      "query": "ALTER TABLE seats DROP CONSTRAINT seats_venue_label_unique",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.285896
+    },
+    {
+      "queryid": "7699025431015990667",
+      "query": "ALTER TABLE seats ADD CONSTRAINT seats_venue_zone_label_unique UNIQUE (venue_id, zone_id, seat_label)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 3.127974
+    },
+    {
+      "queryid": "-7810994734375077898",
+      "query": "UPDATE refunds\r\nSET provider_terminal_at = refunded_at,\r\n    provider_status = $1\r\nWHERE status = $2",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.003627
+    },
+    {
+      "queryid": "-4019243589540193759",
+      "query": "CREATE INDEX refunds_order_created_idx ON refunds(order_id, created_at DESC)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.163497
+    },
+    {
+      "queryid": "-2571526917374594951",
+      "query": "WITH seat_layout AS (\r\n    SELECT\r\n        venue.id AS venue_id,\r\n        row_data.row_no,\r\n        number_data.seat_no,\r\n        row_data.row_no || LPAD(number_data.seat_no::TEXT, $1, $2) AS seat_label,\r\n        CASE\r\n            WHEN row_data.row_no IN ($3, $4) THEN $5\r\n            WHEN row_data.row_no IN ($6, $7) THEN $8\r\n            ELSE $9\r\n        END AS zone\r\n    FROM venues AS venue\r\n    CROSS JOIN (VALUES ($10), ($11), ($12), ($13), ($14), ($15)) AS row_data(row_no)\r\n    CROSS JOIN generate_series($16, $17) AS number_data(seat_no)\r\n)\r\nINSERT INTO seats (id, venue_id, row_no, seat_no, seat_label, zone_id)\r\nSELECT\r\n    $18 || venue_id || $19 || seat_label,\r\n    venue_id,\r\n    row_no,\r\n    seat_no,\r\n    seat_label,\r\n    (SELECT id FROM venue_zones z WHERE z.venue_id=seat_layout.venue_id AND z.name=seat_layout.zone)\r\nFROM seat_layout",
+      "calls": 1,
+      "rows": 120,
+      "total_exec_time": 14.012346
+    },
+    {
+      "queryid": "401107651551081772",
+      "query": "ALTER TABLE user_notifications\r\n    DROP CONSTRAINT user_notifications_type_check,\r\n    ADD CONSTRAINT user_notifications_type_check CHECK (type IN (\r\n        'ORDER_CREATED',\r\n        'PAYMENT_SUCCEEDED',\r\n        'ORDER_CANCELLED',\r\n        'ORDER_EXPIRED',\r\n        'AUTO_REFUND_COMPLETED',\r\n        'AUTO_REFUND_FAILED'\r\n    ))",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.492836
+    },
+    {
+      "queryid": "187011724932727879",
+      "query": "ALTER TABLE app_users ADD COLUMN role TEXT NOT NULL DEFAULT 'CUSTOMER'",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 1.298556
+    },
+    {
+      "queryid": "-1677374361780511631",
+      "query": "CREATE TEMP TABLE phase17_legacy_zones ON COMMIT DROP AS\r\nWITH first_seats AS (\r\n    SELECT DISTINCT ON (venue_id, zone) venue_id, zone, row_no, seat_no\r\n    FROM seats ORDER BY venue_id, zone, row_no, seat_no\r\n)\r\nSELECT $1 || length(venue_id)::text || $2 || venue_id || $3 || zone AS id,\r\n       venue_id, zone AS raw_zone,\r\n       (row_number() OVER (PARTITION BY venue_id ORDER BY row_no, seat_no, zone) - $4)::integer AS position\r\nFROM first_seats",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 1.658419
+    },
+    {
+      "queryid": "-5622002366082622324",
+      "query": "CREATE TABLE admission_runtime_generations (\r\n event_id TEXT PRIMARY KEY REFERENCES events(id),\r\n generation TEXT NOT NULL CHECK (generation ~ '^[a-f0-9]{32}$'),\r\n initialized_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 10.337802
+    },
+    {
+      "queryid": "3575293316325736904",
+      "query": "CREATE INDEX seat_availability_outbox_unleased_idx ON seat_availability_outbox(id) WHERE lease_until IS NULL",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 1.817499
+    },
+    {
+      "queryid": "-2427914428208148581",
+      "query": "ALTER TABLE user_notifications\r\n    DROP CONSTRAINT user_notifications_type_check,\r\n    ADD CONSTRAINT user_notifications_type_check CHECK (type IN (\r\n        'ORDER_CREATED',\r\n        'PAYMENT_SUCCEEDED',\r\n        'ORDER_CANCELLED',\r\n        'ORDER_EXPIRED',\r\n        'AUTO_REFUND_COMPLETED'\r\n    ))",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.842929
+    },
+    {
+      "queryid": "7958071859378383585",
+      "query": "CREATE INDEX checkout_session_seats_inventory_idx\r\n    ON checkout_session_seats(session_seat_id)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 3.47593
+    },
+    {
+      "queryid": "2064869707185898531",
+      "query": "COMMIT",
+      "calls": 17,
+      "rows": 0,
+      "total_exec_time": 0.013786999999999999
+    },
+    {
+      "queryid": "2953339885259956310",
+      "query": "DROP INDEX seats_venue_row_number_idx",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.1969
+    },
+    {
+      "queryid": "8995900770040989888",
+      "query": "INSERT INTO venue_zones (id, venue_id, code, name, sort_order)\r\nSELECT id, venue_id, $1 || position::text, raw_zone, position\r\nFROM phase17_legacy_zones WHERE raw_zone !~ $2",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.006985
+    },
+    {
+      "queryid": "3535726842748028776",
+      "query": "ALTER TABLE session_seats\r\n    ADD COLUMN formal_version BIGINT NOT NULL DEFAULT 0,\r\n    ADD CONSTRAINT session_seats_formal_version_nonnegative CHECK (formal_version >= 0)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 1.804254
+    },
+    {
+      "queryid": "-4794228184287573606",
+      "query": "ALTER TABLE seats DROP COLUMN zone",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.216645
+    },
+    {
+      "queryid": "7476776717718972401",
+      "query": "SELECT NOT EXISTS(SELECT $1 FROM event_admission_policies WHERE mode <> $2) AS all_off",
+      "calls": 1,
+      "rows": 1,
+      "total_exec_time": 0.009649
+    },
+    {
+      "queryid": "-5455950336366194555",
+      "query": "WITH claimed AS (\n SELECT id, CASE WHEN reconciliation_lease_until IS NOT NULL THEN $4 ELSE $5 END AS recovery_reason\n FROM refunds WHERE status=$6 AND provider_terminal_at IS NULL AND next_reconcile_at <= clock_timestamp()\n AND (reconciliation_lease_until IS NULL OR reconciliation_lease_until <= clock_timestamp())\n ORDER BY next_reconcile_at,id FOR UPDATE SKIP LOCKED LIMIT $1\n ), leased AS (UPDATE refunds r SET provider_retry_count=provider_retry_count+$7,\n reconciliation_lease_token=$3,reconciliation_lease_until=clock_timestamp()+INTERVAL $8,\n next_reconcile_at=clock_timestamp()+LEAST($2,power($9,LEAST(provider_retry_count,$10)))*INTERVAL $11\n FROM claimed WHERE r.id=claimed.id RETURNING r.*,claimed.recovery_reason)\n SELECT leased.*,a.provider_payment_id FROM leased JOIN payment_attempts a ON a.id=leased.payment_attempt_id",
+      "calls": 6,
+      "rows": 0,
+      "total_exec_time": 0.041774
+    },
+    {
+      "queryid": "6865378226349601843",
+      "query": "SELECT $1",
+      "calls": 1,
+      "rows": 1,
+      "total_exec_time": 0.037891
+    },
+    {
+      "queryid": "-6385149751482512079",
+      "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version",
+      "calls": 24,
+      "rows": 0,
+      "total_exec_time": 0.27332799999999996
+    },
+    {
+      "queryid": "616948807121942441",
+      "query": "CREATE TABLE sessions (\r\n    id          TEXT PRIMARY KEY,\r\n    event_id    TEXT NOT NULL REFERENCES events(id),\r\n    venue_id    TEXT NOT NULL REFERENCES venues(id),\r\n    hall_name   TEXT NOT NULL,\r\n    start_time  TIMESTAMPTZ NOT NULL,\r\n    gate_time   TIMESTAMPTZ NOT NULL,\r\n    status      TEXT NOT NULL,\r\n    created_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    CONSTRAINT sessions_status_check\r\n        CHECK (status IN ('ON_SALE', 'SOLD_OUT')),\r\n    CONSTRAINT sessions_gate_before_start_check\r\n        CHECK (gate_time < start_time),\r\n    CONSTRAINT sessions_id_venue_unique UNIQUE (id, venue_id)\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 10.397697
+    },
+    {
+      "queryid": "9171163680972495396",
+      "query": "CREATE INDEX payment_attempts_processing_deadline_idx\r\n    ON payment_attempts(processing_deadline)\r\n    WHERE status = 'PROCESSING'",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 1.665572
+    },
+    {
+      "queryid": "-4100412289738901388",
+      "query": "EXISTS (SELECT $1 FROM payment_attempts)",
+      "calls": 1,
+      "rows": 1,
+      "total_exec_time": 0.011686
+    },
+    {
+      "queryid": "4161530802483615735",
+      "query": "UPDATE app_users\r\nSET username = CASE\r\n        WHEN id = $1 THEN $2\r\n        WHEN id = $3 THEN $4\r\n        ELSE $5 || md5(id)\r\n    END,\r\n    password_hash = CASE\r\n        WHEN id = $6 THEN $7\r\n        ELSE $8\r\n    END,\r\n    status = CASE WHEN id = $9 THEN $10 ELSE $11 END",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.004048
+    },
+    {
+      "queryid": "2673280359905394408",
+      "query": "DO $$ BEGIN\r\n    IF EXISTS (SELECT 1 FROM seats WHERE zone_id IS NULL) THEN\r\n        RAISE EXCEPTION 'Every legacy seat must map to exactly one venue Zone';\r\n    END IF;\r\nEND $$",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.106444
+    },
+    {
+      "queryid": "-888923948662486309",
+      "query": "SELECT * FROM phase17_legacy_zones\r\n                  WHERE raw_zone ~ $1 ORDER BY venue_id, position",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.0084
+    },
+    {
+      "queryid": "4626828870717740564",
+      "query": "CREATE INDEX refunds_reconcile_due_idx\r\n    ON refunds(next_reconcile_at)\r\n    WHERE status = 'PROCESSING' AND provider_terminal_at IS NULL",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.808938
+    },
+    {
+      "queryid": "8261285283778288011",
+      "query": "CREATE INDEX payment_attempts_order_created_idx\r\n    ON payment_attempts(order_id, created_at DESC)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 3.078164
+    },
+    {
+      "queryid": "-5157237144903772732",
+      "query": "SELECT $3 FROM ONLY \"public\".\"seats\" x WHERE \"id\" OPERATOR(pg_catalog.=) $1 AND \"venue_id\" OPERATOR(pg_catalog.=) $2 FOR KEY SHARE OF x",
+      "calls": 15300,
+      "rows": 15300,
+      "total_exec_time": 103.49598199999969
+    },
+    {
+      "queryid": "2730990172922744966",
+      "query": "CREATE INDEX orders_user_created_idx ON orders(user_id, created_at DESC)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.668559
+    },
+    {
+      "queryid": "-585374939620324365",
+      "query": "CREATE TABLE user_sessions (\r\n    id                   TEXT PRIMARY KEY,\r\n    user_id              TEXT NOT NULL REFERENCES app_users(id),\r\n    token_hash           TEXT NOT NULL UNIQUE,\r\n    created_at           TIMESTAMPTZ NOT NULL,\r\n    last_seen_at         TIMESTAMPTZ NOT NULL,\r\n    idle_expires_at      TIMESTAMPTZ NOT NULL,\r\n    absolute_expires_at  TIMESTAMPTZ NOT NULL,\r\n    revoked_at           TIMESTAMPTZ,\r\n    CONSTRAINT user_sessions_token_hash_shape_check\r\n        CHECK (token_hash ~ '^[0-9a-f]{64}$'),\r\n    CONSTRAINT user_sessions_idle_expiry_check\r\n        CHECK (idle_expires_at > created_at),\r\n    CONSTRAINT user_sessions_absolute_expiry_check\r\n        CHECK (absolute_expires_at > created_at),\r\n    CONSTRAINT user_sessions_expiry_order_check\r\n        CHECK (idle_expires_at <= absolute_expires_at),\r\n    CONSTRAINT user_sessions_last_seen_check\r\n        CHECK (last_seen_at >= created_at),\r\n    CONSTRAINT user_sessions_revoked_at_check\r\n        CHECK (revoked_at IS NULL OR revoked_at >= created_at)\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 7.920907
+    },
+    {
+      "queryid": "5961578250451613717",
+      "query": "CREATE TABLE checkout_session_seats (\r\n    checkout_session_id  TEXT NOT NULL,\r\n    session_id           TEXT NOT NULL,\r\n    session_seat_id      TEXT NOT NULL,\r\n    created_at           TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    PRIMARY KEY (checkout_session_id, session_seat_id),\r\n    CONSTRAINT checkout_session_seats_session_fk\r\n        FOREIGN KEY (checkout_session_id, session_id)\r\n        REFERENCES checkout_sessions(id, session_id)\r\n        ON DELETE CASCADE,\r\n    CONSTRAINT checkout_session_seats_inventory_fk\r\n        FOREIGN KEY (session_seat_id, session_id)\r\n        REFERENCES session_seats(id, session_id)\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 6.562253
+    },
+    {
+      "queryid": "8805768858464700266",
+      "query": "CREATE INDEX reservations_user_created_idx\r\n    ON reservations(user_id, created_at DESC)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.868188
+    },
+    {
+      "queryid": "4243133427765791973",
+      "query": "ALTER TABLE admission_policy_audit ALTER COLUMN administrator_id DROP NOT NULL",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.237695
+    },
+    {
+      "queryid": "-8295133791629709843",
+      "query": "CREATE TRIGGER session_seats_enqueue_availability\r\n    AFTER UPDATE OF status ON session_seats\r\n    FOR EACH ROW WHEN (OLD.status IS DISTINCT FROM NEW.status)\r\n    EXECUTE FUNCTION enqueue_seat_availability_change()",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.145569
+    },
+    {
+      "queryid": "3693033367428540911",
+      "query": "CREATE TABLE orders (\r\n    id              TEXT PRIMARY KEY,\r\n    user_id         TEXT NOT NULL,\r\n    reservation_id  TEXT NOT NULL UNIQUE,\r\n    status          TEXT NOT NULL,\r\n    total_amount    BIGINT NOT NULL,\r\n    expires_at      TIMESTAMPTZ NOT NULL,\r\n    created_at      TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    paid_at         TIMESTAMPTZ,\r\n    CONSTRAINT orders_user_fk\r\n        FOREIGN KEY (user_id) REFERENCES app_users(id),\r\n    CONSTRAINT orders_reservation_user_fk\r\n        FOREIGN KEY (reservation_id, user_id)\r\n        REFERENCES reservations(id, user_id),\r\n    CONSTRAINT orders_status_check\r\n        CHECK (status IN ('PENDING_PAYMENT', 'PAID', 'CANCELLED', 'EXPIRED')),\r\n    CONSTRAINT orders_amount_nonnegative_check CHECK (total_amount >= 0),\r\n    CONSTRAINT orders_expiry_check CHECK (expires_at > created_at),\r\n    CONSTRAINT orders_paid_at_check CHECK (\r\n        (status = 'PAID' AND paid_at IS NOT NULL)\r\n        OR (status <> 'PAID' AND paid_at IS NULL)\r\n    )\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 9.345403
+    },
+    {
+      "queryid": "-5846354644507609497",
+      "query": "DO $$\r\nDECLARE\r\n    legacy RECORD;\r\n    suffix INTEGER;\r\n    candidate TEXT;\r\nBEGIN\r\n    FOR legacy IN SELECT * FROM phase17_legacy_zones\r\n                  WHERE raw_zone ~ '^[[:space:]]*$' ORDER BY venue_id, position\r\n    LOOP\r\n        suffix := 0;\r\n        candidate := '未命名区域';\r\n        WHILE EXISTS (SELECT 1 FROM venue_zones WHERE venue_id=legacy.venue_id AND name=candidate)\r\n        LOOP\r\n            suffix := suffix + 1;\r\n            candidate := '未命名区域-' || suffix::text;\r\n        END LOOP;\r\n        INSERT INTO venue_zones (id, venue_id, code, name, sort_order)\r\n        VALUES (legacy.id, legacy.venue_id, 'LEGACY_' || legacy.position::text, candidate, legacy.position);\r\n    END LOOP;\r\nEND $$",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.786486
+    },
+    {
+      "queryid": "-8884591198878234638",
+      "query": "SELECT $3 FROM ONLY \"public\".\"session_seats\" x WHERE \"id\" OPERATOR(pg_catalog.=) $1 AND \"session_id\" OPERATOR(pg_catalog.=) $2 FOR KEY SHARE OF x",
+      "calls": 45,
+      "rows": 45,
+      "total_exec_time": 0.29421
+    },
+    {
+      "queryid": "-439726243170224849",
+      "query": "CREATE TABLE admission_policy_audit (\r\n    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\r\n    event_id TEXT NOT NULL REFERENCES events(id),\r\n    administrator_id TEXT NOT NULL REFERENCES app_users(id),\r\n    action TEXT NOT NULL CHECK (action IN ('CREATE','UPDATE','RESET_GENERATION')),\r\n    old_version BIGINT NOT NULL CHECK (old_version >= 0),\r\n    new_version BIGINT NOT NULL CHECK (new_version = old_version + 1),\r\n    old_policy JSONB NOT NULL CHECK (jsonb_typeof(old_policy) = 'object'),\r\n    new_policy JSONB NOT NULL CHECK (jsonb_typeof(new_policy) = 'object'),\r\n    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    UNIQUE(event_id, new_version)\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 10.680429
+    },
+    {
+      "queryid": "-8081729558114898675",
+      "query": "SELECT $3 FROM ONLY \"public\".\"venue_zones\" x WHERE \"id\" OPERATOR(pg_catalog.=) $1 AND \"venue_id\" OPERATOR(pg_catalog.=) $2 FOR KEY SHARE OF x",
+      "calls": 15130,
+      "rows": 15130,
+      "total_exec_time": 80.24061300000022
+    },
+    {
+      "queryid": "-1717171380722580746",
+      "query": "CREATE TABLE session_seats (\r\n    id                      TEXT PRIMARY KEY,\r\n    session_id              TEXT NOT NULL,\r\n    seat_id                 TEXT NOT NULL,\r\n    venue_id                TEXT NOT NULL,\r\n    status                  TEXT NOT NULL,\r\n    price                   BIGINT NOT NULL,\r\n    current_reservation_id  TEXT,\r\n    created_at              TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    CONSTRAINT session_seats_session_venue_fk\r\n        FOREIGN KEY (session_id, venue_id)\r\n        REFERENCES sessions(id, venue_id),\r\n    CONSTRAINT session_seats_seat_venue_fk\r\n        FOREIGN KEY (seat_id, venue_id)\r\n        REFERENCES seats(id, venue_id),\r\n    CONSTRAINT session_seats_current_reservation_fk\r\n        FOREIGN KEY (current_reservation_id, session_id)\r\n        REFERENCES reservations(id, session_id),\r\n    CONSTRAINT session_seats_status_check\r\n        CHECK (status IN ('AVAILABLE', 'HELD', 'SOLD')),\r\n    CONSTRAINT session_seats_price_nonnegative_check CHECK (price >= 0),\r\n    CONSTRAINT session_seats_hold_pointer_check CHECK (\r\n        (status = 'AVAILABLE' AND current_reservation_id IS NULL)\r\n        OR (status = 'HELD' AND current_reservation_id IS NOT NULL)\r\n        OR status = 'SOLD'\r\n    ),\r\n    CONSTRAINT session_seats_session_seat_unique UNIQUE (session_id, seat_id),\r\n    CONSTRAINT session_seats_id_session_unique UNIQUE (id, session_id)\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 11.051481
+    },
+    {
+      "queryid": "-7650368890274383959",
+      "query": "CREATE INDEX user_sessions_active_expiry_idx\r\n    ON user_sessions(idle_expires_at, absolute_expires_at)\r\n    WHERE revoked_at IS NULL",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 1.969933
+    },
+    {
+      "queryid": "-7020862920074037699",
+      "query": "SELECT id\n        FROM orders\n        WHERE status = $2\n          AND expires_at <= CURRENT_TIMESTAMP\n        ORDER BY expires_at ASC, id ASC\n        LIMIT $1",
+      "calls": 3,
+      "rows": 0,
+      "total_exec_time": 0.162451
+    },
+    {
+      "queryid": "4324203093462757831",
+      "query": "CREATE INDEX payment_attempts_recovery_idx ON payment_attempts(id)\r\n    WHERE provider <> 'simulation' AND status IN ('PROCESSING', 'TIMED_OUT')\r\n      AND (provider_status IN ('succeeded', 'canceled') OR next_reconcile_at IS NULL)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 4.544351
+    },
+    {
+      "queryid": "-7545472450755311790",
+      "query": "ALTER TABLE seats ADD COLUMN zone_id TEXT",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.181587
+    },
+    {
+      "queryid": "5493411980061050026",
+      "query": "SELECT\n            inventory.id,\n            seat.seat_label,\n            seat.row_no,\n            seat.seat_no,\n            zone.name AS zone,\n            inventory.price\n        FROM session_seats AS inventory\n        JOIN seats AS seat ON seat.id = inventory.seat_id\n        JOIN venue_zones AS zone ON zone.id = seat.zone_id AND zone.venue_id = seat.venue_id\n        WHERE inventory.session_id = $1 AND EXISTS(SELECT $2 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>$3 AND e.status<>$4)\n        ORDER BY zone.sort_order ASC,\n                 seat.row_no ASC,\n                 seat.seat_no ASC,\n                 inventory.id ASC",
+      "calls": 44,
+      "rows": 330000,
+      "total_exec_time": 350.58772899999997
+    },
+    {
+      "queryid": "-3811360908637704250",
+      "query": "ALTER TABLE reservations\r\n    ADD CONSTRAINT reservations_idempotency_key_length_check\r\n    CHECK (\r\n        idempotency_key IS NULL\r\n        OR char_length(idempotency_key) BETWEEN 1 AND 128\r\n    )",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.769055
+    },
+    {
+      "queryid": "-8537890560272604914",
+      "query": "SELECT id,event_id FROM sessions ORDER BY id LIMIT $1::integer",
+      "calls": 6,
+      "rows": 42,
+      "total_exec_time": 0.19795
+    },
+    {
+      "queryid": "8300725257886456499",
+      "query": "CREATE TABLE event_admission_policies (\r\n    event_id TEXT PRIMARY KEY REFERENCES events(id),\r\n    mode TEXT NOT NULL DEFAULT 'OFF' CHECK (mode IN ('OFF','OBSERVE','ENFORCED','PAUSED')),\r\n    prequeue_seconds INTEGER NOT NULL CHECK (prequeue_seconds BETWEEN 0 AND 86400),\r\n    max_active_users INTEGER NOT NULL CHECK (max_active_users BETWEEN 1 AND 1000000),\r\n    admission_rate_per_second INTEGER NOT NULL CHECK (admission_rate_per_second BETWEEN 1 AND 100000),\r\n    lease_seconds INTEGER NOT NULL CHECK (lease_seconds BETWEEN 10 AND 3600),\r\n    policy_version BIGINT NOT NULL CHECK (policy_version BETWEEN 1 AND 9007199254740991),\r\n    queue_generation TEXT NOT NULL CHECK (queue_generation ~ '^[a-f0-9]{32}$'),\r\n    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    updated_by TEXT NOT NULL REFERENCES app_users(id)\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 9.79691
+    },
+    {
+      "queryid": "-6007470777851065101",
+      "query": "CREATE TABLE seats (\r\n    id          TEXT PRIMARY KEY,\r\n    venue_id    TEXT NOT NULL REFERENCES venues(id),\r\n    row_no      TEXT NOT NULL,\r\n    seat_no     INTEGER NOT NULL,\r\n    seat_label  TEXT NOT NULL,\r\n    zone        TEXT NOT NULL,\r\n    created_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    CONSTRAINT seats_number_positive_check CHECK (seat_no > 0),\r\n    CONSTRAINT seats_venue_position_unique UNIQUE (venue_id, row_no, seat_no),\r\n    CONSTRAINT seats_venue_label_unique UNIQUE (venue_id, seat_label),\r\n    CONSTRAINT seats_id_venue_unique UNIQUE (id, venue_id)\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 12.520607
+    },
+    {
+      "queryid": "2489919497809303155",
+      "query": "CREATE INDEX payment_attempts_reconcile_due_idx\r\n    ON payment_attempts(next_reconcile_at)\r\n    WHERE provider <> 'simulation'\r\n      AND provider_terminal_at IS NULL\r\n      AND status IN ('PROCESSING', 'TIMED_OUT')",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.482357
+    },
+    {
+      "queryid": "-2898587967158842123",
+      "query": "CREATE TABLE payment_provider_events (\r\n    id                  TEXT PRIMARY KEY,\r\n    provider            TEXT NOT NULL,\r\n    provider_event_id   TEXT NOT NULL,\r\n    event_type          TEXT NOT NULL,\r\n    object_kind         TEXT NOT NULL,\r\n    provider_object_id  TEXT,\r\n    local_reference_id  TEXT,\r\n    status              TEXT NOT NULL DEFAULT 'PENDING',\r\n    received_at         TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),\r\n    processed_at        TIMESTAMPTZ,\r\n    retry_count         INTEGER NOT NULL DEFAULT 0,\r\n    next_retry_at       TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),\r\n    last_error          TEXT,\r\n    payload_sha256      TEXT NOT NULL,\r\n    CONSTRAINT payment_provider_events_provider_event_unique\r\n        UNIQUE (provider, provider_event_id),\r\n    CONSTRAINT payment_provider_events_kind_check\r\n        CHECK (object_kind IN ('PAYMENT', 'REFUND')),\r\n    CONSTRAINT payment_provider_events_status_check\r\n        CHECK (status IN ('PENDING', 'PROCESSED', 'FAILED')),\r\n    CONSTRAINT payment_provider_events_retry_check CHECK (retry_count >= 0),\r\n    CONSTRAINT payment_provider_events_state_shape_check CHECK (\r\n        (status = 'PENDING' AND processed_at IS NULL)\r\n        OR (status = 'PROCESSED' AND processed_at IS NOT NULL AND last_error IS NULL)\r\n        OR (status = 'FAILED' AND processed_at IS NOT NULL AND last_error IS NOT NULL)\r\n    ),\r\n    CONSTRAINT payment_provider_events_payload_hash_check\r\n        CHECK (payload_sha256 ~ '^[0-9a-f]{64}$')\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 9.423955
+    },
+    {
+      "queryid": "4541486974722302781",
+      "query": "INSERT INTO venues(id,name,city) VALUES($1,$2,$3)",
+      "calls": 2,
+      "rows": 2,
+      "total_exec_time": 0.36439699999999997
+    },
+    {
+      "queryid": "-9012326392836306510",
+      "query": "SELECT $3 FROM ONLY \"public\".\"reservations\" x WHERE \"id\" OPERATOR(pg_catalog.=) $1 AND \"session_id\" OPERATOR(pg_catalog.=) $2 FOR KEY SHARE OF x",
+      "calls": 65,
+      "rows": 65,
+      "total_exec_time": 0.3965369999999999
+    },
+    {
+      "queryid": "-6787214809201313896",
+      "query": "ALTER TABLE seats ADD CONSTRAINT seats_venue_zone_position_unique UNIQUE (venue_id, zone_id, row_no, seat_no)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 3.456594
+    },
+    {
+      "queryid": "-4972398254606245610",
+      "query": "ALTER TABLE refunds\r\n    ALTER COLUMN refunded_at DROP NOT NULL,\r\n    ADD COLUMN source TEXT NOT NULL DEFAULT 'SYSTEM',\r\n    ADD COLUMN status TEXT NOT NULL DEFAULT 'SUCCEEDED',\r\n    ADD COLUMN provider TEXT NOT NULL DEFAULT 'simulation',\r\n    ADD COLUMN provider_refund_id TEXT,\r\n    ADD COLUMN provider_status TEXT,\r\n    ADD COLUMN failed_at TIMESTAMPTZ,\r\n    ADD COLUMN failure_reason TEXT,\r\n    ADD COLUMN provider_last_sync_at TIMESTAMPTZ,\r\n    ADD COLUMN provider_terminal_at TIMESTAMPTZ,\r\n    ADD COLUMN provider_retry_count INTEGER NOT NULL DEFAULT 0,\r\n    ADD COLUMN next_reconcile_at TIMESTAMPTZ,\r\n    ADD CONSTRAINT refunds_source_check CHECK (source IN ('SYSTEM', 'BUYER')),\r\n    ADD CONSTRAINT refunds_status_check CHECK (status IN ('PROCESSING', 'SUCCEEDED', 'FAILED')),\r\n    ADD CONSTRAINT refunds_provider_retry_check CHECK (provider_retry_count >= 0),\r\n    ADD CONSTRAINT refunds_state_shape_check CHECK (\r\n        (status = 'PROCESSING' AND refunded_at IS NULL AND failed_at IS NULL)\r\n        OR (status = 'SUCCEEDED' AND refunded_at IS NOT NULL AND failed_at IS NULL)\r\n        OR (status = 'FAILED' AND refunded_at IS NULL AND failed_at IS NOT NULL\r\n            AND failure_reason IS NOT NULL)\r\n    ),\r\n    ADD CONSTRAINT refunds_provider_terminal_check CHECK (\r\n        provider_terminal_at IS NULL OR status IN ('SUCCEEDED', 'FAILED')\r\n    )",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.991075
+    },
+    {
+      "queryid": "7983700832242838958",
+      "query": "ALTER TABLE seats ALTER COLUMN zone_id SET NOT NULL",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.153219
+    },
+    {
+      "queryid": "-7940700948867705266",
+      "query": "INSERT INTO app_users (id, display_name, username, password_hash, status, role) VALUES\r\n    (\r\n        $1,\r\n        $2,\r\n        $3,\r\n        $4,\r\n        $5, $6\r\n    ),\r\n    ($7, $8, $9, $10, $11, $12),\r\n    ($13, $14, $15,\r\n     $16,\r\n     $17, $18)",
+      "calls": 1,
+      "rows": 3,
+      "total_exec_time": 0.309934
+    },
+    {
+      "queryid": "1043061107050268283",
+      "query": "UPDATE events SET sales_starts_at=LEAST(created_at,sales_ends_at-INTERVAL $1)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.001854
+    },
+    {
+      "queryid": "-2788348267638400876",
+      "query": "INSERT INTO venues (id, name, city) VALUES\r\n    ($1, $2, $3),\r\n    ($4, $5, $6)",
+      "calls": 1,
+      "rows": 2,
+      "total_exec_time": 0.225632
+    },
+    {
+      "queryid": "-1642361017247557662",
+      "query": "INSERT INTO reservation_session_seats (\r\n    reservation_id, session_id, session_seat_id, reserved_price\r\n)\r\nSELECT\r\n    CASE\r\n        WHEN session_seat.status = $1\r\n            THEN $2 || session_seat.session_id\r\n        ELSE $3 || session_seat.session_id\r\n    END,\r\n    session_seat.session_id,\r\n    session_seat.id,\r\n    session_seat.price\r\nFROM session_seats AS session_seat\r\nWHERE session_seat.status IN ($4, $5)",
+      "calls": 1,
+      "rows": 45,
+      "total_exec_time": 2.066862
+    },
+    {
+      "queryid": "3501951242636239831",
+      "query": "WITH claimed AS (\n            SELECT attempt.id,\n                   CASE WHEN attempt.provider_status IN ($4,$5)\n                        THEN $6\n                        WHEN attempt.next_reconcile_at IS NULL THEN $7\n                        WHEN attempt.reconciliation_lease_until IS NOT NULL THEN $8\n                        ELSE $9 END AS recovery_reason\n            FROM payment_attempts AS attempt\n            WHERE attempt.provider <> $10\n              AND attempt.status IN ($11, $12)\n              AND (attempt.reconciliation_lease_until IS NULL\n                   OR attempt.reconciliation_lease_until <= clock_timestamp())\n              AND (attempt.provider_status IN ($13,$14)\n                   OR attempt.next_reconcile_at IS NULL\n                   OR attempt.next_reconcile_at <= clock_timestamp())\n            ORDER BY (attempt.provider_status IN ($15,$16)) DESC NULLS LAST,\n                     attempt.next_reconcile_at NULLS FIRST, attempt.id\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), leased AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_retry_count = provider_retry_count + $17,\n                reconciliation_lease_token = $3,\n                reconciliation_lease_until = clock_timestamp() + INTERVAL $18,\n                next_reconcile_at = clock_timestamp() + LEAST($2, power($19, LEAST(provider_retry_count, $20))) * INTERVAL $21\n            FROM claimed WHERE attempt.id = claimed.id\n            RETURNING attempt.*, claimed.recovery_reason\n        )\n        SELECT leased.id, leased.order_id, leased.provider, leased.provider_payment_id,\n               ticket_order.total_amount, leased.currency, leased.recovery_reason\n        FROM leased JOIN orders AS ticket_order ON ticket_order.id = leased.order_id",
+      "calls": 6,
+      "rows": 0,
+      "total_exec_time": 0.104894
+    },
+    {
+      "queryid": "1072251443836350836",
+      "query": "ALTER TABLE checkout_sessions\r\n    ADD COLUMN revision BIGINT NOT NULL DEFAULT 0,\r\n    ADD CONSTRAINT checkout_sessions_revision_nonnegative_check\r\n        CHECK (revision >= 0)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 1.873643
+    },
+    {
+      "queryid": "-4427334339045890036",
+      "query": "INSERT INTO venue_zones (id, venue_id, code, name, sort_order)\r\nSELECT $1 || venue.id || $2 || z.sort_order, venue.id, z.code, z.name, z.sort_order\r\nFROM venues venue CROSS JOIN (VALUES\r\n    ($3, $4, $5), ($6, $7, $8), ($9, $10, $11)\r\n) z(code, name, sort_order)",
+      "calls": 1,
+      "rows": 6,
+      "total_exec_time": 0.6495029999999999
+    },
+    {
+      "queryid": "6650430479887907887",
+      "query": "BEGIN",
+      "calls": 17,
+      "rows": 0,
+      "total_exec_time": 0.07080999999999998
+    },
+    {
+      "queryid": "8741847684475881650",
+      "query": "SELECT $3 FROM ONLY \"public\".\"sessions\" x WHERE \"id\" OPERATOR(pg_catalog.=) $1 AND \"venue_id\" OPERATOR(pg_catalog.=) $2 FOR KEY SHARE OF x",
+      "calls": 15310,
+      "rows": 15310,
+      "total_exec_time": 82.34714999999956
+    },
+    {
+      "queryid": "-110239671234573147",
+      "query": "ALTER TABLE events ADD COLUMN published_at TIMESTAMPTZ",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.153667
+    },
+    {
+      "queryid": "-1782078127340736820",
+      "query": "ALTER TABLE seats DROP CONSTRAINT seats_venue_position_unique",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.728144
+    },
+    {
+      "queryid": "-3033747666376424430",
+      "query": "CREATE TRIGGER session_seats_advance_formal_version\r\n    BEFORE UPDATE OF status ON session_seats\r\n    FOR EACH ROW WHEN (OLD.status IS DISTINCT FROM NEW.status)\r\n    EXECUTE FUNCTION advance_seat_formal_version()",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.260622
+    },
+    {
+      "queryid": "3255740136069231943",
+      "query": "CREATE TABLE reservation_session_seats (\r\n    reservation_id  TEXT NOT NULL,\r\n    session_id      TEXT NOT NULL,\r\n    session_seat_id TEXT NOT NULL,\r\n    reserved_price  BIGINT NOT NULL,\r\n    created_at      TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    PRIMARY KEY (reservation_id, session_seat_id),\r\n    CONSTRAINT reservation_session_seats_reservation_fk\r\n        FOREIGN KEY (reservation_id, session_id)\r\n        REFERENCES reservations(id, session_id),\r\n    CONSTRAINT reservation_session_seats_session_seat_fk\r\n        FOREIGN KEY (session_seat_id, session_id)\r\n        REFERENCES session_seats(id, session_id),\r\n    CONSTRAINT reservation_session_seats_price_nonnegative_check\r\n        CHECK (reserved_price >= 0)\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 7.00069
+    },
+    {
+      "queryid": "-5599938995468497022",
+      "query": "SELECT s.id,s.zone_id,s.row_no,s.seat_no,s.seat_label,i.id,i.price,i.status,i.formal_version FROM seats s JOIN session_seats i ON i.seat_id=s.id WHERE i.session_id=$1 ORDER BY s.id",
+      "calls": 2,
+      "rows": 15000,
+      "total_exec_time": 16.411771
+    },
+    {
+      "queryid": "-1551546044377993756",
+      "query": "CREATE TABLE venues (\r\n    id          TEXT PRIMARY KEY,\r\n    name        TEXT NOT NULL,\r\n    city        TEXT NOT NULL,\r\n    created_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 9.757118
+    },
+    {
+      "queryid": "-940789224800037887",
+      "query": "DO $$\r\nDECLARE legacy TEXT := current_setting('ticketing.legacy_payment_currency', true);\r\nBEGIN\r\n    IF EXISTS (SELECT 1 FROM payment_attempts) THEN\r\n        IF legacy IS NULL OR legacy !~ '^[a-z]{3}$' THEN\r\n            RAISE EXCEPTION 'Confirm historical single currency and SET ticketing.legacy_payment_currency in this session';\r\n        END IF;\r\n        UPDATE payment_attempts SET currency = legacy;\r\n        UPDATE refunds r SET currency = a.currency FROM payment_attempts a\r\n        WHERE a.id = r.payment_attempt_id AND a.order_id = r.order_id;\r\n    END IF;\r\n    IF EXISTS (SELECT 1 FROM payment_attempts WHERE currency IS NULL)\r\n       OR EXISTS (SELECT 1 FROM refunds WHERE currency IS NULL) THEN\r\n        RAISE EXCEPTION 'Historical currency mapping incomplete';\r\n    END IF;\r\nEND $$",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.731818
+    },
+    {
+      "queryid": "1539638796499506124",
+      "query": "CREATE INDEX user_notifications_user_created_idx\r\n    ON user_notifications(user_id, created_at DESC)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.610781
+    },
+    {
+      "queryid": "-6286146671147170103",
+      "query": "WITH repairable AS (\n            SELECT checkout.id,\n                   checkout.active_confirm_idempotency_key,\n                   reservation.id AS reservation_id\n            FROM checkout_sessions AS checkout\n            JOIN reservations AS reservation\n              ON reservation.user_id = checkout.user_id\n             AND reservation.idempotency_key =\n                 checkout.active_confirm_idempotency_key\n            JOIN orders AS ticket_order\n              ON ticket_order.reservation_id = reservation.id\n            WHERE checkout.status = $2\n            ORDER BY checkout.updated_at ASC, checkout.id ASC\n            LIMIT $1\n        )\n        UPDATE checkout_sessions AS checkout\n        SET status = $3,\n            reservation_id = repairable.reservation_id,\n            updated_at = CURRENT_TIMESTAMP\n        FROM repairable\n        WHERE checkout.id = repairable.id\n          AND checkout.status = $4\n          AND checkout.active_confirm_idempotency_key =\n              repairable.active_confirm_idempotency_key\n        RETURNING checkout.id",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.025613
+    },
+    {
+      "queryid": "-6419198873233200601",
+      "query": "SELECT $2 FROM ONLY \"public\".\"sessions\" x WHERE \"id\" OPERATOR(pg_catalog.=) $1 FOR KEY SHARE OF x",
+      "calls": 10,
+      "rows": 10,
+      "total_exec_time": 0.055059
+    },
+    {
+      "queryid": "3525231961543427328",
+      "query": "CREATE TABLE user_notifications (\r\n    id          TEXT PRIMARY KEY,\r\n    user_id     TEXT NOT NULL REFERENCES app_users(id),\r\n    order_id    TEXT NOT NULL REFERENCES orders(id),\r\n    type        TEXT NOT NULL,\r\n    title       TEXT NOT NULL,\r\n    message     TEXT NOT NULL,\r\n    dedupe_key  TEXT NOT NULL UNIQUE,\r\n    created_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    read_at     TIMESTAMPTZ,\r\n    CONSTRAINT user_notifications_type_check CHECK (type IN (\r\n        'PAYMENT_SUCCEEDED',\r\n        'ORDER_CANCELLED',\r\n        'ORDER_EXPIRED',\r\n        'AUTO_REFUND_COMPLETED'\r\n    ))\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 7.933859
+    },
+    {
+      "queryid": "3806479186009281974",
+      "query": "ALTER TABLE sessions DROP CONSTRAINT sessions_status_check",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.295311
+    },
+    {
+      "queryid": "-7421503532580055001",
+      "query": "CREATE FUNCTION enqueue_seat_availability_change() RETURNS TRIGGER LANGUAGE plpgsql AS $$\r\nBEGIN\r\n    INSERT INTO seat_availability_outbox(session_id, session_seat_id, formal_status, formal_version)\r\n    VALUES (NEW.session_id, NEW.id, NEW.status, NEW.formal_version);\r\n    RETURN NEW;\r\nEND;\r\n$$",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.109565
+    },
+    {
+      "queryid": "-4955535460125864641",
+      "query": "ALTER TABLE refunds ALTER COLUMN currency SET NOT NULL,\r\n    ADD CONSTRAINT refunds_currency_check CHECK (currency ~ '^[a-z]{3}$'),\r\n    DROP CONSTRAINT refunds_reason_check,\r\n    ADD CONSTRAINT refunds_source_reason_check CHECK (\r\n        (source = 'BUYER' AND reason = 'BUYER_REQUESTED') OR\r\n        (source = 'SYSTEM' AND reason IN ('ORDER_CANCELLED_BEFORE_PAYMENT_CONFIRMATION',\r\n         'ORDER_EXPIRED_BEFORE_PAYMENT_CONFIRMATION','DUPLICATE_LATE_PAYMENT','PAYMENT_NOT_ACCEPTED')))",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 1.509475
+    },
+    {
+      "queryid": "-5249686666649809532",
+      "query": "ALTER TABLE events ADD CONSTRAINT events_sales_window_check CHECK(sales_starts_at<sales_ends_at),\r\n                   ALTER COLUMN sales_starts_at SET NOT NULL,\r\n                   ALTER COLUMN sales_ends_at SET NOT NULL",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.731275
+    },
+    {
+      "queryid": "-2923044196320693240",
+      "query": "CREATE INDEX checkout_sessions_user_session_status_idx\r\n    ON checkout_sessions(user_id, session_id, status, created_at DESC)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.9063
+    },
+    {
+      "queryid": "-8383767406938408586",
+      "query": "CREATE TABLE session_zone_prices (\r\n    session_id TEXT NOT NULL,\r\n    zone_id TEXT NOT NULL,\r\n    venue_id TEXT NOT NULL,\r\n    price BIGINT NOT NULL CHECK (price > 0),\r\n    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    PRIMARY KEY (session_id, zone_id),\r\n    FOREIGN KEY (session_id, venue_id) REFERENCES sessions(id, venue_id) ON DELETE CASCADE,\r\n    FOREIGN KEY (zone_id, venue_id) REFERENCES venue_zones(id, venue_id) ON DELETE CASCADE\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 7.819161
+    },
+    {
+      "queryid": "5242035781951491564",
+      "query": "CREATE TABLE checkout_sessions (\r\n    id                              TEXT PRIMARY KEY,\r\n    user_id                         TEXT NOT NULL REFERENCES app_users(id),\r\n    session_id                      TEXT NOT NULL REFERENCES sessions(id),\r\n    status                          TEXT NOT NULL,\r\n    active_confirm_idempotency_key  TEXT,\r\n    reservation_id                  TEXT UNIQUE,\r\n    created_at                      TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    updated_at                      TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    CONSTRAINT checkout_sessions_status_check\r\n        CHECK (status IN ('SELECTING', 'SUBMITTING', 'RESERVED', 'ABANDONED')),\r\n    CONSTRAINT checkout_sessions_confirm_key_length_check\r\n        CHECK (\r\n            active_confirm_idempotency_key IS NULL\r\n            OR char_length(active_confirm_idempotency_key) BETWEEN 1 AND 128\r\n        ),\r\n    CONSTRAINT checkout_sessions_state_shape_check CHECK (\r\n        (status = 'SELECTING'\r\n            AND active_confirm_idempotency_key IS NULL\r\n            AND reservation_id IS NULL)\r\n        OR (status = 'SUBMITTING'\r\n            AND active_confirm_idempotency_key IS NOT NULL\r\n            AND reservation_id IS NULL)\r\n        OR (status = 'RESERVED'\r\n            AND active_confirm_idempotency_key IS NOT NULL\r\n            AND reservation_id IS NOT NULL)\r\n        OR (status = 'ABANDONED'\r\n            AND active_confirm_idempotency_key IS NULL\r\n            AND reservation_id IS NULL)\r\n    ),\r\n    CONSTRAINT checkout_sessions_reservation_user_fk\r\n        FOREIGN KEY (reservation_id, user_id)\r\n        REFERENCES reservations(id, user_id),\r\n    CONSTRAINT checkout_sessions_reservation_session_fk\r\n        FOREIGN KEY (reservation_id, session_id)\r\n        REFERENCES reservations(id, session_id),\r\n    CONSTRAINT checkout_sessions_id_session_unique UNIQUE (id, session_id)\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 16.266538
+    },
+    {
+      "queryid": "-2425435314539594211",
+      "query": "ALTER TABLE refunds ADD COLUMN currency TEXT",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.314984
+    },
+    {
+      "queryid": "1572661759646685374",
+      "query": "ALTER TABLE app_users ADD CONSTRAINT app_users_role_check CHECK (role IN ('CUSTOMER', 'ADMIN'))",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.566714
+    },
+    {
+      "queryid": "-4913079472531360372",
+      "query": "INSERT INTO session_seats(id,session_id,seat_id,venue_id,status,price) SELECT $1||lpad(i::text,$2,$3),$4,$5||lpad(i::text,$6,$7),$8,$9,$10 FROM generate_series($11,$12) i",
+      "calls": 2,
+      "rows": 15000,
+      "total_exec_time": 507.04237
+    },
+    {
+      "queryid": "3571292012603506107",
+      "query": "ALTER TABLE reservations\r\n    ADD COLUMN idempotency_key TEXT",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.975072
+    },
+    {
+      "queryid": "-6689216056179747227",
+      "query": "ALTER TABLE events DROP CONSTRAINT events_status_check",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.327175
+    },
+    {
+      "queryid": "2047946044958453135",
+      "query": "ALTER TABLE orders ADD COLUMN refunded_at TIMESTAMPTZ,\r\n    DROP CONSTRAINT orders_paid_at_check,\r\n    ADD CONSTRAINT orders_paid_at_check CHECK (\r\n        (status IN ('PENDING_PAYMENT','EXPIRED') AND paid_at IS NULL AND refunded_at IS NULL) OR\r\n        (status = 'PAID' AND paid_at IS NOT NULL AND refunded_at IS NULL) OR\r\n        (status = 'CANCELLED' AND ((paid_at IS NULL AND refunded_at IS NULL) OR\r\n                                 (paid_at IS NOT NULL AND refunded_at IS NOT NULL)))),\r\n    ADD CONSTRAINT orders_refund_time_check CHECK (refunded_at >= paid_at)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.886641
+    },
+    {
+      "queryid": "3935776513879433088",
+      "query": "CREATE TABLE seat_availability_outbox (\r\n    id BIGSERIAL PRIMARY KEY,\r\n    session_id TEXT NOT NULL,\r\n    session_seat_id TEXT NOT NULL,\r\n    formal_status TEXT NOT NULL CHECK (formal_status IN ('AVAILABLE', 'HELD', 'SOLD')),\r\n    formal_version BIGINT NOT NULL CHECK (formal_version >= 0),\r\n    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    lease_token TEXT,\r\n    lease_until TIMESTAMPTZ,\r\n    CONSTRAINT seat_availability_outbox_seat_version_unique UNIQUE (session_seat_id, formal_version),\r\n    CONSTRAINT seat_availability_outbox_lease_pair CHECK ((lease_token IS NULL) = (lease_until IS NULL))\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 10.133728
+    },
+    {
+      "queryid": "7730391551772641759",
+      "query": "SELECT EXISTS(SELECT $2 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>$3 AND e.status<>$4) AS found",
+      "calls": 41,
+      "rows": 41,
+      "total_exec_time": 2.544919
+    },
+    {
+      "queryid": "-2389336089256308415",
+      "query": "ALTER TABLE sessions ADD CONSTRAINT sessions_status_check CHECK (status IN ('DRAFT', 'ON_SALE', 'SOLD_OUT'))",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 0.310452
+    },
+    {
+      "queryid": "2064853351623227891",
+      "query": "CREATE TABLE events (\r\n    id                TEXT PRIMARY KEY,\r\n    primary_venue_id  TEXT NOT NULL REFERENCES venues(id),\r\n    name              TEXT NOT NULL,\r\n    description       TEXT NOT NULL,\r\n    status            TEXT NOT NULL,\r\n    category          TEXT NOT NULL,\r\n    cover_url         TEXT NOT NULL,\r\n    date_range        TEXT NOT NULL,\r\n    created_at        TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    CONSTRAINT events_status_check\r\n        CHECK (status IN ('ON_SALE', 'COMING_SOON'))\r\n)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 6.211196
+    },
+    {
+      "queryid": "7415232235861170058",
+      "query": "ALTER TABLE app_users\r\n    ALTER COLUMN username SET NOT NULL,\r\n    ALTER COLUMN password_hash SET NOT NULL,\r\n    ALTER COLUMN status SET NOT NULL,\r\n    ADD CONSTRAINT app_users_username_unique UNIQUE (username),\r\n    ADD CONSTRAINT app_users_username_length_check\r\n        CHECK (char_length(username) BETWEEN 3 AND 64),\r\n    ADD CONSTRAINT app_users_username_canonical_check\r\n        CHECK (username = lower(username)),\r\n    ADD CONSTRAINT app_users_status_check\r\n        CHECK (status IN ('ACTIVE', 'DISABLED'))",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 6.525036
+    },
+    {
+      "queryid": "-8900604630024544797",
+      "query": "SELECT inventory.id,inventory.status,inventory.formal_version,zone.name AS zone\n            FROM session_seats inventory JOIN seats seat ON seat.id=inventory.seat_id\n            JOIN venue_zones zone ON zone.id=seat.zone_id AND zone.venue_id=seat.venue_id\n            WHERE inventory.session_id=$1 ORDER BY zone.sort_order,seat.row_no,seat.seat_no,inventory.id",
+      "calls": 1,
+      "rows": 5000,
+      "total_exec_time": 4.855396
+    },
+    {
+      "queryid": "4146979231775540253",
+      "query": "CREATE UNIQUE INDEX payment_attempts_provider_payment_unique_idx\r\n    ON payment_attempts(provider, provider_payment_id)\r\n    WHERE provider_payment_id IS NOT NULL",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 3.6651
+    },
+    {
+      "queryid": "-4309222288736922278",
+      "query": "CREATE INDEX seats_venue_zone_row_number_idx ON seats(venue_id, zone_id, row_no, seat_no)",
+      "calls": 1,
+      "rows": 0,
+      "total_exec_time": 2.459481
+    }
+  ],
+  "redis": "# Commandstats\ncmdstat_pttl:calls=5000,usec=403,usec_per_call=0.08,rejected_calls=0,failed_calls=0\ncmdstat_get:calls=10001,usec=835,usec_per_call=0.08,rejected_calls=0,failed_calls=0\ncmdstat_hincrby:calls=10000,usec=3484,usec_per_call=0.35,rejected_calls=0,failed_calls=0\ncmdstat_info:calls=5,usec=262,usec_per_call=52.40,rejected_calls=0,failed_calls=0\ncmdstat_type:calls=7010,usec=1563,usec_per_call=0.22,rejected_calls=0,failed_calls=0\ncmdstat_hset:calls=10006,usec=6790,usec_per_call=0.68,rejected_calls=0,failed_calls=0\ncmdstat_del:calls=12,usec=8,usec_per_call=0.67,rejected_calls=0,failed_calls=0\ncmdstat_zrangebyscore:calls=41,usec=96,usec_per_call=2.34,rejected_calls=0,failed_calls=0\ncmdstat_xrevrange:calls=21,usec=181,usec_per_call=8.62,rejected_calls=0,failed_calls=0\ncmdstat_sadd:calls=5000,usec=2010,usec_per_call=0.40,rejected_calls=0,failed_calls=0\ncmdstat_time:calls=83,usec=43,usec_per_call=0.52,rejected_calls=0,failed_calls=0\ncmdstat_hget:calls=128623,usec=23686,usec_per_call=0.18,rejected_calls=0,failed_calls=0\ncmdstat_sismember:calls=21000,usec=2924,usec_per_call=0.14,rejected_calls=0,failed_calls=0\ncmdstat_smembers:calls=21,usec=3493,usec_per_call=166.33,rejected_calls=0,failed_calls=0\ncmdstat_xrange:calls=40,usec=213,usec_per_call=5.32,rejected_calls=0,failed_calls=0\ncmdstat_xadd:calls=5,usec=26,usec_per_call=5.20,rejected_calls=0,failed_calls=0\ncmdstat_set:calls=1,usec=7,usec_per_call=7.00,rejected_calls=0,failed_calls=0\ncmdstat_exists:calls=41,usec=12,usec_per_call=0.29,rejected_calls=0,failed_calls=0\ncmdstat_eval:calls=124,usec=187386,usec_per_call=1511.18,rejected_calls=0,failed_calls=0\ncmdstat_rpush:calls=5,usec=9,usec_per_call=1.80,rejected_calls=0,failed_calls=0\ncmdstat_lrange:calls=124,usec=203,usec_per_call=1.64,rejected_calls=0,failed_calls=0\ncmdstat_scard:calls=410,usec=91,usec_per_call=0.22,rejected_calls=0,failed_calls=0\ncmdstat_zcount:calls=41,usec=49,usec_per_call=1.20,rejected_calls=0,failed_calls=0\ncmdstat_hello:calls=6,usec=52,usec_per_call=8.67,rejected_calls=0,failed_calls=0",
+  "pgDatabase": "332|0|0|5",
+  "connections": "phase18_fixed_protocol|idle|Client|ClientRead|4\npsql|active|||1"
+}

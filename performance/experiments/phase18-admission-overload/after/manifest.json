@@ -1,0 +1,1313 @@
+{
+  "status": "STAGE0_VALID",
+  "source": {
+    "sha": "4dd48c177516caf950103ce3f7751cc0fb056029",
+    "gitDirty": false,
+    "commit": "4dd48c177516caf950103ce3f7751cc0fb056029 2026-09-13T01:04:10+08:00 8ebc92c72feb5ad644f1530fca41cb7a267a3503",
+    "startedUtc": "2026-09-12T17:07:04.816726+00:00",
+    "scripts": {
+      "browser-environment.json": "6fa7aafb6dc3d8e4206a387d846edb4301feb56e7d2c52765c185833ee5932ed",
+      "browser.mjs": "b7739573cdc4f103d587f64584fbaff6041f3bd62d82d9ebe15a06eda9d0a274",
+      "k6.js": "f0520f15e52939ac8e0b6e9c873838ab605b3a45a779202ddd4f9e3e6f310e2d",
+      "nginx.conf": "05155eff6174b7fff341d76cf8032f2d68b36e5bfe173fc630608343a8469b66",
+      "protocol.py": "4b35b1dd707718dc5bba570598fdc8d202ed32bd4a40a1281871bffc989a96b5",
+      "seed.py": "9786864e0bc876ca88b415240593aa8f83d4e01746423ec3b501a02577ae6b80",
+      "stats.py": "3970ca8b0bc7583c1912152e9ff975fcbbbee371837d066171d54c8d2174ce8c",
+      "test_stats.py": "02d00379d8155e5e944fb04da796b1a79dda38bc36fa0953f1d3940aba83703a"
+    }
+  },
+  "images": {
+    "toolchain": {
+      "tag": "phase14-engineering-build:20260910-v3",
+      "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "repoDigests": [
+        "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+      ]
+    },
+    "postgres": {
+      "tag": "postgres:16-alpine",
+      "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "repoDigests": [
+        "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+      ]
+    },
+    "redis": {
+      "tag": "redis:7.4-alpine",
+      "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "repoDigests": [
+        "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+      ]
+    },
+    "nginx": {
+      "tag": "nginx:1.28-alpine",
+      "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+      "repoDigests": [
+        "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+      ]
+    },
+    "k6": {
+      "tag": "grafana/k6:2.2.0",
+      "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+      "repoDigests": [
+        "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+      ]
+    }
+  },
+  "configs": {
+    "config.docker.json": {
+      "sha256": "11745a3e794a89bc924456f1e9cb4c19065bfcf0754f97e5c045550ccc3e748b",
+      "app": {
+        "number_of_threads": 0,
+        "enable_session": false,
+        "document_root": "./public",
+        "upload_path": "uploads",
+        "client_max_body_size": "1M",
+        "client_max_memory_body_size": "64K"
+      },
+      "postgres": [
+        {
+          "name": "default",
+          "rdbms": "postgresql",
+          "host": "postgres",
+          "port": 5432,
+          "dbname": "ticketing",
+          "user": "ticketing",
+          "is_fast": false,
+          "number_of_connections": 4,
+          "timeout": 5.0,
+          "client_encoding": "UTF8"
+        }
+      ],
+      "redis": [
+        {
+          "name": "traffic_control",
+          "host": "redis",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        },
+        {
+          "name": "seat_holds",
+          "host": "redis",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        },
+        {
+          "name": "auth_sessions",
+          "host": "redis",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        }
+      ],
+      "custom": {
+        "seat_read": {
+          "layout_max_age_seconds": 60,
+          "layout_stale_seconds": 15,
+          "snapshot_poll_ms": 2000,
+          "changed_poll_ms": 2000,
+          "empty_poll_ms": 5000,
+          "degraded_poll_ms": 10000
+        },
+        "traffic_control": {
+          "bulkheads": {
+            "PUBLIC_STATIC_READ": 16,
+            "ADMISSION": 16,
+            "AVAILABILITY": 16,
+            "INVENTORY_WRITE": 16,
+            "RECOVERY": 16,
+            "FINANCIAL": 16,
+            "ADMIN": 16,
+            "POSTGRES_FALLBACK": 2
+          },
+          "account_capacity": 20,
+          "account_rate": 10,
+          "event_capacity": 200,
+          "event_rate": 100
+        },
+        "admission": {
+          "policy_refresh_ms": 2000,
+          "policy_limit": 10000,
+          "scheduler_batch": 64,
+          "scheduler_ms": 250,
+          "poll_ms": 2000,
+          "heartbeat_ms": 5000,
+          "presence_seconds": 30
+        },
+        "admin_catalog": {
+          "max_zones_per_venue": 32,
+          "max_rows_per_zone": 200,
+          "max_seats_per_row": 500,
+          "max_seats_per_venue": 20000,
+          "max_sessions_per_event": 20
+        },
+        "seat_availability_read_model": {
+          "init_lock_seconds": 15,
+          "init_wait_milliseconds": 1000,
+          "stream_maxlen": 10000,
+          "delta_scan_limit": 1000,
+          "expiry_cleanup_batch": 512,
+          "checkout_owner_cache_ttl_seconds": 600
+        },
+        "seat_availability_projection": {
+          "batch_size": 100,
+          "interval_seconds": 0.5,
+          "lease_seconds": 5
+        },
+        "seat_map_compute_workers": 4,
+        "seat_map_compute_queue_capacity": 16,
+        "order_expiry_worker": {
+          "batch_size": 100,
+          "interval_seconds": 5.0
+        },
+        "checkout_session_reconciliation": {
+          "batch_size": 100
+        },
+        "checkout_seat_hold": {
+          "ttl_seconds": 300
+        },
+        "payment_simulation": {
+          "min_delay_seconds": 2.0,
+          "max_delay_seconds": 6.0,
+          "failure_rate": 0.01,
+          "processing_grace_seconds": 10.0
+        },
+        "payment_reconciliation": {
+          "batch_size": 100,
+          "interval_seconds": 2.0,
+          "max_backoff_seconds": 60.0
+        },
+        "authentication": {
+          "idle_timeout_seconds": 86400,
+          "absolute_timeout_seconds": 604800,
+          "session_cache_ttl_seconds": 300,
+          "last_seen_write_interval_seconds": 300,
+          "cookie_name": "ticketing_session",
+          "csrf_cookie_name": "ticketing_csrf",
+          "cookie_secure": false,
+          "allowed_origins": [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173"
+          ],
+          "password_hash_workers": 4,
+          "password_hash_queue_capacity": 64,
+          "argon2_time_cost": 2,
+          "argon2_memory_cost_kib": 65536,
+          "argon2_parallelism": 1
+        },
+        "login_rate_limit": {
+          "window_seconds": 60,
+          "max_failures": 5
+        }
+      }
+    },
+    "config.json": {
+      "sha256": "d629505d3cd3f24d80fd526ddf02b7d152c9519b46b9f9ab679c56078c4f130f",
+      "app": {
+        "number_of_threads": 0,
+        "enable_session": false,
+        "document_root": "./public",
+        "upload_path": "uploads",
+        "client_max_body_size": "1M",
+        "client_max_memory_body_size": "64K"
+      },
+      "postgres": [
+        {
+          "name": "default",
+          "rdbms": "postgresql",
+          "host": "127.0.0.1",
+          "port": 5432,
+          "dbname": "ticketing",
+          "user": "ticketing",
+          "is_fast": false,
+          "number_of_connections": 4,
+          "timeout": 5.0,
+          "client_encoding": "UTF8"
+        }
+      ],
+      "redis": [
+        {
+          "name": "traffic_control",
+          "host": "localhost",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        },
+        {
+          "name": "seat_holds",
+          "host": "127.0.0.1",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        },
+        {
+          "name": "auth_sessions",
+          "host": "127.0.0.1",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        }
+      ],
+      "custom": {
+        "seat_read": {
+          "layout_max_age_seconds": 60,
+          "layout_stale_seconds": 15,
+          "snapshot_poll_ms": 2000,
+          "changed_poll_ms": 2000,
+          "empty_poll_ms": 5000,
+          "degraded_poll_ms": 10000
+        },
+        "traffic_control": {
+          "bulkheads": {
+            "PUBLIC_STATIC_READ": 16,
+            "ADMISSION": 16,
+            "AVAILABILITY": 16,
+            "INVENTORY_WRITE": 16,
+            "RECOVERY": 16,
+            "FINANCIAL": 16,
+            "ADMIN": 16,
+            "POSTGRES_FALLBACK": 2
+          },
+          "account_capacity": 20,
+          "account_rate": 10,
+          "event_capacity": 200,
+          "event_rate": 100
+        },
+        "admission": {
+          "policy_refresh_ms": 2000,
+          "policy_limit": 10000,
+          "scheduler_batch": 64,
+          "scheduler_ms": 250,
+          "poll_ms": 2000,
+          "heartbeat_ms": 5000,
+          "presence_seconds": 30
+        },
+        "admin_catalog": {
+          "max_zones_per_venue": 32,
+          "max_rows_per_zone": 200,
+          "max_seats_per_row": 500,
+          "max_seats_per_venue": 20000,
+          "max_sessions_per_event": 20
+        },
+        "seat_availability_read_model": {
+          "init_lock_seconds": 15,
+          "init_wait_milliseconds": 1000,
+          "stream_maxlen": 10000,
+          "delta_scan_limit": 1000,
+          "expiry_cleanup_batch": 512,
+          "checkout_owner_cache_ttl_seconds": 600
+        },
+        "seat_availability_projection": {
+          "batch_size": 100,
+          "interval_seconds": 0.5,
+          "lease_seconds": 5
+        },
+        "seat_map_compute_workers": 4,
+        "seat_map_compute_queue_capacity": 16,
+        "order_expiry_worker": {
+          "batch_size": 100,
+          "interval_seconds": 5.0
+        },
+        "checkout_session_reconciliation": {
+          "batch_size": 100
+        },
+        "checkout_seat_hold": {
+          "ttl_seconds": 300
+        },
+        "payment_simulation": {
+          "min_delay_seconds": 2.0,
+          "max_delay_seconds": 6.0,
+          "failure_rate": 0.01,
+          "processing_grace_seconds": 10.0
+        },
+        "payment_reconciliation": {
+          "batch_size": 100,
+          "interval_seconds": 2.0,
+          "max_backoff_seconds": 60.0
+        },
+        "authentication": {
+          "idle_timeout_seconds": 86400,
+          "absolute_timeout_seconds": 604800,
+          "session_cache_ttl_seconds": 300,
+          "last_seen_write_interval_seconds": 300,
+          "cookie_name": "ticketing_session",
+          "csrf_cookie_name": "ticketing_csrf",
+          "cookie_secure": false,
+          "allowed_origins": [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173"
+          ],
+          "password_hash_workers": 4,
+          "password_hash_queue_capacity": 64,
+          "argon2_time_cost": 2,
+          "argon2_memory_cost_kib": 65536,
+          "argon2_parallelism": 1
+        },
+        "login_rate_limit": {
+          "window_seconds": 60,
+          "max_failures": 5
+        }
+      }
+    },
+    "config.performance.json": {
+      "sha256": "d0d0c9a7926598b0a3b5c587dd3ab8b5a24e3f08831930aa25fda88689203d8e",
+      "app": {
+        "number_of_threads": 0,
+        "enable_session": false,
+        "document_root": "./public",
+        "upload_path": "uploads",
+        "client_max_body_size": "1M",
+        "client_max_memory_body_size": "64K"
+      },
+      "postgres": [
+        {
+          "name": "default",
+          "rdbms": "postgresql",
+          "host": "postgres",
+          "port": 5432,
+          "dbname": "ticketing",
+          "user": "ticketing",
+          "is_fast": false,
+          "number_of_connections": 4,
+          "timeout": 5.0,
+          "client_encoding": "UTF8",
+          "connect_options": {
+            "application_name": "ticketing_backend_phase10a"
+          }
+        }
+      ],
+      "redis": [
+        {
+          "name": "traffic_control",
+          "host": "redis",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        },
+        {
+          "name": "seat_holds",
+          "host": "redis",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        },
+        {
+          "name": "auth_sessions",
+          "host": "redis",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        }
+      ],
+      "custom": {
+        "seat_read": {
+          "layout_max_age_seconds": 60,
+          "layout_stale_seconds": 15,
+          "snapshot_poll_ms": 2000,
+          "changed_poll_ms": 2000,
+          "empty_poll_ms": 5000,
+          "degraded_poll_ms": 10000
+        },
+        "traffic_control": {
+          "bulkheads": {
+            "PUBLIC_STATIC_READ": 16,
+            "ADMISSION": 16,
+            "AVAILABILITY": 16,
+            "INVENTORY_WRITE": 16,
+            "RECOVERY": 16,
+            "FINANCIAL": 16,
+            "ADMIN": 16,
+            "POSTGRES_FALLBACK": 2
+          },
+          "account_capacity": 20,
+          "account_rate": 10,
+          "event_capacity": 200,
+          "event_rate": 100
+        },
+        "admission": {
+          "policy_refresh_ms": 2000,
+          "policy_limit": 10000,
+          "scheduler_batch": 64,
+          "scheduler_ms": 250,
+          "poll_ms": 2000,
+          "heartbeat_ms": 5000,
+          "presence_seconds": 30
+        },
+        "admin_catalog": {
+          "max_zones_per_venue": 32,
+          "max_rows_per_zone": 200,
+          "max_seats_per_row": 500,
+          "max_seats_per_venue": 20000,
+          "max_sessions_per_event": 20
+        },
+        "seat_availability_read_model": {
+          "init_lock_seconds": 15,
+          "init_wait_milliseconds": 1000,
+          "stream_maxlen": 10000,
+          "delta_scan_limit": 1000,
+          "expiry_cleanup_batch": 512,
+          "checkout_owner_cache_ttl_seconds": 600
+        },
+        "seat_availability_projection": {
+          "batch_size": 100,
+          "interval_seconds": 0.5,
+          "lease_seconds": 5
+        },
+        "seat_map_compute_workers": 4,
+        "seat_map_compute_queue_capacity": 16,
+        "order_expiry_worker": {
+          "batch_size": 100,
+          "interval_seconds": 5.0
+        },
+        "checkout_session_reconciliation": {
+          "batch_size": 100
+        },
+        "checkout_seat_hold": {
+          "ttl_seconds": 300
+        },
+        "payment_simulation": {
+          "min_delay_seconds": 2.0,
+          "max_delay_seconds": 6.0,
+          "failure_rate": 0.01,
+          "processing_grace_seconds": 10.0
+        },
+        "authentication": {
+          "idle_timeout_seconds": 86400,
+          "absolute_timeout_seconds": 604800,
+          "session_cache_ttl_seconds": 300,
+          "last_seen_write_interval_seconds": 300,
+          "cookie_name": "ticketing_session",
+          "csrf_cookie_name": "ticketing_csrf",
+          "cookie_secure": false,
+          "allowed_origins": [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://performance.local"
+          ],
+          "password_hash_workers": 4,
+          "password_hash_queue_capacity": 64,
+          "argon2_time_cost": 2,
+          "argon2_memory_cost_kib": 65536,
+          "argon2_parallelism": 1
+        },
+        "login_rate_limit": {
+          "window_seconds": 60,
+          "max_failures": 5
+        },
+        "performance_metrics": {
+          "enabled": true
+        }
+      }
+    },
+    "config.performance.no_metrics.json": {
+      "sha256": "ab3e7c2508a2ff3ad5a171e7881c533e2f0a3603a3d4cfa617775e46787a61e5",
+      "app": {
+        "number_of_threads": 0,
+        "enable_session": false,
+        "document_root": "./public",
+        "upload_path": "uploads",
+        "client_max_body_size": "1M",
+        "client_max_memory_body_size": "64K"
+      },
+      "postgres": [
+        {
+          "name": "default",
+          "rdbms": "postgresql",
+          "host": "postgres",
+          "port": 5432,
+          "dbname": "ticketing",
+          "user": "ticketing",
+          "is_fast": false,
+          "number_of_connections": 4,
+          "timeout": 5.0,
+          "client_encoding": "UTF8",
+          "connect_options": {
+            "application_name": "ticketing_backend_phase10a"
+          }
+        }
+      ],
+      "redis": [
+        {
+          "name": "traffic_control",
+          "host": "redis",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        },
+        {
+          "name": "seat_holds",
+          "host": "redis",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        },
+        {
+          "name": "auth_sessions",
+          "host": "redis",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        }
+      ],
+      "custom": {
+        "seat_read": {
+          "layout_max_age_seconds": 60,
+          "layout_stale_seconds": 15,
+          "snapshot_poll_ms": 2000,
+          "changed_poll_ms": 2000,
+          "empty_poll_ms": 5000,
+          "degraded_poll_ms": 10000
+        },
+        "traffic_control": {
+          "bulkheads": {
+            "PUBLIC_STATIC_READ": 16,
+            "ADMISSION": 16,
+            "AVAILABILITY": 16,
+            "INVENTORY_WRITE": 16,
+            "RECOVERY": 16,
+            "FINANCIAL": 16,
+            "ADMIN": 16,
+            "POSTGRES_FALLBACK": 2
+          },
+          "account_capacity": 20,
+          "account_rate": 10,
+          "event_capacity": 200,
+          "event_rate": 100
+        },
+        "admission": {
+          "policy_refresh_ms": 2000,
+          "policy_limit": 10000,
+          "scheduler_batch": 64,
+          "scheduler_ms": 250,
+          "poll_ms": 2000,
+          "heartbeat_ms": 5000,
+          "presence_seconds": 30
+        },
+        "admin_catalog": {
+          "max_zones_per_venue": 32,
+          "max_rows_per_zone": 200,
+          "max_seats_per_row": 500,
+          "max_seats_per_venue": 20000,
+          "max_sessions_per_event": 20
+        },
+        "seat_availability_read_model": {
+          "init_lock_seconds": 15,
+          "init_wait_milliseconds": 1000,
+          "stream_maxlen": 10000,
+          "delta_scan_limit": 1000,
+          "expiry_cleanup_batch": 512,
+          "checkout_owner_cache_ttl_seconds": 600
+        },
+        "seat_availability_projection": {
+          "batch_size": 100,
+          "interval_seconds": 0.5,
+          "lease_seconds": 5
+        },
+        "seat_map_compute_workers": 4,
+        "seat_map_compute_queue_capacity": 16,
+        "order_expiry_worker": {
+          "batch_size": 100,
+          "interval_seconds": 5.0
+        },
+        "checkout_session_reconciliation": {
+          "batch_size": 100
+        },
+        "checkout_seat_hold": {
+          "ttl_seconds": 300
+        },
+        "payment_simulation": {
+          "min_delay_seconds": 2.0,
+          "max_delay_seconds": 6.0,
+          "failure_rate": 0.01,
+          "processing_grace_seconds": 10.0
+        },
+        "authentication": {
+          "idle_timeout_seconds": 86400,
+          "absolute_timeout_seconds": 604800,
+          "session_cache_ttl_seconds": 300,
+          "last_seen_write_interval_seconds": 300,
+          "cookie_name": "ticketing_session",
+          "csrf_cookie_name": "ticketing_csrf",
+          "cookie_secure": false,
+          "allowed_origins": [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://performance.local"
+          ],
+          "password_hash_workers": 4,
+          "password_hash_queue_capacity": 64,
+          "argon2_time_cost": 2,
+          "argon2_memory_cost_kib": 65536,
+          "argon2_parallelism": 1
+        },
+        "login_rate_limit": {
+          "window_seconds": 60,
+          "max_failures": 5
+        },
+        "performance_metrics": {
+          "enabled": false
+        }
+      }
+    },
+    "config.phase14.json": {
+      "sha256": "6ce42360f8ea9c0060f0cf4a89528dad4244f6c546451ef9bdf65a2d4b634133",
+      "app": {
+        "number_of_threads": 0,
+        "enable_session": false,
+        "document_root": "./public",
+        "upload_path": "uploads",
+        "client_max_body_size": "1M",
+        "client_max_memory_body_size": "64K"
+      },
+      "postgres": [
+        {
+          "name": "default",
+          "rdbms": "postgresql",
+          "host": "postgres",
+          "port": 5432,
+          "dbname": "ticketing",
+          "user": "ticketing",
+          "is_fast": false,
+          "number_of_connections": 4,
+          "timeout": 5.0,
+          "client_encoding": "UTF8",
+          "connect_options": {
+            "application_name": "ticketing_backend_phase14"
+          }
+        }
+      ],
+      "redis": [
+        {
+          "name": "traffic_control",
+          "host": "redis",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        },
+        {
+          "name": "seat_holds",
+          "host": "redis",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        },
+        {
+          "name": "auth_sessions",
+          "host": "redis",
+          "port": 6379,
+          "is_fast": false,
+          "number_of_connections": 2,
+          "timeout": 0.4
+        }
+      ],
+      "custom": {
+        "seat_read": {
+          "layout_max_age_seconds": 60,
+          "layout_stale_seconds": 15,
+          "snapshot_poll_ms": 2000,
+          "changed_poll_ms": 2000,
+          "empty_poll_ms": 5000,
+          "degraded_poll_ms": 10000
+        },
+        "traffic_control": {
+          "bulkheads": {
+            "PUBLIC_STATIC_READ": 16,
+            "ADMISSION": 16,
+            "AVAILABILITY": 16,
+            "INVENTORY_WRITE": 16,
+            "RECOVERY": 16,
+            "FINANCIAL": 16,
+            "ADMIN": 16,
+            "POSTGRES_FALLBACK": 2
+          },
+          "account_capacity": 20,
+          "account_rate": 10,
+          "event_capacity": 200,
+          "event_rate": 100
+        },
+        "admission": {
+          "policy_refresh_ms": 2000,
+          "policy_limit": 10000,
+          "scheduler_batch": 64,
+          "scheduler_ms": 250,
+          "poll_ms": 2000,
+          "heartbeat_ms": 5000,
+          "presence_seconds": 30
+        },
+        "admin_catalog": {
+          "max_zones_per_venue": 32,
+          "max_rows_per_zone": 200,
+          "max_seats_per_row": 500,
+          "max_seats_per_venue": 20000,
+          "max_sessions_per_event": 20
+        },
+        "seat_availability_read_model": {
+          "init_lock_seconds": 15,
+          "init_wait_milliseconds": 1000,
+          "stream_maxlen": 10000,
+          "delta_scan_limit": 1000,
+          "expiry_cleanup_batch": 512,
+          "checkout_owner_cache_ttl_seconds": 600
+        },
+        "seat_availability_projection": {
+          "batch_size": 100,
+          "interval_seconds": 0.5,
+          "lease_seconds": 5
+        },
+        "seat_map_compute_workers": 4,
+        "seat_map_compute_queue_capacity": 16,
+        "order_expiry_worker": {
+          "batch_size": 100,
+          "interval_seconds": 5.0
+        },
+        "checkout_session_reconciliation": {
+          "batch_size": 100
+        },
+        "checkout_seat_hold": {
+          "ttl_seconds": 300
+        },
+        "payment_simulation": {
+          "min_delay_seconds": 2.0,
+          "max_delay_seconds": 6.0,
+          "failure_rate": 0,
+          "processing_grace_seconds": 10.0
+        },
+        "authentication": {
+          "idle_timeout_seconds": 86400,
+          "absolute_timeout_seconds": 604800,
+          "session_cache_ttl_seconds": 300,
+          "last_seen_write_interval_seconds": 300,
+          "cookie_name": "ticketing_session",
+          "csrf_cookie_name": "ticketing_csrf",
+          "cookie_secure": false,
+          "allowed_origins": [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://performance.local"
+          ],
+          "password_hash_workers": 4,
+          "password_hash_queue_capacity": 64,
+          "argon2_time_cost": 2,
+          "argon2_memory_cost_kib": 65536,
+          "argon2_parallelism": 1
+        },
+        "login_rate_limit": {
+          "window_seconds": 60,
+          "max_failures": 5
+        },
+        "performance_metrics": {
+          "enabled": true,
+          "phase14": true
+        }
+      }
+    }
+  },
+  "runtimeConfigSha256": "ccf2d6248acaedd7d640e20e5a29751e65494ff9f27c90931cd9549e8805bf02",
+  "binarySha256": "46bd7c002d517b0887ccb8feb3e7ca33379d41bdcd808a5d74fbd0b06752d45d",
+  "containers": {
+    "phase18-after-build": {
+      "image": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-09-12T17:06:26.415962375Z",
+        "FinishedAt": "2026-09-12T17:10:51.870510938Z"
+      },
+      "limits": {
+        "NanoCpus": 2000000000,
+        "Memory": 4294967296,
+        "MemorySwap": 8589934592,
+        "PidsLimit": 256,
+        "Ulimits": [
+          {
+            "Name": "nofile",
+            "Hard": 4096,
+            "Soft": 4096
+          }
+        ]
+      },
+      "ports": {}
+    },
+    "phase18after1-api": {
+      "image": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 19144,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-09-12T17:13:35.806968998Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "limits": {
+        "NanoCpus": 2000000000,
+        "Memory": 1073741824,
+        "MemorySwap": 2147483648,
+        "PidsLimit": 256,
+        "Ulimits": [
+          {
+            "Name": "nofile",
+            "Hard": 4096,
+            "Soft": 4096
+          }
+        ]
+      },
+      "ports": {
+        "8080/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18182"
+          }
+        ]
+      }
+    },
+    "phase18after1-frontend": {
+      "image": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 19473,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-09-12T17:13:36.480665602Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "limits": {
+        "NanoCpus": 500000000,
+        "Memory": 134217728,
+        "MemorySwap": 268435456,
+        "PidsLimit": 64,
+        "Ulimits": [
+          {
+            "Name": "nofile",
+            "Hard": 4096,
+            "Soft": 4096
+          }
+        ]
+      },
+      "ports": {
+        "8080/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18183"
+          }
+        ]
+      }
+    },
+    "phase18after1-postgres": {
+      "image": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 71385,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-09-12T17:07:07.555714689Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "limits": {
+        "NanoCpus": 1000000000,
+        "Memory": 536870912,
+        "MemorySwap": 1073741824,
+        "PidsLimit": 128,
+        "Ulimits": [
+          {
+            "Name": "nofile",
+            "Hard": 4096,
+            "Soft": 4096
+          }
+        ]
+      },
+      "ports": {
+        "5432/tcp": null
+      }
+    },
+    "phase18after1-redis": {
+      "image": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 71553,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-09-12T17:07:08.060515411Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "limits": {
+        "NanoCpus": 1000000000,
+        "Memory": 536870912,
+        "MemorySwap": 1073741824,
+        "PidsLimit": 128,
+        "Ulimits": [
+          {
+            "Name": "nofile",
+            "Hard": 4096,
+            "Soft": 4096
+          }
+        ]
+      },
+      "ports": {
+        "6379/tcp": null
+      }
+    },
+    "phase18after1-k6": {
+      "image": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-09-12T17:15:16.133134957Z",
+        "FinishedAt": "2026-09-12T17:15:31.373762103Z"
+      },
+      "limits": {
+        "NanoCpus": 1000000000,
+        "Memory": 268435456,
+        "MemorySwap": 536870912,
+        "PidsLimit": 128,
+        "Ulimits": [
+          {
+            "Name": "nofile",
+            "Hard": 4096,
+            "Soft": 4096
+          }
+        ]
+      },
+      "ports": {}
+    }
+  },
+  "versions": {
+    "node": "v24.18.0",
+    "python": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
+    "docker": "{\"Client\":{\"Version\":\"29.7.2\",\"ApiVersion\":\"1.55\",\"DefaultAPIVersion\":\"1.55\",\"GitCommit\":\"a7dcaa6\",\"GoVersion\":\"go1.26.5\",\"Os\":\"windows\",\"Arch\":\"amd64\",\"BuildTime\":\"Wed Aug  5 18:31:33 2026\",\"Context\":\"desktop-linux\"},\"Server\":{\"Platform\":{\"Name\":\"Docker Desktop 4.88.1 (237512)\"},\"Version\":\"29.7.2\",\"ApiVersion\":\"1.55\",\"MinAPIVersion\":\"1.40\",\"Os\":\"linux\",\"Arch\":\"amd64\",\"Components\":[{\"Name\":\"Engine\",\"Version\":\"29.7.2\",\"Details\":{\"ApiVersion\":\"1.55\",\"Arch\":\"amd64\",\"BuildTime\":\"Wed Aug  5 18:28:36 2026\",\"Experimental\":\"false\",\"GitCommit\":\"6a43e3d\",\"GoVersion\":\"go1.26.5\",\"KernelVersion\":\"6.18.33.2-microsoft-standard-WSL2\",\"MinAPIVersion\":\"1.40\",\"Module\":\"github.com/moby/moby/v2\",\"ModuleVersion\":\"v2.0.0+unknown\",\"Os\":\"linux\"}},{\"Name\":\"containerd\",\"Version\":\"v2.3.3\",\"Details\":{\"GitCommit\":\"aad11006b869517fcd3009450b6f82da282e1a9b\"}},{\"Name\":\"runc\",\"Version\":\"1.4.3\",\"Details\":{\"GitCommit\":\"v1.4.3-0-gbb14dabe\"}},{\"Name\":\"docker-init\",\"Version\":\"0.19.0\",\"Details\":{\"GitCommit\":\"de40ad0\"}}],\"GitCommit\":\"6a43e3d\",\"GoVersion\":\"go1.26.5\",\"KernelVersion\":\"6.18.33.2-microsoft-standard-WSL2\",\"BuildTime\":\"2026-08-05T18:28:36.000000000+00:00\"}}",
+    "postgres": "16.15",
+    "redis": "# Server\nredis_version:7.4.11\nredis_git_sha1:00000000\nredis_git_dirty:0\nredis_build_id:fbf7a7d03c2e9219\nredis_mode:standalone\nos:Linux 6.18.33.2-microsoft-standard-WSL2 x86_64\narch_bits:64\nmonotonic_clock:POSIX clock_gettime\nmultiplexing_api:epoll\natomicvar_api:c11-builtin\ngcc_version:14.2.0\nprocess_id:1\nprocess_supervised:no\nrun_id:8c3e36e39e74d655b58562aecfd2404f1fd6cc40\ntcp_port:6379\nserver_time_usec:1789233487152801\nuptime_in_seconds:659\nuptime_in_days:0\nhz:10\nconfigured_hz:10\nlru_clock:10848591\nexecutable:/data/redis-server\nconfig_file:\nio_threads_active:0\nlistener0:name=tcp,bind=*,bind=-::*,port=6379",
+    "k6": "k6 v2.2.0 (commit/00a9a1b7f5, go1.26.5, linux/amd64)"
+  },
+  "protocol": {
+    "seed": 18,
+    "warmup": 0,
+    "layoutOrdinary": 20,
+    "layoutConditional": 20,
+    "snapshot": 20,
+    "emptyDelta": 20,
+    "browserVisibleMs": 60000,
+    "browserHiddenMs": 10000,
+    "browserRestoreMs": 10000,
+    "k6Rate": 8,
+    "k6Seconds": 15,
+    "burstUsers": 8,
+    "trials": 1,
+    "quantile": "nearest rank"
+  },
+  "files": {
+    "availability-10000-after-database.json": {
+      "sha256": "59d7ebff35c5f4375051b38be8f90ebfba0e6bdf3d17bd9d4531f5763359794b",
+      "bytes": 79264
+    },
+    "availability-10000-after-metrics.txt": {
+      "sha256": "7a1f4fb81dce41503c94e5640cc5b8f4df35fe2689e08f8ba84032a172f3a10d",
+      "bytes": 229330
+    },
+    "availability-10000-before-database.json": {
+      "sha256": "d3ab4b0c3900f1755d8c14d7c120abf18571e963b654e79d79f2b158c5c85127",
+      "bytes": 79233
+    },
+    "availability-10000-before-metrics.txt": {
+      "sha256": "cc4e67692240d3293aa354ffb4d1b0e87a130e709df4756394f20bf968487da9",
+      "bytes": 229295
+    },
+    "availability-5000-after-database.json": {
+      "sha256": "42c922d4fb2f2ec7dc2f2325a3391a00ae1d50afdd52698c02038ee5e81adb9c",
+      "bytes": 79220
+    },
+    "availability-5000-after-metrics.txt": {
+      "sha256": "1cda97c5d9e56b1883cb0629f4a04ea2cbe7646c92c2d375935675940ee0d697",
+      "bytes": 229294
+    },
+    "availability-5000-before-database.json": {
+      "sha256": "5abee7d32efea2f5b31b1cd7ed5bbc21b922081c29a8f72cad7b61ea6b7470c2",
+      "bytes": 76540
+    },
+    "availability-5000-before-metrics.txt": {
+      "sha256": "071e008c025d9d65622495fe67663c763f76674bee574cd9e6e5a9df7b018a62",
+      "bytes": 218693
+    },
+    "backend-build.log": {
+      "sha256": "a7c962ca688e97e740d604c5c30c18266e5e66d1b10be418643a16166634eb22",
+      "bytes": 65469
+    },
+    "backend-ctest.log": {
+      "sha256": "45aabad848f746802acbb9fd6fa64e5fc45f748119110bbd9398a0cdcb16ac40",
+      "bytes": 4658
+    },
+    "browser-after-database.json": {
+      "sha256": "c7da5d5e795f6e23f7cf674941bca3b251940399f90c0c4c3bfb35dd2b893c00",
+      "bytes": 82966
+    },
+    "browser-after-metrics.txt": {
+      "sha256": "0f243f69dc084d6f52ebbaa3b74b737404f302f7844abb3e3b21d8958defb441",
+      "bytes": 235669
+    },
+    "browser-before-database.json": {
+      "sha256": "ec8ffc2a8c49801bbc9528d7a77ce9085c1a01a9dff7eac53fe69188ef766b84",
+      "bytes": 79275
+    },
+    "browser-before-metrics.txt": {
+      "sha256": "55a849464629473b8daf40a272508152e050d3dfd3ecb5f23f116201f9aba72d",
+      "bytes": 229330
+    },
+    "browser-run.log": {
+      "sha256": "a45eb06ba4d97c11090742a45c8a53d75e8ff51e2e188ec6d86f219dc122359c",
+      "bytes": 455
+    },
+    "browser.json": {
+      "sha256": "387468c15e2308e4a7dff8b05159d96e256c951af6c49039b6b89a4c837c3bc0",
+      "bytes": 20227
+    },
+    "browser.json.browser.log": {
+      "sha256": "b3d29c203ade4a238e642110eef0d1f63c2d6d7c562966908f8a6a56accbea89",
+      "bytes": 258
+    },
+    "burst-after-database.json": {
+      "sha256": "ae2af8eada2b0db676b770957418a9cce17a9b149aa20d758cbeace9cbb11965",
+      "bytes": 91661
+    },
+    "burst-after-metrics.txt": {
+      "sha256": "f2927e5dd286865c945ae1f683ed062d1ff4ade32e67ed9e610d022443ab2dd9",
+      "bytes": 235747
+    },
+    "burst-before-database.json": {
+      "sha256": "f2ae59a5c3c84866179423c14ef5b87c82b006f6030efbce693ee30ee2d0fe7a",
+      "bytes": 84403
+    },
+    "burst-before-metrics.txt": {
+      "sha256": "1412a86b0ee1d3b1aabdbfa714547e00e7bd71e718c00dedbc1997a2feba0f7c",
+      "bytes": 240287
+    },
+    "burst.json": {
+      "sha256": "6d00466d54809813e04613d36aebba230f6cabe20d4266076f515398ea57b44d",
+      "bytes": 1336
+    },
+    "config.json": {
+      "sha256": "ccf2d6248acaedd7d640e20e5a29751e65494ff9f27c90931cd9549e8805bf02",
+      "bytes": 18235
+    },
+    "data-fingerprint.json": {
+      "sha256": "374a4db74fbd9d86ebd30e4fe276208cc9e8519937632288dc6c09fbb38b4dfc",
+      "bytes": 355
+    },
+    "final-database.json": {
+      "sha256": "d750e1d7b375fa6f6dd25c48d6d1b1eff4c03cd6f697e213064c72e90a3a489f",
+      "bytes": 108086
+    },
+    "final-metrics.txt": {
+      "sha256": "c9ac71156a9e076791df92b20362cbb77de1c39a52c6b7c31377e312951d4190",
+      "bytes": 247151
+    },
+    "frontend-build.log": {
+      "sha256": "4bad0593c6adb4d76500c7d35dd8e54a705f3aa7135caa2fe216437582f4a212",
+      "bytes": 1397
+    },
+    "frontend-ci.log": {
+      "sha256": "c33f071e45a8c5c20f391890bb024f22afe4c374b3c5f671218e9bfd9eeb23a8",
+      "bytes": 29
+    },
+    "frontend-tests.json": {
+      "sha256": "0278c28c9cd9c4d006b0e7093b05e77165b627afa04bf1dbf3e0ff1411fd0a67",
+      "bytes": 95757
+    },
+    "frontend-tests.log": {
+      "sha256": "c499061293622928dc09839f4c99ef4bb40fe370a227722f3d2ecc26327a8048",
+      "bytes": 2898
+    },
+    "host-hardware.json": {
+      "sha256": "e4b772c421fd88987591277b31abcd52a560a11c1eb7168492a73374799dde1d",
+      "bytes": 110
+    },
+    "host-noise-preflight.jsonl": {
+      "sha256": "03ef583b4356b1d82dd4ff7987ee8739395d1495e1d52d0095e5ea85e7c8ede4",
+      "bytes": 10880
+    },
+    "host.json": {
+      "sha256": "eff65e9c14556bcf5b220d89edce1d32f5a0c7c07ad291020745959e8f087b4e",
+      "bytes": 1493
+    },
+    "images.json": {
+      "sha256": "dae70e7c2b1e89b7bab8d30d1a5da004413b1ae39eca13fee329825a57206f69",
+      "bytes": 1329
+    },
+    "k6-after-database.json": {
+      "sha256": "e34f05f48873b0efc6ecf08724cbbff2696ba7b98ddab4e8c3e6e0dc69d9d080",
+      "bytes": 82961
+    },
+    "k6-after-metrics.txt": {
+      "sha256": "f2927e5dd286865c945ae1f683ed062d1ff4ade32e67ed9e610d022443ab2dd9",
+      "bytes": 235747
+    },
+    "k6-before-database.json": {
+      "sha256": "efa07bbfcc357090da913cacf590723e6485ae87f908610b3854ba8b886f8f96",
+      "bytes": 82959
+    },
+    "k6-before-metrics.txt": {
+      "sha256": "dea1f41a4a1ba30991b2f2623eff582e930a81100e53e9449b4220a8b8dfed34",
+      "bytes": 235669
+    },
+    "k6-summary.json": {
+      "sha256": "e9ab9dae36963665b71759c8d3d7c93ce641a564f1b19349d0e3a4a7913bd449",
+      "bytes": 4918
+    },
+    "k6.log": {
+      "sha256": "1fecf72f7b4eab9b557e1b53da617eb7d0f94749f3dc9d6d977dd7670569ea69",
+      "bytes": 2348
+    },
+    "layout-10000-after-database.json": {
+      "sha256": "fe6c1c8aa95afbc85674e0ec8baf0fb5f0ddbc88294845d88816c4d238d50c92",
+      "bytes": 79219
+    },
+    "layout-10000-after-metrics.txt": {
+      "sha256": "9981441fb0e00c84e759b5536467139523eed731e25d52299e6def5a24e26b97",
+      "bytes": 229295
+    },
+    "layout-10000-before-database.json": {
+      "sha256": "fd952830365ef2aefb27ea1ecd578955a36ec240be7cd1b5346a28000f4d2f8a",
+      "bytes": 79221
+    },
+    "layout-10000-before-metrics.txt": {
+      "sha256": "c5a49142b0a60c71acf490f897b01fac8bb7c6ae05198272f85515cdc54db4e5",
+      "bytes": 229294
+    },
+    "layout-5000-after-database.json": {
+      "sha256": "208eb0ef3f9a7ad6b9c45e714ad397bd6648f9e5d57123b8e0f363a1893acb2d",
+      "bytes": 76550
+    },
+    "layout-5000-after-metrics.txt": {
+      "sha256": "68821f439a3440b471f4884c7a1420a5a90e4e59a18455e4bec765279095898d",
+      "bytes": 218692
+    },
+    "layout-5000-before-database.json": {
+      "sha256": "2fd882cb58cfeedce8b24efcb58d9b8ee56677964b63b636dd4ce78875a0d268",
+      "bytes": 74706
+    },
+    "layout-5000-before-metrics.txt": {
+      "sha256": "c256b565a218a875fba962147ffde39c9aa2986eb7a7b0fcab1972563a5eade1",
+      "bytes": 213772
+    },
+    "measure.log": {
+      "sha256": "be10a1fc3972b5832660b253f612367321638270b98a5270a3e6b7d2de23d15d",
+      "bytes": 4176
+    },
+    "measurement-end.json": {
+      "sha256": "ac5d1a0feb779d69a4c9d5057844ebe4bfd90d7605da3ecc67d95ecc23b13ba6",
+      "bytes": 49
+    },
+    "measurement-start.json": {
+      "sha256": "28e99fcb4b2f2459703d578d1d9a9ac2644c452fd551ac2414fef3c967cefdfe",
+      "bytes": 242
+    },
+    "phase18after1-api.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "phase18after1-frontend.log": {
+      "sha256": "e63caac5001f12c7a410f41cc466125dd88208486b10dec6cd6351c11a81ebed",
+      "bytes": 2076
+    },
+    "phase18after1-postgres.log": {
+      "sha256": "c3cb6cde896a8c1965342c087378d3e22c2267b26541c4867b4f0869d7985363",
+      "bytes": 2452
+    },
+    "phase18after1-redis.log": {
+      "sha256": "d514af2bfb9110e54037afe42f9fea48934f9e0a957397f61819bb8cb21c4d6c",
+      "bytes": 1729
+    },
+    "preflight.log": {
+      "sha256": "8706f05fa6395be3a43f412b269d4c7bba7ea5e52774d680896656e0971f20ea",
+      "bytes": 33
+    },
+    "reads.json": {
+      "sha256": "2ad2c38c8543b4359d9c83f046deeef112989f045c04f9b668eb96a827606270",
+      "bytes": 78807
+    },
+    "resource-samples.json": {
+      "sha256": "829a2eaee9772a48ff41a1b87bd0aaa25d8f81c514fba586c377f23469c339af",
+      "bytes": 139667
+    },
+    "setup.log": {
+      "sha256": "185360baa40c24543b44d3d0d783f80bb67ee6c3a8fc06c486189006373d1a60",
+      "bytes": 38
+    },
+    "source.json": {
+      "sha256": "ff4ba605a00bb82681a3bd3f1f8e676cf84c82f266208a7bb915db17e96ce16a",
+      "bytes": 982
+    },
+    "start.log": {
+      "sha256": "4e62843db4b0fa088315ce0cd114e5a3e494f25df65f16b8ca4e0393f87f1a4a",
+      "bytes": 36
+    },
+    "verifier.json": {
+      "sha256": "cba19a4b3f4def03c974719595035b9b425f308d409636ff68140c9c6647a5b6",
+      "bytes": 2863
+    },
+    "phase15-verifier\\verifier.json": {
+      "sha256": "6eea42347f5696d33539b5faf55b0b467c64b2eb00fb8da94299a30af8f7701b",
+      "bytes": 2293
+    },
+    "phase15-verifier\\phase16-regression\\verifier.json": {
+      "sha256": "223f6db261872246756ad525ffa03083eb66f0796ad3064bbd896fb53ac31dfb",
+      "bytes": 1852
+    }
+  },
+  "limitations": [
+    "Shared host; isolated cgroups, not dedicated CPUs. No capacity/SLA claim.",
+    "Resource sampling approximately every 2-4 seconds; subinterval resource peaks may be missed. HTTP flow high-water from server metrics records request peaks.",
+    "gzipOfflineBytes is deterministic offline compression; gzipWire reports actual transport encoding.",
+    "Phase14 transaction acquisition histograms include only already-instrumented paths; SQL calls/rows are pg_stat_statements, not inferred.",
+    "All policies are absent/OFF at baseline; future enforced admission tests are additional scenarios.",
+    "Browser binary and Playwright version must match; external script hashes must equal committed copies before Stage0 commit.",
+    "Cold means first request to this fixture after fresh API start; no host page-cache flush."
+  ]
+}

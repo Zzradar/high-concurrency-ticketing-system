@@ -1,0 +1,62 @@
+{
+  "before": {
+    "processObservedPeaks": {
+      "VmHWM": 237556,
+      "VmRSS": 173976,
+      "Threads": 155
+    },
+    "samples": 46,
+    "payloads": [
+      {
+        "seats": 5000,
+        "snapshotBytes": [
+          50536
+        ],
+        "deltaBytes": [
+          536
+        ],
+        "layoutWireBytes": 20513772
+      },
+      {
+        "seats": 10000,
+        "snapshotBytes": [
+          102537
+        ],
+        "deltaBytes": [
+          537
+        ],
+        "layoutWireBytes": 41435548
+      }
+    ]
+  },
+  "after": {
+    "processObservedPeaks": {
+      "VmHWM": 225140,
+      "VmRSS": 161604,
+      "Threads": 163
+    },
+    "samples": 43,
+    "payloads": [
+      {
+        "seats": 5000,
+        "snapshotBytes": [
+          50555
+        ],
+        "deltaBytes": [
+          555
+        ],
+        "layoutWireBytes": 10521052
+      },
+      {
+        "seats": 10000,
+        "snapshotBytes": [
+          102556
+        ],
+        "deltaBytes": [
+          556
+        ],
+        "layoutWireBytes": 21250808
+      }
+    ]
+  }
+}

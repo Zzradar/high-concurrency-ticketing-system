@@ -6,3 +6,16 @@ performance/phase14/load-main-memory.json text eol=lf
 performance/experiments/phase18-admission-overload/capabilities/** -text whitespace=cr-at-eol
 
 performance/experiments/phase18-admission-overload/diagnostics/hardening/** -text
+
+# Preserve the complete frozen-protocol after evidence byte for byte.
+performance/experiments/phase18-admission-overload/after/** -text whitespace=cr-at-eol
+
+# Captured terminal padding is evidence; never trim raw logs.
+performance/experiments/phase18-admission-overload/after/*.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+
+# Keep hash-bound derived delivery artifacts stable on Windows checkout.
+performance/experiments/phase18-admission-overload/FINAL_REPORT.md text eol=lf
+performance/experiments/phase18-admission-overload/comparison.json text eol=lf
+performance/experiments/phase18-admission-overload/resource-and-payload-comparison.json text eol=lf
+performance/experiments/phase18-admission-overload/after-phase18-verifier.json text eol=lf
+performance/experiments/phase18-admission-overload/phase18-delivery.json text eol=lf

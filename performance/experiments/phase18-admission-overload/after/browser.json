@@ -1,0 +1,651 @@
+{
+  "startedUtc": "2026-09-12T17:13:52.848Z",
+  "environment": {
+    "playwright": "1.63.0",
+    "executable": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+    "product": "Edg/152.0.4191.66",
+    "args": [
+      "--disable-field-trial-config",
+      "--disable-background-networking",
+      "--disable-background-timer-throttling",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-back-forward-cache",
+      "--disable-breakpad",
+      "--disable-client-side-phishing-detection",
+      "--disable-component-extensions-with-background-pages",
+      "--disable-component-update",
+      "--no-default-browser-check",
+      "--disable-default-apps",
+      "--disable-dev-shm-usage",
+      "--disable-edgeupdater",
+      "--disable-extensions",
+      "--disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion",
+      "--enable-features=CDPScreenshotNewSurface",
+      "--allow-pre-commit-input",
+      "--disable-hang-monitor",
+      "--disable-ipc-flooding-protection",
+      "--disable-popup-blocking",
+      "--disable-prompt-on-repost",
+      "--disable-renderer-backgrounding",
+      "--disable-updater-scheduler",
+      "--force-color-profile=srgb",
+      "--metrics-recording-only",
+      "--no-first-run",
+      "--password-store=basic",
+      "--use-mock-keychain",
+      "--no-service-autorun",
+      "--export-tagged-pdf",
+      "--disable-search-engine-choice-screen",
+      "--unsafely-disable-devtools-self-xss-warnings",
+      "--edge-skip-compat-layer-relaunch",
+      "--disable-infobars",
+      "--disable-search-engine-choice-screen",
+      "--disable-sync",
+      "--enable-unsafe-swiftshader",
+      "--no-sandbox",
+      "--user-data-dir=PROFILE",
+      "--remote-debugging-port=0",
+      "about:blank"
+    ],
+    "resolution": "Official msedge channel verified in diagnostics; headed; one context and two same-window pages; noDefaults=true"
+  },
+  "profile": "C:\\Users\\a12\\AppData\\Local\\Temp\\phase18-after-final\\browser-profile",
+  "args": [
+    "--disable-field-trial-config",
+    "--disable-background-networking",
+    "--disable-background-timer-throttling",
+    "--disable-backgrounding-occluded-windows",
+    "--disable-back-forward-cache",
+    "--disable-breakpad",
+    "--disable-client-side-phishing-detection",
+    "--disable-component-extensions-with-background-pages",
+    "--disable-component-update",
+    "--no-default-browser-check",
+    "--disable-default-apps",
+    "--disable-dev-shm-usage",
+    "--disable-edgeupdater",
+    "--disable-extensions",
+    "--disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion",
+    "--enable-features=CDPScreenshotNewSurface",
+    "--allow-pre-commit-input",
+    "--disable-hang-monitor",
+    "--disable-ipc-flooding-protection",
+    "--disable-popup-blocking",
+    "--disable-prompt-on-repost",
+    "--disable-renderer-backgrounding",
+    "--disable-updater-scheduler",
+    "--force-color-profile=srgb",
+    "--metrics-recording-only",
+    "--no-first-run",
+    "--password-store=basic",
+    "--use-mock-keychain",
+    "--no-service-autorun",
+    "--export-tagged-pdf",
+    "--disable-search-engine-choice-screen",
+    "--unsafely-disable-devtools-self-xss-warnings",
+    "--edge-skip-compat-layer-relaunch",
+    "--disable-infobars",
+    "--disable-search-engine-choice-screen",
+    "--disable-sync",
+    "--enable-unsafe-swiftshader",
+    "--no-sandbox",
+    "--user-data-dir=C:\\Users\\a12\\AppData\\Local\\Temp\\phase18-after-final\\browser-profile",
+    "--remote-debugging-port=0",
+    "about:blank"
+  ],
+  "connection": "CDP noDefaults=true",
+  "requests": [
+    {
+      "id": 1,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0",
+      "startEpochMs": 1789233233679,
+      "startMonotonicNs": "1153391425401200",
+      "status": 200,
+      "headersEpochMs": 1789233233734,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789233233736,
+      "ms": 57.7619,
+      "bytes": 50555,
+      "mode": "snapshot",
+      "hasMore": false
+    },
+    {
+      "id": 2,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=580741c7-a8bc-439c-8620-5aa0bcbc16b4&since=1789233221935-0",
+      "startEpochMs": 1789233236097,
+      "startMonotonicNs": "1153393843809100",
+      "status": 200,
+      "headersEpochMs": 1789233236139,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789233236140,
+      "ms": 42.7624,
+      "bytes": 555,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 3,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=580741c7-a8bc-439c-8620-5aa0bcbc16b4&since=1789233221935-0",
+      "startEpochMs": 1789233241190,
+      "startMonotonicNs": "1153398936964700",
+      "status": 200,
+      "headersEpochMs": 1789233241257,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789233241259,
+      "ms": 68.9181,
+      "bytes": 555,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 4,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=580741c7-a8bc-439c-8620-5aa0bcbc16b4&since=1789233221935-0",
+      "startEpochMs": 1789233249586,
+      "startMonotonicNs": "1153407332863000",
+      "status": 200,
+      "headersEpochMs": 1789233249637,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789233249638,
+      "ms": 51.9577,
+      "bytes": 555,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 5,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=580741c7-a8bc-439c-8620-5aa0bcbc16b4&since=1789233221935-0",
+      "startEpochMs": 1789233265897,
+      "startMonotonicNs": "1153423643782400",
+      "status": 200,
+      "headersEpochMs": 1789233265933,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789233265934,
+      "ms": 37.0531,
+      "bytes": 555,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 6,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0",
+      "startEpochMs": 1789233303906,
+      "startMonotonicNs": "1153461652060600",
+      "status": 200,
+      "headersEpochMs": 1789233303962,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789233303964,
+      "ms": 57.838,
+      "bytes": 50555,
+      "mode": "snapshot",
+      "hasMore": false
+    },
+    {
+      "id": 7,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=580741c7-a8bc-439c-8620-5aa0bcbc16b4&since=1789233221935-0",
+      "startEpochMs": 1789233306090,
+      "startMonotonicNs": "1153463836099800",
+      "status": 200,
+      "headersEpochMs": 1789233306127,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789233306128,
+      "ms": 38.1689,
+      "bytes": 555,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    },
+    {
+      "id": 8,
+      "url": "http://127.0.0.1:18183/api/sessions/p18-s-5000/seat-availability?zone=Zone+0&generation=580741c7-a8bc-439c-8620-5aa0bcbc16b4&since=1789233221935-0",
+      "startEpochMs": 1789233312106,
+      "startMonotonicNs": "1153469852504200",
+      "status": 200,
+      "headersEpochMs": 1789233312143,
+      "fixture": "stage0-v2",
+      "endEpochMs": 1789233312144,
+      "ms": 37.9359,
+      "bytes": 555,
+      "mode": "delta",
+      "changeCount": 0,
+      "hasMore": false
+    }
+  ],
+  "phases": [
+    {
+      "state": "visible",
+      "actionAt": 1789233233787,
+      "observedAt": 1789233233816,
+      "durationMs": 60000,
+      "hidden": false,
+      "visibilityState": "visible"
+    },
+    {
+      "state": "hidden",
+      "actionAt": 1789233293822,
+      "observedAt": 1789233293852,
+      "durationMs": 10000,
+      "hidden": true,
+      "visibilityState": "hidden"
+    },
+    {
+      "state": "restored",
+      "actionAt": 1789233303870,
+      "observedAt": 1789233303983,
+      "durationMs": 10000,
+      "hidden": false,
+      "visibilityState": "visible"
+    }
+  ],
+  "timeline": [
+    {
+      "url": "http://127.0.0.1:18183/sessions/p18-s-5000/seats",
+      "records": [
+        {
+          "type": "init",
+          "trusted": null,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789233233545,
+          "performanceNow": 16.59999990463257,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 2523
+            }
+          ]
+        },
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789233233546,
+          "performanceNow": 17.299999952316284,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 2523
+            }
+          ]
+        },
+        {
+          "type": "blur",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789233293825,
+          "performanceNow": 60296.299999952316,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 2523
+            }
+          ]
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": true,
+          "visibilityState": "hidden",
+          "dateNow": 1789233293829,
+          "performanceNow": 60300.200000047684,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 2523
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 60299.5,
+              "duration": 0,
+              "navigationId": 2523
+            }
+          ]
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789233303887,
+          "performanceNow": 70358.09999990463,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 2523
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 60299.5,
+              "duration": 0,
+              "navigationId": 2523
+            },
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 70357.79999995232,
+              "duration": 0,
+              "navigationId": 2523
+            }
+          ]
+        },
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789233303931,
+          "performanceNow": 70402.39999985695,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 2523
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 60299.5,
+              "duration": 0,
+              "navigationId": 2523
+            },
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 70357.79999995232,
+              "duration": 0,
+              "navigationId": 2523
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "url": "data:text/html,<title>Neutral tab</title><h1>Neutral</h1>",
+      "records": [
+        {
+          "type": "init",
+          "trusted": null,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789233233466,
+          "performanceNow": 10.100000143051147,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4349
+            }
+          ]
+        },
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789233233472,
+          "performanceNow": 16,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4349
+            }
+          ]
+        },
+        {
+          "type": "blur",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789233233494,
+          "performanceNow": 37.5,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4349
+            }
+          ]
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": true,
+          "visibilityState": "hidden",
+          "dateNow": 1789233233498,
+          "performanceNow": 41.90000009536743,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4349
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 41.799999952316284,
+              "duration": 0,
+              "navigationId": 4349
+            }
+          ]
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789233293836,
+          "performanceNow": 60380.200000047684,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4349
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 41.799999952316284,
+              "duration": 0,
+              "navigationId": 4349
+            },
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 60380,
+              "duration": 0,
+              "navigationId": 4349
+            }
+          ]
+        },
+        {
+          "type": "focus",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789233293838,
+          "performanceNow": 60382.10000014305,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4349
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 41.799999952316284,
+              "duration": 0,
+              "navigationId": 4349
+            },
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 60380,
+              "duration": 0,
+              "navigationId": 4349
+            }
+          ]
+        },
+        {
+          "type": "blur",
+          "trusted": true,
+          "hidden": false,
+          "visibilityState": "visible",
+          "dateNow": 1789233303872,
+          "performanceNow": 70415.79999995232,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4349
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 41.799999952316284,
+              "duration": 0,
+              "navigationId": 4349
+            },
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 60380,
+              "duration": 0,
+              "navigationId": 4349
+            }
+          ]
+        },
+        {
+          "type": "visibilitychange",
+          "trusted": true,
+          "hidden": true,
+          "visibilityState": "hidden",
+          "dateNow": 1789233303877,
+          "performanceNow": 70420.79999995232,
+          "entries": [
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 0,
+              "duration": 0,
+              "navigationId": 4349
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 41.799999952316284,
+              "duration": 0,
+              "navigationId": 4349
+            },
+            {
+              "name": "visible",
+              "entryType": "visibility-state",
+              "startTime": 60380,
+              "duration": 0,
+              "navigationId": 4349
+            },
+            {
+              "name": "hidden",
+              "entryType": "visibility-state",
+              "startTime": 70420.60000014305,
+              "duration": 0,
+              "navigationId": 4349
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "topology": [
+    {
+      "name": "seat",
+      "targetId": "67E9A47A001BE068ED704E89A979A201",
+      "type": "page",
+      "title": "Phase18 5000 · 选座 | 票迹",
+      "url": "http://127.0.0.1:18183/sessions/p18-s-5000/seats",
+      "attached": true,
+      "canAccessOpener": false,
+      "browserContextId": "794DEBA936D6DB1BDEFE6DFA42DCA38F",
+      "pid": 29376,
+      "windowId": 1349251631,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    },
+    {
+      "name": "neutral",
+      "targetId": "82A7B4FB941F22E3EDBA72F518259F0C",
+      "type": "page",
+      "title": "Neutral tab",
+      "url": "data:text/html,<title>Neutral tab</title><h1>Neutral</h1>",
+      "attached": true,
+      "canAccessOpener": false,
+      "browserContextId": "794DEBA936D6DB1BDEFE6DFA42DCA38F",
+      "pid": 32572,
+      "windowId": 1349251631,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    }
+  ],
+  "errors": [],
+  "maxInflight": 1,
+  "passed": true,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Edg/152.0.4191.66",
+    "revision": "@cc2931e6363af1d70882ad63ee33b0e8cd524de0",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36 Edg/152.0.0.0",
+    "jsVersion": "15.2.23.10"
+  },
+  "endedUtc": "2026-09-12T17:15:14.022Z",
+  "inflightAtClose": 0
+}
