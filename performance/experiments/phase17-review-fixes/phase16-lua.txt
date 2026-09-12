@@ -1,0 +1,16 @@
+test_cold_5000_and_latest_hold_at_publish (__main__.ReadModelTest) ... ok
+test_corrupt_model_does_not_partially_write_hold (__main__.ReadModelTest) ... ok
+test_dedupe_paging_no_change_and_trim (__main__.ReadModelTest) ... ok
+test_defer_no_model_generation_and_zone (__main__.ReadModelTest) ... ok
+test_expiry_and_extension_formal_precedence (__main__.ReadModelTest) ... ok
+test_large_versions_do_not_round_through_lua_double (__main__.ReadModelTest) ... ok
+test_numeric_summary_corruption_cannot_fail_after_original_hold_write (__main__.ReadModelTest) ... ok
+test_owner_change_emits_even_when_public_stays_held (__main__.ReadModelTest) ... ok
+test_prepare_ensure_abort_finalize_release (__main__.ReadModelTest) ... ok
+test_projection_versions_public_unchanged_still_delta (__main__.ReadModelTest) ... ok
+test_stale_initializer_cannot_publish (__main__.ReadModelTest) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 36.259s
+
+OK

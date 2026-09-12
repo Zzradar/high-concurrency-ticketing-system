@@ -1,0 +1,9 @@
+test_backend_permissions (__main__.VenueTest) ... ok
+test_create_detail_list_and_set_based_seats (__main__.VenueTest) ... ok
+test_invalid_inputs_and_limits (__main__.VenueTest) ... ok
+test_replace_resets_draft_prices_and_frozen_rejects (__main__.VenueTest) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 2.098s
+
+OK

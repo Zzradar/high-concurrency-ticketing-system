@@ -142,3 +142,17 @@ git diff --check
 Role HTTP probe 只在 TICKETING_PHASE17_EXTERNAL_TESTS=ON 测试构建存在；最终普通构建不含 probe。故障 runner 拒绝未知同名容器，重复运行应选择/准备新的专用环境。Scale 脚本顺序创建新数据；基线对照脚本拒绝覆盖同名数据库。
 
 最终普通 push、完整提交 SHA 和 clean/ahead/behind 以会话报告为准。分支不会自动 merge main，不创建 PR。
+
+
+## 独立验收后的修复轮
+
+验收起点 `6c3d3994226f524fe44dde0522dee497203f5c7a` 后追加修复，原六提交不改写：
+
+- 价格保留原始字符串，使用 BigInt 十进制定点转换与确定性回显；至少0.01元、至多两位小数，超过安全整数分或任何非法输入不请求API。
+- 012对不同原始空白Zone分别保留确定性ID，先保留全部非空白名称，再按首个真实座位顺序分配“未命名区域”最小可用后缀；Seat通过原始身份映射回填。001–011未修改。
+- 活动列表及详情在API入口校验必要字段与完整有效售票窗口，坏数据成为TicketApiError和可恢复错误页。EventCard/窗口工具对缺失及非法日期容错，不伪造OPEN或时间。
+- 退出统一清理本地状态并replace到登录页；401视为完成，超时/网络失败展示未确认提示，不抛未处理rejection。保持认证initialized，失效在途/me响应，避免旧会话复活。
+- 公共数量来自loading/events；消费者文案移除数据库、事务、MVP和固定城市。生产真实API登录页不显示Demo凭据，开发或明确Demo模式才显示；模拟支付标识保留。
+
+本轮独立回归命令、结果和网络/Router/currentUser证据见[修复门禁记录](../performance/experiments/phase17-review-fixes/README.md)。
+座位图前后数据、版本及不能直接比较的范围集中见[座位图优化证据审计](seat_read_optimization_evidence_audit.md)。用户5173现场服务已停止，未猜测其旧响应来自哪个后端或代理。

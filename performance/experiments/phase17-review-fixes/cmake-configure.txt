@@ -1,0 +1,60 @@
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- The C compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- compiler: GNU
+-- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY
+-- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY - Success
+-- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY
+-- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY - Success
+-- Performing Test COMPILER_HAS_DEPRECATED_ATTR
+-- Performing Test COMPILER_HAS_DEPRECATED_ATTR - Success
+-- Looking for C++ include any
+-- Looking for C++ include any - found
+-- Looking for C++ include string_view
+-- Looking for C++ include string_view - found
+-- Looking for C++ include coroutine
+-- Looking for C++ include coroutine - found
+-- Trantor using SSL library: OpenSSL
+-- Found c-ares: /usr/include
+-- c-ares found!
+-- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE)
+-- Looking for C++ include filesystem
+-- Looking for C++ include filesystem - found
+-- Performing Test CXX_FILESYSTEM_NO_LINK_NEEDED
+-- Performing Test CXX_FILESYSTEM_NO_LINK_NEEDED - Success
+-- Found std::filesystem
+-- use c++20
+-- Found Jsoncpp: /usr/include/jsoncpp
+-- jsoncpp version:1.9.5
+-- yaml-cpp not used
+-- Found UUID: /usr/lib/x86_64-linux-gnu/libuuid.so
+-- Found Brotli: /usr/lib/x86_64-linux-gnu/libbrotlidec.so
+-- Brotli found
+-- Found PostgreSQL: /usr/lib/x86_64-linux-gnu/libpq.so (found version "16.15")
+-- pg inc: /usr/include/postgresql
+-- Found pg: /usr/lib/x86_64-linux-gnu/libpq.so
+-- libpq inc path:/usr/include/postgresql
+-- libpq lib:/usr/lib/x86_64-linux-gnu/libpq.so
+-- The libpq supports batch mode
+-- MySql was not found.
+-- sqlite3 was not found.
+-- Found Hiredis: /usr/lib/x86_64-linux-gnu/libhiredis.so
+-- Found ZLIB: /usr/lib/x86_64-linux-gnu/libz.so (found version "1.3")
+-- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter
+-- Configuring done (1.9s)
+-- Generating done (0.1s)
+-- Build files have been written to: /fix-build

@@ -1,0 +1,13 @@
+test_actual_compose_initdb_mounts_and_verifiers (__main__.FreshComposeTest) ... ok
+test_backfill_orders_by_real_first_pair_and_preserves_unusual_names (__main__.SchemaTest) ... ok
+test_blank_legacy_names_are_distinct_deterministic_and_collision_safe (__main__.SchemaTest) ... ok
+test_constraints_duplicate_labels_and_price_cascades (__main__.SchemaTest) ... ok
+test_failed_upgrade_rolls_back_all_changes (__main__.SchemaTest) ... ok
+test_fresh_seed_all_verifiers_and_formal_fields (__main__.SchemaTest) ... ok
+test_performance_generator_and_replacement_use_normalized_zones (__main__.SchemaTest) ... ok
+test_upgrade_preserves_every_seat_and_deterministic_zone_identity (__main__.SchemaTest) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 26.538s
+
+OK

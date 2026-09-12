@@ -1,0 +1,611 @@
+{
+  "config": {
+    "argv": [
+      "D:\\App\\Nodejs\\node.exe",
+      "D:\\Documents\\vscode\\high-concurrency-ticketing-system-phase17\\frontend\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.phase17-fixes.config.ts"
+    ],
+    "configFile": "D:\\Documents\\vscode\\high-concurrency-ticketing-system-phase17\\frontend\\playwright.phase17-fixes.config.ts",
+    "rootDir": "D:/Documents/vscode/high-concurrency-ticketing-system-phase17/frontend/phase17-e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/Documents/vscode/high-concurrency-ticketing-system-phase17/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "D:/Documents/vscode/high-concurrency-ticketing-system-phase17/frontend/phase17-e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "fixes.spec.ts"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../performance/experiments/phase17-review-fixes/playwright.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev -- --host 127.0.0.1 --port 5189 --strictPort",
+      "url": "http://127.0.0.1:5189/events",
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "fixes.spec.ts",
+      "file": "fixes.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "logout success from /events, no reload and re-login",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1035,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:36:17.690Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "logout-evidence",
+                      "contentType": "application/json",
+                      "body": "eyJtb2RlIjoic3VjY2VzcyIsInBhdGgiOiIvZXZlbnRzIiwibG9nb3V0U3RhdHVzIjoyMDAsImFmdGVyTG9nb3V0Ijp7ImN1cnJlbnRVc2VyIjpudWxsLCJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUxODkvbG9naW4iLCJyb3V0ZSI6Ii9sb2dpbiIsImxvZ2luIjp0cnVlLCJhY2NvdW50IjpmYWxzZX0sImFmdGVyTG9naW4iOnsiY3VycmVudFVzZXIiOiJVLUFETUlOLURFTU8iLCJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUxODkvZXZlbnRzIiwicm91dGUiOiIvZXZlbnRzIiwibG9naW4iOmZhbHNlLCJhY2NvdW50Ijp0cnVlfSwibWVDYWxscyI6MCwiZXJyb3JzIjpbXSwiY29uc29sZUVycm9ycyI6WyJGYWlsZWQgdG8gbG9hZCByZXNvdXJjZTogdGhlIHNlcnZlciByZXNwb25kZWQgd2l0aCBhIHN0YXR1cyBvZiA0MDEgKFVuYXV0aG9yaXplZCkiLCJGYWlsZWQgdG8gbG9hZCByZXNvdXJjZTogdGhlIHNlcnZlciByZXNwb25kZWQgd2l0aCBhIHN0YXR1cyBvZiA0MDEgKFVuYXV0aG9yaXplZCkiXX0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fdb6556a2fac0d0e6511-1638bfdea1727ef1bbdc",
+          "file": "fixes.spec.ts",
+          "line": 20,
+          "column": 2
+        },
+        {
+          "title": "logout 401 from /events, no reload and re-login",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 968,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:36:18.868Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "logout-evidence",
+                      "contentType": "application/json",
+                      "body": "eyJtb2RlIjoiNDAxIiwicGF0aCI6Ii9ldmVudHMiLCJsb2dvdXRTdGF0dXMiOjQwMSwiYWZ0ZXJMb2dvdXQiOnsiY3VycmVudFVzZXIiOm51bGwsInVybCI6Imh0dHA6Ly8xMjcuMC4wLjE6NTE4OS9sb2dpbiIsInJvdXRlIjoiL2xvZ2luIiwibG9naW4iOnRydWUsImFjY291bnQiOmZhbHNlfSwiYWZ0ZXJMb2dpbiI6eyJjdXJyZW50VXNlciI6IlUtQURNSU4tREVNTyIsInVybCI6Imh0dHA6Ly8xMjcuMC4wLjE6NTE4OS9ldmVudHMiLCJyb3V0ZSI6Ii9ldmVudHMiLCJsb2dpbiI6ZmFsc2UsImFjY291bnQiOnRydWV9LCJtZUNhbGxzIjowLCJlcnJvcnMiOltdLCJjb25zb2xlRXJyb3JzIjpbIkZhaWxlZCB0byBsb2FkIHJlc291cmNlOiB0aGUgc2VydmVyIHJlc3BvbmRlZCB3aXRoIGEgc3RhdHVzIG9mIDQwMSAoVW5hdXRob3JpemVkKSIsIkZhaWxlZCB0byBsb2FkIHJlc291cmNlOiB0aGUgc2VydmVyIHJlc3BvbmRlZCB3aXRoIGEgc3RhdHVzIG9mIDQwMSAoVW5hdXRob3JpemVkKSIsIkZhaWxlZCB0byBsb2FkIHJlc291cmNlOiB0aGUgc2VydmVyIHJlc3BvbmRlZCB3aXRoIGEgc3RhdHVzIG9mIDQwMSAoVW5hdXRob3JpemVkKSJdfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fdb6556a2fac0d0e6511-4f31ba9c588b4b11fb3e",
+          "file": "fixes.spec.ts",
+          "line": 20,
+          "column": 2
+        },
+        {
+          "title": "logout timeout from /events, no reload and re-login",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8937,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:36:19.842Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "logout-evidence",
+                      "contentType": "application/json",
+                      "body": "eyJtb2RlIjoidGltZW91dCIsInBhdGgiOiIvZXZlbnRzIiwibG9nb3V0U3RhdHVzIjoiY2xpZW50IHRpbWVvdXQgYWZ0ZXIgODAwMG1zIiwiYWZ0ZXJMb2dvdXQiOnsiY3VycmVudFVzZXIiOm51bGwsInVybCI6Imh0dHA6Ly8xMjcuMC4wLjE6NTE4OS9sb2dpbiIsInJvdXRlIjoiL2xvZ2luIiwibG9naW4iOnRydWUsImFjY291bnQiOmZhbHNlfSwiYWZ0ZXJMb2dpbiI6eyJjdXJyZW50VXNlciI6IlUtQURNSU4tREVNTyIsInVybCI6Imh0dHA6Ly8xMjcuMC4wLjE6NTE4OS9ldmVudHMiLCJyb3V0ZSI6Ii9ldmVudHMiLCJsb2dpbiI6ZmFsc2UsImFjY291bnQiOnRydWV9LCJtZUNhbGxzIjowLCJlcnJvcnMiOltdLCJjb25zb2xlRXJyb3JzIjpbIkZhaWxlZCB0byBsb2FkIHJlc291cmNlOiB0aGUgc2VydmVyIHJlc3BvbmRlZCB3aXRoIGEgc3RhdHVzIG9mIDQwMSAoVW5hdXRob3JpemVkKSIsIkZhaWxlZCB0byBsb2FkIHJlc291cmNlOiB0aGUgc2VydmVyIHJlc3BvbmRlZCB3aXRoIGEgc3RhdHVzIG9mIDQwMSAoVW5hdXRob3JpemVkKSJdfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fdb6556a2fac0d0e6511-26014e7a16e0ab006cbf",
+          "file": "fixes.spec.ts",
+          "line": 20,
+          "column": 2
+        },
+        {
+          "title": "logout network from /events, no reload and re-login",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1021,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:36:28.785Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "logout-evidence",
+                      "contentType": "application/json",
+                      "body": "eyJtb2RlIjoibmV0d29yayIsInBhdGgiOiIvZXZlbnRzIiwibG9nb3V0U3RhdHVzIjoibmV0d29yayBhYm9ydCIsImFmdGVyTG9nb3V0Ijp7ImN1cnJlbnRVc2VyIjpudWxsLCJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUxODkvbG9naW4iLCJyb3V0ZSI6Ii9sb2dpbiIsImxvZ2luIjp0cnVlLCJhY2NvdW50IjpmYWxzZX0sImFmdGVyTG9naW4iOnsiY3VycmVudFVzZXIiOiJVLUFETUlOLURFTU8iLCJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUxODkvZXZlbnRzIiwicm91dGUiOiIvZXZlbnRzIiwibG9naW4iOmZhbHNlLCJhY2NvdW50Ijp0cnVlfSwibWVDYWxscyI6MCwiZXJyb3JzIjpbXSwiY29uc29sZUVycm9ycyI6WyJGYWlsZWQgdG8gbG9hZCByZXNvdXJjZTogdGhlIHNlcnZlciByZXNwb25kZWQgd2l0aCBhIHN0YXR1cyBvZiA0MDEgKFVuYXV0aG9yaXplZCkiLCJGYWlsZWQgdG8gbG9hZCByZXNvdXJjZTogdGhlIHNlcnZlciByZXNwb25kZWQgd2l0aCBhIHN0YXR1cyBvZiA0MDEgKFVuYXV0aG9yaXplZCkiLCJGYWlsZWQgdG8gbG9hZCByZXNvdXJjZTogbmV0OjpFUlJfRkFJTEVEIl19"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fdb6556a2fac0d0e6511-8f3967989776bfa7d83c",
+          "file": "fixes.spec.ts",
+          "line": 20,
+          "column": 2
+        },
+        {
+          "title": "logout success from /admin/events, no reload and re-login",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1087,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:36:29.814Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "logout-evidence",
+                      "contentType": "application/json",
+                      "body": "eyJtb2RlIjoic3VjY2VzcyIsInBhdGgiOiIvYWRtaW4vZXZlbnRzIiwibG9nb3V0U3RhdHVzIjoyMDAsImFmdGVyTG9nb3V0Ijp7ImN1cnJlbnRVc2VyIjpudWxsLCJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUxODkvbG9naW4iLCJyb3V0ZSI6Ii9sb2dpbiIsImxvZ2luIjp0cnVlLCJhY2NvdW50IjpmYWxzZX0sImFmdGVyTG9naW4iOnsiY3VycmVudFVzZXIiOiJVLUFETUlOLURFTU8iLCJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUxODkvZXZlbnRzIiwicm91dGUiOiIvZXZlbnRzIiwibG9naW4iOmZhbHNlLCJhY2NvdW50Ijp0cnVlfSwibWVDYWxscyI6MCwiZXJyb3JzIjpbXSwiY29uc29sZUVycm9ycyI6WyJGYWlsZWQgdG8gbG9hZCByZXNvdXJjZTogdGhlIHNlcnZlciByZXNwb25kZWQgd2l0aCBhIHN0YXR1cyBvZiA0MDEgKFVuYXV0aG9yaXplZCkiLCJGYWlsZWQgdG8gbG9hZCByZXNvdXJjZTogdGhlIHNlcnZlciByZXNwb25kZWQgd2l0aCBhIHN0YXR1cyBvZiA0MDEgKFVuYXV0aG9yaXplZCkiXX0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fdb6556a2fac0d0e6511-56f9405fe6279853bbde",
+          "file": "fixes.spec.ts",
+          "line": 20,
+          "column": 2
+        },
+        {
+          "title": "logout 401 from /admin/events, no reload and re-login",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1233,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:36:30.910Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "logout-evidence",
+                      "contentType": "application/json",
+                      "body": "eyJtb2RlIjoiNDAxIiwicGF0aCI6Ii9hZG1pbi9ldmVudHMiLCJsb2dvdXRTdGF0dXMiOjQwMSwiYWZ0ZXJMb2dvdXQiOnsiY3VycmVudFVzZXIiOm51bGwsInVybCI6Imh0dHA6Ly8xMjcuMC4wLjE6NTE4OS9sb2dpbiIsInJvdXRlIjoiL2xvZ2luIiwibG9naW4iOnRydWUsImFjY291bnQiOmZhbHNlfSwiYWZ0ZXJMb2dpbiI6eyJjdXJyZW50VXNlciI6IlUtQURNSU4tREVNTyIsInVybCI6Imh0dHA6Ly8xMjcuMC4wLjE6NTE4OS9ldmVudHMiLCJyb3V0ZSI6Ii9ldmVudHMiLCJsb2dpbiI6ZmFsc2UsImFjY291bnQiOnRydWV9LCJtZUNhbGxzIjowLCJlcnJvcnMiOltdLCJjb25zb2xlRXJyb3JzIjpbIkZhaWxlZCB0byBsb2FkIHJlc291cmNlOiB0aGUgc2VydmVyIHJlc3BvbmRlZCB3aXRoIGEgc3RhdHVzIG9mIDQwMSAoVW5hdXRob3JpemVkKSIsIkZhaWxlZCB0byBsb2FkIHJlc291cmNlOiB0aGUgc2VydmVyIHJlc3BvbmRlZCB3aXRoIGEgc3RhdHVzIG9mIDQwMSAoVW5hdXRob3JpemVkKSIsIkZhaWxlZCB0byBsb2FkIHJlc291cmNlOiB0aGUgc2VydmVyIHJlc3BvbmRlZCB3aXRoIGEgc3RhdHVzIG9mIDQwMSAoVW5hdXRob3JpemVkKSJdfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fdb6556a2fac0d0e6511-c34b4e4a1b654a24bdc4",
+          "file": "fixes.spec.ts",
+          "line": 20,
+          "column": 2
+        },
+        {
+          "title": "logout timeout from /admin/events, no reload and re-login",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9863,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:36:32.163Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "logout-evidence",
+                      "contentType": "application/json",
+                      "body": "eyJtb2RlIjoidGltZW91dCIsInBhdGgiOiIvYWRtaW4vZXZlbnRzIiwibG9nb3V0U3RhdHVzIjoiY2xpZW50IHRpbWVvdXQgYWZ0ZXIgODAwMG1zIiwiYWZ0ZXJMb2dvdXQiOnsiY3VycmVudFVzZXIiOm51bGwsInVybCI6Imh0dHA6Ly8xMjcuMC4wLjE6NTE4OS9sb2dpbiIsInJvdXRlIjoiL2xvZ2luIiwibG9naW4iOnRydWUsImFjY291bnQiOmZhbHNlfSwiYWZ0ZXJMb2dpbiI6eyJjdXJyZW50VXNlciI6IlUtQURNSU4tREVNTyIsInVybCI6Imh0dHA6Ly8xMjcuMC4wLjE6NTE4OS9ldmVudHMiLCJyb3V0ZSI6Ii9ldmVudHMiLCJsb2dpbiI6ZmFsc2UsImFjY291bnQiOnRydWV9LCJtZUNhbGxzIjowLCJlcnJvcnMiOltdLCJjb25zb2xlRXJyb3JzIjpbIkZhaWxlZCB0byBsb2FkIHJlc291cmNlOiB0aGUgc2VydmVyIHJlc3BvbmRlZCB3aXRoIGEgc3RhdHVzIG9mIDQwMSAoVW5hdXRob3JpemVkKSIsIkZhaWxlZCB0byBsb2FkIHJlc291cmNlOiB0aGUgc2VydmVyIHJlc3BvbmRlZCB3aXRoIGEgc3RhdHVzIG9mIDQwMSAoVW5hdXRob3JpemVkKSJdfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fdb6556a2fac0d0e6511-c6db355820bc80315bfb",
+          "file": "fixes.spec.ts",
+          "line": 20,
+          "column": 2
+        },
+        {
+          "title": "logout network from /admin/events, no reload and re-login",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1115,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:36:42.047Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "logout-evidence",
+                      "contentType": "application/json",
+                      "body": "eyJtb2RlIjoibmV0d29yayIsInBhdGgiOiIvYWRtaW4vZXZlbnRzIiwibG9nb3V0U3RhdHVzIjoibmV0d29yayBhYm9ydCIsImFmdGVyTG9nb3V0Ijp7ImN1cnJlbnRVc2VyIjpudWxsLCJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUxODkvbG9naW4iLCJyb3V0ZSI6Ii9sb2dpbiIsImxvZ2luIjp0cnVlLCJhY2NvdW50IjpmYWxzZX0sImFmdGVyTG9naW4iOnsiY3VycmVudFVzZXIiOiJVLUFETUlOLURFTU8iLCJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUxODkvZXZlbnRzIiwicm91dGUiOiIvZXZlbnRzIiwibG9naW4iOmZhbHNlLCJhY2NvdW50Ijp0cnVlfSwibWVDYWxscyI6MCwiZXJyb3JzIjpbXSwiY29uc29sZUVycm9ycyI6WyJGYWlsZWQgdG8gbG9hZCByZXNvdXJjZTogdGhlIHNlcnZlciByZXNwb25kZWQgd2l0aCBhIHN0YXR1cyBvZiA0MDEgKFVuYXV0aG9yaXplZCkiLCJGYWlsZWQgdG8gbG9hZCByZXNvdXJjZTogdGhlIHNlcnZlciByZXNwb25kZWQgd2l0aCBhIHN0YXR1cyBvZiA0MDEgKFVuYXV0aG9yaXplZCkiLCJGYWlsZWQgdG8gbG9hZCByZXNvdXJjZTogbmV0OjpFUlJfRkFJTEVEIl19"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fdb6556a2fac0d0e6511-8375a4b33e5561dc1305",
+          "file": "fixes.spec.ts",
+          "line": 20,
+          "column": 2
+        },
+        {
+          "title": "salesWindow missing: recoverable page and auth navigation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1167,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:36:43.176Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "contract-evidence",
+                      "contentType": "application/json",
+                      "body": "eyJtb2RlIjoibWlzc2luZyIsInN0YXRlIjp7ImN1cnJlbnRVc2VyIjoiVS1BRE1JTi1ERU1PIiwidXJsIjoiaHR0cDovLzEyNy4wLjAuMTo1MTg5L2V2ZW50cyIsInJvdXRlIjoiL2V2ZW50cyIsImxvZ2luIjpmYWxzZSwiYWNjb3VudCI6dHJ1ZX0sImVycm9ycyI6W10sImNvbnNvbGVFcnJvcnMiOlsiRmFpbGVkIHRvIGxvYWQgcmVzb3VyY2U6IHRoZSBzZXJ2ZXIgcmVzcG9uZGVkIHdpdGggYSBzdGF0dXMgb2YgNDAxIChVbmF1dGhvcml6ZWQpIiwiRmFpbGVkIHRvIGxvYWQgcmVzb3VyY2U6IHRoZSBzZXJ2ZXIgcmVzcG9uZGVkIHdpdGggYSBzdGF0dXMgb2YgNDAxIChVbmF1dGhvcml6ZWQpIl19"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fdb6556a2fac0d0e6511-f1d30c6d3b41e3290510",
+          "file": "fixes.spec.ts",
+          "line": 47,
+          "column": 57
+        },
+        {
+          "title": "salesWindow empty: recoverable page and auth navigation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1142,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:36:44.350Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "contract-evidence",
+                      "contentType": "application/json",
+                      "body": "eyJtb2RlIjoiZW1wdHkiLCJzdGF0ZSI6eyJjdXJyZW50VXNlciI6IlUtQURNSU4tREVNTyIsInVybCI6Imh0dHA6Ly8xMjcuMC4wLjE6NTE4OS9ldmVudHMiLCJyb3V0ZSI6Ii9ldmVudHMiLCJsb2dpbiI6ZmFsc2UsImFjY291bnQiOnRydWV9LCJlcnJvcnMiOltdLCJjb25zb2xlRXJyb3JzIjpbIkZhaWxlZCB0byBsb2FkIHJlc291cmNlOiB0aGUgc2VydmVyIHJlc3BvbmRlZCB3aXRoIGEgc3RhdHVzIG9mIDQwMSAoVW5hdXRob3JpemVkKSIsIkZhaWxlZCB0byBsb2FkIHJlc291cmNlOiB0aGUgc2VydmVyIHJlc3BvbmRlZCB3aXRoIGEgc3RhdHVzIG9mIDQwMSAoVW5hdXRob3JpemVkKSJdfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fdb6556a2fac0d0e6511-0c93881af9e79f1ab738",
+          "file": "fixes.spec.ts",
+          "line": 47,
+          "column": 57
+        },
+        {
+          "title": "salesWindow invalid: recoverable page and auth navigation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1198,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:36:45.500Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "contract-evidence",
+                      "contentType": "application/json",
+                      "body": "eyJtb2RlIjoiaW52YWxpZCIsInN0YXRlIjp7ImN1cnJlbnRVc2VyIjoiVS1BRE1JTi1ERU1PIiwidXJsIjoiaHR0cDovLzEyNy4wLjAuMTo1MTg5L2V2ZW50cyIsInJvdXRlIjoiL2V2ZW50cyIsImxvZ2luIjpmYWxzZSwiYWNjb3VudCI6dHJ1ZX0sImVycm9ycyI6W10sImNvbnNvbGVFcnJvcnMiOlsiRmFpbGVkIHRvIGxvYWQgcmVzb3VyY2U6IHRoZSBzZXJ2ZXIgcmVzcG9uZGVkIHdpdGggYSBzdGF0dXMgb2YgNDAxIChVbmF1dGhvcml6ZWQpIiwiRmFpbGVkIHRvIGxvYWQgcmVzb3VyY2U6IHRoZSBzZXJ2ZXIgcmVzcG9uZGVkIHdpdGggYSBzdGF0dXMgb2YgNDAxIChVbmF1dGhvcml6ZWQpIl19"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fdb6556a2fac0d0e6511-eab9f199c52b9b907753",
+          "file": "fixes.spec.ts",
+          "line": 47,
+          "column": 57
+        },
+        {
+          "title": "salesWindow valid: recoverable page and auth navigation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1227,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:36:46.706Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "contract-evidence",
+                      "contentType": "application/json",
+                      "body": "eyJtb2RlIjoidmFsaWQiLCJzdGF0ZSI6eyJjdXJyZW50VXNlciI6IlUtQURNSU4tREVNTyIsInVybCI6Imh0dHA6Ly8xMjcuMC4wLjE6NTE4OS9ldmVudHMiLCJyb3V0ZSI6Ii9ldmVudHMiLCJsb2dpbiI6ZmFsc2UsImFjY291bnQiOnRydWV9LCJlcnJvcnMiOltdLCJjb25zb2xlRXJyb3JzIjpbIkZhaWxlZCB0byBsb2FkIHJlc291cmNlOiB0aGUgc2VydmVyIHJlc3BvbmRlZCB3aXRoIGEgc3RhdHVzIG9mIDQwMSAoVW5hdXRob3JpemVkKSIsIkZhaWxlZCB0byBsb2FkIHJlc291cmNlOiB0aGUgc2VydmVyIHJlc3BvbmRlZCB3aXRoIGEgc3RhdHVzIG9mIDQwMSAoVW5hdXRob3JpemVkKSJdfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fdb6556a2fac0d0e6511-3f2c4fb1a90b5d867481",
+          "file": "fixes.spec.ts",
+          "line": 47,
+          "column": 57
+        },
+        {
+          "title": "price validation prevents writes and stores exact cents with lossless roundtrip",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2996,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-12T09:36:47.940Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "price-evidence",
+                      "contentType": "application/json",
+                      "body": "eyJ3cml0ZXMiOjgsImV2aWRlbmNlIjpbeyJ5dWFuIjoiMSIsImZlbiI6MTAwLCJkaXNwbGF5IjoiMS4wMCIsInN0b3JlZCI6IjEwMCJ9LHsieXVhbiI6IjEuNSIsImZlbiI6MTUwLCJkaXNwbGF5IjoiMS41MCIsInN0b3JlZCI6IjE1MCJ9LHsieXVhbiI6IjAuMDEiLCJmZW4iOjEsImRpc3BsYXkiOiIwLjAxIiwic3RvcmVkIjoiMSJ9LHsieXVhbiI6IjkwMDcxOTkyNTQ3NDA5LjkxIiwiZmVuIjo5MDA3MTk5MjU0NzQwOTkxLCJkaXNwbGF5IjoiOTAwNzE5OTI1NDc0MDkuOTEiLCJzdG9yZWQiOiI5MDA3MTk5MjU0NzQwOTkxIn1dfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fdb6556a2fac0d0e6511-4efaf24b75edf559dec0",
+          "file": "fixes.spec.ts",
+          "line": 66,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-12T09:36:16.226Z",
+    "duration": 35361.598,
+    "expected": 13,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

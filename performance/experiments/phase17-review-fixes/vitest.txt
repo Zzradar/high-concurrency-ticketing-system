@@ -1,0 +1,12 @@
+
+> frontend@0.0.0 test
+> vitest run --run
+
+
+ RUN  v4.1.11 D:/Documents/vscode/high-concurrency-ticketing-system-phase17/frontend
+
+
+ Test Files  30 passed (30)
+      Tests  259 passed (259)
+   Start at  17:35:24
+   Duration  5.51s (transform 8.19s, setup 673ms, import 21.01s, tests 10.62s, environment 25.48s)
