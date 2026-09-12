@@ -2,7 +2,7 @@ import json,copy,sys,tempfile,unittest
 from pathlib import Path
 from unittest.mock import Mock
 ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT/'performance/scripts'))
-from phase14_memory import MAIN_BYTES,PROBE_BYTES,main_shard,apply_main_override,validate_units,assess
+from phase14_memory import MAIN_BYTES,PROBE_BYTES,OVERRIDE,main_shard,apply_main_override,validate_units,assess
 
 class MemoryTests(unittest.TestCase):
     def units(self,fraction=.6):
@@ -15,6 +15,9 @@ class MemoryTests(unittest.TestCase):
         self.assertTrue(main_shard(['PHASE14_ROLE=main','--execution-segment','0:1/4']))
         self.assertFalse(main_shard(['PHASE14_ROLE=probe','--execution-segment','0:1']))
         self.assertFalse(main_shard(['PHASE14_ROLE=main']))
+    def test_standard_overlay_matches_measured_bytes(self):
+        self.assertEqual(OVERRIDE,{'services':{'k6':{'mem_limit':3221225472}}})
+        self.assertEqual(PROBE_BYTES,2147483648)
     def test_overlay_keeps_probe_base_and_cpu(self):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d);base=p/'base.json';base.write_text('{}')

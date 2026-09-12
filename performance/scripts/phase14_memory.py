@@ -5,7 +5,7 @@ from pathlib import Path
 MAIN_BYTES=3221225472
 PROBE_BYTES=2147483648
 BUSINESS_SECONDS=120
-OVERRIDE={'services':{'k6':{'mem_limit':MAIN_BYTES}}}
+OVERRIDE=json.loads((Path(__file__).resolve().parents[1]/'phase14/load-main-memory.json').read_text())
 
 
 def main_shard(argv):
