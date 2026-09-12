@@ -62,7 +62,7 @@ export function normalizeApiError(error: unknown): unknown {
   return error
 }
 
-const http = axios.create({
+export const http = axios.create({
   baseURL: '/api',
   timeout: 8000,
   withCredentials: true,

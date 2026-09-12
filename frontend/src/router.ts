@@ -16,6 +16,13 @@ import SeatSelectionPage from './pages/SeatSelectionPage.vue'
 import SessionListPage from './pages/SessionListPage.vue'
 
 export const appRoutes: RouteRecordRaw[] = [
+  {path:'/admin',name:'admin',redirect:'/admin/events',meta:{requiresAuth:true,requiresAdmin:true,title:'管理后台 | 票迹'}},
+  {path:'/admin/events',name:'admin-events',component:()=>import('./pages/AdminEventListPage.vue'),meta:{requiresAuth:true,requiresAdmin:true,title:'管理后台 | 票迹'}},
+  {path:'/admin/events/new',name:'admin-event-new',component:()=>import('./pages/AdminEventEditorPage.vue'),meta:{requiresAuth:true,requiresAdmin:true,title:'管理后台 | 票迹'}},
+  {path:'/admin/events/:eventId',name:'admin-event',component:()=>import('./pages/AdminEventEditorPage.vue'),meta:{requiresAuth:true,requiresAdmin:true,title:'管理后台 | 票迹'}},
+  {path:'/admin/venues',name:'admin-venues',component:()=>import('./pages/AdminVenueListPage.vue'),meta:{requiresAuth:true,requiresAdmin:true,title:'管理后台 | 票迹'}},
+  {path:'/admin/venues/new',name:'admin-venue-new',component:()=>import('./pages/AdminVenueEditorPage.vue'),meta:{requiresAuth:true,requiresAdmin:true,title:'管理后台 | 票迹'}},
+  {path:'/admin/venues/:venueId',name:'admin-venue',component:()=>import('./pages/AdminVenueEditorPage.vue'),meta:{requiresAuth:true,requiresAdmin:true,title:'管理后台 | 票迹'}},
   { path: '/', name: routeNames.home, redirect: { name: routeNames.events } },
   { path: '/login', name: routeNames.login, component: LoginView, meta: { title: '登录 | 票迹' } },
   { path: '/events', name: routeNames.events, component: EventListPage, meta: { title: '活动列表 | 票迹' } },
@@ -69,6 +76,7 @@ export function createAppRouter(history: RouterHistory = createWebHistory()) {
     if (to.meta.requiresAuth && !user) {
       return { name: routeNames.login, query: { redirect: to.fullPath } }
     }
+    if (to.meta.requiresAdmin && user?.role !== 'ADMIN') return { name: routeNames.events }
     if (to.name === routeNames.login && user) return { name: routeNames.events }
   })
 

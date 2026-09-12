@@ -143,6 +143,7 @@ onBeforeUnmount(() => {
           <section v-if="accountOpen" id="account-panel" class="account-panel" aria-label="当前账户">
             <header><strong>{{ authState.currentUser.value.displayName }}</strong><small>{{ authState.currentUser.value.username }}</small></header>
             <nav aria-label="账户操作">
+              <RouterLink v-if="authState.currentUser.value.role === 'ADMIN'" to="/admin" @click="accountOpen = false">管理后台</RouterLink>
               <RouterLink :to="{ name: routeNames.orders }" @click="accountOpen = false">我的订单</RouterLink>
               <button type="button" @click="logout">退出登录</button>
             </nav>
