@@ -46,6 +46,10 @@ drogon::HttpResponsePtr makeCheckoutResponse(
                 drogon::k409Conflict,
                 "SESSION_NOT_AVAILABLE",
                 "Session is not available for checkout");
+        case CheckoutSessionOutcome::SalesNotStarted:
+            return ticketing::makeErrorResponse(drogon::k409Conflict,"SALES_NOT_STARTED","Ticket sales have not started");
+        case CheckoutSessionOutcome::SalesEnded:
+            return ticketing::makeErrorResponse(drogon::k409Conflict,"SALES_ENDED","Ticket sales have ended");
         case CheckoutSessionOutcome::NotFound:
             return ticketing::makeErrorResponse(
                 drogon::k404NotFound,

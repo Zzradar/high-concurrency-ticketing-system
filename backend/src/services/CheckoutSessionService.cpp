@@ -119,6 +119,10 @@ std::optional<CheckoutSessionOutcome> checkoutBusinessFailure(
             return CheckoutSessionOutcome::SessionNotFound;
         case CreateReservationOutcome::SessionNotAvailable:
             return CheckoutSessionOutcome::SessionNotAvailable;
+        case CreateReservationOutcome::SalesNotStarted:
+            return CheckoutSessionOutcome::SalesNotStarted;
+        case CreateReservationOutcome::SalesEnded:
+            return CheckoutSessionOutcome::SalesEnded;
         case CreateReservationOutcome::SeatConflict:
             return CheckoutSessionOutcome::SeatConflict;
         case CreateReservationOutcome::Created:

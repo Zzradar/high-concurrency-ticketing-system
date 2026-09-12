@@ -26,6 +26,8 @@ enum class CheckoutSessionOutcome
     InvalidArgument,
     SessionNotFound,
     SessionNotAvailable,
+    SalesNotStarted,
+    SalesEnded,
     NotFound,
     NotModifiable,
     VersionConflict,

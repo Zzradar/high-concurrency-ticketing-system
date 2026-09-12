@@ -299,5 +299,6 @@ option(TICKETING_PHASE15_EXTERNAL_TESTS "Register isolated Phase15 database/HTTP
 if(BUILD_TESTING AND TICKETING_PHASE15_EXTERNAL_TESTS)
     add_test(NAME phase15_migration COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase15_migration_test.py")
     add_test(NAME phase15_read_api COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase15_read_api_test.py")
-    set_tests_properties(phase15_migration phase15_read_api PROPERTIES RUN_SERIAL TRUE LABELS integration)
+    add_test(NAME phase15_reservation COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase15_reservation_test.py")
+    set_tests_properties(phase15_migration phase15_read_api phase15_reservation PROPERTIES RUN_SERIAL TRUE LABELS integration)
 endif()

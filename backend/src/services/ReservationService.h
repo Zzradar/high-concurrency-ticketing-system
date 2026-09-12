@@ -2,6 +2,7 @@
 
 #include "dto/TicketDtos.h"
 #include "repositories/ReservationRepository.h"
+#include "repositories/SalesWindowRepository.h"
 #include "repositories/NotificationRepository.h"
 
 #include <json/json.h>
@@ -28,6 +29,8 @@ enum class CreateReservationOutcome
     InvalidArgument,
     SessionNotFound,
     SessionNotAvailable,
+    SalesNotStarted,
+    SalesEnded,
     SeatConflict,
     IdempotencyConflict,
     InternalError,
@@ -65,6 +68,7 @@ class ReservationService
     void arbitrateIdempotency(
         const std::shared_ptr<FlowState> &state) const;
     void lockSeats(const std::shared_ptr<FlowState> &state) const;
+    void checkFinalGate(const std::shared_ptr<FlowState> &state) const;
     void holdSeats(const std::shared_ptr<FlowState> &state) const;
     void insertSeatSnapshots(
         const std::shared_ptr<FlowState> &state) const;
@@ -77,6 +81,7 @@ class ReservationService
                        CreateReservationResult result);
 
     ReservationRepository repository_;
+    SalesWindowRepository salesWindowRepository_;
     NotificationRepository notificationRepository_;
 };
 }  // namespace ticketing

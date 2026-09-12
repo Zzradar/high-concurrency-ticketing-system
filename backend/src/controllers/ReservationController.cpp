@@ -1,6 +1,7 @@
 #include "controllers/ReservationController.h"
 
 #include "common/ApiResponse.h"
+#include "observability/PerformanceMetrics.h"
 #include "common/AuthContext.h"
 
 #include <memory>
@@ -51,6 +52,14 @@ drogon::HttpResponsePtr makeServiceResponse(
                 drogon::k409Conflict,
                 "SESSION_NOT_AVAILABLE",
                 "Session is not available for reservation");
+        case CreateReservationOutcome::SalesNotStarted:
+        case CreateReservationOutcome::SalesEnded:
+        {
+            const bool notStarted=result.outcome==CreateReservationOutcome::SalesNotStarted;
+            ticketing::PerformanceMetrics::salesWindowRejection("reservation_create",notStarted?"not_started":"ended");
+            return ticketing::makeErrorResponse(drogon::k409Conflict,notStarted?"SALES_NOT_STARTED":"SALES_ENDED",
+                                               notStarted?"Ticket sales have not started":"Ticket sales have ended");
+        }
         case CreateReservationOutcome::SeatConflict:
             return ticketing::makeErrorResponse(
                 drogon::k409Conflict,

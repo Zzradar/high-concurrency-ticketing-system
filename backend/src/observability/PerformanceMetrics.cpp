@@ -71,6 +71,7 @@ struct MetricsState
     std::shared_ptr<CounterCollector> refundFailures;
     std::shared_ptr<GaugeCollector> refundAge;
     std::shared_ptr<CounterCollector> availabilityEvents;
+    std::shared_ptr<CounterCollector> salesWindowRejections;
     std::shared_ptr<HistogramCollector> availabilityDuration, availabilitySeats;
 };
 
@@ -275,6 +276,7 @@ void PerformanceMetrics::registerWithApplication()
             "ticketing_refund_lifecycle_failures_total");
         state->refundAge = exporter->getCollector<drogon::monitoring::Gauge>(
             "ticketing_refund_processing_age_seconds");
+        state->salesWindowRejections=exporter->getCollector<drogon::monitoring::Counter>("ticketing_sales_window_rejections_total");
         state->availabilityEvents=exporter->getCollector<drogon::monitoring::Counter>("ticketing_availability_events_total");
         state->availabilityDuration=exporter->getCollector<drogon::monitoring::Histogram>("ticketing_availability_duration_seconds");
         state->availabilitySeats=exporter->getCollector<drogon::monitoring::Histogram>("ticketing_availability_returned_seats");
@@ -492,6 +494,13 @@ std::shared_ptr<SeatMapComputeObserver> PerformanceMetrics::seatMapComputeObserv
     // Safe to create before beginning advice publishes metrics; ordinary
     // configuration stays no-op. No collector registration from workers.
     return std::make_shared<SeatMapMetricsObserver>();
+}
+void PerformanceMetrics::salesWindowRejection(std::string_view entrypoint,std::string_view reason)
+{
+    if(entrypoint!="checkout_create" && entrypoint!="checkout_replace" && entrypoint!="checkout_confirm" && entrypoint!="reservation_create")return;
+    if(reason!="not_started" && reason!="ended")return;
+    if(auto *s=seatMapMetrics.load(std::memory_order_acquire);s && s->salesWindowRejections)
+        s->salesWindowRejections->metric({std::string(entrypoint),std::string(reason)})->increment();
 }
 void PerformanceMetrics::availability(std::string_view operation,std::string_view result,double seconds,double seats)
 {
