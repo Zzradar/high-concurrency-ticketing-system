@@ -16,23 +16,46 @@ CREATE TABLE venue_zones (
     UNIQUE (id, venue_id)
 );
 
--- Length-prefixed venue identity makes legacy IDs injective, without hash collisions.
--- Order uses the actual first (row_no, seat_no) pair in each Zone, then its name.
+-- Preserve raw legacy identity separately from its possibly repaired display name.
+-- All original nonblank names are reserved before allocating blank-name aliases.
+CREATE TEMP TABLE phase17_legacy_zones ON COMMIT DROP AS
 WITH first_seats AS (
     SELECT DISTINCT ON (venue_id, zone) venue_id, zone, row_no, seat_no
     FROM seats ORDER BY venue_id, zone, row_no, seat_no
-), ordered AS (
-    SELECT *, row_number() OVER (PARTITION BY venue_id ORDER BY row_no, seat_no, zone) - 1 AS position
-    FROM first_seats
 )
+SELECT 'VZ-LEGACY-' || length(venue_id)::text || ':' || venue_id || ':' || zone AS id,
+       venue_id, zone AS raw_zone,
+       (row_number() OVER (PARTITION BY venue_id ORDER BY row_no, seat_no, zone) - 1)::integer AS position
+FROM first_seats;
+
 INSERT INTO venue_zones (id, venue_id, code, name, sort_order)
-SELECT 'VZ-LEGACY-' || length(venue_id)::text || ':' || venue_id || ':' || zone,
-       venue_id, 'LEGACY_' || position::text, zone, position::integer
-FROM ordered;
+SELECT id, venue_id, 'LEGACY_' || position::text, raw_zone, position
+FROM phase17_legacy_zones WHERE raw_zone !~ '^[[:space:]]*$';
+
+DO $$
+DECLARE
+    legacy RECORD;
+    suffix INTEGER;
+    candidate TEXT;
+BEGIN
+    FOR legacy IN SELECT * FROM phase17_legacy_zones
+                  WHERE raw_zone ~ '^[[:space:]]*$' ORDER BY venue_id, position
+    LOOP
+        suffix := 0;
+        candidate := '未命名区域';
+        WHILE EXISTS (SELECT 1 FROM venue_zones WHERE venue_id=legacy.venue_id AND name=candidate)
+        LOOP
+            suffix := suffix + 1;
+            candidate := '未命名区域-' || suffix::text;
+        END LOOP;
+        INSERT INTO venue_zones (id, venue_id, code, name, sort_order)
+        VALUES (legacy.id, legacy.venue_id, 'LEGACY_' || legacy.position::text, candidate, legacy.position);
+    END LOOP;
+END $$;
 
 ALTER TABLE seats ADD COLUMN zone_id TEXT;
-UPDATE seats s SET zone_id = z.id FROM venue_zones z
-WHERE z.venue_id = s.venue_id AND z.name = s.zone;
+UPDATE seats s SET zone_id = z.id FROM phase17_legacy_zones z
+WHERE z.venue_id = s.venue_id AND z.raw_zone = s.zone;
 DO $$ BEGIN
     IF EXISTS (SELECT 1 FROM seats WHERE zone_id IS NULL) THEN
         RAISE EXCEPTION 'Every legacy seat must map to exactly one venue Zone';

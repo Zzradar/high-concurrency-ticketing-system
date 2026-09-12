@@ -81,6 +81,34 @@ class SchemaTest(unittest.TestCase):
         self.sql("INSERT INTO venues(id,name,city) VALUES('v:1','V','C'); INSERT INTO seats(id,venue_id,row_no,seat_no,seat_label,zone) VALUES('x1','v:1','A',9,'X1',' Z:区 '),('x2','v:1','B',1,'X2',' Z:区 '),('x3','v:1','A',5,'X3','B 区');")
         self.migration()
         self.assertEqual(json.loads(self.sql("SELECT json_agg(name ORDER BY sort_order) FROM venue_zones WHERE venue_id='v:1';")),['B 区',' Z:区 '])
+    def test_blank_legacy_names_are_distinct_deterministic_and_collision_safe(self):
+        self.install(True)
+        self.sql("INSERT INTO venues(id,name,city) VALUES('blank-v1','V','C'),('blank-v2','V','C');")
+        # Real first pairs order blanks before the names that must be reserved.
+        self.sql("INSERT INTO seats(id,venue_id,row_no,seat_no,seat_label,zone) VALUES "
+                 "('blank-0','blank-v1','A',1,'A1',''),('blank-1','blank-v1','A',2,'A2',' '),"
+                 "('blank-2','blank-v1','A',3,'A3',E'\\t\\n'),('blank-3','blank-v1','A',4,'A4',E'\\r\\f'),"
+                 "('named-0','blank-v1','B',1,'B1','未命名区域'),('named-2','blank-v1','B',2,'B2','未命名区域-2'),"
+                 "('named-keep','blank-v1','C',1,'C1',' 普通区 '),('other-0','blank-v2','A',1,'A1',''),"
+                 "('other-1','blank-v2','A',2,'A2',' ');")
+        self.sql('CREATE TABLE before_zones AS SELECT * FROM seats;')
+        self.migration()
+        actual=json.loads(self.sql("SELECT json_agg(json_build_array(venue_id,name,sort_order) ORDER BY venue_id,sort_order) FROM venue_zones WHERE venue_id LIKE 'blank-v%';"))
+        self.assertEqual(actual, [['blank-v1','未命名区域-1',0],['blank-v1','未命名区域-3',1],
+            ['blank-v1','未命名区域-4',2],['blank-v1','未命名区域-5',3],['blank-v1','未命名区域',4],
+            ['blank-v1','未命名区域-2',5],['blank-v1',' 普通区 ',6],['blank-v2','未命名区域',0],['blank-v2','未命名区域-1',1]])
+        self.assertEqual(self.sql("SELECT count(*) FROM seats s JOIN before_zones b USING(id) WHERE s.zone_id <> 'VZ-LEGACY-'||length(b.venue_id)::text||':'||b.venue_id||':'||b.zone;"),'0')
+        self.assertEqual(self.sql("SELECT count(*) FROM seats s JOIN before_zones b USING(id) JOIN venue_zones z ON z.id=s.zone_id WHERE b.zone !~ '^[[:space:]]*$' AND z.name<>b.zone;"),'0')
+        self.assertEqual(self.sql("SELECT count(*) FROM venue_zones WHERE name ~ '^[[:space:]]*$';"),'0')
+
+    def test_failed_upgrade_rolls_back_all_changes(self):
+        self.install(True)
+        self.sql("CREATE FUNCTION reject_upgrade() RETURNS event_trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'test rollback'; END $$; CREATE EVENT TRIGGER phase17_reject_upgrade ON ddl_command_start WHEN TAG IN ('CREATE TABLE AS') EXECUTE FUNCTION reject_upgrade();")
+        try:
+            self.sql((ROOT/'db/migrations/012_add_admin_event_publishing.sql').read_text(encoding='utf-8'),False)
+            self.assertEqual(self.sql("SELECT count(*) FROM information_schema.columns WHERE table_schema=current_schema() AND table_name='app_users' AND column_name='role';"),'0')
+            self.assertEqual(self.sql("SELECT count(*) FROM information_schema.columns WHERE table_schema=current_schema() AND table_name='seats' AND column_name='zone';"),'1')
+        finally:self.sql('DROP EVENT TRIGGER phase17_reject_upgrade;')
 class FreshComposeTest(unittest.TestCase):
     def test_actual_compose_initdb_mounts_and_verifiers(self):
         config=json.loads(subprocess.check_output(['docker','compose','-f',str(ROOT/'docker-compose.yml'),'config','--format','json'],text=True,encoding='utf-8'))
