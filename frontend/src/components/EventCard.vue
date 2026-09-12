@@ -1,8 +1,18 @@
 <script setup lang="ts">
 import { ArrowRight, CalendarDays, MapPin } from '@lucide/vue'
+import { computed, ref, watch } from 'vue'
+import { ticketApi } from '../api/ticketApi'
+import { useSalesWindow } from '../utils/salesWindow'
 import type { TicketEvent } from '../types'
 
-defineProps<{ event: TicketEvent }>()
+const props = defineProps<{ event: TicketEvent }>()
+const current = ref(props.event)
+watch(() => props.event, value => { current.value = value })
+const { label } = useSalesWindow(computed(() => current.value.salesWindow), async () => {
+  const id = current.value.id
+  const fresh = await ticketApi.getEvent(id)
+  if (current.value.id === id) current.value = fresh
+})
 defineEmits<{ select: [event: TicketEvent] }>()
 </script>
 
@@ -14,8 +24,10 @@ defineEmits<{ select: [event: TicketEvent] }>()
     </div>
     <div class="event-card__body">
       <div>
-        <p class="eyebrow">{{ event.city }} · 正在售票</p>
+        <p class="eyebrow">{{ event.city }} · {{ event.status === 'ON_SALE' ? '在售活动' : '即将推出' }}</p>
         <h2>{{ event.name }}</h2>
+        <p>{{ label }}</p>
+        <small>开售 {{ current.salesWindow.startsAt }} · 截止 {{ current.salesWindow.endsAt }}</small>
         <p class="event-card__description">{{ event.description }}</p>
       </div>
       <dl class="event-card__meta">

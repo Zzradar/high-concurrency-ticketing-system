@@ -20,7 +20,12 @@ constexpr const char *kEventSelect = R"SQL(
         event.cover_url,
         COUNT(session.id)::BIGINT AS session_count,
         event.category,
-        MIN(session.start_time) AS earliest_session
+        MIN(session.start_time) AS earliest_session,
+            TO_CHAR((event.sales_starts_at) AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS sales_starts_at,
+            TO_CHAR((LEAST(event.sales_ends_at,COALESCE(MAX(session.start_time),event.sales_ends_at))) AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS sales_ends_at,
+            TO_CHAR((statement_timestamp()) AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS sales_evaluated_at,
+            CASE WHEN LEAST(event.sales_ends_at,COALESCE(MAX(session.start_time),event.sales_ends_at))<=event.sales_starts_at THEN 'ENDED' WHEN statement_timestamp()<event.sales_starts_at THEN 'NOT_STARTED' WHEN statement_timestamp()>=LEAST(event.sales_ends_at,COALESCE(MAX(session.start_time),event.sales_ends_at)) THEN 'ENDED' ELSE 'OPEN' END AS sales_state
+
     FROM events AS event
     JOIN venues AS venue ON venue.id = event.primary_venue_id
     LEFT JOIN sessions AS session ON session.event_id = event.id
@@ -52,6 +57,7 @@ EventRow mapEventRow(const drogon::orm::Row &row)
         .cover = row["cover_url"].as<std::string>(),
         .sessionCount = row["session_count"].as<std::int64_t>(),
         .category = row["category"].as<std::string>(),
+        .salesWindow = SalesWindow::fromRow(row),
     };
 }
 }  // namespace

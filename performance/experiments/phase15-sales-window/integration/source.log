@@ -1,0 +1,9 @@
+test_all_fresh_database_stacks_install_phase16_before_seed (__main__.Phase16Contract) ... ok
+test_config_variants_preserve_existing_capacity (__main__.Phase16Contract) ... ok
+test_migration_is_additive_and_atomic (__main__.Phase16Contract) ... ok
+test_worker_lease_and_atomic_model_boundaries (__main__.Phase16Contract) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.017s
+
+OK

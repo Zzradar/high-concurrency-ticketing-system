@@ -20,6 +20,7 @@ struct ReservationService::FlowState
     std::string reservationId;
     std::string orderId;
     std::string eventId;
+    SessionSalesGate preliminaryGate;
     std::vector<LockedSessionSeatRow> lockedSeats;
     std::int64_t totalAmount{};
     ReservationResult result;
@@ -218,24 +219,15 @@ void ReservationService::validateUser(
 void ReservationService::validateSession(
     const std::shared_ptr<FlowState> &state) const
 {
-    repository_.findSession(
-        state->transaction,
-        state->sessionId,
-        [this, state](std::optional<ReservationSessionRow> session) {
-            if (!session)
-            {
-                fail(state, CreateReservationOutcome::SessionNotFound);
-                return;
-            }
-            if (session->status != "ON_SALE")
-            {
-                fail(state, CreateReservationOutcome::SessionNotAvailable);
-                return;
-            }
-            state->eventId = std::move(session->eventId);
+    salesWindowRepository_.readSessionGate(
+        state->transaction,state->sessionId,
+        [this,state](std::optional<SessionSalesGate> gate){
+            if(!gate){fail(state,CreateReservationOutcome::SessionNotFound);return;}
+            state->eventId=gate->eventId;
+            state->preliminaryGate=std::move(*gate);
+            // Unique-key arbitration must precede dynamic/static rejection.
             arbitrateIdempotency(state);
-        },
-        [state] { fail(state, CreateReservationOutcome::InternalError); });
+        },[state]{fail(state,CreateReservationOutcome::InternalError);});
 }
 
 void ReservationService::arbitrateIdempotency(
@@ -258,6 +250,10 @@ void ReservationService::arbitrateIdempotency(
             }
             reservation->seatIds = state->seatIds;
             state->result.reservation = std::move(*reservation);
+            const auto &gate=state->preliminaryGate;
+            if(!gate.staticallyAvailable()){fail(state,CreateReservationOutcome::SessionNotAvailable);return;}
+            if(gate.state==SalesWindowState::NotStarted){fail(state,CreateReservationOutcome::SalesNotStarted);return;}
+            if(gate.state==SalesWindowState::Ended){fail(state,CreateReservationOutcome::SalesEnded);return;}
             lockSeats(state);
         },
         [state] { fail(state, CreateReservationOutcome::InternalError); });
@@ -301,9 +297,22 @@ void ReservationService::lockSeats(
                 state->totalAmount += seat.price;
             }
             state->lockedSeats = std::move(seats);
-            holdSeats(state);
+            checkFinalGate(state);
         },
         [state] { fail(state, CreateReservationOutcome::InternalError); });
+}
+
+void ReservationService::checkFinalGate(const std::shared_ptr<FlowState> &state) const
+{
+    // This fresh database clock, after seat locks, is the admission instant.
+    salesWindowRepository_.readSessionGate(state->transaction,state->sessionId,
+        [this,state](std::optional<SessionSalesGate> gate){
+            if(!gate){fail(state,CreateReservationOutcome::SessionNotFound);return;}
+            if(!gate->staticallyAvailable()){fail(state,CreateReservationOutcome::SessionNotAvailable);return;}
+            if(gate->state==SalesWindowState::NotStarted){fail(state,CreateReservationOutcome::SalesNotStarted);return;}
+            if(gate->state==SalesWindowState::Ended){fail(state,CreateReservationOutcome::SalesEnded);return;}
+            holdSeats(state);
+        },[state]{fail(state,CreateReservationOutcome::InternalError);});
 }
 
 void ReservationService::holdSeats(

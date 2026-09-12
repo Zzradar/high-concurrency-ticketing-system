@@ -1,0 +1,17 @@
+[
+  {
+    "case": "G0",
+    "passed": true,
+    "directory": "performance\\results\\phase15-current-g0"
+  },
+  {
+    "case": "U1",
+    "passed": true,
+    "directory": "performance\\results\\phase15-current-u1"
+  },
+  {
+    "case": "U2",
+    "passed": true,
+    "directory": "performance\\results\\phase15-current-u2"
+  }
+]

@@ -17,6 +17,7 @@ TicketEvent EventService::toDto(EventRow row)
         .cover = std::move(row.cover),
         .sessionCount = row.sessionCount,
         .category = std::move(row.category),
+        .salesWindow = std::move(row.salesWindow),
     };
 }
 

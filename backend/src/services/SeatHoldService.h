@@ -28,6 +28,7 @@ class SeatHoldService
     using ReadCompletion = std::function<void(SeatHoldReadResult)>;
 
     static void validateConfiguration();
+    static std::int64_t defaultTtlMilliseconds();
 
     void prepare(
         const std::string &sessionId,
@@ -36,6 +37,7 @@ class SeatHoldService
         const std::vector<std::string> &retainedSeatIds,
         std::int64_t baseRevision,
         std::int64_t targetRevision,
+        std::int64_t ttlMilliseconds,
         Completion completion) const;
 
     void abort(
@@ -57,6 +59,7 @@ class SeatHoldService
         const std::string &checkoutSessionId,
         const std::vector<std::string> &seatIds,
         std::int64_t revision,
+        std::int64_t ttlMilliseconds,
         Completion completion) const;
 
     void release(

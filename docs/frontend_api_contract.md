@@ -734,3 +734,11 @@ zones 是全场各区公共汇总；seats/changes 只含目标区。认证且 ch
 参数不成对/非法StreamID为400 INVALID_ARGUMENT；未知场次/区域为404 SESSION_NOT_FOUND/ZONE_NOT_FOUND；初始化等待耗尽为503 SEAT_AVAILABILITY_INITIALIZING，compute队列满为503 SEAT_MAP_BUSY。无zone仍返回原 `{sessionId,seats}`，兼容调用者不必迁移。
 
 页面每2s串行轮询，degraded5s；隐藏暂停，可见/focus恢复。区切换只加载该区，保留跨区已选；认证/Checkout上下文变化立即 Snapshot 当前及选中席所属区，并丢弃旧context响应。恢复会话的label来自静态layout。完整实现和验收见 [Phase16记录](phase16_availability_read_model_implementation.md)。
+
+## Phase15 SalesWindow（必需新增字段）
+
+所有Event与Session响应包含 `salesWindow: { startsAt: string, endsAt: string, state: 'NOT_STARTED' | 'OPEN' | 'ENDED', evaluatedAt: string }`。三个时间字段均为UTC Z；state按半开区间计算并独立于静态status。Session endsAt为min(Event end,Session start_time)，Event endsAt为min(Event end,最晚场次start_time)。evaluatedAt只用于前端展示时钟校准，客户端不能推定正式准入。
+
+POST /reservations、POST /checkout-sessions、非空PUT /checkout-sessions/{id}/seats、POST /checkout-sessions/{id}/confirm 的新准入可返回HTTP409 `SALES_NOT_STARTED`或`SALES_ENDED`。空替换可继续释放；RESERVED与已成功正式幂等结果不因停售失效。SUBMITTING确认沿用原key恢复，不能简单视作停售失败。现有订单仍按expiresAt支付。
+
+选座页仅服务端OPEN且静态可售时编辑；关闭窗口可展示一个Zone Snapshot并停止周期Delta。边界只刷新一次Session。明确售票错误清选择/locator、保留布局，不启动未知结果轮询；网络/5xx异常才恢复原会话。详见[Phase15实施与验证](phase15_sales_window_implementation.md)。

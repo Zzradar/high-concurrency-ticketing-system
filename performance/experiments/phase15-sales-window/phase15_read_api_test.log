@@ -1,0 +1,7 @@
+test_effective_end_clamped_to_session_and_last_session (__main__.SalesReadApiTest) ... ok
+test_time_states_and_static_independence (__main__.SalesReadApiTest) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 2.332s
+
+OK

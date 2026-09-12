@@ -26,6 +26,8 @@ enum class CheckoutSessionOutcome
     InvalidArgument,
     SessionNotFound,
     SessionNotAvailable,
+    SalesNotStarted,
+    SalesEnded,
     NotFound,
     NotModifiable,
     VersionConflict,
@@ -98,6 +100,7 @@ class CheckoutSessionService
     void replaceLock(const std::shared_ptr<ReplaceState> &state) const;
     void replaceLoadCurrentSeats(const std::shared_ptr<ReplaceState> &state) const;
     void replaceValidateSeats(const std::shared_ptr<ReplaceState> &state) const;
+    void replaceWriteHolds(const std::shared_ptr<ReplaceState> &state) const;
     void replacePrepareHolds(const std::shared_ptr<ReplaceState> &state) const;
     void replaceDeleteSeats(const std::shared_ptr<ReplaceState> &state) const;
     void replaceInsertSeats(const std::shared_ptr<ReplaceState> &state) const;
@@ -108,6 +111,9 @@ class CheckoutSessionService
     void prepareConfirm(const std::shared_ptr<ConfirmState> &state) const;
     void confirmLoadSeats(const std::shared_ptr<ConfirmState> &state) const;
     void confirmEnsureHolds(const std::shared_ptr<ConfirmState> &state) const;
+    void closeSelectingAfterSalesWindow(const std::shared_ptr<ConfirmState> &state) const;
+    void closeSubmittingAfterSalesWindow(const std::shared_ptr<ConfirmState> &state) const;
+    void closeSalesWindowCommit(const std::shared_ptr<ConfirmState> &state) const;
     void freezeConfirm(const std::shared_ptr<ConfirmState> &state) const;
     void confirmPrepareCommit(const std::shared_ptr<ConfirmState> &state) const;
     void runFormalReservation(const std::shared_ptr<ConfirmState> &state) const;
@@ -152,5 +158,6 @@ class CheckoutSessionService
     ReservationRepository reservationRepository_;
     ReservationService reservationService_;
     SeatHoldService seatHoldService_;
+    SalesWindowRepository salesWindowRepository_;
 };
 }  // namespace ticketing

@@ -40,6 +40,7 @@ class PerformanceMetricsSourceContractTest(unittest.TestCase):
         self.assertEqual(
             set(by_name),
             {
+                "ticketing_sales_window_rejections_total",
                 "ticketing_availability_events_total",
                 "ticketing_availability_duration_seconds",
                 "ticketing_availability_returned_seats",
@@ -75,6 +76,7 @@ class PerformanceMetricsSourceContractTest(unittest.TestCase):
             by_name["ticketing_http_requests_total"]["labels"],
             ["method", "route", "status_class"],
         )
+        self.assertEqual(by_name["ticketing_sales_window_rejections_total"]["labels"], ["entrypoint", "reason"])
         self.assertEqual(by_name["ticketing_availability_events_total"]["labels"], ["operation", "outcome"])
         self.assertEqual(by_name["ticketing_availability_returned_seats"]["labels"], ["operation"])
         self.assertEqual(by_name["ticketing_seat_map_stage_duration_seconds"]["labels"], ["stage"])

@@ -57,6 +57,13 @@ export interface CreateRefundResult {
   pollAfterMs: number
 }
 
+export interface SalesWindow {
+  startsAt: string
+  endsAt: string
+  state: 'NOT_STARTED' | 'OPEN' | 'ENDED'
+  evaluatedAt: string
+}
+
 export interface TicketEvent {
   id: string
   name: string
@@ -64,6 +71,7 @@ export interface TicketEvent {
   city: string
   venue: string
   dateRange: string
+  salesWindow: SalesWindow
   status: EventStatus
   cover: string
   sessionCount: number
@@ -78,6 +86,7 @@ export interface TicketSession {
   weekday: string
   venue: string
   gateTime: string
+  salesWindow: SalesWindow
   status: SessionStatus
   priceFrom: number // 整数“分”
   availability: '充足' | '紧张' | '售罄'

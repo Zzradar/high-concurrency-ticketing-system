@@ -1,6 +1,7 @@
 #include "controllers/CheckoutSessionController.h"
 
 #include "common/ApiResponse.h"
+#include "observability/PerformanceMetrics.h"
 #include "common/AuthContext.h"
 
 #include <memory>
@@ -46,6 +47,10 @@ drogon::HttpResponsePtr makeCheckoutResponse(
                 drogon::k409Conflict,
                 "SESSION_NOT_AVAILABLE",
                 "Session is not available for checkout");
+        case CheckoutSessionOutcome::SalesNotStarted:
+            return ticketing::makeErrorResponse(drogon::k409Conflict,"SALES_NOT_STARTED","Ticket sales have not started");
+        case CheckoutSessionOutcome::SalesEnded:
+            return ticketing::makeErrorResponse(drogon::k409Conflict,"SALES_ENDED","Ticket sales have ended");
         case CheckoutSessionOutcome::NotFound:
             return ticketing::makeErrorResponse(
                 drogon::k404NotFound,
@@ -89,6 +94,14 @@ drogon::HttpResponsePtr makeCheckoutResponse(
                                         "Internal server error");
 }
 
+void countSalesFailure(std::string_view entrypoint,const ticketing::CheckoutSessionResult &result)
+{
+    if(result.outcome==ticketing::CheckoutSessionOutcome::SalesNotStarted)
+        ticketing::PerformanceMetrics::salesWindowRejection(entrypoint,"not_started");
+    else if(result.outcome==ticketing::CheckoutSessionOutcome::SalesEnded)
+        ticketing::PerformanceMetrics::salesWindowRejection(entrypoint,"ended");
+}
+
 void respond(const std::shared_ptr<HttpCallback> &callback,
              ticketing::CheckoutSessionResult result)
 {
@@ -112,6 +125,7 @@ void CheckoutSessionController::create(
     service_.create(ticketing::authenticatedUserId(request),
                     *json,
                     [callbackPtr](ticketing::CheckoutSessionResult result) {
+                         countSalesFailure("checkout_create",result);
                         respond(callbackPtr, std::move(result));
                     });
 }
@@ -184,6 +198,7 @@ void CheckoutSessionController::replaceSeats(
         ticketing::authenticatedUserId(request),
         *json,
         [callbackPtr](ticketing::CheckoutSessionResult result) {
+                         countSalesFailure("checkout_replace",result);
             respond(callbackPtr, std::move(result));
         });
 }
@@ -197,6 +212,7 @@ void CheckoutSessionController::confirm(
     service_.confirm(std::move(id),
                      ticketing::authenticatedUserId(request),
                      [callbackPtr](ticketing::CheckoutSessionResult result) {
+                         countSalesFailure("checkout_confirm",result);
                          if (result.outcome ==
                                  ticketing::CheckoutSessionOutcome::Confirmed &&
                              result.value && !result.disposition.empty())

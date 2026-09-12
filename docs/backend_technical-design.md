@@ -1050,3 +1050,7 @@ FAILED保留订单与座位；SYSTEM退款终态不改变票务权益，也不�
 正式库存仍由 PostgreSQL 事务和行锁决定。迁移010以状态变化 trigger 在同事务递增 formal_version 并写 outbox；异步租约 worker 投影至现有 Redis。模型分为正式状态/版本、临时 Hold、到期索引、每区 Summary 与 Stream。init token 单赢家读 PG，发布时导入最新 Hold；更高版本投影补齐快照后的正式变化。
 
 带 zone 的 Availability 提供 Snapshot/Delta/generation/cursor；不带 zone 的 legacy 保留。Redis 失效回退 PG 分区 degraded Snapshot，正式 Confirm 继续依赖 PG。JSON 编码和 owner overlay 复用 SeatMapComputeExecutor 4/16。配置、原子性、故障与真实测量详见 [Phase16 实施记录](phase16_availability_read_model_implementation.md)。本节更新先前无轮询/无增量协议的历史阶段描述。
+
+## Phase15 售票时间准入（当前实现）
+
+Event 新增 sales_starts_at / sales_ends_at（migration011，TIMESTAMPTZ NOT NULL，starts < ends）。Session有效截止取Event截止和开演较早值。Reservation在现有幂等结果/唯一键仲裁之后处理新请求准入，并在全部Seat行锁与校验后用当前事务的一次新DB clock_timestamp Gate作最终准入。Event/Session不加全局写锁。Checkout的SELECTING时间失败收口为ABANDONED；SUBMITTING先恢复原幂等结果，新的正式时间拒绝才按原key重新加锁收口。既有订单支付/退款/过期截止保持原规则。Hold改为PX/PEXPIRE并受销售窗口剩余毫秒限制，Phase16根据实际PTTL同步派生状态。详见[Phase15记录](phase15_sales_window_implementation.md)。

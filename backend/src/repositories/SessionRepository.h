@@ -1,4 +1,5 @@
 #pragma once
+#include "common/SalesWindow.h"
 
 #include <cstdint>
 #include <functional>
@@ -21,6 +22,7 @@ struct SessionRow
     std::int64_t priceFrom{};
     std::int64_t totalCount{};
     std::int64_t availableCount{};
+    SalesWindow salesWindow;
 };
 
 class SessionRepository

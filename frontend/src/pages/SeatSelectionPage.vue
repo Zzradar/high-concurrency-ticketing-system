@@ -7,6 +7,7 @@ import PageBreadcrumbs from '../components/PageBreadcrumbs.vue'
 import PageState from '../components/PageState.vue'
 import { routeNames, setPageTitle } from '../navigation'
 import { requestNotificationRefresh, showNotice } from '../uiSignals'
+import { useSalesWindow } from '../utils/salesWindow'
 import { ZoneAvailabilityState } from '../utils/zoneAvailability'
 import SeatSelectionView from '../views/SeatSelectionView.vue'
 import type { CheckoutSession, Seat, SeatStatic, TicketEvent, TicketOrder, TicketSession, SeatZoneAvailabilitySummary } from '../types'
@@ -40,6 +41,36 @@ let availabilityTimer: ReturnType<typeof setTimeout> | undefined
 let ownContext = ''
 let disposed = false
 const zoneRequests = new Map<string, Promise<boolean>>()
+const salesOpen = computed(() => session.value?.salesWindow.state === 'OPEN' && session.value.status === 'ON_SALE' && event.value?.status === 'ON_SALE')
+const { label: salesLabel } = useSalesWindow(computed(() => session.value?.salesWindow), refreshSalesSession)
+async function refreshSalesSession() {
+  if (!session.value) return
+  const id = session.value.id
+  const epoch = pageLoadEpoch
+  const fresh = await ticketApi.getSession(id)
+  if (disposed || epoch !== pageLoadEpoch || session.value?.id !== id) return
+  session.value = fresh
+  if (salesOpen.value) scheduleAvailability()
+  else stopAvailabilityTimer()
+}
+async function handleSalesFailure(cause: unknown) {
+  if (!(cause instanceof TicketApiError) || !['SALES_NOT_STARTED', 'SALES_ENDED'].includes(cause.code)) return false
+  pollingGeneration++
+  submittingPolling.value = false
+  submitUncertain.value = false
+  stopAvailabilityTimer()
+  error.value = cause.code === 'SALES_NOT_STARTED' ? '售票尚未开始。' : '售票已结束。'
+  try { await refreshSalesSession() } catch { /* Keep the map and fail closed until a successful read. */
+    if (session.value) session.value = {...session.value, salesWindow: {...session.value.salesWindow, state: cause.code === 'SALES_ENDED' ? 'ENDED' : 'NOT_STARTED'}}
+  }
+  if (checkout.value?.status === 'SELECTING') {
+    try { await ticketApi.abandonCheckoutSession(checkout.value.id) } catch { /* best effort */ }
+  }
+  checkout.value = null
+  selectedSeatIds.value = []
+  locatorClear()
+  return true
+}
 
 function stopAvailabilityTimer() {
   if (availabilityTimer !== undefined) clearTimeout(availabilityTimer)
@@ -47,7 +78,7 @@ function stopAvailabilityTimer() {
 }
 function scheduleAvailability() {
   stopAvailabilityTimer()
-  if (disposed || document.hidden || !seatMapLoaded.value || !activeZone.value) return
+  if (disposed || document.hidden || !salesOpen.value || !seatMapLoaded.value || !activeZone.value) return
   const slow = availability.sync.get(activeZone.value)?.degraded
   availabilityTimer = setTimeout(() => { void refreshSeats() }, slow ? 5000 : 2000)
 }
@@ -89,7 +120,7 @@ function visibilityChanged() {
 }
 
 const selectedSeats = computed(() => seats.value.filter((seat) => selectedSeatIds.value.includes(seat.id)))
-const editingDisabled = computed(() => refreshing.value || syncing.value || confirming.value || submittingPolling.value || checkout.value?.status !== 'SELECTING' && !!checkout.value)
+const editingDisabled = computed(() => !salesOpen.value || refreshing.value || syncing.value || confirming.value || submittingPolling.value || checkout.value?.status !== 'SELECTING' && !!checkout.value)
 const existingOrder = computed(() => sessionOrders.value.find((order) => order.status === 'PENDING_PAYMENT') ?? sessionOrders.value.find((order) => order.status === 'PAID'))
 
 function locatorWrite(value: CheckoutSession) {
@@ -241,6 +272,7 @@ async function toggleSeat(seat: Seat) {
     }
     await refreshSeats()
   } catch (cause) {
+    if (await handleSalesFailure(cause)) return
     error.value = cause instanceof TicketApiError ? cause.message : '座位选择同步失败。'
     const isHoldConflict = cause instanceof TicketApiError && cause.code === 'SEAT_TEMPORARILY_HELD'
     let refreshed: boolean | undefined
@@ -276,6 +308,7 @@ async function clearSeats() {
 
 async function confirmCheckout() {
   if (!(await requireLogin()) || !checkout.value || !selectedSeatIds.value.length) return
+  if (checkout.value.status === 'SELECTING' && !salesOpen.value) return
   confirming.value = true
   error.value = ''
   try {
@@ -296,8 +329,9 @@ async function confirmCheckout() {
       })
     }
   } catch (cause) {
+    if (await handleSalesFailure(cause)) return
     error.value = cause instanceof TicketApiError ? cause.message : '确认结果暂时未知，正在恢复同一购票会话。'
-    startSubmittingPoll(checkout.value.id)
+    if (!(cause instanceof TicketApiError) || cause.status !== undefined && cause.status >= 500 || cause.code === 'INTERNAL_ERROR') startSubmittingPoll(checkout.value.id)
   } finally {
     confirming.value = false
   }
@@ -348,7 +382,7 @@ async function abandon(value: CheckoutSession) {
 
 async function handleFocus() {
   if (document.hidden) return
-  await refreshSeats()
+  await Promise.all([refreshSalesSession().catch(() => { /* existing state remains authoritative */ }), refreshSeats()])
   requestNotificationRefresh()
   await refreshSessionOrders()
   if (checkout.value) {
@@ -389,6 +423,7 @@ watch(() => route.params.sessionId, () => { pollingGeneration++; checkout.value 
     <span>{{ existingOrder.status === 'PENDING_PAYMENT' ? '你有本场次待支付订单' : '你已经购买过本场次' }}</span>
     <button type="button" @click="router.push({ name: routeNames.orderDetail, params: { orderId: existingOrder.id } })">查看订单</button><span>也可继续购票</span>
   </section>
+  <p v-if="session" class="message-banner" role="status">{{ salesLabel }} · 开售 {{ session.salesWindow.startsAt }} · 截止 {{ session.salesWindow.endsAt }}</p>
   <SeatSelectionView
     v-if="event && session && seatMapLoaded"
     :event="event" :session="session" :seats="seats.filter(seat => seat.zone === activeZone)"

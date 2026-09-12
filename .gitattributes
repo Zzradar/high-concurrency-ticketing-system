@@ -1,2 +1,3 @@
 # This file is hashed byte-for-byte by the frozen Phase14 plan.
 performance/baseline/phase14-targets.json text eol=lf
+performance/phase14/load-main-memory.json text eol=lf

@@ -6,11 +6,11 @@ import type { Seat, TicketEvent, TicketSession } from '../types'
 
 const event: TicketEvent = {
   id: 'event-1', name: '测试活动', description: '说明', city: '上海', venue: '测试馆',
-  dateRange: '2026.10.01', status: 'ON_SALE', cover: '/cover.png', sessionCount: 1, category: '演唱会',
+  dateRange: '2026.10.01', salesWindow: {startsAt:'2026-01-01T00:00:00Z',endsAt:'2026-12-01T00:00:00Z',evaluatedAt:'2026-09-01T00:00:00Z',state:'OPEN' as const}, status: 'ON_SALE', cover: '/cover.png', sessionCount: 1, category: '演唱会',
 }
 const session: TicketSession = {
   id: 'session-1', eventId: event.id, date: '10月01日', time: '19:30', weekday: '周四',
-  venue: '测试馆', gateTime: '18:00', status: 'ON_SALE', priceFrom: 58000, availability: '充足',
+  venue: '测试馆', gateTime: '18:00', salesWindow: {startsAt:'2026-01-01T00:00:00Z',endsAt:'2026-12-01T00:00:00Z',evaluatedAt:'2026-09-01T00:00:00Z',state:'OPEN' as const}, status: 'ON_SALE', priceFrom: 58000, availability: '充足',
 }
 const seats: Seat[] = [
   { id: 'A1', sessionId: session.id, label: 'A01', row: 'A', number: 1, zone: '星光区', price: 128000, status: 'AVAILABLE' },

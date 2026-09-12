@@ -1,0 +1,9 @@
+{
+  "intervalSeconds": 1,
+  "samples": 23,
+  "errors": [],
+  "maxGapSeconds": 1.0187280178070068,
+  "collectionSeconds": 0.09599999967031181,
+  "connectionMode": "persistent_read_only",
+  "scope": "target PostgreSQL client activity only; separate from host and application metrics"
+}

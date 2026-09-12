@@ -49,6 +49,7 @@ add_executable(ticketing_backend
     src/controllers/HealthController.cpp
     src/controllers/EventController.cpp
     src/repositories/EventRepository.cpp
+    src/repositories/SalesWindowRepository.cpp
     src/services/EventService.cpp
     src/controllers/SessionController.cpp
     src/repositories/SessionRepository.cpp
@@ -289,4 +290,18 @@ endif()
 if(BUILD_TESTING AND TICKETING_PHASE16_EXTERNAL_TESTS)
     add_test(NAME phase16_api COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase16_api_test.py")
     set_tests_properties(phase16_api PROPERTIES RUN_SERIAL TRUE LABELS integration)
+endif()
+
+if(BUILD_TESTING)
+    add_test(NAME phase15_source_contract COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase15_source_contract_test.py")
+endif()
+option(TICKETING_PHASE15_EXTERNAL_TESTS "Register isolated Phase15 database/HTTP gates" OFF)
+if(BUILD_TESTING AND TICKETING_PHASE15_EXTERNAL_TESTS)
+    add_test(NAME phase15_migration COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase15_migration_test.py")
+    add_test(NAME phase15_read_api COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase15_read_api_test.py")
+    add_test(NAME phase15_reservation COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase15_reservation_test.py")
+    add_test(NAME phase15_checkout COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase15_checkout_test.py")
+    add_test(NAME phase15_crash_recovery COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase15_crash_recovery_test.py")
+    add_test(NAME phase15_observation COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/phase15_observation_test.py")
+    set_tests_properties(phase15_migration phase15_read_api phase15_reservation phase15_checkout phase15_crash_recovery phase15_observation PROPERTIES RUN_SERIAL TRUE LABELS integration)
 endif()

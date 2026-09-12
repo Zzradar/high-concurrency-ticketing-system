@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "runId": "phase15-baseline-g0",
+  "gitHead": "486513d7029bff915af46b6fc62cbe88d70780c1",
+  "worktree": " M backend/tests/phase15_checkout_test.py\n?? backend/tests/phase15_crash_recovery_test.py\n?? frontend/phase15-e2e/\n?? frontend/playwright.phase15.config.ts\n?? performance/scripts/run_phase15_comparison.py\n",
+  "mode": "smoke",
+  "shards": [
+    {
+      "shard": "0",
+      "segment": "0:1",
+      "sequence": "0,1",
+      "role": "main"
+    }
+  ],
+  "targetsSha256": "653bbcf69399ef14f822e2ff4235332384062743072b93e3763632673a5b35b8",
+  "snapshotSha256": "303872cad41c6a50bb96af54ebb2258b6febe54123bd3dd8adad65db8dec1587",
+  "start": "2026-09-12T04:21:47.638744Z",
+  "releaseAtMs": 1789186915637,
+  "idempotencyNamespace": "phase15-baseline-g0"
+}

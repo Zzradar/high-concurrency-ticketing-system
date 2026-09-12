@@ -1,0 +1,32 @@
+[
+  {
+    "suite": "phase15_migration_test",
+    "tests": 4,
+    "passed": true
+  },
+  {
+    "suite": "phase15_read_api_test",
+    "tests": 2,
+    "passed": true
+  },
+  {
+    "suite": "phase15_reservation_test",
+    "tests": 4,
+    "passed": true
+  },
+  {
+    "suite": "phase15_checkout_test",
+    "tests": 7,
+    "passed": true
+  },
+  {
+    "suite": "phase15_crash_recovery_test",
+    "tests": 1,
+    "passed": true
+  },
+  {
+    "suite": "phase15_observation_test",
+    "tests": 2,
+    "passed": true
+  }
+]

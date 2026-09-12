@@ -1,0 +1,689 @@
+Start testing: Sep 12 04:33 UTC
+----------------------------------------------------------
+1/32 Testing: phase12_source_contract
+1/32 Test: phase12_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/phase12_source_contract_test.py"
+Directory: /tmp/phase16-build
+"phase12_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_build_registers_new_sources (__main__.RefundContracts.test_build_registers_new_sources) ... ok
+test_compose_real_initialization_order (__main__.RefundContracts.test_compose_real_initialization_order) ... ok
+test_fence_before_rights_and_sold_shape_preserved (__main__.RefundContracts.test_fence_before_rights_and_sold_shape_preserved) ... ok
+test_no_webhook_binding_and_request_no_provider (__main__.RefundContracts.test_no_webhook_binding_and_request_no_provider) ... ok
+test_performance_compose_initialization_order (__main__.RefundContracts.test_performance_compose_initialization_order) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.014s
+
+OK
+<end of output>
+Test time =   0.08 sec
+----------------------------------------------------------
+Test Passed.
+"phase12_source_contract" end time: Sep 12 04:33 UTC
+"phase12_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/32 Testing: schema_contract
+2/32 Test: schema_contract
+Command: "/usr/bin/python3" "/work/backend/tests/schema_contract_test.py"
+Directory: /tmp/phase16-build
+"schema_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+OK
+<end of output>
+Test time =   0.06 sec
+----------------------------------------------------------
+Test Passed.
+"schema_contract" end time: Sep 12 04:33 UTC
+"schema_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/32 Testing: read_api_source_contract
+3/32 Test: read_api_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/read_api_source_contract_test.py"
+Directory: /tmp/phase16-build
+"read_api_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.032s
+
+OK
+<end of output>
+Test time =   0.10 sec
+----------------------------------------------------------
+Test Passed.
+"read_api_source_contract" end time: Sep 12 04:33 UTC
+"read_api_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/32 Testing: phase3_schema_contract
+4/32 Test: phase3_schema_contract
+Command: "/usr/bin/python3" "/work/backend/tests/phase3_schema_contract_test.py"
+Directory: /tmp/phase16-build
+"phase3_schema_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"phase3_schema_contract" end time: Sep 12 04:33 UTC
+"phase3_schema_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/32 Testing: reservation_source_contract
+5/32 Test: reservation_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/reservation_source_contract_test.py"
+Directory: /tmp/phase16-build
+"reservation_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.023s
+
+OK
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"reservation_source_contract" end time: Sep 12 04:33 UTC
+"reservation_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/32 Testing: order_source_contract
+6/32 Test: order_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/order_source_contract_test.py"
+Directory: /tmp/phase16-build
+"order_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_order_get_is_read_only (__main__.OrderSourceContractTest.test_order_get_is_read_only) ... ok
+test_order_get_route_and_user_scope_are_registered (__main__.OrderSourceContractTest.test_order_get_route_and_user_scope_are_registered) ... ok
+test_order_query_returns_the_frontend_contract (__main__.OrderSourceContractTest.test_order_query_returns_the_frontend_contract) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.018s
+
+OK
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"order_source_contract" end time: Sep 12 04:33 UTC
+"order_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+7/32 Testing: order_expiry_source_contract
+7/32 Test: order_expiry_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/order_expiry_source_contract_test.py"
+Directory: /tmp/phase16-build
+"order_expiry_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.020s
+
+OK
+<end of output>
+Test time =   0.08 sec
+----------------------------------------------------------
+Test Passed.
+"order_expiry_source_contract" end time: Sep 12 04:33 UTC
+"order_expiry_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+8/32 Testing: phase5_schema_contract
+8/32 Test: phase5_schema_contract
+Command: "/usr/bin/python3" "/work/backend/tests/phase5_schema_contract_test.py"
+Directory: /tmp/phase16-build
+"phase5_schema_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.000s
+
+OK
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"phase5_schema_contract" end time: Sep 12 04:33 UTC
+"phase5_schema_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+9/32 Testing: checkout_session_source_contract
+9/32 Test: checkout_session_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/checkout_session_source_contract_test.py"
+Directory: /tmp/phase16-build
+"checkout_session_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.036s
+
+OK
+<end of output>
+Test time =   0.10 sec
+----------------------------------------------------------
+Test Passed.
+"checkout_session_source_contract" end time: Sep 12 04:33 UTC
+"checkout_session_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+10/32 Testing: seat_hold_source_contract
+10/32 Test: seat_hold_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/seat_hold_source_contract_test.py"
+Directory: /tmp/phase16-build
+"seat_hold_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.024s
+
+OK
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"seat_hold_source_contract" end time: Sep 12 04:33 UTC
+"seat_hold_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+11/32 Testing: seat_split_source_contract
+11/32 Test: seat_split_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/seat_split_source_contract_test.py"
+Directory: /tmp/phase16-build
+"seat_split_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_availability_query_is_minimal_and_does_not_join_seats (__main__.SeatSplitSourceContractTest.test_availability_query_is_minimal_and_does_not_join_seats) ... ok
+test_layout_query_omits_dynamic_status (__main__.SeatSplitSourceContractTest.test_layout_query_omits_dynamic_status) ... ok
+test_low_cardinality_split_stages_are_registered (__main__.SeatSplitSourceContractTest.test_low_cardinality_split_stages_are_registered) ... ok
+test_routes_and_minimal_dtos_are_distinct (__main__.SeatSplitSourceContractTest.test_routes_and_minimal_dtos_are_distinct) ... ok
+test_shared_overlay_and_capacity_guard_are_reused (__main__.SeatSplitSourceContractTest.test_shared_overlay_and_capacity_guard_are_reused) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.025s
+
+OK
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"seat_split_source_contract" end time: Sep 12 04:33 UTC
+"seat_split_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+12/32 Testing: phase8_schema_contract
+12/32 Test: phase8_schema_contract
+Command: "/usr/bin/python3" "/work/backend/tests/phase8_schema_contract_test.py"
+Directory: /tmp/phase16-build
+"phase8_schema_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_does_not_extend_order_or_checkout_states (__main__.Phase8SchemaContractTest.test_does_not_extend_order_or_checkout_states) ... ok
+test_dtos_and_fresh_database_order_are_registered (__main__.Phase8SchemaContractTest.test_dtos_and_fresh_database_order_are_registered) ... ok
+test_only_one_processing_attempt_per_order (__main__.Phase8SchemaContractTest.test_only_one_processing_attempt_per_order) ... ok
+test_payment_attempt_shape_and_state_constraints (__main__.Phase8SchemaContractTest.test_payment_attempt_shape_and_state_constraints) ... ok
+test_refunds_and_notifications_are_idempotent (__main__.Phase8SchemaContractTest.test_refunds_and_notifications_are_idempotent) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+OK
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"phase8_schema_contract" end time: Sep 12 04:33 UTC
+"phase8_schema_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+13/32 Testing: order_lifecycle_source_contract
+13/32 Test: order_lifecycle_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/order_lifecycle_source_contract_test.py"
+Directory: /tmp/phase16-build
+"order_lifecycle_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_cancel_and_expire_share_formal_transition_core (__main__.OrderLifecycleSourceContractTest.test_cancel_and_expire_share_formal_transition_core) ... ok
+test_cancel_route_and_errors_are_exposed (__main__.OrderLifecycleSourceContractTest.test_cancel_route_and_errors_are_exposed) ... ok
+test_order_is_first_lock_and_uses_wall_clock (__main__.OrderLifecycleSourceContractTest.test_order_is_first_lock_and_uses_wall_clock) ... ok
+test_processing_grace_and_timeout_are_checked_under_lock (__main__.OrderLifecycleSourceContractTest.test_processing_grace_and_timeout_are_checked_under_lock) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.016s
+
+OK
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"order_lifecycle_source_contract" end time: Sep 12 04:33 UTC
+"order_lifecycle_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+14/32 Testing: payment_source_contract
+14/32 Test: payment_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/payment_source_contract_test.py"
+Directory: /tmp/phase16-build
+"payment_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_attempt_is_committed_before_provider_and_redis_is_not_used (__main__.PaymentSourceContractTest.test_attempt_is_committed_before_provider_and_redis_is_not_used) ... ok
+test_callback_supports_accept_failure_timeout_and_refund (__main__.PaymentSourceContractTest.test_callback_supports_accept_failure_timeout_and_refund) ... ok
+test_configuration_is_validated_and_has_deterministic_non_http_seam (__main__.PaymentSourceContractTest.test_configuration_is_validated_and_has_deterministic_non_http_seam) ... ok
+test_provider_is_non_blocking_and_callback_is_order_first (__main__.PaymentSourceContractTest.test_provider_is_non_blocking_and_callback_is_order_first) ... ok
+test_routes_and_user_scoping_are_registered (__main__.PaymentSourceContractTest.test_routes_and_user_scoping_are_registered) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.032s
+
+OK
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"payment_source_contract" end time: Sep 12 04:33 UTC
+"payment_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+15/32 Testing: phase9_auth_schema_contract
+15/32 Test: phase9_auth_schema_contract
+Command: "/usr/bin/python3" "/work/backend/tests/phase9_auth_schema_contract_test.py"
+Directory: /tmp/phase16-build
+"phase9_auth_schema_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_existing_users_are_backfilled_without_assuming_only_seed_users (__main__.Phase9AuthSchemaContractTest.test_existing_users_are_backfilled_without_assuming_only_seed_users) ... ok
+test_native_dependencies_are_explicit (__main__.Phase9AuthSchemaContractTest.test_native_dependencies_are_explicit) ... ok
+test_notification_and_fresh_init_order (__main__.Phase9AuthSchemaContractTest.test_notification_and_fresh_init_order) ... ok
+test_seed_uses_real_argon2id_demo_and_disabled_holder (__main__.Phase9AuthSchemaContractTest.test_seed_uses_real_argon2id_demo_and_disabled_holder) ... ok
+test_user_sessions_allow_many_per_user_and_hash_only_tokens (__main__.Phase9AuthSchemaContractTest.test_user_sessions_allow_many_per_user_and_hash_only_tokens) ... ok
+test_users_are_canonical_and_status_checked (__main__.Phase9AuthSchemaContractTest.test_users_are_canonical_and_status_checked) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.000s
+
+OK
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"phase9_auth_schema_contract" end time: Sep 12 04:33 UTC
+"phase9_auth_schema_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+16/32 Testing: auth_core_source_contract
+16/32 Test: auth_core_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/auth_core_source_contract_test.py"
+Directory: /tmp/phase16-build
+"auth_core_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_cache_is_namespaced_and_database_fallback_exists (__main__.AuthCoreSourceContractTest.test_cache_is_namespaced_and_database_fallback_exists) ... ok
+test_database_stores_hash_and_uses_authoritative_clock (__main__.AuthCoreSourceContractTest.test_database_stores_hash_and_uses_authoritative_clock) ... ok
+test_password_verification_is_argon2id_and_bounded (__main__.AuthCoreSourceContractTest.test_password_verification_is_argon2id_and_bounded) ... ok
+test_session_timeout_parameters_keep_postgres_int8_type (__main__.AuthCoreSourceContractTest.test_session_timeout_parameters_keep_postgres_int8_type) ... ok
+test_token_uses_csprng_and_sha256 (__main__.AuthCoreSourceContractTest.test_token_uses_csprng_and_sha256) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.000s
+
+OK
+<end of output>
+Test time =   0.08 sec
+----------------------------------------------------------
+Test Passed.
+"auth_core_source_contract" end time: Sep 12 04:33 UTC
+"auth_core_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+17/32 Testing: auth_http_source_contract
+17/32 Test: auth_http_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/auth_http_source_contract_test.py"
+Directory: /tmp/phase16-build
+"auth_http_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_cookie_security_shape (__main__.AuthHttpSourceContractTest.test_cookie_security_shape) ... ok
+test_filter_uses_cookie_context_and_csrf (__main__.AuthHttpSourceContractTest.test_filter_uses_cookie_context_and_csrf) ... ok
+test_login_has_dummy_argon2_and_bounded_executor (__main__.AuthHttpSourceContractTest.test_login_has_dummy_argon2_and_bounded_executor) ... ok
+test_rate_limit_is_atomic_ttl_and_fail_open (__main__.AuthHttpSourceContractTest.test_rate_limit_is_atomic_ttl_and_fail_open) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+OK
+<end of output>
+Test time =   0.08 sec
+----------------------------------------------------------
+Test Passed.
+"auth_http_source_contract" end time: Sep 12 04:33 UTC
+"auth_http_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+18/32 Testing: authenticated_routes_source_contract
+18/32 Test: authenticated_routes_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/authenticated_routes_source_contract_test.py"
+Directory: /tmp/phase16-build
+"authenticated_routes_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_business_routes_use_filter_and_context (__main__.AuthenticatedRoutesSourceContractTest.test_business_routes_use_filter_and_context) ... ok
+test_public_seat_map_requires_authenticated_database_ownership (__main__.AuthenticatedRoutesSourceContractTest.test_public_seat_map_requires_authenticated_database_ownership) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.031s
+
+OK
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"authenticated_routes_source_contract" end time: Sep 12 04:33 UTC
+"authenticated_routes_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+19/32 Testing: order_recovery_source_contract
+19/32 Test: order_recovery_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/order_recovery_source_contract_test.py"
+Directory: /tmp/phase16-build
+"order_recovery_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_order_created_notification_is_in_reservation_transaction (__main__.OrderRecoverySourceContractTest.test_order_created_notification_is_in_reservation_transaction) ... ok
+test_order_list_is_scoped_filtered_and_bounded_without_n_plus_one (__main__.OrderRecoverySourceContractTest.test_order_list_is_scoped_filtered_and_bounded_without_n_plus_one) ... ok
+test_session_detail_is_public_and_database_backed (__main__.OrderRecoverySourceContractTest.test_session_detail_is_public_and_database_backed) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"order_recovery_source_contract" end time: Sep 12 04:33 UTC
+"order_recovery_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+20/32 Testing: operation_disposition_source_contract
+20/32 Test: operation_disposition_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/operation_disposition_source_contract_test.py"
+Directory: /tmp/phase16-build
+"operation_disposition_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_cancel_uses_lifecycle_outcome (__main__.OperationDispositionSourceContractTest.test_cancel_uses_lifecycle_outcome) ... ok
+test_confirm_uses_locked_entry_state (__main__.OperationDispositionSourceContractTest.test_confirm_uses_locked_entry_state) ... ok
+test_payment_uses_attempt_creation_fact (__main__.OperationDispositionSourceContractTest.test_payment_uses_attempt_creation_fact) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+<end of output>
+Test time =   0.08 sec
+----------------------------------------------------------
+Test Passed.
+"operation_disposition_source_contract" end time: Sep 12 04:33 UTC
+"operation_disposition_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+21/32 Testing: performance_metrics_source_contract
+21/32 Test: performance_metrics_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/performance_metrics_source_contract_test.py"
+Directory: /tmp/phase16-build
+"performance_metrics_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_default_configs_do_not_enable_performance_metrics (__main__.PerformanceMetricsSourceContractTest.test_default_configs_do_not_enable_performance_metrics) ... ok
+test_metrics_use_bounded_labels_and_cumulative_histogram (__main__.PerformanceMetricsSourceContractTest.test_metrics_use_bounded_labels_and_cumulative_histogram) ... ok
+test_performance_config_declares_exact_metric_contract (__main__.PerformanceMetricsSourceContractTest.test_performance_config_declares_exact_metric_contract) ... ok
+test_registration_and_build_wiring_exist (__main__.PerformanceMetricsSourceContractTest.test_registration_and_build_wiring_exist) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.016s
+
+OK
+<end of output>
+Test time =   0.08 sec
+----------------------------------------------------------
+Test Passed.
+"performance_metrics_source_contract" end time: Sep 12 04:33 UTC
+"performance_metrics_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+22/32 Testing: phase11_payment_provider_source_contract
+22/32 Test: phase11_payment_provider_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/phase11_payment_provider_source_contract_test.py"
+Directory: /tmp/phase16-build
+"phase11_payment_provider_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_idempotency_and_secret_boundaries (__main__.Phase11ProviderSourceContractTest.test_idempotency_and_secret_boundaries) ... ok
+test_provider_boundary_and_direct_async_rest (__main__.Phase11ProviderSourceContractTest.test_provider_boundary_and_direct_async_rest) ... ok
+test_reconciliation_claims_without_locking_over_http (__main__.Phase11ProviderSourceContractTest.test_reconciliation_claims_without_locking_over_http) ... ok
+test_terminal_snapshot_is_transactional_and_secret_free (__main__.Phase11ProviderSourceContractTest.test_terminal_snapshot_is_transactional_and_secret_free) ... ok
+test_webhook_is_raw_signed_and_inbox_only (__main__.Phase11ProviderSourceContractTest.test_webhook_is_raw_signed_and_inbox_only) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.027s
+
+OK
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"phase11_payment_provider_source_contract" end time: Sep 12 04:33 UTC
+"phase11_payment_provider_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+23/32 Testing: phase11_schema_contract
+23/32 Test: phase11_schema_contract
+Command: "/usr/bin/python3" "/work/backend/tests/phase11_schema_contract_test.py"
+Directory: /tmp/phase16-build
+"phase11_schema_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_async_refund_shape (__main__.Phase11SchemaContractTest.test_async_refund_shape) ... ok
+test_attempt_provider_recovery_shape (__main__.Phase11SchemaContractTest.test_attempt_provider_recovery_shape) ... ok
+test_inbox_does_not_store_payload (__main__.Phase11SchemaContractTest.test_inbox_does_not_store_payload) ... ok
+test_lease_migration_preserves_business_checks (__main__.Phase11SchemaContractTest.test_lease_migration_preserves_business_checks) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.002s
+
+OK
+<end of output>
+Test time =   0.06 sec
+----------------------------------------------------------
+Test Passed.
+"phase11_schema_contract" end time: Sep 12 04:33 UTC
+"phase11_schema_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+24/32 Testing: stripe_config_unit
+24/32 Test: stripe_config_unit
+Command: "/tmp/phase16-build/stripe_config_unit"
+Directory: /tmp/phase16-build
+"stripe_config_unit" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"stripe_config_unit" end time: Sep 12 04:33 UTC
+"stripe_config_unit" time elapsed: 00:00:00
+----------------------------------------------------------
+
+25/32 Testing: stripe_webhook_verifier_unit
+25/32 Test: stripe_webhook_verifier_unit
+Command: "/tmp/phase16-build/stripe_webhook_verifier_unit"
+Directory: /tmp/phase16-build
+"stripe_webhook_verifier_unit" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"stripe_webhook_verifier_unit" end time: Sep 12 04:33 UTC
+"stripe_webhook_verifier_unit" time elapsed: 00:00:00
+----------------------------------------------------------
+
+26/32 Testing: password_hash_executor_unit
+26/32 Test: password_hash_executor_unit
+Command: "/tmp/phase16-build/password_hash_executor_unit"
+Directory: /tmp/phase16-build
+"password_hash_executor_unit" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.11 sec
+----------------------------------------------------------
+Test Passed.
+"password_hash_executor_unit" end time: Sep 12 04:33 UTC
+"password_hash_executor_unit" time elapsed: 00:00:00
+----------------------------------------------------------
+
+27/32 Testing: seat_map_compute_executor_unit
+27/32 Test: seat_map_compute_executor_unit
+Command: "/tmp/phase16-build/seat_map_compute_executor_unit"
+Directory: /tmp/phase16-build
+"seat_map_compute_executor_unit" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+PASS: 2/4 workers, full queue, off-thread execution, ownership, exceptions, drain and shutdown
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"seat_map_compute_executor_unit" end time: Sep 12 04:33 UTC
+"seat_map_compute_executor_unit" time elapsed: 00:00:00
+----------------------------------------------------------
+
+28/32 Testing: seat_display_status_unit
+28/32 Test: seat_display_status_unit
+Command: "/tmp/phase16-build/seat_display_status_unit"
+Directory: /tmp/phase16-build
+"seat_display_status_unit" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"seat_display_status_unit" end time: Sep 12 04:33 UTC
+"seat_display_status_unit" time elapsed: 00:00:00
+----------------------------------------------------------
+
+29/32 Testing: phase14_observation_unit
+29/32 Test: phase14_observation_unit
+Command: "/tmp/phase16-build/phase14_observation_unit"
+Directory: /tmp/phase16-build
+"phase14_observation_unit" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+PASS lifetime, duplicate callbacks, concurrent completion, exceptions, oldest and seconds
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"phase14_observation_unit" end time: Sep 12 04:33 UTC
+"phase14_observation_unit" time elapsed: 00:00:00
+----------------------------------------------------------
+
+30/32 Testing: phase14_metrics_source_contract
+30/32 Test: phase14_metrics_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/phase14_metrics_source_contract_test.py"
+Directory: /tmp/phase16-build
+"phase14_metrics_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_business_parameters_unchanged (__main__.Phase14MetricsContracts.test_business_parameters_unchanged) ... ok
+test_every_transaction_call_site_is_observed (__main__.Phase14MetricsContracts.test_every_transaction_call_site_is_observed) ... ok
+test_metric_labels_are_bounded_and_hook_boundaries_explicit (__main__.Phase14MetricsContracts.test_metric_labels_are_bounded_and_hook_boundaries_explicit) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.076s
+
+OK
+<end of output>
+Test time =   0.14 sec
+----------------------------------------------------------
+Test Passed.
+"phase14_metrics_source_contract" end time: Sep 12 04:33 UTC
+"phase14_metrics_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+31/32 Testing: phase16_source_contract
+31/32 Test: phase16_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/phase16_source_contract_test.py"
+Directory: /tmp/phase16-build
+"phase16_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_all_fresh_database_stacks_install_phase16_before_seed (__main__.Phase16Contract.test_all_fresh_database_stacks_install_phase16_before_seed) ... ok
+test_config_variants_preserve_existing_capacity (__main__.Phase16Contract.test_config_variants_preserve_existing_capacity) ... ok
+test_migration_is_additive_and_atomic (__main__.Phase16Contract.test_migration_is_additive_and_atomic) ... ok
+test_worker_lease_and_atomic_model_boundaries (__main__.Phase16Contract.test_worker_lease_and_atomic_model_boundaries) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.041s
+
+OK
+<end of output>
+Test time =   0.10 sec
+----------------------------------------------------------
+Test Passed.
+"phase16_source_contract" end time: Sep 12 04:33 UTC
+"phase16_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+32/32 Testing: phase15_source_contract
+32/32 Test: phase15_source_contract
+Command: "/usr/bin/python3" "/work/backend/tests/phase15_source_contract_test.py"
+Directory: /tmp/phase16-build
+"phase15_source_contract" start time: Sep 12 04:33 UTC
+Output:
+----------------------------------------------------------
+test_fresh_init_installs_window_before_seed (__main__.SalesContracts.test_fresh_init_installs_window_before_seed) ... ok
+test_gate_uses_one_database_clock_without_global_write_lock (__main__.SalesContracts.test_gate_uses_one_database_clock_without_global_write_lock) ... ok
+test_hold_ttl_and_checkout_close_preserve_phase16_and_key_fences (__main__.SalesContracts.test_hold_ttl_and_checkout_close_preserve_phase16_and_key_fences) ... ok
+test_read_fields_remain_independent_of_static_status (__main__.SalesContracts.test_read_fields_remain_independent_of_static_status) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.015s
+
+OK
+<end of output>
+Test time =   0.08 sec
+----------------------------------------------------------
+Test Passed.
+"phase15_source_contract" end time: Sep 12 04:33 UTC
+"phase15_source_contract" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Sep 12 04:33 UTC

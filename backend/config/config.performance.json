@@ -57,6 +57,7 @@
       "config": {
         "path": "/metrics",
         "collectors": [
+          {"name":"ticketing_sales_window_rejections_total","help":"Sales window business rejections by entrypoint and reason","type":"counter","labels":["entrypoint","reason"]},
 {
   "name": "ticketing_availability_events_total",
   "help": "Availability operations by bounded result",

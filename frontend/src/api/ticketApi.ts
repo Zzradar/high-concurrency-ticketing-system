@@ -1,3 +1,4 @@
+import { salesWindowAt } from '../utils/salesWindow'
 import type { SeatAvailabilitySyncOptions, SeatAvailabilitySyncResponse } from '../types'
 import axios from 'axios'
 import type {
@@ -26,11 +27,13 @@ import { normalizeLegacySeatSnapshot } from '../utils/seatMap'
 
 export class TicketApiError extends Error {
   readonly code: string
+  readonly status?: number
 
-  constructor(message: string, code: string) {
+  constructor(message: string, code: string, status?: number) {
     super(message)
     this.name = 'TicketApiError'
     this.code = code
+    this.status = status
   }
 }
 
@@ -53,7 +56,7 @@ export function normalizeApiError(error: unknown): unknown {
   const code = error.response?.data?.code
   const message = error.response?.data?.message
   if (typeof code === 'string' && typeof message === 'string') {
-    return new TicketApiError(message, code)
+    return new TicketApiError(message, code, error.response?.status)
   }
 
   return error
@@ -98,6 +101,7 @@ http.interceptors.response.use(
 export const isMockMode =
   import.meta.env.MODE === 'test' || import.meta.env.VITE_USE_MOCK_API !== 'false'
 
+const seedWindow = () => salesWindowAt('2026-01-01T00:00:00.000Z', '2026-12-01T00:00:00.000Z', Date.now())
 const eventsSeed: TicketEvent[] = [
   {
     id: 'evt-concert-2026',
@@ -107,6 +111,7 @@ const eventsSeed: TicketEvent[] = [
     venue: '上海体育场',
     dateRange: '2026.10.01 — 10.03',
     status: 'ON_SALE',
+    salesWindow: seedWindow(),
     cover: '/images/concert-cover.png',
     sessionCount: 3,
     category: '演唱会',
@@ -119,6 +124,7 @@ const eventsSeed: TicketEvent[] = [
     venue: '浦东体育中心',
     dateRange: '2026.11.08 — 11.09',
     status: 'ON_SALE',
+    salesWindow: seedWindow(),
     cover: '/images/basketball-cover.png',
     sessionCount: 2,
     category: '体育赛事',
@@ -136,6 +142,7 @@ const sessionsSeed: Record<string, TicketSession[]> = {
       venue: '上海体育场 · 主场馆',
       gateTime: '17:30',
       status: 'ON_SALE',
+    salesWindow: seedWindow(),
       priceFrom: 58000,
       availability: '紧张',
     },
@@ -148,6 +155,7 @@ const sessionsSeed: Record<string, TicketSession[]> = {
       venue: '上海体育场 · 主场馆',
       gateTime: '17:30',
       status: 'ON_SALE',
+    salesWindow: seedWindow(),
       priceFrom: 58000,
       availability: '充足',
     },
@@ -160,6 +168,7 @@ const sessionsSeed: Record<string, TicketSession[]> = {
       venue: '上海体育场 · 主场馆',
       gateTime: '17:30',
       status: 'ON_SALE',
+    salesWindow: seedWindow(),
       priceFrom: 58000,
       availability: '充足',
     },
@@ -174,6 +183,7 @@ const sessionsSeed: Record<string, TicketSession[]> = {
       venue: '浦东体育中心 · 一号馆',
       gateTime: '17:00',
       status: 'ON_SALE',
+    salesWindow: seedWindow(),
       priceFrom: 38000,
       availability: '紧张',
     },
@@ -186,10 +196,38 @@ const sessionsSeed: Record<string, TicketSession[]> = {
       venue: '浦东体育中心 · 一号馆',
       gateTime: '17:30',
       status: 'ON_SALE',
+    salesWindow: seedWindow(),
       priceFrom: 38000,
       availability: '充足',
     },
   ],
+}
+
+let mockSalesNow: number | undefined
+const mockWindows = new Map<string, {startsAt: string; endsAt: string}>()
+export function setMockSalesClock(now?: number) { mockSalesNow = now }
+export function setMockSalesWindow(eventId: string, startsAt: string, endsAt: string) {
+  mockWindows.set(eventId, {startsAt, endsAt})
+}
+function sessionWindow(session: TicketSession) {
+  const configured = mockWindows.get(session.eventId) ?? session.salesWindow
+  const end = Math.min(Date.parse(configured.endsAt), Date.parse(refundDeadlines[session.id]!))
+  return salesWindowAt(configured.startsAt, new Date(end).toISOString(), mockSalesNow ?? Date.now())
+}
+function currentSession(session: TicketSession): TicketSession { return {...session, salesWindow: sessionWindow(session)} }
+function currentEvent(event: TicketEvent): TicketEvent {
+  const configured = mockWindows.get(event.id) ?? event.salesWindow
+  const ends = (sessionsSeed[event.id] ?? []).map(s => Date.parse(refundDeadlines[s.id]!))
+  const end = ends.length ? Math.min(Date.parse(configured.endsAt), Math.max(...ends)) : Date.parse(configured.endsAt)
+  return {...event, salesWindow: salesWindowAt(configured.startsAt, new Date(end).toISOString(), mockSalesNow ?? Date.now())}
+}
+function requireSalesOpen(sessionId: string) {
+  const session = Object.values(sessionsSeed).flat().find(s => s.id === sessionId)
+  if (!session) throw new TicketApiError('场次不存在。', 'SESSION_NOT_FOUND')
+  const event = eventsSeed.find(e => e.id === session.eventId)!
+  if (session.status !== 'ON_SALE' || event.status !== 'ON_SALE') throw new TicketApiError('场次当前不可售。', 'SESSION_NOT_AVAILABLE', 409)
+  const state = sessionWindow(session).state
+  if (state !== 'OPEN') throw new TicketApiError(state === 'NOT_STARTED' ? '售票尚未开始。' : '售票已结束。', state === 'NOT_STARTED' ? 'SALES_NOT_STARTED' : 'SALES_ENDED', 409)
 }
 
 let mockLatency = 180
@@ -346,12 +384,12 @@ function synchronizeExpiry(order: TicketOrder) {
 
 async function mockGetEvents() {
   await wait()
-  return clone(eventsSeed)
+  return clone(eventsSeed.map(currentEvent))
 }
 
 async function mockGetSessions(eventId: string) {
   await wait()
-  return clone(sessionsSeed[eventId] ?? [])
+  return clone((sessionsSeed[eventId] ?? []).map(currentSession))
 }
 
 async function mockGetSeats(sessionId: string) {
@@ -434,6 +472,7 @@ async function mockSyncAvailability(sessionId: string, checkoutId: string | unde
 
 async function mockCreateReservation(sessionId: string, seatIds: string[]): Promise<ReservationResult> {
   await wait()
+  requireSalesOpen(sessionId)
   const currentUser = requireMockUser()
   const seats = ensureSeats(sessionId)
   const requested = seats.filter((seat) => seatIds.includes(seat.id))
@@ -507,6 +546,7 @@ async function mockCreateCheckoutSession(
     .flat()
     .find((item) => item.id === sessionId)
   if (!session) throw new TicketApiError('场次不存在。', 'SESSION_NOT_FOUND')
+  requireSalesOpen(sessionId)
   validateCheckoutSeatIds(sessionId, seatIds, 1)
   const now = new Date().toISOString()
   const checkout: CheckoutSession = {
@@ -569,6 +609,7 @@ async function mockReplaceCheckoutSessionSeats(
       'CHECKOUT_SESSION_VERSION_CONFLICT',
     )
   }
+  if (seatIds.length) requireSalesOpen(checkout.sessionId)
   validateCheckoutSeatIds(checkout.sessionId, seatIds, 0)
   checkout.seatIds = [...seatIds].sort()
   checkout.revision += 1
@@ -587,6 +628,10 @@ function startMockCheckoutConfirmation(checkout: CheckoutSession) {
       return clone(checkout)
     })
     .catch((error: unknown) => {
+      if (error instanceof TicketApiError && ['SALES_NOT_STARTED', 'SALES_ENDED'].includes(error.code)) {
+        checkout.status = 'ABANDONED'
+        checkout.updatedAt = new Date().toISOString()
+      }
       if (error instanceof TicketApiError && error.code === 'SEAT_CONFLICT') {
         checkout.status = 'SELECTING'
         checkout.updatedAt = new Date().toISOString()
@@ -614,6 +659,10 @@ async function mockConfirmCheckoutSession(id: string): Promise<CheckoutConfirmat
   const existing = checkoutConfirmations.get(id)
   if (existing) {
     return { disposition: 'REUSED_CONFIRMATION', checkoutSession: clone(await existing) }
+  }
+  try { requireSalesOpen(checkout.sessionId) } catch (cause) {
+    if (cause instanceof TicketApiError && ['SALES_NOT_STARTED','SALES_ENDED'].includes(cause.code)) checkout.status = 'ABANDONED'
+    throw cause
   }
   checkout.status = 'SUBMITTING'
   checkout.updatedAt = new Date().toISOString()
@@ -959,7 +1008,7 @@ export const ticketApi = {
       await wait()
       const event = eventsSeed.find((item) => item.id === eventId)
       if (!event) throw new TicketApiError('活动不存在。', 'EVENT_NOT_FOUND')
-      return clone(event)
+      return clone(currentEvent(event))
     }
     return (await http.get<TicketEvent>('/events/' + eventId)).data
   },
@@ -972,7 +1021,7 @@ export const ticketApi = {
       await wait()
       const session = Object.values(sessionsSeed).flat().find((item) => item.id === sessionId)
       if (!session) throw new TicketApiError('场次不存在。', 'SESSION_NOT_FOUND')
-      return clone(session)
+      return clone(currentSession(session))
     }
     return (await http.get<TicketSession>('/sessions/' + sessionId)).data
   },
@@ -1093,6 +1142,8 @@ export const ticketApi = {
 }
 
 export function resetMockData() {
+  mockWindows.clear()
+  mockSalesNow = undefined
   mockZoneLogs.clear()
   seatsBySession = new Map()
   reservations = new Map()

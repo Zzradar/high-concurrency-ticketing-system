@@ -1,0 +1,12 @@
+test_argument_errors (__main__.AvailabilityApiTest) ... ok
+test_delta_dedup_pagination_and_bounded_trim (__main__.AvailabilityApiTest) ... ok
+test_generation_reset (__main__.AvailabilityApiTest) ... ok
+test_initialization_wait_timeout_and_corruption_rebuild (__main__.AvailabilityApiTest) ... ok
+test_legacy_snapshot_delta_zone_isolation (__main__.AvailabilityApiTest) ... ok
+test_ownership_and_hold_delta (__main__.AvailabilityApiTest) ... ok
+test_warm_delta_does_not_fetch_inventory (__main__.AvailabilityApiTest) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 6.086s
+
+OK

@@ -1,0 +1,90 @@
+{
+  "passed": true,
+  "baseline": "d1d1fd7170553df86c73cfa2313f09d57fa718a6",
+  "releaseBuild": true,
+  "ctest": {
+    "passed": 32,
+    "total": 32
+  },
+  "vitest": {
+    "passed": 196,
+    "total": 196
+  },
+  "frontendBuild": true,
+  "performanceUnit": {
+    "passed": 233,
+    "total": 233
+  },
+  "phase15External": [
+    {
+      "suite": "phase15_migration_test",
+      "tests": 4,
+      "passed": true
+    },
+    {
+      "suite": "phase15_read_api_test",
+      "tests": 2,
+      "passed": true
+    },
+    {
+      "suite": "phase15_reservation_test",
+      "tests": 4,
+      "passed": true
+    },
+    {
+      "suite": "phase15_checkout_test",
+      "tests": 7,
+      "passed": true
+    },
+    {
+      "suite": "phase15_crash_recovery_test",
+      "tests": 1,
+      "passed": true
+    },
+    {
+      "suite": "phase15_observation_test",
+      "tests": 2,
+      "passed": true
+    }
+  ],
+  "simulationPayment": {
+    "passed": 6,
+    "total": 6
+  },
+  "phase11And12": {
+    "passed": 60,
+    "total": 60,
+    "firstRunPassed": 59,
+    "rechecked": 1,
+    "reason": "Restored original stdbuf -oL for INFO log assertion; no changed test assertions."
+  },
+  "playwright": {
+    "passed": 3,
+    "total": 3
+  },
+  "phase16Api": {
+    "passed": 7,
+    "total": 7
+  },
+  "phase16Redis": {
+    "passed": 11,
+    "total": 11
+  },
+  "phase14Representative": {
+    "passed": 6,
+    "total": 6
+  },
+  "verifier": {
+    "passed": true,
+    "redisSeats": 5060,
+    "violations": 0
+  },
+  "binarySha256": {
+    "baseline_backend": "f147beebc0a200da500ec462156525e3bc3188a591a852bfe3e5757a165699ca",
+    "ticketing_backend": "ca56da6e3af9fb85dc697807f5ecbab544f5126bde251e997fcbbba25478ddb0"
+  },
+  "images": {
+    "baseline": "sha256:51dba767e67816fca16c42907f172434e2ed4c7333190d493c417bae92a7c198",
+    "current": "sha256:c7d9f990bcf1701995d474dd3d39a6c54dfd16af8261bac09b5c55934cb82430"
+  }
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "suite": "vitest",
+    "passed": true
+  },
+  {
+    "suite": "frontend-build",
+    "passed": true
+  }
+]

@@ -1,0 +1,80 @@
+test_3ds_grace_skips_expiry_then_times_out_and_refunds (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ... ok
+test_backend_restart_recovers_processing_payment (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ...  Container phase15-phase12-backend-1 Restarting
+ Container phase15-phase12-backend-1 Started
+ok
+test_card_only_request_and_provider_deadline (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ... ok
+test_create_response_lost_and_webhook_lost_recover_by_scan (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ... ok
+test_duplicate_late_success_refunds_after_newer_attempt_paid (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ... ok
+test_expired_order_late_success_refunds_without_inventory_revival (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ... ok
+test_late_success_refund_response_lost_is_idempotent (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ... ok
+test_provider_500_is_retryable_and_recovers (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ... ok
+test_refund_terminal_failure_notifies (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ... ok
+test_webhook_duplicate_and_out_of_order_retrieve_latest (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ... ok
+test_webhook_inbox_database_failure_returns_5xx (phase11_stripe_integration_test.Phase11StripeIntegrationTest) ... ok
+test_a_terminal_retrieved_crash_before_local_commit (phase11_crash_window_integration_test.CrashWindowIntegrationTest) ... ok
+test_b_final_transaction_rolls_back_once_and_inbox_handoff_survives (phase11_crash_window_integration_test.CrashWindowIntegrationTest) ... ok
+test_c_exact_legacy_p1_null_schedule (phase11_crash_window_integration_test.CrashWindowIntegrationTest) ... ok
+test_c_future_schedule_does_not_hide_terminal_evidence (phase11_crash_window_integration_test.CrashWindowIntegrationTest) ... ok
+test_d_timed_out_expired_late_success (phase11_crash_window_integration_test.CrashWindowIntegrationTest) ... ok
+test_e_crash_before_refund_obligation_commit (phase11_crash_window_integration_test.CrashWindowIntegrationTest) ... ok
+test_existing_checks_still_reject_illegal_half_states (phase11_crash_window_integration_test.CrashWindowIntegrationTest) ... ok
+test_f_refund_atomic_sql_rollback_then_restart (phase11_crash_window_integration_test.CrashWindowIntegrationTest) ... ok
+test_g_refund_claim_crash_lease_expiry_recovery (phase11_crash_window_integration_test.CrashWindowIntegrationTest) ... Case G: due/no lease -> committed claim -> retrieve -> terminal SQL at gate
+Case G: SIGKILL 137 -> DB rollback/locks gone -> old lease retained and expired
+Case G: reclaim -> fresh retrieve -> SUCCEEDED/exactly one notification/lease cleared; verifiers=0
+ok
+test_payment_fallback_retrieves_and_rejects_each_identity_mismatch (phase11_crash_window_integration_test.CrashWindowIntegrationTest) ... ok
+test_stripe_terminal_failure_is_atomic_and_keeps_order_retryable (phase11_crash_window_integration_test.CrashWindowIntegrationTest) ... ok
+test_buyer_provider_success_then_process_crash_recovers (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_concurrent_requests_create_one_obligation_and_provider_object (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_currency_comes_from_historical_attempt (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_duplicate_effective_owner_rolls_back (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_each_terminal_write_failure_rolls_back_whole_transaction (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_eligibility_and_existing_first_after_deadline (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_expired_idempotency_key_recovers_existing_refund (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_http_400_amount_too_large_invalid_request_error (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_http_400_charge_already_refunded_invalid_request_error (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_http_400_unknown_idempotency_error (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_http_400_unknown_invalid_request_error (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_http_401_invalid_api_key_authentication_error (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_http_403_permission_permission_error (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_http_429_rate_limit_rate_limit_error (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_http_500_unknown_api_error (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_immediate_failed_and_canceled (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_match_on_later_page (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_nonpaid_and_closed_window (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_null_sold_pointer_full_atomic_refund_and_reuse (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_old_worker_fenced_before_seats_after_resale (phase12_buyer_refund_integration_test.BuyerRefundTest) ... FAIL
+test_owner_body_and_missing_accepted_attempt (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_pending_failed_and_requires_action_keep_rights (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_refund_webhook_only_wakes_no_identity_binding (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_response_loss_recovers_without_second_post (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_retrieve_mismatch_never_completes (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_scan_amount (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_scan_currency (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_scan_empty_more (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_scan_invalid (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_scan_invalid_json (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_scan_missing_cursor (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_scan_multiple (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_scan_order_id (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_scan_page_cap (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_scan_payment_intent (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_scan_repeat_cursor (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_should_retry_header_wins_over_auth_status (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+test_wrong_seat_state_rolls_back (phase12_buyer_refund_integration_test.BuyerRefundTest) ... ok
+
+======================================================================
+FAIL: test_old_worker_fenced_before_seats_after_resale (phase12_buyer_refund_integration_test.BuyerRefundTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase16\backend\tests\phase12_buyer_refund_integration_test.py", line 118, in test_old_worker_fenced_before_seats_after_resale
+    wait_until(lambda:'REFUND_FENCED_BEFORE_RIGHTS refund='+r['id'] in compose('logs','--no-color','backend'),timeout=20)
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase16\backend\tests\phase11_stripe_integration_test.py", line 36, in wait_until
+    raise AssertionError(f"Timed out waiting for {message}")
+AssertionError: Timed out waiting for condition
+
+----------------------------------------------------------------------
+Ran 60 tests in 630.721s
+
+FAILED (failures=1)

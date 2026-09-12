@@ -12,7 +12,7 @@ from auth_test_support import AuthenticatedClient, anonymous_request, test_user_
 SESSION='ses-concert-1001'
 
 def sql(statement):
-    r=subprocess.run(['docker','exec','-i','phase16-api-postgres','psql','-U','postgres','-qAt','-v','ON_ERROR_STOP=1'],input=statement,text=True,encoding='utf-8',capture_output=True)
+    r=subprocess.run(['docker','exec','-i',os.environ.get('PHASE16_POSTGRES_CONTAINER','phase16-api-postgres'),'psql','-U','postgres','-qAt','-v','ON_ERROR_STOP=1'],input=statement,text=True,encoding='utf-8',capture_output=True)
     if r.returncode:raise AssertionError(r.stderr)
     return r.stdout.strip()
 
@@ -69,7 +69,7 @@ class AvailabilityApiTest(unittest.TestCase):
                 self.assertNotIn('userId',json.dumps(body));self.assertNotIn(checkout['id'],json.dumps(body))
             # A valid cached relationship for another session/user must not grant ownership.
             def cache(*args):
-                result=subprocess.run(['docker','exec','phase16-api-redis','redis-cli','--json',*map(str,args)],capture_output=True,text=True,encoding='utf-8')
+                result=subprocess.run(['docker','exec',os.environ.get('PHASE16_REDIS_CONTAINER','phase16-api-redis'),'redis-cli','--json',*map(str,args)],capture_output=True,text=True,encoding='utf-8')
                 self.assertEqual(result.returncode,0,result.stderr)
                 return json.loads(result.stdout)
             key='ticketing:checkout-owner:{'+checkout['id']+'}'
@@ -99,7 +99,7 @@ class AvailabilityApiTest(unittest.TestCase):
 
     def test_initialization_wait_timeout_and_corruption_rebuild(self):
         def redis(*args):
-            result=subprocess.run(['docker','exec','phase16-api-redis','redis-cli','--json',*map(str,args)],capture_output=True,text=True,encoding='utf-8')
+            result=subprocess.run(['docker','exec',os.environ.get('PHASE16_REDIS_CONTAINER','phase16-api-redis'),'redis-cli','--json',*map(str,args)],capture_output=True,text=True,encoding='utf-8')
             self.assertEqual(result.returncode,0,result.stderr)
             return json.loads(result.stdout)
         prefix='ticketing:seat-availability:{'+SESSION+'}'
@@ -119,7 +119,7 @@ class AvailabilityApiTest(unittest.TestCase):
 
     def test_delta_dedup_pagination_and_bounded_trim(self):
         def redis(*args):
-            result=subprocess.run(['docker','exec','phase16-api-redis','redis-cli','--json',*map(str,args)],capture_output=True,text=True,encoding='utf-8')
+            result=subprocess.run(['docker','exec',os.environ.get('PHASE16_REDIS_CONTAINER','phase16-api-redis'),'redis-cli','--json',*map(str,args)],capture_output=True,text=True,encoding='utf-8')
             self.assertEqual(result.returncode,0,result.stderr)
             return json.loads(result.stdout)
         _,snap=self.get(zone=self.zone)
