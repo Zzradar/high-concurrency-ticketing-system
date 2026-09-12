@@ -4,6 +4,26 @@
   "baselineSutSha": "ed51447154418e05ed9e4c49728f3eb114713db9",
   "binarySha256": "0369ac28d472f020ee078de0037330d7cdfb96d8e76cb3874bb5aba6c797ee6d",
   "files": {
+    "backend/src/admission/AdmissionConfig.h": "53dc03593889eb8f82a56f4aa43c69c35a56af4684c3c5c2e7d7b3068847341b",
+    "backend/src/admission/AdmissionPolicy.cpp": "cb021a12dfd79a753668368d8d71bb9c00a22c2377bd664ab5f36244a8a02a7c",
+    "backend/src/admission/AdmissionPolicy.h": "554aaf58c639170c0f5b34aa95b120d44d8803ee9fbffc528cd256639cda22e5",
+    "backend/src/admission/AdmissionRuntime.cpp": "26c001f1e76c1b754dd5b23a1492380eab92691226d224d9ad911dd2849094a9",
+    "backend/src/admission/AdmissionRuntime.h": "1b8ed9f0f19c4bcb5aee2b11c1a8e7712e1a25fc060c6f380f563183f037b1a6",
+    "backend/src/admission/AdmissionService.cpp": "7e5cd8120f3b234a12e6adfa821bfb64ced08f953fde319aa842d8a1af71c9e4",
+    "backend/src/admission/AdmissionService.h": "5db9c3280550aeda15729ef5ca72586df33cebfd337fbae5cab3e1468713175a",
+    "backend/src/admission/RedisAdmissionStore.cpp": "3d95f2f0bd40b2ebf85f82252c9d69cb8c1dfab37bb7f9b8e5cec9d4acd9f536",
+    "backend/src/admission/RedisAdmissionStore.h": "ad82566d5c48eacff57932c6badd9efb3b64262ef9b53e40e4b8049379a582f2",
+    "backend/src/admission/waiting_room.lua": "540993ebdd9a312be6856a219297c4e31b7b6beda1a0f8d8691b2c4045ffbe1a",
+    "backend/tests/phase18_admission_http_test.py": "f51aee9b3540346c81c2edbcc2f873485a968262525e56ad19ff3ff4aed7014f",
+    "backend/tests/phase18_waiting_room_test.py": "89e4d6c95661f8cd56f633f751a59de1b581deaa2feb0a5bcfba33efb467b59d"
+  },
+  "logs": {
+    "ctest.log": "380f4385cf75315e189ee223dabbc3b4feb6447254f3f6b35dfa33323d7e2a68",
+    "http.log": "167552b123a4d62eb4637c5ccfa1ec43878d8a6166fec442e6368b311cbaedad",
+    "redis-lua.log": "0f8fd4e0d8216da070b65afa9f94b501b5e2f861acabe383a80686a3f254a367"
+  },
+  "sourceCommit": "9a64d86c52ba4303b12831b92bac216cee853de2",
+  "buildWorkingTreeHashes": {
     "backend/src/admission/AdmissionConfig.h": "fd6eaf1382fc29d8f0a352e34eedb9641e4c11ecfe9d6a91930debae96b8dbf7",
     "backend/src/admission/AdmissionPolicy.cpp": "3b827a37087b298c177b05227d92853c04ccc589a1ca7dbcab19e501e8f35f87",
     "backend/src/admission/AdmissionPolicy.h": "27c321a360086e0bbe64c7cea358373fb64263bc1bc0ee0f42624f5427b7ae4e",
@@ -17,9 +37,5 @@
     "backend/tests/phase18_admission_http_test.py": "53a4d65d88ad06695e83f3e2c664fb8248b17ba346b5ca59cdfdece684d052e2",
     "backend/tests/phase18_waiting_room_test.py": "a45a929e0b3b7e9b51b30c705d01bbee4316d65a5e7ccca15a0598026667bcb1"
   },
-  "logs": {
-    "ctest.log": "380f4385cf75315e189ee223dabbc3b4feb6447254f3f6b35dfa33323d7e2a68",
-    "http.log": "167552b123a4d62eb4637c5ccfa1ec43878d8a6166fec442e6368b311cbaedad",
-    "redis-lua.log": "0f8fd4e0d8216da070b65afa9f94b501b5e2f861acabe383a80686a3f254a367"
-  }
+  "sourceNormalization": "Git source blobs use LF; build bind-mounted Windows working-tree bytes are recorded separately. Raw capability logs preserve original bytes."
 }
