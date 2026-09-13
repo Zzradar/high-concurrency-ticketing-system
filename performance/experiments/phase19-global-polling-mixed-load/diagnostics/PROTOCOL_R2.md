@@ -11,3 +11,5 @@ r2-gzip-validated-source 保存上述完整负载诊断执行时的协议。最�
 资格和正式主容量身份均为用户批准的 k6 2 CPU / 4 GiB，事件策略 OFF、本地 Bulkhead 保持默认。旧 2 GiB 和原 4 GiB 资格仅为历史记录。新协议须完整重跑资格和全部 baseline；after 必须使用同一冻结协议。
 
 原生 gzip 方式见 [Grafana k6 JSON output](https://grafana.com/docs/k6/latest/results-output/real-time/json/)。
+
+最终门禁的第一轮新资格：100/250/500 有效；1000 在 15 秒空闲结束后，cgroup 连续从 248.44→477.69→792.71 MiB 增长，触发门禁并停止，1000 次迭代未完成。检查发现资格未传递正式 Closed 已使用的 INIT_SPREAD_SECONDS=30，导致同时解析所有首次 Snapshot。修正资格启动为 15 秒空闲 + 与正式相同的 30 秒首读展开，之后仍完整观察 60 秒；没有放宽停止阈值、增加资源或减少 VU。全部资格从 100 重新开始，旧运行保存至 r2-initial-qualification。

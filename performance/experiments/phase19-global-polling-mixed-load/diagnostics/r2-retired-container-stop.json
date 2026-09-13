@@ -1,0 +1,47 @@
+{
+  "utc": "2026-09-13T13:09:12.157821+00:00",
+  "reason": "Phase19 diagnostic services retired before fresh r2 baseline",
+  "containers": [
+    {
+      "name": "phase19-formal-baseline-frontend",
+      "id": "75c3043cc48a0aab0258290c9a8cc61ca547f7fef5ec98e21137e5c2df4c9621",
+      "wasRunning": true
+    },
+    {
+      "name": "phase19-formal-baseline-api",
+      "id": "6051dd2341b4d319e31d40b00ebb15d50119da9fc003e541caed311876440a0c",
+      "wasRunning": true
+    },
+    {
+      "name": "phase19-formal-baseline-redis",
+      "id": "8938a26ea4efa18f46a0c37940c643f09113cdf86f5aca509b30f651704c4265",
+      "wasRunning": true
+    },
+    {
+      "name": "phase19-formal-baseline-postgres",
+      "id": "a7018f2356f3a872c9add0688c0f038773daf8ad567719fe9e21ecb0cfb2af3a",
+      "wasRunning": true
+    },
+    {
+      "name": "phase19-protocol-smoke-frontend",
+      "id": "34a65ecc06185bafcc0a3139026ceaac3226addad6ec00b661863871229d353e",
+      "wasRunning": true
+    },
+    {
+      "name": "phase19-protocol-smoke-api",
+      "id": "d4b15108462eca8b9de40776004acdabbe1f45fcbdf6fe14e6c32b05b805cdce",
+      "wasRunning": true
+    },
+    {
+      "name": "phase19-protocol-smoke-redis",
+      "id": "3ef1097987aff5a754a201faa6bac5bd4862659319a2be6afa8ac84c10ee6ab1",
+      "wasRunning": true
+    },
+    {
+      "name": "phase19-protocol-smoke-postgres",
+      "id": "5ebca82b7a51656aff4888408d48a39f6110e76e320275e5ef00af883942c54e",
+      "wasRunning": true
+    }
+  ],
+  "volumesPreserved": true
+}

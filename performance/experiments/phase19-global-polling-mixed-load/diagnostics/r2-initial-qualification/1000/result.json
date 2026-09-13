@@ -1,0 +1,23 @@
+{
+  "valid": false,
+  "reason": "memory grows >= 5% of limit across three samples without deceleration",
+  "exitCode": null,
+  "vus": 1000,
+  "initializedVUs": 1000,
+  "droppedIterations": 0,
+  "startedIterations": 1000,
+  "completedIterations": 0,
+  "interruptedOrUncompletedIterations": 1000,
+  "peakBytes": 848547840,
+  "peakCgroupBytes": 831217664,
+  "cpuPeakQuotaFraction": 0.3294732770697956,
+  "fdPeak": 1007,
+  "tcpTableEntriesPeak": 1001,
+  "idleRssBytes": 287379456,
+  "elapsedSeconds": 20.0,
+  "sampling": "approximately 1-2s; startup before first sample can be missed",
+  "cleanup": "only point-owned containers and network removed",
+  "endedUtc": "2026-09-13T13:10:59.377301+00:00",
+  "rawPointsSha256": "1e7244d2c7f6c5fcaf143babb0bfac0048709bb3b202162295fc4e15bc7bccca",
+  "rawPointsBytes": 156279
+}

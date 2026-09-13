@@ -28,7 +28,11 @@ seats occupy Zone-4 and use another user. Hotspots use a separate session and po
 `calibrate.py --vus N --seconds 60 --out <NEW_PRIVATE_POINT>` uses the same executed
 `workload.js` and `policy.mjs`, inert shared credentials, 1000-seat zone Snapshot
 bodies and Delta parsing. Both qualification and SUT runs export native lossless
-k6 gzip JSONL to the same Windows bind-mounted output mechanism. Each VU idles 15 seconds before work. Qualify 100, 250,
+k6 gzip JSONL to the same Windows bind-mounted output mechanism. Each VU idles 15 seconds before work, then its first Snapshot is spread over
+30 seconds exactly as in real-SUT closed warmup. Qualification observation starts
+after these 45 seconds and lasts 60 seconds. The old simultaneous stub startup
+triggered the unchanged three-point memory-growth gate and remains invalid.
+Qualify 100, 250,
 500 and 1000 sequentially; 2000/3000 require a conservative memory check using the
 new observed maximum marginal increment. Retain all failed attempts.
 

@@ -51,3 +51,11 @@ class CandidateProtocolTests(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+class QualificationStartupTests(unittest.TestCase):
+    def test_qualification_keeps_observe_window_after_real_sut_spread(self):
+        protocol=Path(__file__).resolve().parents[1]/'experiments/phase19-global-polling-mixed-load/protocol'
+        code=(protocol/'calibrate.py').read_text()
+        self.assertIn('INIT_SPREAD_SECONDS=30',code)
+        self.assertIn('WARMUP_SECONDS=45',code)
+        self.assertIn('SECONDS={args.seconds+45}',code)

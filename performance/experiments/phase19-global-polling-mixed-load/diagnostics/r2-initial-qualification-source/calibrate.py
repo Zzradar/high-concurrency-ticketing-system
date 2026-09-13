@@ -74,7 +74,7 @@ def main():
     images = {role: json.loads(run("docker", "image", "inspect", image))[0]
               for role, image in [("k6", "grafana/k6:2.2.0"), ("stub", "python:3.12-alpine")]}
     identity = {"startedUtc": datetime.now(timezone.utc).isoformat(), "actualVUsRequested": args.vus,
-        "observationSeconds": args.seconds, "initialIdleSeconds": 15, "initialSpreadSeconds":30, "warmupSeconds":45, "metricOutput":"native k6 gzip JSONL, same as real SUT points",
+        "observationSeconds": args.seconds, "initialIdleSeconds": 15, "metricOutput":"native k6 gzip JSONL, same as real SUT points",
         "protocolSha256": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in HERE.iterdir() if p.is_file()},
         "images": {role: {"id": obj["Id"], "digests": obj["RepoDigests"]} for role, obj in images.items()},
         "limits": {"generator": {"cpus": 2, "memoryBytes": args.generator_memory_gib*1024**3, "pids": 256, "nofile": 16384}, "stub": {"cpus": 1, "memoryBytes": 268435456}}}
@@ -93,8 +93,8 @@ def main():
             "--cpus", "2", "--memory", f"{args.generator_memory_gib}g", "--pids-limit", "256", "--ulimit", "nofile=16384:16384",
             "--mount", f"type=bind,source={HERE},target=/protocol,readonly",
             "--mount", f"type=bind,source={fixture},target=/fixture,readonly", "--mount", f"type=bind,source={out},target=/output",
-            "-e", "MODE=closed", "-e", f"VUS={args.vus}", "-e", f"SECONDS={args.seconds+45}",
-            "-e", "INIT_IDLE_SECONDS=15", "-e", "INIT_SPREAD_SECONDS=30", "-e", "WARMUP_SECONDS=45", "-e", "BASE_URL=http://stub:8080",
+            "-e", "MODE=closed", "-e", f"VUS={args.vus}", "-e", f"SECONDS={args.seconds+15}",
+            "-e", "INIT_IDLE_SECONDS=15", "-e", "WARMUP_SECONDS=15", "-e", "BASE_URL=http://stub:8080",
             images["k6"]["Id"], "run", "--quiet", "--out", "json=/output/k6-points.jsonl.gz", "/protocol/workload.js")
         created.append(generator)
         while True:
