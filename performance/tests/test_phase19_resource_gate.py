@@ -27,6 +27,13 @@ class ResourceGateTests(unittest.TestCase):
         self.assertIsNotNone(gate.stop_reason([high, high, high]))
         self.assertIsNone(gate.stop_reason([high, self.sample(), high]))
 
+    def test_significant_nondecelerating_growth_stops_even_below_limit(self):
+        rows = [{**self.sample(), 'memory':n} for n in [20,25,31]]
+        self.assertIn('memory grows', gate.stop_reason(rows))
+        self.assertIsNone(gate.stop_reason(rows[:2]))
+        self.assertIsNone(gate.stop_reason([{**self.sample(),'memory':n} for n in [20,26,31]]))
+        self.assertIsNone(gate.stop_reason([{**self.sample(),'memory':n} for n in [20,24,28]]))
+
     def test_swap_oom_and_restarts_fail(self):
         self.assertIsNotNone(gate.stop_reason([self.sample(oom=True)]))
         self.assertIsNotNone(gate.stop_reason([self.sample(restarted=True)]))

@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "name": "phase19-mixed",
+  "seed": 1901,
+  "registeredUsers": 5000,
+  "activeAuthSessions": 5000,
+  "events": 1,
+  "sessionsPerEvent": 5,
+  "seatLayout": {"rows": 50, "seatsPerRow": 100},
+  "futureStartOffsetDays": 30,
+  "sessionSpacingHours": 4,
+  "gateLeadMinutes": 90,
+  "priceZones": [
+    {"name": "Zone-0", "rows": 10, "price": 10000},
+    {"name": "Zone-1", "rows": 10, "price": 10000},
+    {"name": "Zone-2", "rows": 10, "price": 10000},
+    {"name": "Zone-3", "rows": 10, "price": 10000},
+    {"name": "Zone-4", "rows": 10, "price": 10000}
+  ]
+}

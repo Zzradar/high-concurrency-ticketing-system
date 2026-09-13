@@ -1,0 +1,129 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-r2-gzip-hotspot-100",
+  "normalization": "UTF-8 newline and private-path redaction; gzip is lossless with mtime=0",
+  "classification": "Result fields are preserved verbatim, including invalid outcomes",
+  "files": {
+    "aggregate.json": {
+      "sourceSha256": "6815d0f88ee377e65c88c2902ac7ec6e316d8d23787babf2e20621ccd5b5ef59",
+      "sourceBytes": 1516,
+      "normalizedSha256": "92871eb0338a4d8650f7ac231e46e05b32fed5e80b0ea394a5c75da81a61e5f5",
+      "normalizedBytes": 1486,
+      "storedAs": "aggregate.json",
+      "storedSha256": "92871eb0338a4d8650f7ac231e46e05b32fed5e80b0ea394a5c75da81a61e5f5",
+      "storedBytes": 1486
+    },
+    "cleanup.json": {
+      "sourceSha256": "0cb36d4d10304731d284300a7dc32d7608f118adcbfefad26fe08585d0afdeca",
+      "sourceBytes": 84,
+      "normalizedSha256": "558276b30effe909cbefaac872e94290b2f76ac6eb10e87af7cbcef1d3750bf2",
+      "normalizedBytes": 77,
+      "storedAs": "cleanup.json",
+      "storedSha256": "558276b30effe909cbefaac872e94290b2f76ac6eb10e87af7cbcef1d3750bf2",
+      "storedBytes": 77
+    },
+    "control-probes.json": {
+      "sourceSha256": "40d21027f60b7757c3d913e28c43b982e76df9dbd7e82c407b830de308ce0776",
+      "sourceBytes": 959,
+      "normalizedSha256": "911674cf9c4d716582a5e68f14a73ef695685219700f747a1f501dba5060c430",
+      "normalizedBytes": 915,
+      "storedAs": "control-probes.json",
+      "storedSha256": "911674cf9c4d716582a5e68f14a73ef695685219700f747a1f501dba5060c430",
+      "storedBytes": 915
+    },
+    "identity.json": {
+      "sourceSha256": "6814af0abddf56e38ea233231cb40410541ba690317f61ae5f9533807a99aa24",
+      "sourceBytes": 4032,
+      "normalizedSha256": "1561de17f6ac98ba5bc7b6718e962a51e81cdcdbdf4629674beceae22edc1e72",
+      "normalizedBytes": 3950,
+      "storedAs": "identity.json",
+      "storedSha256": "1561de17f6ac98ba5bc7b6718e962a51e81cdcdbdf4629674beceae22edc1e72",
+      "storedBytes": 3950
+    },
+    "inventory-after.json": {
+      "sourceSha256": "2c306e11b52239c03732aaae15e132e95bc4ce537e1812251e86af51a4b621ef",
+      "sourceBytes": 4108,
+      "normalizedSha256": "0cd220b8be200ace76a21fd93b66a1e5819bfff0e50c677f7a239eaaa38de266",
+      "normalizedBytes": 3969,
+      "storedAs": "inventory-after.json",
+      "storedSha256": "0cd220b8be200ace76a21fd93b66a1e5819bfff0e50c677f7a239eaaa38de266",
+      "storedBytes": 3969
+    },
+    "inventory-before.json": {
+      "sourceSha256": "2051b30b2c5642e4108869ffd6c7442477c8f31d1665aadbdf1e68351b8c2e5d",
+      "sourceBytes": 4108,
+      "normalizedSha256": "a1503e4bded2c7d23fd04e605d0df423b1702fd295936db3ed6c32a94b9cddbb",
+      "normalizedBytes": 3969,
+      "storedAs": "inventory-before.json",
+      "storedSha256": "a1503e4bded2c7d23fd04e605d0df423b1702fd295936db3ed6c32a94b9cddbb",
+      "storedBytes": 3969
+    },
+    "k6-summary.json": {
+      "sourceSha256": "d3daf16543c8e041f67c893dd7addb1516bf849ac11237d455075163139a192e",
+      "sourceBytes": 6500,
+      "normalizedSha256": "d3daf16543c8e041f67c893dd7addb1516bf849ac11237d455075163139a192e",
+      "normalizedBytes": 6500,
+      "storedAs": "k6-summary.json",
+      "storedSha256": "d3daf16543c8e041f67c893dd7addb1516bf849ac11237d455075163139a192e",
+      "storedBytes": 6500
+    },
+    "k6.log": {
+      "sourceSha256": "79eb8fcdd643cabaeb7363fa90bcee847d872bbfb801c183f5fcb6078876ab4c",
+      "sourceBytes": 22890,
+      "normalizedSha256": "b19e061fdf04e56d8d32eacd146efecf2e22552a2c6d3f0c2cf8bcc703cccf63",
+      "normalizedBytes": 22790,
+      "storedAs": "k6.log",
+      "storedSha256": "b19e061fdf04e56d8d32eacd146efecf2e22552a2c6d3f0c2cf8bcc703cccf63",
+      "storedBytes": 22790
+    },
+    "resources.json": {
+      "sourceSha256": "dcb0553cd489151c4ebfcd7c3d8c9b12d216bb9972b769179754933f4ac47100",
+      "sourceBytes": 8250,
+      "normalizedSha256": "a96031d20b3fcdb06152b2afb845e1cb35c0926cac7e0c216fc26b81369fd992",
+      "normalizedBytes": 7951,
+      "storedAs": "resources.json",
+      "storedSha256": "a96031d20b3fcdb06152b2afb845e1cb35c0926cac7e0c216fc26b81369fd992",
+      "storedBytes": 7951
+    },
+    "result.json": {
+      "sourceSha256": "7b54c4654ab3ca8666416b21c1bbe5e8c6cd48c0f4303817ceed22ca4baaa75b",
+      "sourceBytes": 2457,
+      "normalizedSha256": "e22cc8fba7ac442277f51ae66d878283a50023236415b5e8e8c79830625597bf",
+      "normalizedBytes": 2386,
+      "storedAs": "result.json",
+      "storedSha256": "e22cc8fba7ac442277f51ae66d878283a50023236415b5e8e8c79830625597bf",
+      "storedBytes": 2386
+    },
+    "system-observations.json": {
+      "sourceSha256": "657e39f0dd76667cafe24e90faa444257e2eb5663494ca7e037d8c409e004484",
+      "sourceBytes": 570275,
+      "normalizedSha256": "3991e36eb05315a421abb4b26aa1bad149f0b3868e47f30244e40b603c3ccc11",
+      "normalizedBytes": 569639,
+      "storedAs": "system-observations.json",
+      "storedSha256": "3991e36eb05315a421abb4b26aa1bad149f0b3868e47f30244e40b603c3ccc11",
+      "storedBytes": 569639
+    },
+    "verifier-after.json": {
+      "sourceSha256": "92d95eeec7951db8fa75be59f9e423d205bcd3fc0463d72380fe6c117b1d4f93",
+      "sourceBytes": 719,
+      "normalizedSha256": "ad70925d4cb3707e848c3813451177070fc49ee135fdb49c8d88081b621bb146",
+      "normalizedBytes": 696,
+      "storedAs": "verifier-after.json",
+      "storedSha256": "ad70925d4cb3707e848c3813451177070fc49ee135fdb49c8d88081b621bb146",
+      "storedBytes": 696
+    },
+    "verifier-before.json": {
+      "sourceSha256": "d82a2665e108ce3929ea37fd67a4b7f808b37781ecb692cc1ae8ec8347a89785",
+      "sourceBytes": 719,
+      "normalizedSha256": "d74154fbe847823a0c16db4badadd0caf64d0b053ac02211d8b13a6efb9b6a6e",
+      "normalizedBytes": 696,
+      "storedAs": "verifier-before.json",
+      "storedSha256": "d74154fbe847823a0c16db4badadd0caf64d0b053ac02211d8b13a6efb9b6a6e",
+      "storedBytes": 696
+    }
+  },
+  "privateRawPoints": {
+    "path": "<PRIVATE_TEMP>/phase19-r2-gzip-hotspot-100/k6-points.jsonl.gz",
+    "sha256": "c6a0312faf302e6971a265ddeb90538d6a7a9ff74f98ec75b32ee1a40dcfe050",
+    "bytes": 19266
+  }
+}

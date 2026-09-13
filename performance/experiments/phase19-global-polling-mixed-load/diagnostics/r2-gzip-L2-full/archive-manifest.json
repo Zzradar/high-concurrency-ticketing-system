@@ -1,0 +1,129 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-r2-gzip-L2-full",
+  "normalization": "UTF-8 newline and private-path redaction; gzip is lossless with mtime=0",
+  "classification": "Result fields are preserved verbatim, including invalid outcomes",
+  "files": {
+    "aggregate.json": {
+      "sourceSha256": "7a91a7035c1fdfba018aa2123534a55b843c8cdf1549572d21a4cc3b2c9c7388",
+      "sourceBytes": 14052,
+      "normalizedSha256": "b5510c9b11bfab40708291bf2bb67ca328ed248378af3403bf89f69ff3e50d3d",
+      "normalizedBytes": 13876,
+      "storedAs": "aggregate.json",
+      "storedSha256": "b5510c9b11bfab40708291bf2bb67ca328ed248378af3403bf89f69ff3e50d3d",
+      "storedBytes": 13876
+    },
+    "identity.json": {
+      "sourceSha256": "abc0cfcba59206854e86c4a1570cfaaee6ab59782e13ec31c3c1a378d0618e46",
+      "sourceBytes": 4043,
+      "normalizedSha256": "cf7239a6a6a97a366d7cc16366d42f9ab05362ea41df793a432923891d4652ab",
+      "normalizedBytes": 3961,
+      "storedAs": "identity.json",
+      "storedSha256": "cf7239a6a6a97a366d7cc16366d42f9ab05362ea41df793a432923891d4652ab",
+      "storedBytes": 3961
+    },
+    "inventory-after.json": {
+      "sourceSha256": "1e76e0b489bbcc4ae9c9f20c7822a7869299112642255a364d1d311994b7062b",
+      "sourceBytes": 4082,
+      "normalizedSha256": "6896727ee0795c8f560cee6bf77f4631f322a55fd6778f816dc1c3ad57e9e053",
+      "normalizedBytes": 3943,
+      "storedAs": "inventory-after.json",
+      "storedSha256": "6896727ee0795c8f560cee6bf77f4631f322a55fd6778f816dc1c3ad57e9e053",
+      "storedBytes": 3943
+    },
+    "inventory-before.json": {
+      "sourceSha256": "545ac1a17c981697baefff9e5cd256577ef896d6ec72ad70e93d94379ccc1d33",
+      "sourceBytes": 4080,
+      "normalizedSha256": "1e6bb92c3355e8a24f4451faae0515c0ef6c426782443ee4a40836d3a132dbef",
+      "normalizedBytes": 3941,
+      "storedAs": "inventory-before.json",
+      "storedSha256": "1e6bb92c3355e8a24f4451faae0515c0ef6c426782443ee4a40836d3a132dbef",
+      "storedBytes": 3941
+    },
+    "k6-summary.json": {
+      "sourceSha256": "7d1df757d37f81be35bf30efcff9fb0f4fdd7097e0ae388df4d9a4a76a9add68",
+      "sourceBytes": 7265,
+      "normalizedSha256": "7d1df757d37f81be35bf30efcff9fb0f4fdd7097e0ae388df4d9a4a76a9add68",
+      "normalizedBytes": 7265,
+      "storedAs": "k6-summary.json",
+      "storedSha256": "7d1df757d37f81be35bf30efcff9fb0f4fdd7097e0ae388df4d9a4a76a9add68",
+      "storedBytes": 7265
+    },
+    "k6.log": {
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceBytes": 0,
+      "normalizedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalizedBytes": 0,
+      "storedAs": "k6.log",
+      "storedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "storedBytes": 0
+    },
+    "propagation/observer-timeline.json": {
+      "sourceSha256": "e2e17554f6303c3a434e6edbd7dec3a6d81c1509b75f460d3a343abe74f8839a",
+      "sourceBytes": 11868,
+      "normalizedSha256": "562a2723e9ba916eaf43557ead04b61dc43cecaa48a3a7474649be475a55f96c",
+      "normalizedBytes": 11393,
+      "storedAs": "propagation/observer-timeline.json",
+      "storedSha256": "562a2723e9ba916eaf43557ead04b61dc43cecaa48a3a7474649be475a55f96c",
+      "storedBytes": 11393
+    },
+    "propagation/result.json": {
+      "sourceSha256": "f8c30a201b76c73c6055b63417b6c923742cdfa94cd2617fb0d18375947fd5a1",
+      "sourceBytes": 5057,
+      "normalizedSha256": "673b84f15d8f33eb3e8a757afd248eab4d4bbc44448911a5abe732762aaa2d5a",
+      "normalizedBytes": 4884,
+      "storedAs": "propagation/result.json",
+      "storedSha256": "673b84f15d8f33eb3e8a757afd248eab4d4bbc44448911a5abe732762aaa2d5a",
+      "storedBytes": 4884
+    },
+    "resources.json": {
+      "sourceSha256": "713d0dc06ea2f70d48eb11bfe9d8a6b88c6f5c87d19e049275dea0119698bd29",
+      "sourceBytes": 219665,
+      "normalizedSha256": "9eac4481ef1f99b095925638511b50ae1c4da50b9224c40160dfa5b9995d093b",
+      "normalizedBytes": 211842,
+      "storedAs": "resources.json",
+      "storedSha256": "9eac4481ef1f99b095925638511b50ae1c4da50b9224c40160dfa5b9995d093b",
+      "storedBytes": 211842
+    },
+    "result.json": {
+      "sourceSha256": "f17e8244d552777ad16d9f1fe74611804fb44873358527a29e83e89b2caad6d9",
+      "sourceBytes": 3094,
+      "normalizedSha256": "383fd54bfae303c04f3d56408001b7ffd14320dc4fa126be63c549bdd863cea2",
+      "normalizedBytes": 2999,
+      "storedAs": "result.json",
+      "storedSha256": "383fd54bfae303c04f3d56408001b7ffd14320dc4fa126be63c549bdd863cea2",
+      "storedBytes": 2999
+    },
+    "system-observations.json": {
+      "sourceSha256": "08e1b3856e309efc0c2d47c2f5d662302a3aff4df6911f188d5d4c7c81f55102",
+      "sourceBytes": 11242824,
+      "normalizedSha256": "59c09f290d30765362ef0d05cc2fada4425f16ff3f523ec64f4c1dd2444ac0bf",
+      "normalizedBytes": 11229819,
+      "storedAs": "system-observations.json.gz",
+      "storedSha256": "6c3066fe254c84d3af5f78ac54bbea0e33260ed4e40109fd6997141622155d79",
+      "storedBytes": 639383
+    },
+    "verifier-after.json": {
+      "sourceSha256": "ab43ab63123fe045f1463eab78c5102a2e54f2510a9f6fce246bb7a812c5c10f",
+      "sourceBytes": 719,
+      "normalizedSha256": "075c1b6834307924f2d55cc46f1a173d5b941e82ffb7d0eccec26adceb521dca",
+      "normalizedBytes": 696,
+      "storedAs": "verifier-after.json",
+      "storedSha256": "075c1b6834307924f2d55cc46f1a173d5b941e82ffb7d0eccec26adceb521dca",
+      "storedBytes": 696
+    },
+    "verifier-before.json": {
+      "sourceSha256": "5188cf3df9df69ab6c8958d56d74e016794e8ffaf09cb1a6dcd5ec0c6423cb7a",
+      "sourceBytes": 719,
+      "normalizedSha256": "6664685f6a03b2b41f11533624315c5aec970625d05d4661a7ef4cc1e9337af3",
+      "normalizedBytes": 696,
+      "storedAs": "verifier-before.json",
+      "storedSha256": "6664685f6a03b2b41f11533624315c5aec970625d05d4661a7ef4cc1e9337af3",
+      "storedBytes": 696
+    }
+  },
+  "privateRawPoints": {
+    "path": "<PRIVATE_TEMP>/phase19-r2-gzip-L2-full/k6-points.jsonl.gz",
+    "sha256": "b6585bea92bd6d3c9a188336331b3f1af3da040309e5f753775603c68ffe6595",
+    "bytes": 7698727
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "valid": false,
+  "diagnostic": true,
+  "reason": null,
+  "exitCode": 0,
+  "observerErrors": [],
+  "startedIterations": 4473,
+  "completedBusinessIterations": 4473,
+  "k6CompletedIterations": 4473,
+  "interruptedIterations": 0,
+  "droppedIterations": 0,
+  "httpRequestCount": 4951,
+  "cursorAdvances": 840,
+  "initializedActiveVUs": 200,
+  "endedUtc": "2026-09-13T12:36:44.632251+00:00",
+  "rawPointsSha256": "2128a9a3299a8599580b27642e0b638821ea351d270ea0d78ac3ab0b22b24a76",
+  "rawPointsBytes": 19041179,
+  "inventoryChanges": {
+    "formalGenerated": 88,
+    "formalProjected": 88,
+    "allStreamEntriesAdded": 624,
+    "temporaryVisibleEntriesAdded": 536,
+    "streamEntriesBySessionZone": {
+      "phase19-session-001-001/Zone-0": 0,
+      "phase19-session-001-001/Zone-1": 0,
+      "phase19-session-001-001/Zone-2": 0,
+      "phase19-session-001-001/Zone-3": 0,
+      "phase19-session-001-001/Zone-4": 0,
+      "phase19-session-001-002/Zone-0": 624,
+      "phase19-session-001-002/Zone-1": 0,
+      "phase19-session-001-002/Zone-2": 0,
+      "phase19-session-001-002/Zone-3": 0,
+      "phase19-session-001-002/Zone-4": 0,
+      "phase19-session-001-003/Zone-0": 0,
+      "phase19-session-001-003/Zone-1": 0,
+      "phase19-session-001-003/Zone-2": 0,
+      "phase19-session-001-003/Zone-3": 0,
+      "phase19-session-001-003/Zone-4": 0,
+      "phase19-session-001-004/Zone-0": 0,
+      "phase19-session-001-004/Zone-1": 0,
+      "phase19-session-001-004/Zone-2": 0,
+      "phase19-session-001-004/Zone-3": 0,
+      "phase19-session-001-004/Zone-4": 0,
+      "phase19-session-001-005/Zone-0": 0,
+      "phase19-session-001-005/Zone-1": 0,
+      "phase19-session-001-005/Zone-2": 0,
+      "phase19-session-001-005/Zone-3": 0,
+      "phase19-session-001-005/Zone-4": 0
+    },
+    "generationsUnchanged": true,
+    "scope": "entire point including drain and separately logged cleanup; not just observe window"
+  },
+  "accounting": {
+    "planned": {
+      "readerIterationsNominal": 4250,
+      "writerFlowsNominal": 223.21428571428572
+    },
+    "startedByKind": {
+      "abandon": 114,
+      "read": 4249,
+      "adjust": 44,
+      "cancel": 44,
+      "expiry": 22
+    },
+    "completedByKind": {
+      "abandon": 114,
+      "read": 4249,
+      "adjust": 44,
+      "cancel": 44,
+      "expiry": 22
+    },
+    "startedByScenario": {
+      "writers": 224,
+      "readers0": 424,
+      "readers1": 425,
+      "readers2": 425,
+      "readers3": 425,
+      "readers4": 425,
+      "readers5": 425,
+      "readers6": 425,
+      "readers7": 425,
+      "readers8": 425,
+      "readers9": 425
+    },
+    "errors": [
+      "reader arrival stream 0 differs from plan"
+    ],
+    "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+  }
+}

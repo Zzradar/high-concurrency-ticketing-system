@@ -22,6 +22,9 @@ def package(source, target):
     completed = source / ('browser.json' if (source / 'browser.json').exists() else 'result.json')
     if not completed.exists():
         raise ValueError('No completed point result; preserve incomplete diagnostics separately')
+    record = json.loads(completed.read_text(encoding='utf-8'))
+    if not isinstance(record.get('endedUtc'), str):
+        raise ValueError('Point is still running; no completion timestamp')
     files = {}
     pending = {}
     for path in sorted(source.rglob('*')):
@@ -40,13 +43,13 @@ def package(source, target):
                        'normalizedSha256': digest(normalized), 'normalizedBytes': len(normalized),
                        'storedAs': stored_name, 'storedSha256': digest(stored), 'storedBytes': len(stored)}
     raw_points = source / 'k6-points.jsonl'
+    if not raw_points.exists(): raw_points = source / 'k6-points.jsonl.gz'
     private = None
     if raw_points.exists():
         raw = raw_points.read_bytes()
-        private = {'path': '<PRIVATE_TEMP>/' + source.name + '/k6-points.jsonl',
+        private = {'path': '<PRIVATE_TEMP>/' + source.name + '/' + raw_points.name,
                    'sha256': digest(raw), 'bytes': len(raw)}
-        result = json.loads(completed.read_text(encoding='utf-8'))
-        if result.get('rawPointsSha256') != private['sha256'] or result.get('rawPointsBytes') != private['bytes']:
+        if record.get('rawPointsSha256') != private['sha256'] or record.get('rawPointsBytes') != private['bytes']:
             raise ValueError('Raw metric hash/length differs from completed result')
     manifest = {'source': '<PRIVATE_TEMP>/' + source.name,
                 'normalization': 'UTF-8 newline and private-path redaction; gzip is lossless with mtime=0',

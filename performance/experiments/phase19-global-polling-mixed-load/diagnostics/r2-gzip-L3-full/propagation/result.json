@@ -1,0 +1,173 @@
+{
+  "clock": "single process time.perf_counter, seconds",
+  "startedUtc": "2026-09-13T12:50:09.043281+00:00",
+  "dwellSeconds": 10,
+  "cyclesPlanned": 3,
+  "samples": [
+    {
+      "category": "temporary",
+      "operation": "hold",
+      "target": "HELD",
+      "writeResponseMonotonic": 1223964.958879,
+      "firstSeenMonotonic": 1223966.9565136,
+      "milliseconds": 1997.634599916637,
+      "matched": true
+    },
+    {
+      "category": "convergence",
+      "operation": "abandon",
+      "target": "AVAILABLE",
+      "writeResponseMonotonic": 1223979.0261832,
+      "firstSeenMonotonic": 1223984.0238388,
+      "milliseconds": 4997.655599843711,
+      "matched": true
+    },
+    {
+      "category": "temporary",
+      "operation": "hold",
+      "target": "HELD",
+      "writeResponseMonotonic": 1223984.0318382,
+      "firstSeenMonotonic": 1223986.0496425,
+      "milliseconds": 2017.8042999468744,
+      "matched": true
+    },
+    {
+      "category": "formal",
+      "operation": "confirm",
+      "target": "HELD",
+      "writeResponseMonotonic": 1223998.1426621,
+      "firstSeenMonotonic": 1224003.1233962,
+      "milliseconds": 4980.734099866822,
+      "matched": true
+    },
+    {
+      "category": "formal",
+      "operation": "cancel",
+      "target": "AVAILABLE",
+      "writeResponseMonotonic": 1224015.198433,
+      "firstSeenMonotonic": 1224020.198772,
+      "milliseconds": 5000.339000020176,
+      "matched": true
+    },
+    {
+      "category": "convergence",
+      "operation": "cancel_final",
+      "target": "AVAILABLE",
+      "writeResponseMonotonic": 1224015.198433,
+      "firstSeenMonotonic": 1224020.198772,
+      "milliseconds": 5000.339000020176,
+      "matched": true
+    },
+    {
+      "category": "temporary",
+      "operation": "hold",
+      "target": "HELD",
+      "writeResponseMonotonic": 1224020.2068664,
+      "firstSeenMonotonic": 1224022.2127473,
+      "milliseconds": 2005.8808999601752,
+      "matched": true
+    },
+    {
+      "category": "convergence",
+      "operation": "abandon",
+      "target": "AVAILABLE",
+      "writeResponseMonotonic": 1224034.2656717,
+      "firstSeenMonotonic": 1224039.2742845,
+      "milliseconds": 5008.612799923867,
+      "matched": true
+    },
+    {
+      "category": "temporary",
+      "operation": "hold",
+      "target": "HELD",
+      "writeResponseMonotonic": 1224039.2810749,
+      "firstSeenMonotonic": 1224041.2995118,
+      "milliseconds": 2018.43690010719,
+      "matched": true
+    },
+    {
+      "category": "formal",
+      "operation": "confirm",
+      "target": "HELD",
+      "writeResponseMonotonic": 1224053.4081155,
+      "firstSeenMonotonic": 1224058.4001031,
+      "milliseconds": 4991.987600224093,
+      "matched": true
+    },
+    {
+      "category": "formal",
+      "operation": "cancel",
+      "target": "AVAILABLE",
+      "writeResponseMonotonic": 1224070.4666827,
+      "firstSeenMonotonic": 1224075.4673787,
+      "milliseconds": 5000.695999944583,
+      "matched": true
+    },
+    {
+      "category": "convergence",
+      "operation": "cancel_final",
+      "target": "AVAILABLE",
+      "writeResponseMonotonic": 1224070.4666827,
+      "firstSeenMonotonic": 1224075.4673787,
+      "milliseconds": 5000.695999944583,
+      "matched": true
+    },
+    {
+      "category": "temporary",
+      "operation": "hold",
+      "target": "HELD",
+      "writeResponseMonotonic": 1224075.4757276,
+      "firstSeenMonotonic": 1224077.4943225,
+      "milliseconds": 2018.594899913296,
+      "matched": true
+    },
+    {
+      "category": "convergence",
+      "operation": "abandon",
+      "target": "AVAILABLE",
+      "writeResponseMonotonic": 1224089.5640528,
+      "firstSeenMonotonic": 1224094.5753882,
+      "milliseconds": 5011.33540016599,
+      "matched": true
+    },
+    {
+      "category": "temporary",
+      "operation": "hold",
+      "target": "HELD",
+      "writeResponseMonotonic": 1224094.5827775,
+      "firstSeenMonotonic": 1224096.5819644,
+      "milliseconds": 1999.1868999786675,
+      "matched": true
+    },
+    {
+      "category": "formal",
+      "operation": "confirm",
+      "target": "HELD",
+      "writeResponseMonotonic": 1224108.6471064,
+      "firstSeenMonotonic": 1224113.6350458,
+      "milliseconds": 4987.939399899915,
+      "matched": true
+    },
+    {
+      "category": "formal",
+      "operation": "cancel",
+      "target": "AVAILABLE",
+      "writeResponseMonotonic": 1224125.7086229,
+      "firstSeenMonotonic": 1224130.722475,
+      "milliseconds": 5013.852099888027,
+      "matched": true
+    },
+    {
+      "category": "convergence",
+      "operation": "cancel_final",
+      "target": "AVAILABLE",
+      "writeResponseMonotonic": 1224125.7086229,
+      "firstSeenMonotonic": 1224130.722475,
+      "milliseconds": 5013.852099888027,
+      "matched": true
+    }
+  ],
+  "passed": true,
+  "cleanup": [],
+  "endedUtc": "2026-09-13T12:52:54.872514+00:00"
+}

@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import re
 
 ROOT=Path(__file__).resolve().parents[2]
 EVIDENCE=ROOT/'performance/experiments/phase19-global-polling-mixed-load'
@@ -24,6 +25,16 @@ def qualification(result,identity,current,expected_vus,memory_gib):
         raise ValueError('Qualification belongs to another memory identity')
     for name in ['workload.js','policy.mjs','stub.py','calibrate.py']:
         if identity['protocolSha256'].get(name)!=current[name]:raise ValueError('Executed qualification core drift: '+name)
+    if identity['protocolSha256']!=current:
+        raise ValueError('Executed qualification protocol drift outside core')
+
+
+def qualification_directory(parent,memory_gib,vus,template=None):
+    if template is not None:
+        if not re.fullmatch(r'phase19-[a-z0-9-]*\{vus\}[a-z0-9-]*',template):
+            raise ValueError('Qualification template must be a single Phase19 directory name')
+        return parent/template.format(vus=vus)
+    return parent/(f'phase19-calibration-4g-{vus}-r1' if memory_gib==4 else f'phase19-calibration-{vus}-r3')
 
 
 def main(args):
@@ -35,9 +46,12 @@ def main(args):
     files={p.name:sha(p) for p in PROTOCOL.iterdir() if p.is_file()}
     points={}
     tiers=[100,250,500,1000]
-    if args.memory_gib==4 and (args.private/'phase19-calibration-4g-2000-r1/result.json').exists():tiers.append(2000)
+    template=getattr(args,'qualification_template',None)
+    max_vus=getattr(args,'max_vus',None)
+    next_point=qualification_directory(args.private,args.memory_gib,2000,template)
+    if max_vus==2000 or max_vus is None and args.memory_gib==4 and (next_point/'result.json').exists():tiers.append(2000)
     for vus in tiers:
-        directory=args.private/f'phase19-calibration-4g-{vus}-r1' if args.memory_gib==4 else args.private/f'phase19-calibration-{vus}-r3'
+        directory=qualification_directory(args.private,args.memory_gib,vus,template)
         result=json.loads((directory/'result.json').read_text())
         identity=json.loads((directory/'identity.json').read_text())
         qualification(result,identity,files,vus,args.memory_gib)
@@ -53,4 +67,6 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('--private',type=Path,required=True)
     parser.add_argument('--memory-gib',type=int,choices=[2,4],required=True)
+    parser.add_argument('--qualification-template')
+    parser.add_argument('--max-vus',type=int,choices=[1000,2000])
     main(parser.parse_args())

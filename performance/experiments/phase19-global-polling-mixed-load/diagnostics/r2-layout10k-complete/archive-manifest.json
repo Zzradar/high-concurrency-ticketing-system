@@ -1,0 +1,44 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-r2-layout10k-complete",
+  "normalization": "UTF-8 newline and private-path redaction; gzip is lossless with mtime=0",
+  "classification": "Result fields are preserved verbatim, including invalid outcomes",
+  "files": {
+    "identity.json": {
+      "sourceSha256": "9609d438ea676083cb97aa19db249a8629b2b2c6e8fda7a64dfaa08dc2c2bdfb",
+      "sourceBytes": 3521,
+      "normalizedSha256": "f782d122e6c638748f3b312aca1e67b6cfa4e390101621d9c01cf4528cc78432",
+      "normalizedBytes": 3455,
+      "storedAs": "identity.json",
+      "storedSha256": "f782d122e6c638748f3b312aca1e67b6cfa4e390101621d9c01cf4528cc78432",
+      "storedBytes": 3455
+    },
+    "result.json": {
+      "sourceSha256": "44c4eefaad0d33c44ca73d7f8aaec34377efcee9e03f853d588904bf36de3da2",
+      "sourceBytes": 2605,
+      "normalizedSha256": "618cd418c558c12064bff732dcfdd192293344d9b4f0dff541fb3f1bbf6c2e01",
+      "normalizedBytes": 2482,
+      "storedAs": "result.json",
+      "storedSha256": "618cd418c558c12064bff732dcfdd192293344d9b4f0dff541fb3f1bbf6c2e01",
+      "storedBytes": 2482
+    },
+    "verifier-after.json": {
+      "sourceSha256": "dec79498e1d965e77c037fb80eb7bbdb76232fd6d4f7e64fbeb934916dfc853e",
+      "sourceBytes": 719,
+      "normalizedSha256": "7e6f22b11b7330f774c0c74f63485aef53639aea032d06e51dce093e8bab3253",
+      "normalizedBytes": 696,
+      "storedAs": "verifier-after.json",
+      "storedSha256": "7e6f22b11b7330f774c0c74f63485aef53639aea032d06e51dce093e8bab3253",
+      "storedBytes": 696
+    },
+    "verifier-before.json": {
+      "sourceSha256": "28155591db43af8adeec32a57198d18027fdd78de5f9a7f19a2a2784cfa2900c",
+      "sourceBytes": 719,
+      "normalizedSha256": "47ea7a0696c25619e1f83a0736baf59085526e0d27bfed3a9383ea421a1bd3b9",
+      "normalizedBytes": 696,
+      "storedAs": "verifier-before.json",
+      "storedSha256": "47ea7a0696c25619e1f83a0736baf59085526e0d27bfed3a9383ea421a1bd3b9",
+      "storedBytes": 696
+    }
+  },
+  "privateRawPoints": null
+}

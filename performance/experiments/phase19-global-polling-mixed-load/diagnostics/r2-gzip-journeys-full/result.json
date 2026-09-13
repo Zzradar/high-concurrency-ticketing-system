@@ -1,0 +1,280 @@
+{
+  "metricSummaryAvailable": true,
+  "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+  "valid": true,
+  "diagnostic": true,
+  "reason": null,
+  "exitCode": 0,
+  "observerErrors": [],
+  "startedIterations": 5001,
+  "completedBusinessIterations": 5001,
+  "k6CompletedIterations": 5001,
+  "interruptedIterations": 0,
+  "droppedIterations": 0,
+  "httpRequestCount": 21955,
+  "cursorAdvances": 0,
+  "initializedActiveVUs": 100,
+  "endedUtc": "2026-09-13T12:57:46.561365+00:00",
+  "rawPointsSha256": "13b35f47ce6366c3db056d937df532da59ddf6bb94a1422e0de52ef1929ac1a4",
+  "rawPointsBytes": 2722885,
+  "inventoryChanges": {
+    "formalGenerated": 800,
+    "formalProjected": 800,
+    "allStreamEntriesAdded": 3198,
+    "temporaryVisibleEntriesAdded": 2398,
+    "streamEntriesBySessionZone": {
+      "phase19-session-001-001/Zone-0": 0,
+      "phase19-session-001-001/Zone-1": 0,
+      "phase19-session-001-001/Zone-2": 0,
+      "phase19-session-001-001/Zone-3": 0,
+      "phase19-session-001-001/Zone-4": 0,
+      "phase19-session-001-002/Zone-0": 0,
+      "phase19-session-001-002/Zone-1": 0,
+      "phase19-session-001-002/Zone-2": 0,
+      "phase19-session-001-002/Zone-3": 0,
+      "phase19-session-001-002/Zone-4": 0,
+      "phase19-session-001-003/Zone-0": 100,
+      "phase19-session-001-003/Zone-1": 0,
+      "phase19-session-001-003/Zone-2": 0,
+      "phase19-session-001-003/Zone-3": 0,
+      "phase19-session-001-003/Zone-4": 0,
+      "phase19-session-001-004/Zone-0": 0,
+      "phase19-session-001-004/Zone-1": 0,
+      "phase19-session-001-004/Zone-2": 0,
+      "phase19-session-001-004/Zone-3": 0,
+      "phase19-session-001-004/Zone-4": 0,
+      "phase19-session-001-005/Zone-0": 620,
+      "phase19-session-001-005/Zone-1": 619,
+      "phase19-session-001-005/Zone-2": 619,
+      "phase19-session-001-005/Zone-3": 620,
+      "phase19-session-001-005/Zone-4": 620
+    },
+    "generationsUnchanged": true,
+    "scope": "entire point including drain and separately logged cleanup; not just observe window"
+  },
+  "accounting": {
+    "planned": {
+      "journeysNominal": 5000
+    },
+    "startedByKind": {
+      "journey_browse": 3751,
+      "journey_hold": 750,
+      "journey_order_cancel": 400,
+      "journey_hotspot": 100
+    },
+    "completedByKind": {
+      "journey_browse": 3751,
+      "journey_hold": 750,
+      "journey_order_cancel": 400,
+      "journey_hotspot": 100
+    },
+    "startedByScenario": {
+      "journeys": 5001
+    },
+    "errors": [],
+    "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+  },
+  "journeyHotspotGroups": {
+    "0": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "1": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "2": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "3": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "4": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "5": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "6": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "7": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "8": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "9": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "10": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "11": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "12": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "13": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "14": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "15": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "16": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "17": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "18": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "19": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "20": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "21": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "22": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "23": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "24": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "25": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "26": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "27": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "28": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "29": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "30": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "31": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "32": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "33": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "34": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "35": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "36": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "37": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "38": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "39": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "40": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "41": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "42": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "43": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "44": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "45": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "46": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "47": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "48": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "49": {
+      "contenders": 2.0,
+      "winners": 1.0
+    }
+  },
+  "plannedJourneysNominal": 5000
+}

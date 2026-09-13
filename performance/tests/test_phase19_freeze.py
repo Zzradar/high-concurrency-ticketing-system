@@ -22,6 +22,14 @@ class FreezeTests(unittest.TestCase):
             freeze.qualification(result,identity,changed,1000,4)
         with self.assertRaises(ValueError):
             freeze.qualification({**result,'droppedIterations':1},identity,hashes,1000,4)
+        with self.assertRaisesRegex(ValueError,'outside core'):
+            freeze.qualification(result,identity,{**hashes,'resource_gate.py':'new-safety-rule'},1000,4)
+
+    def test_new_qualification_identity_cannot_escape_private_parent(self):
+        parent=Path('private')
+        self.assertEqual(freeze.qualification_directory(parent,4,2000,'phase19-r2-4g-{vus}'),parent/'phase19-r2-4g-2000')
+        for template in ['../phase19-{vus}','phase19-{vus}/child','other-{vus}','phase19-fixed']:
+            with self.assertRaises(ValueError):freeze.qualification_directory(parent,4,2000,template)
 
 
 if __name__=='__main__':unittest.main()
