@@ -1,0 +1,95 @@
+{
+  "status": "COMPLETE_STAGE2_BEFORE_PRODUCTION_EDIT",
+  "capturedUtc": "2026-09-13T14:19:45.447103+00:00",
+  "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+  "productionTrees": {
+    "backend/src": "1530bcc058a0002760010f604f50697664579fa8",
+    "backend/config": "758d23f2a8168a6e6e3ba7fa44e2ebbd7be54b98",
+    "backend/db/migrations": "027f13b7c52b3156c00921cceadaddb05dbaf5ca",
+    "frontend/src": "5c182d9b7c547562db849c68483e61dcb52d2101",
+    "frontend/public": "a6c8ce8c108948bc23c54e4ac09632691b97f55d"
+  },
+  "binarySha256": "d9082f28bdf8d5bb8312cee40c9e6a79345b559554d4cbd2a301e742fae0bad5",
+  "protocolSha256": "a5d6470272c1d126e03a78cb3d46f0edddedccc368141ec00e3a16bedd63a295",
+  "pollingBaselineManifestSha256": "5cd786d576b677954e7e40d1341dec989f72ada919d3e0160ac8b28f6af7ed42",
+  "points": {
+    "closed-100": {
+      "sha256": "4bdc0f4a6773800b7cb40bddeaa0b317ca9e39a2e5dd13ee011bc916619596b3",
+      "valid": true,
+      "endedUtc": "2026-09-13T13:35:04.534482+00:00"
+    },
+    "closed-1000": {
+      "sha256": "dbaba4a7dcbb456ec7d666fcba33739189b3407f9ff44a14f3cd9d226855fbf7",
+      "valid": true,
+      "endedUtc": "2026-09-13T13:41:55.503747+00:00"
+    },
+    "closed-2000": {
+      "sha256": "f4e809bad19266e7a0b0878c4368b3edbcf7077c95bde59e7983af15151f06bc",
+      "valid": true,
+      "endedUtc": "2026-09-13T13:45:21.319858+00:00"
+    },
+    "closed-2000-10m": {
+      "sha256": "a766fbae756c6956832c4ead3d198597003ff11ec4f4d6225ee811cf8aa22bc9",
+      "valid": true,
+      "endedUtc": "2026-09-13T14:01:25.784370+00:00"
+    },
+    "closed-3000": {
+      "sha256": "7d17f15b151016946af3bd2f74c9126453a83fd11deae34c1bffff379e0dad3f",
+      "valid": false,
+      "endedUtc": "2026-09-13T13:46:08.550139+00:00"
+    },
+    "closed-500": {
+      "sha256": "b4400295214ee17162e2ac5d81bdda91b86ff18adf0cec921c895c3f561c9274",
+      "valid": true,
+      "endedUtc": "2026-09-13T13:38:29.170725+00:00"
+    },
+    "hotspot-100": {
+      "sha256": "9bca03f7d3df2d496a4b7b5086c9845c31d4d1cc913f07579c3c1896e89aaada",
+      "valid": true,
+      "endedUtc": "2026-09-13T14:16:29.760580+00:00"
+    },
+    "hotspot-1000": {
+      "sha256": "2d247397822e8bbe169efee43bd4698f1487c1044c2942a27179b8de3fe3474f",
+      "valid": true,
+      "endedUtc": "2026-09-13T14:17:29.232221+00:00"
+    },
+    "hotspot-500": {
+      "sha256": "09f6920c69eb32c82050088df03f6c4a2c4ee0f4806f4f1dd5a3e16d28a05ac4",
+      "valid": true,
+      "endedUtc": "2026-09-13T14:16:59.593502+00:00"
+    },
+    "journeys-5000": {
+      "sha256": "e220bf53ad79f4a745304e5321112c4ff4617293a4cff686126f6a05e318c5c4",
+      "valid": true,
+      "endedUtc": "2026-09-13T14:15:59.630794+00:00"
+    },
+    "layout-10000": {
+      "sha256": "e610e4362ce4b07e5d264fa677e0900a7650b34d0a75bee99725db0c79dc53a7",
+      "passed": true,
+      "endedUtc": "2026-09-13T14:17:38.019182+00:00"
+    },
+    "open-L1": {
+      "sha256": "4f97d949a93b6991e9fa7f2ee36564c71d54a74f942a393b1f8d1c6d057eb91b",
+      "valid": true,
+      "endedUtc": "2026-09-13T14:04:53.474592+00:00"
+    },
+    "open-L2": {
+      "sha256": "033ebdc392427e3d651cd7ae468d7f1e6187c4a99321bbaf75dfe86dc2eb17a6",
+      "valid": true,
+      "endedUtc": "2026-09-13T14:08:06.780746+00:00"
+    },
+    "open-L3": {
+      "sha256": "6cbfba43a5d40762e3c7771c435f16f3caad7e10719c5d1df9a2eac78bcfd377",
+      "valid": true,
+      "endedUtc": "2026-09-13T14:11:22.175903+00:00"
+    },
+    "open-precheck": {
+      "sha256": "40817d8125e4ad7419e117107d43951689d43fe6c220e947606edb7b70c04592",
+      "valid": true,
+      "endedUtc": "2026-09-13T14:02:46.453352+00:00"
+    }
+  },
+  "firstObservedUnstable": "closed-3000",
+  "highestStableActualVUs": 2000,
+  "protection": "Event policies OFF; unchanged default local Bulkheads enabled; 503 excluded from success throughput"
+}

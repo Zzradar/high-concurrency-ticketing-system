@@ -1,0 +1,83 @@
+{
+  "startedUtc": "2026-09-13T14:16:11.604806+00:00",
+  "diagnostic": false,
+  "stack": {
+    "prefix": "phase19-formal-r2",
+    "apiPort": 18398,
+    "frontendPort": 18399,
+    "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+    "binarySha256": "d9082f28bdf8d5bb8312cee40c9e6a79345b559554d4cbd2a301e742fae0bad5",
+    "images": {
+      "api": {
+        "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+        "digests": [
+          "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+        ]
+      },
+      "postgres": {
+        "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+        "digests": [
+          "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+        ]
+      },
+      "redis": {
+        "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+        "digests": [
+          "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+        ]
+      },
+      "frontend": {
+        "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+        "digests": [
+          "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+        ]
+      },
+      "k6": {
+        "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+        "digests": [
+          "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+        ]
+      }
+    },
+    "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+    "sourceCommit": "d4948d3bc299a26bc41ba7a0ef29f162f8a8da6d"
+  },
+  "runtimeConfigSha256": "0610fec04568cf27895c18c8d3a76eb53b90f8ea169129252f92e6c354256fc4",
+  "protocolSha256": {
+    "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+    "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+    "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+    "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+    "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+    "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+    "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+    "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+    "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+    "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+    "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+    "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+    "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+    "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+    "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+    "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+    "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+    "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+  },
+  "model": "hotspot",
+  "actualVUsRequested": 100,
+  "warmupSeconds": 0,
+  "observeSeconds": 40,
+  "targetDeltaIterationsPerSecond": null,
+  "targetStateTransitionsPerSecond": null,
+  "plannedReadIterationsTotal": null,
+  "bootstrapSnapshotsPlanned": 0,
+  "bootstrapSnapshotRate": null,
+  "plannedWriteFlowsTotal": null,
+  "generatorLimits": {
+    "cpus": 2,
+    "memoryBytes": 4294967296,
+    "nofile": 16384,
+    "pids": 256
+  },
+  "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+}

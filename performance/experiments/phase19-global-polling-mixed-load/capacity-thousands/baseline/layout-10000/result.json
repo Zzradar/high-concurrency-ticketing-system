@@ -1,0 +1,123 @@
+{
+  "diagnostic": false,
+  "seats": 10000,
+  "sessions": 1,
+  "layout": [
+    {
+      "status": 200,
+      "count": 10000,
+      "seconds": 0.11259829998016357,
+      "bytes": 1189259
+    },
+    {
+      "status": 200,
+      "count": 10000,
+      "seconds": 0.136272800154984,
+      "bytes": 1189259
+    },
+    {
+      "status": 200,
+      "count": 10000,
+      "seconds": 0.13962079980410635,
+      "bytes": 1189259
+    },
+    {
+      "status": 200,
+      "count": 10000,
+      "seconds": 0.12801879993639886,
+      "bytes": 1189259
+    },
+    {
+      "status": 200,
+      "count": 10000,
+      "seconds": 0.12569590006023645,
+      "bytes": 1189259
+    }
+  ],
+  "availability": [
+    {
+      "status": 200,
+      "mode": "snapshot",
+      "zone": "Zone-0",
+      "seats": 2000,
+      "seconds": 0.17166700004599988,
+      "bytes": 132578
+    },
+    {
+      "status": 200,
+      "mode": "delta",
+      "zone": "Zone-0",
+      "changes": 0,
+      "seconds": 0.02124350005760789,
+      "bytes": 578
+    },
+    {
+      "status": 200,
+      "mode": "snapshot",
+      "zone": "Zone-1",
+      "seats": 2000,
+      "seconds": 0.021204999880865216,
+      "bytes": 132578
+    },
+    {
+      "status": 200,
+      "mode": "delta",
+      "zone": "Zone-1",
+      "changes": 0,
+      "seconds": 0.00390509981662035,
+      "bytes": 578
+    },
+    {
+      "status": 200,
+      "mode": "snapshot",
+      "zone": "Zone-2",
+      "seats": 2000,
+      "seconds": 0.03677630005404353,
+      "bytes": 132578
+    },
+    {
+      "status": 200,
+      "mode": "delta",
+      "zone": "Zone-2",
+      "changes": 0,
+      "seconds": 0.004778300179168582,
+      "bytes": 578
+    },
+    {
+      "status": 200,
+      "mode": "snapshot",
+      "zone": "Zone-3",
+      "seats": 2000,
+      "seconds": 0.04367820010520518,
+      "bytes": 132578
+    },
+    {
+      "status": 200,
+      "mode": "delta",
+      "zone": "Zone-3",
+      "changes": 0,
+      "seconds": 0.026151100173592567,
+      "bytes": 578
+    },
+    {
+      "status": 200,
+      "mode": "snapshot",
+      "zone": "Zone-4",
+      "seats": 2000,
+      "seconds": 0.0213899000082165,
+      "bytes": 132578
+    },
+    {
+      "status": 200,
+      "mode": "delta",
+      "zone": "Zone-4",
+      "changes": 0,
+      "seconds": 0.025358499959111214,
+      "bytes": 578
+    }
+  ],
+  "passed": true,
+  "mismatches": 0,
+  "inventorySha256": "53bd528f1e7290a63668be4cc2d645bf2729281d72679f2d04194669efe8e4f7",
+  "endedUtc": "2026-09-13T14:17:38.019182+00:00"
+}

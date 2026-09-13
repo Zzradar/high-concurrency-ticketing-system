@@ -1,0 +1,75 @@
+{
+  "reason": "git apply honors checkout line endings; normalized complete file content matches tested proposal",
+  "files": {
+    "src/api/ticketApi.ts": {
+      "appliedSha256": "2173db0279083e8863d488ca62b6af5d683c92916867733c007063d02460966e",
+      "proposalSha256": "cf02edd712151e3a9dee017bf7db30e68e34570512c1e110eef7631f46d66c10",
+      "normalizedTextIdentical": true
+    },
+    "src/App.test.ts": {
+      "appliedSha256": "5e200c40d72a01ef85f22eb67587f903136d3080acab0e211ae121059f2c9091",
+      "proposalSha256": "90a75eeb7a98fb7ec447573b4d1db8eabfe9d5ab36afe094502133ea6100f255",
+      "normalizedTextIdentical": true
+    },
+    "src/App.vue": {
+      "appliedSha256": "846935c096a4cbe39075a1c8c75d25de38e9b4b1b6fd44b0199908fb709e7c17",
+      "proposalSha256": "c84e2fe4173c935e255c6a78141e3ebe925cffe1801d27ab33b4c9462ecbcf42",
+      "normalizedTextIdentical": true
+    },
+    "src/auth/authState.ts": {
+      "appliedSha256": "5cafe700f08622a6c4fb050e1cc6adaf57438a3bce246105750c900c2661d4be",
+      "proposalSha256": "b1392a6a394871705658cfa684a152cdf9964b189f16efae4712aad8d740b172",
+      "normalizedTextIdentical": true
+    },
+    "src/pages/OrderPage.refund.test.ts": {
+      "appliedSha256": "934a1a328efa35dc900c68c99d1e0987a4406990e5135e1a6084eff78be2c225",
+      "proposalSha256": "be35b608d6fb2abd50e3c133c58e948262910a79960b5663d7eed4dc5e200cb8",
+      "normalizedTextIdentical": true
+    },
+    "src/pages/OrderPage.test.ts": {
+      "appliedSha256": "4d996e2100a08be92ac5c15c429f4f6377846c18af3958477472fa4233357115",
+      "proposalSha256": "7dd535077f1b09f5795cfbea62ba4cee0d30bdbfaa8033e963d5f029bf647a3c",
+      "normalizedTextIdentical": true
+    },
+    "src/pages/OrderPage.vue": {
+      "appliedSha256": "ada25e1be7301a6e65630d8561b4a2be920debc516230839902ec5a466ad2d12",
+      "proposalSha256": "5d1f68ede1310fd4a46c2b8a03e073be3baf8551f8ef30f8286f9d748e257fa1",
+      "normalizedTextIdentical": true
+    },
+    "src/pages/SeatSelectionPage.vue": {
+      "appliedSha256": "27e5fe6debc2d35e520c4d70101f5a7d14eff98d1685e647b93942ea677b1672",
+      "proposalSha256": "65c9ed071bf04f51a69f82160a1581a203783c5f6aaba000d8971e2d5e9354b0",
+      "normalizedTextIdentical": true
+    },
+    "src/utils/pollingPolicy.test.ts": {
+      "appliedSha256": "a13b3462802b73c38673d82af2949971e537b88ed097954dec59ba7be7bd08ac",
+      "proposalSha256": "b99e3c72abc3ed91b3f9f60bb3bd41bad27b13146e39f4cd5ab9cf34f1b6a630",
+      "normalizedTextIdentical": true
+    },
+    "src/utils/pollingPolicy.ts": {
+      "appliedSha256": "88e2c1271588056635ea8fb820ffc6dcb956cc4dcec94f909a6d3d4d96b88c93",
+      "proposalSha256": "f3811818db68ad1b0843c9dabf2bf6e224605014099e86e03ee12158dc2be823",
+      "normalizedTextIdentical": true
+    },
+    "src/utils/singleFlight.ts": {
+      "appliedSha256": "217fd1da6f4ad272b0294099d9eb2db3a0334ff7745b3d3274b2d75e554ad530",
+      "proposalSha256": "00b1ca226acbddc99be6a819c61d9ac65fc21931c7b41b19e5f04b5d66e4872d",
+      "normalizedTextIdentical": true
+    },
+    "tests/phase19.auth-lifecycle.test.ts": {
+      "appliedSha256": "6b85f7c379c041755526cb495aa1c69cdae1e78d03bfe672c9a86778c843878e",
+      "proposalSha256": "080e701792bc3a3a607c35e228c8977b1e322511cee01145e45382855578077b",
+      "normalizedTextIdentical": true
+    },
+    "tests/phase19.notifications.test.ts": {
+      "appliedSha256": "1ebb1905b84adf7ee47f9995ab809f168efe8684b8af95005772bb40948880f0",
+      "proposalSha256": "3395ad169e85414e8d529faf2e2f26dc653bc37ea7787e1d71541aa5eebb7170",
+      "normalizedTextIdentical": true
+    },
+    "tests/phase19.submitting.test.ts": {
+      "appliedSha256": "8304959db0400ddd8e419eb533848a3d17578556d8063af7d1bd5c0344995852",
+      "proposalSha256": "2356a194ab362dad17ca6e1f6493d0e5723a597b28ac9795cf352d6d0c195ea5",
+      "normalizedTextIdentical": true
+    }
+  }
+}

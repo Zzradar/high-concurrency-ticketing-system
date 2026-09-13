@@ -1,0 +1,98 @@
+{
+  "status": "PROPOSAL_ONLY_NOT_APPLIED_TO_BASELINE",
+  "files": {
+    "src/api/ticketApi.ts": {
+      "baselineSha256": "e58e810c2e4d47bc6f8bb6a8102845b5a614ef78f6f7678cf5ecadc90cd39b3b",
+      "proposalSha256": "cf02edd712151e3a9dee017bf7db30e68e34570512c1e110eef7631f46d66c10"
+    },
+    "src/App.test.ts": {
+      "baselineSha256": "4c0e00eb5ad0f3366ccd75dbd2d85d1176b96c1825803b5d0544d63c9122362d",
+      "proposalSha256": "90a75eeb7a98fb7ec447573b4d1db8eabfe9d5ab36afe094502133ea6100f255"
+    },
+    "src/App.vue": {
+      "baselineSha256": "7df3c6d74d3c0fb91ff79df8c02a2c1cec80dc6bd921492835944ce124c5d2b7",
+      "proposalSha256": "c84e2fe4173c935e255c6a78141e3ebe925cffe1801d27ab33b4c9462ecbcf42"
+    },
+    "src/auth/authState.ts": {
+      "baselineSha256": "00d51aabfaad32346f25a7e244d886a124400481ced567331d889d346046f875",
+      "proposalSha256": "b1392a6a394871705658cfa684a152cdf9964b189f16efae4712aad8d740b172"
+    },
+    "src/pages/OrderPage.refund.test.ts": {
+      "baselineSha256": "e552f8fb1cdb0e8e84a63174b0ae3252875cd0bf6278161f64999cc1cbddf8ff",
+      "proposalSha256": "be35b608d6fb2abd50e3c133c58e948262910a79960b5663d7eed4dc5e200cb8"
+    },
+    "src/pages/OrderPage.test.ts": {
+      "baselineSha256": "7eae2d1ea36608677d502d1e7ac5fb797c4f19d970dcca2cdb6754b591f05aff",
+      "proposalSha256": "7dd535077f1b09f5795cfbea62ba4cee0d30bdbfaa8033e963d5f029bf647a3c"
+    },
+    "src/pages/OrderPage.vue": {
+      "baselineSha256": "5af7db9c250f3a7db82413d8775a5425407916c85de4bd80f870299cb735cdde",
+      "proposalSha256": "5d1f68ede1310fd4a46c2b8a03e073be3baf8551f8ef30f8286f9d748e257fa1"
+    },
+    "src/pages/SeatSelectionPage.vue": {
+      "baselineSha256": "9d3f9f7cf11ff96240c2b90b9e17c6aa2dac5bd68fda503793d34036fc1bfdc0",
+      "proposalSha256": "65c9ed071bf04f51a69f82160a1581a203783c5f6aaba000d8971e2d5e9354b0"
+    },
+    "src/utils/pollingPolicy.test.ts": {
+      "baselineSha256": "f5202c64eca8b442ed9e63a83db77b7a0bef86079dfc476be252d004ebd21d67",
+      "proposalSha256": "b99e3c72abc3ed91b3f9f60bb3bd41bad27b13146e39f4cd5ab9cf34f1b6a630"
+    },
+    "src/utils/pollingPolicy.ts": {
+      "baselineSha256": "35bcb3aac1b41071e01265177c8124d6095c1acd7e6bac9defbf6e27583aaf4e",
+      "proposalSha256": "f3811818db68ad1b0843c9dabf2bf6e224605014099e86e03ee12158dc2be823"
+    },
+    "src/utils/singleFlight.ts": {
+      "baselineSha256": null,
+      "proposalSha256": "00b1ca226acbddc99be6a819c61d9ac65fc21931c7b41b19e5f04b5d66e4872d"
+    },
+    "tests/phase19.auth-lifecycle.test.ts": {
+      "baselineSha256": "803ffabd0b67bde950c43d8b89938cbeef8a72588c657cb22c7e47de5cb3ce5d",
+      "proposalSha256": "080e701792bc3a3a607c35e228c8977b1e322511cee01145e45382855578077b"
+    },
+    "tests/phase19.notifications.test.ts": {
+      "baselineSha256": "0e972ae8c7cb25a73f9da82c67713cf0c8cc2006d786b1cc03c25aaf1ff54c53",
+      "proposalSha256": "3395ad169e85414e8d529faf2e2f26dc653bc37ea7787e1d71541aa5eebb7170"
+    },
+    "tests/phase19.submitting.test.ts": {
+      "baselineSha256": "dc1ebd9a8a0ef889bc07588cbb624316a97edd7fa5f500ca131673a157d548f0",
+      "proposalSha256": "2356a194ab362dad17ca6e1f6493d0e5723a597b28ac9795cf352d6d0c195ea5"
+    }
+  },
+  "patchSha256": "cfe6756cdf86c787088d743b392f635407bbb50abd959ecfa22e659a729dbecb",
+  "privatePatch": "<PRIVATE_TEMP>/phase19-frontend-proposal-final.patch",
+  "logs": {
+    "phase19-proposal-full-r3.log": {
+      "sourceSha256": "afd8c0b9b2a1ec32336b41a567ab321aeb60e17de1cb940803beb784339eccb0",
+      "sourceBytes": 1144
+    },
+    "phase19-proposal-full-r4.log": {
+      "sourceSha256": "e3b80db0ba8a7760323b5eb14d39d949891712467fcd1273b34e58101058fbcd",
+      "sourceBytes": 270
+    },
+    "phase19-proposal-activation-r1.log": {
+      "sourceSha256": "bc310a6e22ded26b7dce21b7d106579c87db21404b212c26e3a6c01655ff59bd",
+      "sourceBytes": 263
+    },
+    "phase19-proposal-full-r5.log": {
+      "sourceSha256": "43b618c6955cb7a9c36abad633f8a062304f17d876903c10ca0c47273012ee39",
+      "sourceBytes": 270
+    },
+    "phase19-proposal-auth-epoch-r1.log": {
+      "sourceSha256": "6066a3c5e9cf8ef39168279e0b2fba8ad1cde5e2d3f70dfe2b846f1885f6cee1",
+      "sourceBytes": 262
+    },
+    "phase19-proposal-full-r6.log": {
+      "sourceSha256": "d924b3dcdc6f71b1c1569c771e544fa1dacaf075ea81e44506fe93dcac45c8fb",
+      "sourceBytes": 270
+    },
+    "phase19-proposal-build-r3.log": {
+      "sourceSha256": "5c923804b74ec4137a35c6a37cf32579010a3912b661f40cd5e6c5b8783f8d01",
+      "sourceBytes": 1066
+    }
+  },
+  "validation": {
+    "fullTests": 328,
+    "testFiles": 42,
+    "httpProductionBuild": "PASS"
+  }
+}

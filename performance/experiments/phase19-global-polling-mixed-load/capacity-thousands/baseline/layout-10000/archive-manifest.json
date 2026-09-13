@@ -1,0 +1,44 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-r2-baseline-layout-10000",
+  "normalization": "UTF-8 newline and private-path redaction; gzip is lossless with mtime=0",
+  "classification": "Result fields are preserved verbatim, including invalid outcomes",
+  "files": {
+    "identity.json": {
+      "sourceSha256": "091804cb6759835fa602e57776de2961902547593ee9b96601eb187eb942cecb",
+      "sourceBytes": 3516,
+      "normalizedSha256": "9d22b3d0b6e7d718ce8acf69249934aeebea7b54d71454b8ae1c99465b880b76",
+      "normalizedBytes": 3450,
+      "storedAs": "identity.json",
+      "storedSha256": "9d22b3d0b6e7d718ce8acf69249934aeebea7b54d71454b8ae1c99465b880b76",
+      "storedBytes": 3450
+    },
+    "result.json": {
+      "sourceSha256": "41d5fb975b0e7a1f0b5d659076acb8938d9da4f70d467c6f50d1800fe034e1de",
+      "sourceBytes": 2603,
+      "normalizedSha256": "e610e4362ce4b07e5d264fa677e0900a7650b34d0a75bee99725db0c79dc53a7",
+      "normalizedBytes": 2480,
+      "storedAs": "result.json",
+      "storedSha256": "e610e4362ce4b07e5d264fa677e0900a7650b34d0a75bee99725db0c79dc53a7",
+      "storedBytes": 2480
+    },
+    "verifier-after.json": {
+      "sourceSha256": "3fff07cb2e73bbe7b0dc7715301b9cff8fc8b01d8d1b78a20c9dc46cbf2570f9",
+      "sourceBytes": 719,
+      "normalizedSha256": "3242547505c9d89b2850e417b95f7fd33e07328ac9174b76d865f5faa512c387",
+      "normalizedBytes": 696,
+      "storedAs": "verifier-after.json",
+      "storedSha256": "3242547505c9d89b2850e417b95f7fd33e07328ac9174b76d865f5faa512c387",
+      "storedBytes": 696
+    },
+    "verifier-before.json": {
+      "sourceSha256": "277e6229a332bbc5343e7b520ed5cbc60fc5ac2a0e3516ef419bb4fe383b472d",
+      "sourceBytes": 719,
+      "normalizedSha256": "d511f0e711fbacd4bf313641c8fa18a5bf86b36be90947abca8bb5aff903d445",
+      "normalizedBytes": 696,
+      "storedAs": "verifier-before.json",
+      "storedSha256": "d511f0e711fbacd4bf313641c8fa18a5bf86b36be90947abca8bb5aff903d445",
+      "storedBytes": 696
+    }
+  },
+  "privateRawPoints": null
+}

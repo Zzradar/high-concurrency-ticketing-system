@@ -1,0 +1,30 @@
+
+ RUN  v4.1.11 C:/Users/a12/AppData/Local/Temp/phase19-frontend-proposal-check
+
+ ❯ src/pages/WaitingRoomPage.test.ts (6 tests | 1 failed) 347ms
+   × cannot apply a late admission grant after logout 19ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/WaitingRoomPage.test.ts > cannot apply a late admission grant after logout
+AssertionError: expected 'session-seats' to be 'login' // Object.is equality
+
+Expected: "login"
+Received: "session-seats"
+
+ ❯ src/pages/WaitingRoomPage.test.ts:84:41
+     82|  finish(state('ADMITTED'));await vi.advanceTimersByTimeAsync(50)
+     83|  expect(authState.currentUser.value).toBeNull();expect(availability).n…
+     84|  expect(router.currentRoute.value.name).toBe(routeNames.login)
+       |                                         ^
+     85| })
+     86|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 41 passed (42)
+      Tests  1 failed | 323 passed (324)
+   Start at  21:48:01
+   Duration  5.47s (transform 7.44s, setup 740ms, import 22.34s, tests 11.11s, environment 29.18s)
+

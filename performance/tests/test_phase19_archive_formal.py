@@ -22,6 +22,7 @@ class FormalArchiveTests(unittest.TestCase):
             (source / 'system-observations.json').write_bytes(timeline)
             (source / 'users.json').write_text('session-secret')
             manifest = package(source, target)
+            self.assertNotIn(b'\r\n', (target / 'archive-manifest.json').read_bytes())
             self.assertFalse((target / 'users.json').exists())
             self.assertFalse((target / 'k6-points.jsonl').exists())
             self.assertFalse(json.loads((target / 'result.json').read_text())['valid'])

@@ -1,0 +1,6 @@
+{
+  "reason": "git apply requires new-file mode metadata for the new utility; source/test content unchanged",
+  "originalPatchSha256": "cfe6756cdf86c787088d743b392f635407bbb50abd959ecfa22e659a729dbecb",
+  "correctedPatchSha256": "f94fb2202e5be787b0dacbebe899820360c9e6deecf9ed317fbe35aaffbe5491",
+  "correctedPrivatePath": "<PRIVATE_TEMP>/phase19-frontend-proposal-final-v2.patch"
+}
