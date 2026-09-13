@@ -25,6 +25,10 @@
       "sha256": "782ca414f113b9c91c27ee4bb2f7cfd2831fb548db2b4c5c7d14d8758e8f7e72",
       "bytes": 5930
     },
+    "manifest.json": {
+      "sha256": "2e22a644da07a35f1f87027576d98a73091a2e4d5cf169d30343d711068369bd",
+      "bytes": 11550
+    },
     "POLLING_DESIGN.md": {
       "sha256": "d8afb362bbe48f2f0c819307b9db9a5a771db3df33cd79f7838555c380b7134f",
       "bytes": 4005

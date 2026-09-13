@@ -1,0 +1,295 @@
+{
+  "schemaVersion": 1,
+  "status": "READY_FOR_INDEPENDENT_REVIEW_NOT_MERGED",
+  "capturedUtc": "2026-09-13T14:54:17.134691+00:00",
+  "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+  "implementationCommit": "fed32789ed4cbbd91a4babbf27d37c10b516b78a",
+  "evidenceParentCommit": "67feefcb44f44b9e1ddec81e201f1fa73a84a1c2",
+  "gitBinding": "Containing delivery commit binds this manifest; its own Git SHA and the index SHA are returned externally to avoid self-referential hashes. No PR, no merge main, no force push.",
+  "branch": "phase19/global-polling-mixed-load",
+  "commitsThroughEvidenceParent": [
+    {
+      "sha": "5fe4e51b2152d009ba279262eddbb969d8792c07",
+      "subject": "test(performance): inventory phase19 baseline polling"
+    },
+    {
+      "sha": "51e1ce6ab738a0d5dbab54423e9ace477323a286",
+      "subject": "test: isolate phase19 regression and fault fixture transports"
+    },
+    {
+      "sha": "4d80bfdaaaa03ec4bb84ad7f903f0c27b9520cac",
+      "subject": "test(performance): record phase19 preflight and generator qualification"
+    },
+    {
+      "sha": "92d254164d250a4f7ea2d7aad19df804fcd29ca4",
+      "subject": "test(performance): validate phase19 mixed-load diagnostic harness"
+    },
+    {
+      "sha": "a07886ee0752224ea2a3d85247feb88ffae523c1",
+      "subject": "test(performance): freeze phase19 baseline protocol"
+    },
+    {
+      "sha": "05e75d7ed5080091cdbc20d72cfd612733430401",
+      "subject": "test(performance): preserve initial formal baseline evidence"
+    },
+    {
+      "sha": "71f1d190b91459c32e5ddf1ee6c8c7b95b7f941a",
+      "subject": "test(performance): record thousand-VU baselines and visibility integrity"
+    },
+    {
+      "sha": "d4948d3bc299a26bc41ba7a0ef29f162f8a8da6d",
+      "subject": "test(performance): repair and requalify phase19 protocol revision two"
+    },
+    {
+      "sha": "b4af35c339f8ff3e84cd3aa43a715a5c018b13ce",
+      "subject": "test(performance): align generator startup with closed model warmup"
+    },
+    {
+      "sha": "ca3b27ae1e2732338c545800759505357dd60faf",
+      "subject": "test(performance): freeze fully qualified phase19 revision two"
+    },
+    {
+      "sha": "3f43fa4817276d493df5d8a267347994dd12bd95",
+      "subject": "test(performance): record r2 stable tier and first unstable boundary"
+    },
+    {
+      "sha": "489385f006fd0445f49f78a9e81191a3119a59f7",
+      "subject": "test: add bounded enforced financial recovery regression"
+    },
+    {
+      "sha": "fed32789ed4cbbd91a4babbf27d37c10b516b78a",
+      "subject": "feat(frontend): govern recurring network polling and stale authentication responses"
+    },
+    {
+      "sha": "df4e35981819743c0d9b5ae7609478bdb75bb1ef",
+      "subject": "test(performance): preserve complete r2 baseline and audit delivery invariants"
+    },
+    {
+      "sha": "8c36bd8a4323339a0ef0a7908f71f8f4a3d0596e",
+      "subject": "test(backend): assert the converged overload metric sample"
+    },
+    {
+      "sha": "67feefcb44f44b9e1ddec81e201f1fa73a84a1c2",
+      "subject": "docs: deliver phase19 polling and mixed-load evidence with limits"
+    }
+  ],
+  "baseProductionTrees": {
+    "backend/src": "1530bcc058a0002760010f604f50697664579fa8",
+    "backend/config": "758d23f2a8168a6e6e3ba7fa44e2ebbd7be54b98",
+    "backend/db/migrations": "027f13b7c52b3156c00921cceadaddb05dbaf5ca",
+    "frontend/src": "5c182d9b7c547562db849c68483e61dcb52d2101",
+    "frontend/public": "a6c8ce8c108948bc23c54e4ac09632691b97f55d"
+  },
+  "afterProductionTrees": {
+    "backend/src": "1530bcc058a0002760010f604f50697664579fa8",
+    "backend/config": "758d23f2a8168a6e6e3ba7fa44e2ebbd7be54b98",
+    "backend/db/migrations": "027f13b7c52b3156c00921cceadaddb05dbaf5ca",
+    "frontend/src": "1e1d6ef0696b5ad23d3b11a6b265410062dc431c",
+    "frontend/public": "a6c8ce8c108948bc23c54e4ac09632691b97f55d"
+  },
+  "baselineAndRebuiltBackendBinarySha256": "d9082f28bdf8d5bb8312cee40c9e6a79345b559554d4cbd2a301e742fae0bad5",
+  "afterArtifacts": {
+    ".openai/hosting.json": {
+      "sha256": "a449f6ac24b26a3447521292f92d3ef86d6ed2a6335d3b8cac2b642663c43f58",
+      "bytes": 66
+    },
+    "assets/adminApi-BvzBlz9I.js": {
+      "sha256": "97cbf9087d4e88eca765fd55f1157dddd06aaed79ad6f5c3c27d1877d07ad1d0",
+      "bytes": 2984
+    },
+    "assets/adminApi-BzpU8YTP.css": {
+      "sha256": "23601929a91261bfe38d431947d6e01e339d5659441ed1b2eb5c9e9fa4b7c955",
+      "bytes": 2409
+    },
+    "assets/adminDateTime-D-syJO9q.js": {
+      "sha256": "f80aeb7126aafdc3d1ca24ce9fef95b10f367690237dadc098795eac037baf99",
+      "bytes": 805
+    },
+    "assets/AdminEventEditorPage-YKeYfhX8.js": {
+      "sha256": "d27e0d7001981562a7afc6abbdafb7ff4e571364ceb6b71125f222c361bfcb23",
+      "bytes": 12520
+    },
+    "assets/AdminEventListPage-u-FtWsUf.js": {
+      "sha256": "099bb0ab85e1eceab00fd234b862ede33ba3f707598d5c21f4a5c35a3b8749d7",
+      "bytes": 1261
+    },
+    "assets/AdminVenueEditorPage-m5iufvGF.js": {
+      "sha256": "b208bb96d54dfa108a94af5bc769c4f7ab19893dcc23206f88b5d4dcec4bf767",
+      "bytes": 5262
+    },
+    "assets/AdminVenueListPage-ESohBzSH.js": {
+      "sha256": "e65442be9e6150e91e8dd5d4b8e06ab1174c971f3af05267aa14c4b52ad63703",
+      "bytes": 1379
+    },
+    "assets/index-BEyvCYky.css": {
+      "sha256": "99b01be69aedc808d3af99ec9c3236be36d104f088432c6777e9522da0266579",
+      "bytes": 30543
+    },
+    "assets/index-CNUpQwJI.js": {
+      "sha256": "a672dbdc6ab13e2249f455d92fba61116bc75cfdcdb3cb26b08c5e8fd6b46780",
+      "bytes": 246845
+    },
+    "assets/WaitingRoomPage-Clr4_T-v.js": {
+      "sha256": "9a692ab78ebe11d22ca9636ebff6b43ec3ac4652023f74dd76c3f47b6ce1c4f8",
+      "bytes": 4253
+    },
+    "favicon.svg": {
+      "sha256": "93208bb26adbe1d0f4c18e95cc92a9445456d8597218947f47c7f1ba81594861",
+      "bytes": 284
+    },
+    "images/basketball-cover.png": {
+      "sha256": "58f742818970835628ffc781fec0baa279867c2b898d188eba4d19266cb81dc8",
+      "bytes": 2350032
+    },
+    "images/concert-cover.png": {
+      "sha256": "36f996a35295213d65823aaeb759327ad84c1a26af2598d5a59f81d2f4cd4bb9",
+      "bytes": 1882602
+    },
+    "index.html": {
+      "sha256": "e0db2a220136a698f5f171f87b5ca4aec4e7b64abe5c3c67784a8e0eaf2ccc7a",
+      "bytes": 963
+    },
+    "server/index.js": {
+      "sha256": "cff7643b114f820476a62bdf2f615327e9caff7181e2d3f2d3b7fbd3748c7b82",
+      "bytes": 405
+    }
+  },
+  "boundFiles": {
+    "protocol": {
+      "path": "protocol-sha256.json",
+      "sha256": "a5d6470272c1d126e03a78cb3d46f0edddedccc368141ec00e3a16bedd63a295",
+      "bytes": 3560
+    },
+    "capacityBaseline": {
+      "path": "capacity-thousands/baseline/manifest.json",
+      "sha256": "7c80f1909f93f3454868135c3dcea4a31c1cbac12261e9e42a23318d6a17aa08",
+      "bytes": 3808
+    },
+    "browserBaseline": {
+      "path": "polling-baseline/manifest.json",
+      "sha256": "5cd786d576b677954e7e40d1341dec989f72ada919d3e0160ac8b28f6af7ed42",
+      "bytes": 10303
+    },
+    "browserAfter": {
+      "path": "polling-after/manifest.json",
+      "sha256": "f365fd50495673f718d1c85bdf6b41daebaacd2b2e74d0370c377b3344a7014b",
+      "bytes": 10272
+    },
+    "finalRegressions": {
+      "path": "final-regressions/manifest.json",
+      "sha256": "815ba8151d4d45ead168194e6524aa3cfbe0242abf5015efa9e19660847d06d3",
+      "bytes": 15836
+    },
+    "cleanup": {
+      "path": "cleanup.json",
+      "sha256": "306481b11ef11ea63f9a62b83b1c765762ad4af2b4eee2d7137369a872a0de78",
+      "bytes": 23535
+    },
+    "report": {
+      "path": "FINAL_REPORT.md",
+      "sha256": "bbff1316fe6704d8764144e45dc94f05c19e63318c8ad80b84f417d8775a6d80",
+      "bytes": 16534
+    },
+    "resumeEvidence": {
+      "path": "RESUME_EVIDENCE.md",
+      "sha256": "29700ce71738349a4e7ff11dd3224554811992e52e6804f34deb4eda492baafc",
+      "bytes": 2053
+    },
+    "scaleEstimate": {
+      "path": "scale-estimate/estimate.json",
+      "sha256": "6f950ccd065d899e17a4383eb75b02ef62542c8bc81ca36b868ba84d8be23559",
+      "bytes": 7907
+    },
+    "overloadRecovery": {
+      "path": "overload-separated/recovery/overload-recovery.json",
+      "sha256": "51dc0c3508709d4dcfee5a2c8894f790ea3cb6241454b01e1df7c91f5cdb3f9d",
+      "bytes": 348043
+    },
+    "reportTables": {
+      "path": "report-tables.json",
+      "sha256": "8a5a340214ee9e587f8946f831a1ca91510978a5d40d3ed0db5908f8bae10357",
+      "bytes": 190664
+    },
+    "capacityDetails": {
+      "path": "capacity-details.json",
+      "sha256": "4d0933b04e074583fd7c7d081620dd01ca6156c21cd13d8537ed17ab4a492de0",
+      "bytes": 43540
+    }
+  },
+  "testCounts": {
+    "phase18_admission_http_test": 5,
+    "phase18_off_regression": 57,
+    "phase18_policy_http_test": 7,
+    "phase18_public_contract_test": 2,
+    "phase18_schema_test": 2,
+    "phase18_token_bucket_test": 3,
+    "phase18_waiting_room_test": 7,
+    "phase18_traffic_http_test": 2,
+    "phase18_availability_fault_test": 1,
+    "phase18_checkout_crash_test": 1,
+    "phase18_inventory_fault_test": 1,
+    "phase18_layout_http_test": 3,
+    "phase18_layout_resolution_http_test": 1,
+    "phase18_layout_revision_http_test": 7,
+    "phase18_metrics_http_test": 1,
+    "phase18_verifier_test": 1,
+    "phase11_crash_window_integration_test": 11,
+    "phase11_stripe_integration_test": 11,
+    "phase12_buyer_refund_integration_test": 38,
+    "phase18_multi_instance_test": 1,
+    "phase18_refund_verifier_fixture": 3,
+    "ctest": 36,
+    "vitest": 328,
+    "performance_python": 321,
+    "protocol_node": 2,
+    "phase19_overload_recovery_test": 1
+  },
+  "browserGroups": {
+    "baselineScenes": 7,
+    "afterScenes": 7,
+    "governedGetBaseline": 267,
+    "governedGetAfter": 56,
+    "hiddenAfter": 0,
+    "maxInflightPerPoller": 1,
+    "errorsAfter": 0,
+    "afterBuildReproducedAfterBrowser": true
+  },
+  "capacity": {
+    "highestValidActualVUs": 2000,
+    "highestStableObserveSeconds": 600,
+    "highestStableDeltaReqPerSecond": 72.23,
+    "firstObservedUnstableActualVUs": 3000,
+    "firstUnstableSnapshot503": 2,
+    "highestValidMixed": "L3",
+    "mixedObserveSeconds": 120,
+    "mixedDeltaReqPerSecond": 500.05,
+    "mixedHttpWriteReqPerSecond": 42.85,
+    "cumulativeJourneysPlannedNominal": 5000,
+    "cumulativeJourneysCompleted": 5001,
+    "hotspotContenders": 1000,
+    "hotspotWinners": 1,
+    "hotspotConflicts409": 999,
+    "tenThousandSeatLayoutPassed": true,
+    "tensOfThousandsActualVUExecuted": false
+  },
+  "protection": "Event policies OFF; process-local Bulkheads at default limits. Rejections excluded from successful throughput.",
+  "cleanupSummary": {
+    "ownedContainersRemoved": 45,
+    "ownedNetworksRemoved": 13,
+    "unrelatedContainersPreserved": 60,
+    "volumesPreserved": true
+  },
+  "priorEvidenceTrees": {
+    "phase16-availability": "5dd878f5669336c723715663ed714fd58872a22b",
+    "phase17-admin-publishing": "bb9e56985e3ae27e2999da3a583680b5009f0830",
+    "phase18-admission-overload": "0caf3c2f3db12159971fb2d9b887a5f365cacf6c"
+  },
+  "limitations": [
+    "One local host and fixed fixtures, short observations, no production SLA or theoretical capacity claim.",
+    "Controlled browser HTTP fixture is separate from real-SUT propagation and throughput.",
+    "Propagation includes server-hint polling delay and observer drain; six samples/category, no stable tail SLA.",
+    "Backend /metrics can be cached for five seconds; short waves can escape external sampling.",
+    "Raw gzip JSONL and container logs remain private with path placeholders, size and SHA; no credentials committed.",
+    "Original r1 group and invalid points remain diagnostics; no cross-protocol A/B concatenation."
+  ]
+}
