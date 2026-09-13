@@ -1,0 +1,7 @@
+test_existing_checkout_order_payment_refund_remain_recoverable (__main__.main.<locals>.Recovery) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 18.724s
+
+OK
+{"passed": true, "phaseCounts": [{"processing-payment": 606}, {"processing-refund": 600}]}

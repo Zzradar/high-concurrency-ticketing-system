@@ -1,0 +1,24 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-final-financial-private",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "phase11_crash_window_integration_test.log": {
+      "sourceSha256": "cc63755697e2c8f458cd7ffbea1e9f540e04ace029688bcb73cdb5665855bfcc",
+      "sourceBytes": 1446,
+      "archivedSha256": "624e31a54e2e28d8431f2ceb5ef2d1d722c44266cdb6fd80fea462f0dcf5e96a",
+      "archivedBytes": 1427
+    },
+    "phase11_stripe_integration_test.log": {
+      "sourceSha256": "74a896b4a340a2170c75ab5f2bc167b009c3bedad5ec2277ce8f2797171956b0",
+      "sourceBytes": 1318,
+      "archivedSha256": "52c587bd5e95d26a42b8cc4384bbd5aa0cfdbbbee8c4669f4ecbc54ecccfe3eb",
+      "archivedBytes": 1302
+    },
+    "phase12_buyer_refund_integration_test.log": {
+      "sourceSha256": "3ef986ac5c17ebb7be7f9b1250badbea5e59eaf6482b9a3f68853de39398803b",
+      "sourceBytes": 2912,
+      "archivedSha256": "54a267c01f7544b56aea9b9b2775db36a3e7d310a32c03c51daa927e38edb427",
+      "archivedBytes": 2869
+    }
+  }
+}

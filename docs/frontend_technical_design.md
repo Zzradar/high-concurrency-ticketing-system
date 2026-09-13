@@ -1041,3 +1041,28 @@ CurrentUser.role 为 CUSTOMER | ADMIN，登录/me 同步该字段。账户菜单
 adminApi 复用 ticketApi 导出的同一 Axios http 实例，沿用 Cookie、CSRF、401 与错误归一化，没有完整 Mock Admin 数据库。四个管理页覆盖场馆列表、结构化 Seat Plan/连续行生成、活动/场次/分区价、Preview/Publish。frozen 禁止修改方案，pricingReset 提示重设价格，结构化 issues 关联场次/区域。金额元转整数分；adminDateTime 将 datetime-local 按北京时间解释并转 UTC，测试覆盖跨日和无效日期。
 
 Zone 是 Phase16 业务分区，页面仍仅渲染当前 Zone，跨区重复 A001 由不同 Seat ID 区分。5000/10000 席浏览器测量分别渲染 1000/2000 席，不声称生产容量。不建设 SVG/Canvas 编辑器。详见 [Phase17](phase17_admin_event_publishing_implementation.md)。
+
+
+## Phase19：全局网络轮询治理（当前行为）
+
+本节覆盖前文历史阶段的调度描述；支付、退款、库存的业务状态机与后端事务语义不变。
+
+| 读取 | 触发与间隔 | 停止与恢复 |
+|---|---|---|
+| Notifications | 登录立即一次；稳定 ID/readAt 签名比较；30 秒兜底，连续无变化退避至 60 秒；面板、业务信号可立即刷新 | 匿名/hidden/logout/卸载停止；visible/focus 合并一次，旧用户结果无效 |
+| Availability | 保留每个页面自己的 generation/cursor、pollAfterMs、空结果与错误退避、hasMore 串行追赶 | hidden/旧身份停止；恢复一次权威 Snapshot；不重写已成熟状态机 |
+| Admission/Lease | 复用 admissionPolling 的串行 server hint 与错误退避 | hidden 暂停、恢复同步；正式准入失效保留登录跳转 |
+| PaymentAttempt | 串行请求；短期优先、1–5 秒有界退避；遵守 Retry-After | 15 秒墙钟期限，终态立即停止；隐藏跨期限恢复只做一次最终权威读取，之后提示手动刷新 |
+| Refund/Order | PROCESSING 时使用 createRefund.pollAfterMs；无变化/错误自适应；手动刷新加入已有订单 GET | hidden/身份变化/卸载/终态停止，恢复一次权威订单读取 |
+| Checkout SUBMITTING | 同一 Checkout 的 GET 单在途，错误退避和 Retry-After | 15 秒墙钟期限；切 Checkout/路由/身份或终态停止；隐藏跨期限后只做一次最终读取 |
+
+共享 pollingPolicy 的普通区间默认 500–30000ms，业务可设自己的基础与上限。
+合法 Retry-After 秒数或 HTTP 日期作为服务器最短等待，可超过普通退避上限；超过 JavaScript 安全定时上限的非法数值不转为溢出的即时定时器。
+SingleFlight 按业务代次合并在途请求，旧请求排空后再验证新生命周期，每次 await 后检查身份与业务对象。
+
+认证 epoch 在登录/退出边界推进。HTTP 401 只有匹配发起时的当前 epoch 才清除会话；旧身份迟到 401 不会退出新用户。logout 点击立即清除本地身份，迟到退出完成不清除后续登录。
+真实 hidden/blur 重置激活合并窗口，快速再次切回仍立即刷新；同一激活产生的 visible/focus 和派生通知信号在 500ms 内合并。通知错误不阻断导航。
+
+salesWindow、OrderSummary 的每秒本地倒计时保持原实现；测试确认时间显示变化不会触发 HTTP。
+完整前端验收为 328 tests / 42 files 通过，HTTP 模式生产构建通过。真实浏览器 A/B 使用固定 Edge、两个真实标签页、60/91/30 秒窗口和原生 visibility；受控 HTTP 75ms 夹具隔离页面调度，不能替代后端容量或 Stripe 证据。
+逐场景结果、原始时间线及限制见 [Phase19](../performance/experiments/phase19-global-polling-mixed-load/FINAL_REPORT.md) 与 [设计](../performance/experiments/phase19-global-polling-mixed-load/POLLING_DESIGN.md)。

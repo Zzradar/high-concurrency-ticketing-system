@@ -1,0 +1,15 @@
+
+ RUN  v4.1.11 <PHASE19_WORKTREE>/frontend
+
+stderr | src/pages/AdminEventEditorPage.test.ts > never sends invalid raw prices, sends exact cents, and roundtrips saved prices
+[Vue Router warn]: No match found for location with path "/admin/events"
+[Vue Router warn]: No match found for location with path "/admin/venues"
+[Vue Router warn]: No match found for location with path "/events"
+
+········································································································································································································································································································································
+
+ Test Files  42 passed (42)
+      Tests  328 passed (328)
+   Start at  22:20:10
+   Duration  6.58s (transform 7.84s, setup 823ms, import 25.06s, tests 13.55s, environment 37.35s)
+

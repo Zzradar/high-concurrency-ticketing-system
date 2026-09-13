@@ -167,3 +167,18 @@ python -X utf8 performance/scripts/phase14_local_closeout.py
 增量驱动执行受影响的 U1/U2/J1/S1 和 L 场景；完整缩小矩阵仍可使用 `run_phase14.py campaign --smoke --yes`。数据位于 `performance/generated/phase14/smoke-v3`，旧目录保留。新 smoke 的容量、相对保护和正式恢复统一为 `not_applicable`，实测倍率、恢复缺口和采样开销写入诊断；不适用不是通过。历史 verdict 不转换。
 
 运行与证据见 [v3 实施说明](../docs/phase14_v3_closeout.md)、[当前报告](experiments/phase14-capacity/report.md) 和 [v3 汇总](experiments/phase14-capacity/v3-evidence-summary.json)。保留 [v2 报告](experiments/phase14-capacity/report-v2-checkpoints.md)。**正式万人验证仍缺隔离压力机与正式 G0；当前没有证据证明或否定万人容量。**
+
+
+## Phase19：全局轮询与持续混合读写
+
+[完整报告与身份](experiments/phase19-global-polling-mixed-load/FINAL_REPORT.md) 使用独立夹具和冻结 r2 协议；事件策略 OFF、本地 Bulkhead 保持默认，503 单列且不算成功吞吐。
+
+- Closed Model 固定真实独立 VU，各自推进 generation/cursor，并按服务端提示等待。最高有效档 2000 actual VUs，额外观察 10 分钟；该窗口 Delta 72.23 req/s。响应变慢时闭合模型流量会下降，不能替代固定到达率证据。
+- Open Model 固定到达率；L3 观察 120 秒，目标 Delta 500/s、状态改变 50/s，实际 Delta 500.05 req/s、HTTP write 42.85 req/s。完整业务流程、写请求与状态改变分别计数，不能混写。
+- cumulative journeys 是累计旅程：名义计划 5000，边界实际启动/完成 5001，不能称为 5001 同时在线。online-equivalent 只允许用于轮询流量换算，本阶段不将其作为用户并发结果。
+- 1000 contenders 争抢一个座位，1 winner、999 明确 409；冲突不算成功购票吞吐。短波形采样可能漏掉瞬时资源峰值。
+- 3000 VU 发生器资格通过，但 SUT 预热有 2 次 Snapshot 503，属于首次观测不稳定点。10000/20000/30000 actual VU 评估 UNSAFE，未执行。
+
+`python performance/scripts/phase19_report_tables.py` 只调用冻结统计器渲染聚合。
+`python performance/scripts/phase19_delivery_audit.py` 只读核对协议、浏览器组、计数守恒、verifier、旧证据树和 SHA256 索引。
+大体积原始 k6 gzip JSONL 保留在私有临时输出目录；每点 archive-manifest.json 记录占位路径、哈希和字节数。正式命令见冻结 `protocol/PROTOCOL.md`；凭据不提交。

@@ -1,0 +1,54 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-final-capabilities-rest-private",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "phase18_availability_fault_test.log": {
+      "sourceSha256": "cfc09dbdbe865d910889d363d3f7ace828eb93d88b47625df8a37cefa93a5c7f",
+      "sourceBytes": 321,
+      "archivedSha256": "00317f0ae25927901251b0a622f0b4f7c243ea7c8e29eb148e9a632c3f758d66",
+      "archivedBytes": 311
+    },
+    "phase18_checkout_crash_test.log": {
+      "sourceSha256": "a8659c1cb3c7c69c10d9beab2e4a3ac693ef217ac3af55d9d55b9968b4658fbc",
+      "sourceBytes": 309,
+      "archivedSha256": "9eaed636dfe5c8985accf7c74a3375abdba8792299da7c50c1be4e7f05facc08",
+      "archivedBytes": 302
+    },
+    "phase18_inventory_fault_test.log": {
+      "sourceSha256": "39a838bcebb701b5751abd6a11008bb8b364bb681e33f9e80cb517471fc25180",
+      "sourceBytes": 371,
+      "archivedSha256": "218b3837d53f912959e74796e167a2dfbbd86d48e4e87dd68cf98d7d8f2630e7",
+      "archivedBytes": 364
+    },
+    "phase18_layout_http_test.log": {
+      "sourceSha256": "20a0795ca31b9638a4f7349c074912e2a576be1f82bf88a2b94a202bfa651e6a",
+      "sourceBytes": 512,
+      "archivedSha256": "79000dbfc8c8845c6699fdd1f8d02e1afcf0ee5d41732b19bec0ac2f333898ac",
+      "archivedBytes": 503
+    },
+    "phase18_layout_resolution_http_test.log": {
+      "sourceSha256": "b4e3f78d30b56dc8edf2e13a9f6bdae621b71729fdd08360193367a703b0fca3",
+      "sourceBytes": 195,
+      "archivedSha256": "d9815713b226bd80833d3dcfbde83091f47e51eb4c7bb8ccaa3ae0c5c7987178",
+      "archivedBytes": 189
+    },
+    "phase18_layout_revision_http_test.log": {
+      "sourceSha256": "c13c7a89e7d0c60e76f0d7dd1a2ea5af47b0441a7b1c03c15559af7eb0a8cd97",
+      "sourceBytes": 677,
+      "archivedSha256": "72aa6b4bb593e5e20f45d84cc0795d1589d5ee79f2d709b85ef9fc2d7160f7e7",
+      "archivedBytes": 665
+    },
+    "phase18_metrics_http_test.log": {
+      "sourceSha256": "8bb1746ab4bcef0e5636f70ce369e8f383258d278b8846c3304cb4351acccd92",
+      "sourceBytes": 296,
+      "archivedSha256": "e3d6bd00b34c80c9dd14fa01b63b6c1e02f6efb1a86bd979c497640b35597c7a",
+      "archivedBytes": 289
+    },
+    "phase18_verifier_test.log": {
+      "sourceSha256": "637e7a4a01540b531d2c18e271ce06fc0cb29881a9fe99a41b999619e2ca0d34",
+      "sourceBytes": 179,
+      "archivedSha256": "d1d3335cfa01f58fb7e0d99c267e064f7310bfd24588135c365bb375809a0edc",
+      "archivedBytes": 173
+    }
+  }
+}

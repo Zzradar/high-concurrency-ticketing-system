@@ -50,3 +50,8 @@ Admin 请求复用原 Cookie/CSRF/401/错误处理，没有完整 Mock Admin 数
 ## Phase18 Waiting Room 与轮询
 
 真实 API 模式支持安全登录回跳、显式加入、RESET 重入、独立租约心跳与 Admin OCC 重载。Availability 和排队轮询均串行、后台停止、前台权威同步，使用有界服务端建议与退避。默认 Mock 仍保持 OFF 演示。完整类型、缓存及恢复边界见 [Phase18 实施说明](../docs/phase18_admission_overload_control.md)。
+
+
+## Phase19 轮询治理
+
+通知、支付、退款、未知提交采用串行、可见性暂停、身份隔离和有界退避。Availability/Admission 保留现有自适应架构；本地倒计时不参与网络调度。当前完整测试为 328 tests / 42 files，HTTP production build 通过。设计与浏览器证据见 [技术设计](../docs/frontend_technical_design.md) 和 [Phase19](../performance/experiments/phase19-global-polling-mixed-load/FINAL_REPORT.md)。

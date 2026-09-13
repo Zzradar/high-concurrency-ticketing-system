@@ -1,0 +1,15 @@
+{
+  "rootCause": "PromExporter sets response expiration to 5 seconds; AdmissionRuntime publishes asynchronously. Consecutive scrape calls can observe different cached responses.",
+  "evidence": {
+    "initialObservedPeak": 1,
+    "restartObservedPeak": 0,
+    "laterTwelveConsecutiveScrapesPeak": 16,
+    "exporterSourceSha256": "dd81ec2e98b2ce990581d69877e3652920ae55f73b7fc1d6691733883b306862",
+    "source": "Drogon lib/src/PromExporter.cc setExpiredTime(5); backend/src/admission/AdmissionRuntime.cpp tick()"
+  },
+  "fix": "Wait for and assert the same captured converged peak=16, instead of performing a second potentially stale scrape. Fresh API restart before successful final test.",
+  "final": "32 reads;16 accepted;16 SYSTEM_OVERLOADED;peak16;drained0;financial/recovery200;20 subsequent reads200",
+  "backendProductionChanged": false,
+  "mainFrozenProtocolChanged": false,
+  "interpretationLimit": "Formal backend /metrics samples can lag by cache TTL; external cgroup/RSS/FD and SQL/Redis samples are collected independently."
+}

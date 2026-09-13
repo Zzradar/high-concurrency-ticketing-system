@@ -1,0 +1,18 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-final-overload-private",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "overload-recovery.json": {
+      "sourceSha256": "cde454a3bdb82474189d0c05fffebfb9dbf52db62e347221e8d6824127c8a57f",
+      "sourceBytes": 360441,
+      "archivedSha256": "51dc0c3508709d4dcfee5a2c8894f790ea3cb6241454b01e1df7c91f5cdb3f9d",
+      "archivedBytes": 348043
+    },
+    "phase19_overload_recovery_test.log": {
+      "sourceSha256": "78fba6716f0bfb12fdec5867c3ed84c3627488d7a12283415eca3a9d90a73eb1",
+      "sourceBytes": 300,
+      "archivedSha256": "ea8e47f8c49d72c06b23a9c09faed4ea7ced903b00e7f8d7694bd8e7bd560671",
+      "archivedBytes": 293
+    }
+  }
+}

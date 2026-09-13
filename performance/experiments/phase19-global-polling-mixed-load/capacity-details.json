@@ -1,0 +1,1476 @@
+{
+  "method": "Report-only extraction from frozen native summary/system samples; min/max HTTP initiation timestamps (microsecond precision); frozen measure.distribution for control probe latency",
+  "points": {
+    "closed-100": {
+      "summaryTrends": {
+        "http_req_connecting": {
+          "avg": 0.0631984691046658,
+          "med": 0,
+          "p(95)": 0.2628732,
+          "p(99)": 0.3423892400000002,
+          "max": 24.798218
+        },
+        "phase19_poll_interval_ms": {
+          "avg": 17433.62914862915,
+          "med": 19900,
+          "p(95)": 30003,
+          "p(99)": 30003.08,
+          "max": 30005
+        },
+        "http_req_blocked": {
+          "avg": 0.08413849810844895,
+          "med": 0.00833,
+          "p(95)": 0.3522264,
+          "p(99)": 0.46603536000000023,
+          "max": 24.926624
+        },
+        "data_received": {
+          "count": 6194157,
+          "rate": 34463.57054457193
+        },
+        "data_sent": {
+          "count": 422013,
+          "rate": 2348.031345706354
+        },
+        "phase19_max_inflight": {
+          "value": 0,
+          "min": 0,
+          "max": 1
+        }
+      },
+      "syncCounts": {
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"readers\"}": 100.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"readers\"}": 209.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers\"}": 484.0
+      },
+      "postgres": {
+        "samples": 44,
+        "maxWaitingLocks": 0,
+        "maxConnections": 5,
+        "databaseDelta": {
+          "xact_commit": 1800,
+          "xact_rollback": 0,
+          "deadlocks": 0,
+          "blks_read": 14,
+          "blks_hit": 37565,
+          "temp_bytes": 0
+        }
+      },
+      "redis": {
+        "connected_clients": {
+          "first": 7,
+          "last": 7,
+          "max": 7,
+          "delta": 0
+        },
+        "blocked_clients": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "rejected_connections": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "evicted_keys": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "total_error_replies": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "used_memory": {
+          "first": 6921928,
+          "last": 6879040,
+          "max": 7142792,
+          "delta": -42888
+        },
+        "used_memory_peak": {
+          "first": 10298632,
+          "last": 10298632,
+          "max": 10298632,
+          "delta": 0
+        }
+      }
+    },
+    "closed-1000": {
+      "summaryTrends": {
+        "phase19_poll_interval_ms": {
+          "med": 19700.5,
+          "p(95)": 30003,
+          "p(99)": 30003,
+          "max": 30025,
+          "avg": 17429.22286374134
+        },
+        "data_sent": {
+          "count": 4219048,
+          "rate": 23440.052488122234
+        },
+        "data_received": {
+          "count": 61940072,
+          "rate": 344124.67902665964
+        },
+        "http_req_connecting": {
+          "avg": 0.037457391902119046,
+          "med": 0,
+          "p(95)": 0.24206355,
+          "p(99)": 0.3140845,
+          "max": 30.009886
+        },
+        "phase19_max_inflight": {
+          "value": 0,
+          "min": 0,
+          "max": 1
+        },
+        "http_req_blocked": {
+          "avg": 0.0601811012865795,
+          "med": 0.008344,
+          "p(95)": 0.31561234999999976,
+          "p(99)": 0.4007832999999995,
+          "max": 40.665187
+        }
+      },
+      "syncCounts": {
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"readers\"}": 1000.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"readers\"}": 2116.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers\"}": 4812.0
+      },
+      "postgres": {
+        "samples": 44,
+        "maxWaitingLocks": 0,
+        "maxConnections": 5,
+        "databaseDelta": {
+          "xact_commit": 8950,
+          "xact_rollback": 0,
+          "deadlocks": 0,
+          "blks_read": 0,
+          "blks_hit": 68010,
+          "temp_bytes": 0
+        }
+      },
+      "redis": {
+        "connected_clients": {
+          "first": 7,
+          "last": 7,
+          "max": 7,
+          "delta": 0
+        },
+        "blocked_clients": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "rejected_connections": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "evicted_keys": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "total_error_replies": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "used_memory": {
+          "first": 7140776,
+          "last": 6820408,
+          "max": 7160920,
+          "delta": -320368
+        },
+        "used_memory_peak": {
+          "first": 10298632,
+          "last": 10298632,
+          "max": 10298632,
+          "delta": 0
+        }
+      }
+    },
+    "closed-2000": {
+      "summaryTrends": {
+        "phase19_max_inflight": {
+          "min": 0,
+          "max": 1,
+          "value": 0
+        },
+        "http_req_connecting": {
+          "avg": 0.03876080779680296,
+          "med": 0,
+          "p(95)": 0.22857,
+          "p(99)": 0.3161702399999999,
+          "max": 30.980578
+        },
+        "http_req_blocked": {
+          "avg": 0.10438452928539828,
+          "med": 0.008094,
+          "p(95)": 0.3046142999999999,
+          "p(99)": 0.4186516799999999,
+          "max": 148.002694
+        },
+        "data_received": {
+          "rate": 688186.6828200592,
+          "count": 123858423
+        },
+        "phase19_poll_interval_ms": {
+          "p(99)": 30003,
+          "max": 30030,
+          "avg": 17413.47240905475,
+          "med": 19751,
+          "p(95)": 30003
+        },
+        "data_sent": {
+          "rate": 46796.88465507466,
+          "count": 8422407
+        }
+      },
+      "syncCounts": {
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"readers\"}": 1998.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"readers\"}": 4202.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers\"}": 9625.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers\"}": 2.0
+      },
+      "postgres": {
+        "samples": 43,
+        "maxWaitingLocks": 0,
+        "maxConnections": 5,
+        "databaseDelta": {
+          "xact_commit": 16842,
+          "xact_rollback": 0,
+          "deadlocks": 0,
+          "blks_read": 0,
+          "blks_hit": 96961,
+          "temp_bytes": 0
+        }
+      },
+      "redis": {
+        "connected_clients": {
+          "first": 7,
+          "last": 7,
+          "max": 7,
+          "delta": 0
+        },
+        "blocked_clients": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "rejected_connections": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "evicted_keys": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "total_error_replies": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "used_memory": {
+          "first": 7099832,
+          "last": 6842408,
+          "max": 7099832,
+          "delta": -257424
+        },
+        "used_memory_peak": {
+          "first": 10298632,
+          "last": 10298632,
+          "max": 10298632,
+          "delta": 0
+        }
+      }
+    },
+    "closed-2000-10m": {
+      "summaryTrends": {
+        "http_req_connecting": {
+          "p(95)": 0,
+          "p(99)": 0.2508536199999999,
+          "max": 18.737477,
+          "avg": 0.011504536765596571,
+          "med": 0
+        },
+        "phase19_max_inflight": {
+          "min": 0,
+          "max": 1,
+          "value": 0
+        },
+        "http_req_blocked": {
+          "p(99)": 0.32580785999999995,
+          "max": 161.936442,
+          "avg": 0.040383524651725525,
+          "med": 0.008145,
+          "p(95)": 0.016166499999999782
+        },
+        "data_received": {
+          "count": 149101970,
+          "rate": 225920.56202054684
+        },
+        "phase19_poll_interval_ms": {
+          "med": 28707,
+          "p(95)": 30003,
+          "p(99)": 30003,
+          "max": 30038,
+          "avg": 25255.992068167474
+        },
+        "data_sent": {
+          "count": 26655730,
+          "rate": 40388.986830073074
+        }
+      },
+      "syncCounts": {
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"readers\"}": 1997.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"readers\"}": 4189.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers\"}": 3.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers\"}": 43341.0
+      },
+      "postgres": {
+        "samples": 158,
+        "maxWaitingLocks": 0,
+        "maxConnections": 5,
+        "databaseDelta": {
+          "xact_commit": 53293,
+          "xact_rollback": 0,
+          "deadlocks": 0,
+          "blks_read": 0,
+          "blks_hit": 323858,
+          "temp_bytes": 0
+        }
+      },
+      "redis": {
+        "connected_clients": {
+          "first": 7,
+          "last": 7,
+          "max": 7,
+          "delta": 0
+        },
+        "blocked_clients": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "rejected_connections": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "evicted_keys": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "total_error_replies": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "used_memory": {
+          "first": 6947224,
+          "last": 6907464,
+          "max": 7249088,
+          "delta": -39760
+        },
+        "used_memory_peak": {
+          "first": 10298632,
+          "last": 10298632,
+          "max": 10298632,
+          "delta": 0
+        }
+      }
+    },
+    "closed-3000": {
+      "summaryTrends": {
+        "data_received": {
+          "count": 121958202,
+          "rate": 5767972.99447784
+        },
+        "phase19_max_inflight": {
+          "value": 1,
+          "min": 0,
+          "max": 1
+        },
+        "phase19_poll_interval_ms": {
+          "avg": 4055.2730525736306,
+          "med": 2384,
+          "p(95)": 9444.4,
+          "p(99)": 11330.479999999998,
+          "max": 12022
+        },
+        "http_req_blocked": {
+          "p(95)": 0.3212505,
+          "p(99)": 1.2602330999999944,
+          "max": 114.753732,
+          "avg": 0.25292250968417324,
+          "med": 0.007644
+        },
+        "data_sent": {
+          "count": 2955355,
+          "rate": 139772.5413260443
+        },
+        "http_req_connecting": {
+          "med": 0,
+          "p(95)": 0.25035949999999996,
+          "p(99)": 0.7896241999999988,
+          "max": 20.044434,
+          "avg": 0.1041919164194732
+        }
+      },
+      "syncCounts": {
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"readers\"}": 2101.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"readers\"}": 3628.0
+      },
+      "postgres": {
+        "samples": 6,
+        "maxWaitingLocks": 0,
+        "maxConnections": 5,
+        "databaseDelta": {
+          "xact_commit": 5170,
+          "xact_rollback": 0,
+          "deadlocks": 0,
+          "blks_read": 0,
+          "blks_hit": 24247,
+          "temp_bytes": 0
+        }
+      },
+      "redis": {
+        "connected_clients": {
+          "first": 7,
+          "last": 7,
+          "max": 7,
+          "delta": 0
+        },
+        "blocked_clients": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "rejected_connections": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "evicted_keys": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "total_error_replies": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "used_memory": {
+          "first": 6940800,
+          "last": 7022240,
+          "max": 7111024,
+          "delta": 81440
+        },
+        "used_memory_peak": {
+          "first": 10298632,
+          "last": 10298632,
+          "max": 10298632,
+          "delta": 0
+        }
+      }
+    },
+    "closed-500": {
+      "summaryTrends": {
+        "http_req_blocked": {
+          "p(99)": 0.41298984000000005,
+          "max": 26.642533,
+          "avg": 0.06495488835564543,
+          "med": 0.008342,
+          "p(95)": 0.33223349999999996
+        },
+        "data_sent": {
+          "count": 2106819,
+          "rate": 11706.927538841393
+        },
+        "phase19_max_inflight": {
+          "value": 0,
+          "min": 0,
+          "max": 1
+        },
+        "http_req_connecting": {
+          "avg": 0.04107260040414245,
+          "med": 0,
+          "p(95)": 0.25576319999999997,
+          "p(99)": 0.3175331600000001,
+          "max": 26.564336
+        },
+        "phase19_poll_interval_ms": {
+          "avg": 17395.094535993063,
+          "med": 19730,
+          "p(95)": 30003,
+          "p(99)": 30003,
+          "max": 30004
+        },
+        "data_received": {
+          "rate": 172069.89536532393,
+          "count": 30966291
+        }
+      },
+      "syncCounts": {
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"readers\"}": 500.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"readers\"}": 1050.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers\"}": 2409.0
+      },
+      "postgres": {
+        "samples": 44,
+        "maxWaitingLocks": 0,
+        "maxConnections": 5,
+        "databaseDelta": {
+          "xact_commit": 4977,
+          "xact_rollback": 0,
+          "deadlocks": 0,
+          "blks_read": 0,
+          "blks_hit": 50287,
+          "temp_bytes": 0
+        }
+      },
+      "redis": {
+        "connected_clients": {
+          "first": 7,
+          "last": 7,
+          "max": 7,
+          "delta": 0
+        },
+        "blocked_clients": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "rejected_connections": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "evicted_keys": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "total_error_replies": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "used_memory": {
+          "first": 6826920,
+          "last": 6863560,
+          "max": 7189824,
+          "delta": 36640
+        },
+        "used_memory_peak": {
+          "first": 10298632,
+          "last": 10298632,
+          "max": 10298632,
+          "delta": 0
+        }
+      }
+    },
+    "hotspot-100": {
+      "summaryTrends": {
+        "http_req_blocked": {
+          "avg": 32.15506506,
+          "med": 32.124442,
+          "p(95)": 34.60214225,
+          "p(99)": 35.11912204,
+          "max": 35.318512
+        },
+        "http_req_connecting": {
+          "p(95)": 29.540185049999998,
+          "p(99)": 30.03866399,
+          "max": 30.08351,
+          "avg": 17.521333969999993,
+          "med": 28.1033405
+        },
+        "data_sent": {
+          "count": 52600,
+          "rate": 10303.361304715128
+        },
+        "data_received": {
+          "count": 29661,
+          "rate": 5810.038016333753
+        }
+      },
+      "syncCounts": {},
+      "postgres": {
+        "samples": 2,
+        "maxWaitingLocks": 0,
+        "maxConnections": 5,
+        "databaseDelta": {
+          "xact_commit": 27,
+          "xact_rollback": 0,
+          "deadlocks": 0,
+          "blks_read": 0,
+          "blks_hit": 841,
+          "temp_bytes": 0
+        }
+      },
+      "redis": {
+        "connected_clients": {
+          "first": 7,
+          "last": 7,
+          "max": 7,
+          "delta": 0
+        },
+        "blocked_clients": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "rejected_connections": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "evicted_keys": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "total_error_replies": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "used_memory": {
+          "first": 8555872,
+          "last": 8705760,
+          "max": 8705760,
+          "delta": 149888
+        },
+        "used_memory_peak": {
+          "first": 10298632,
+          "last": 10298632,
+          "max": 10298632,
+          "delta": 0
+        }
+      },
+      "wave": {
+        "actualInitiations": 100,
+        "firstUtc": "2026-09-13T14:16:17.006531974Z",
+        "lastUtc": "2026-09-13T14:16:17.011073768Z",
+        "startSpreadMs": 4.542,
+        "rawSha256": "bb24b56fd3d6d4d98223415bfff7c6c69f697b5749e144d0dfe378432e4a3953",
+        "rawBytes": 19126
+      },
+      "controls": {
+        "public": {
+          "samples": 2,
+          "p50": 4.540400113910437,
+          "p95": 23.762699915096164,
+          "p99": 23.762699915096164,
+          "max": 23.762699915096164
+        },
+        "auth": {
+          "samples": 2,
+          "p50": 6.433699978515506,
+          "p95": 14.525500126183033,
+          "p99": 14.525500126183033,
+          "max": 14.525500126183033
+        },
+        "sentinel": {
+          "samples": 2,
+          "p50": 12.736700009554625,
+          "p95": 34.378499956801534,
+          "p99": 34.378499956801534,
+          "max": 34.378499956801534
+        }
+      }
+    },
+    "hotspot-1000": {
+      "summaryTrends": {
+        "data_sent": {
+          "count": 526000,
+          "rate": 89820.71451202528
+        },
+        "data_received": {
+          "count": 295161,
+          "rate": 50402.22797734581
+        },
+        "http_req_blocked": {
+          "p(99)": 183.48752109999998,
+          "max": 204.414433,
+          "avg": 161.49971232699997,
+          "med": 166.0220235,
+          "p(95)": 179.41940060000002
+        },
+        "http_req_connecting": {
+          "med": 47.7988485,
+          "p(95)": 117.5008318,
+          "p(99)": 121.97362237,
+          "max": 163.244339,
+          "avg": 53.153750565999985
+        }
+      },
+      "syncCounts": {},
+      "postgres": {
+        "samples": 2,
+        "maxWaitingLocks": 0,
+        "maxConnections": 5,
+        "databaseDelta": {
+          "xact_commit": 30,
+          "xact_rollback": 0,
+          "deadlocks": 0,
+          "blks_read": 0,
+          "blks_hit": 810,
+          "temp_bytes": 0
+        }
+      },
+      "redis": {
+        "connected_clients": {
+          "first": 7,
+          "last": 7,
+          "max": 7,
+          "delta": 0
+        },
+        "blocked_clients": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "rejected_connections": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "evicted_keys": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "total_error_replies": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "used_memory": {
+          "first": 8445528,
+          "last": 8441496,
+          "max": 8445528,
+          "delta": -4032
+        },
+        "used_memory_peak": {
+          "first": 10298632,
+          "last": 10298632,
+          "max": 10298632,
+          "delta": 0
+        }
+      },
+      "wave": {
+        "actualInitiations": 1000,
+        "firstUtc": "2026-09-13T14:17:16.812158834Z",
+        "lastUtc": "2026-09-13T14:17:16.854120245Z",
+        "startSpreadMs": 41.961999999999996,
+        "rawSha256": "ddbf59bb361bd4c13248f1ffe415dd44defe3910e3ddfc2241f0f41f01b429a7",
+        "rawBytes": 180734
+      },
+      "controls": {
+        "public": {
+          "samples": 2,
+          "p50": 3.7141998764127493,
+          "p95": 4.325499990954995,
+          "p99": 4.325499990954995,
+          "max": 4.325499990954995
+        },
+        "auth": {
+          "samples": 2,
+          "p50": 3.7025001365691423,
+          "p95": 20.297100069001317,
+          "p99": 20.297100069001317,
+          "max": 20.297100069001317
+        },
+        "sentinel": {
+          "samples": 2,
+          "p50": 15.585199929773808,
+          "p95": 25.190799962729216,
+          "p99": 25.190799962729216,
+          "max": 25.190799962729216
+        }
+      }
+    },
+    "hotspot-500": {
+      "summaryTrends": {
+        "http_req_blocked": {
+          "avg": 131.47929902200008,
+          "med": 144.0729915,
+          "p(95)": 153.55320269999999,
+          "p(99)": 155.39131415,
+          "max": 164.027302
+        },
+        "http_req_connecting": {
+          "avg": 37.73973490199995,
+          "med": 45.6958235,
+          "p(95)": 82.28203484999999,
+          "p(99)": 83.33764163,
+          "max": 83.861438
+        },
+        "data_sent": {
+          "count": 263000,
+          "rate": 47509.91452386684
+        },
+        "data_received": {
+          "count": 147661,
+          "rate": 26674.37828330305
+        }
+      },
+      "syncCounts": {},
+      "postgres": {
+        "samples": 2,
+        "maxWaitingLocks": 0,
+        "maxConnections": 5,
+        "databaseDelta": {
+          "xact_commit": 26,
+          "xact_rollback": 0,
+          "deadlocks": 0,
+          "blks_read": 0,
+          "blks_hit": 830,
+          "temp_bytes": 0
+        }
+      },
+      "redis": {
+        "connected_clients": {
+          "first": 7,
+          "last": 7,
+          "max": 7,
+          "delta": 0
+        },
+        "blocked_clients": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "rejected_connections": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "evicted_keys": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "total_error_replies": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "used_memory": {
+          "first": 8540032,
+          "last": 8688000,
+          "max": 8688000,
+          "delta": 147968
+        },
+        "used_memory_peak": {
+          "first": 10298632,
+          "last": 10298632,
+          "max": 10298632,
+          "delta": 0
+        }
+      },
+      "wave": {
+        "actualInitiations": 500,
+        "firstUtc": "2026-09-13T14:16:47.077869932Z",
+        "lastUtc": "2026-09-13T14:16:47.146328067Z",
+        "startSpreadMs": 68.459,
+        "rawSha256": "44384074c66f3b742edaae8d70f7f43dc6b08c61ef05ceed450bc728e8284e6b",
+        "rawBytes": 90933
+      },
+      "controls": {
+        "public": {
+          "samples": 2,
+          "p50": 28.95090007223189,
+          "p95": 223.70980004779994,
+          "p99": 223.70980004779994,
+          "max": 223.70980004779994
+        },
+        "auth": {
+          "samples": 2,
+          "p50": 15.637899981811643,
+          "p95": 57.95299983583391,
+          "p99": 57.95299983583391,
+          "max": 57.95299983583391
+        },
+        "sentinel": {
+          "samples": 2,
+          "p50": 11.718299938365817,
+          "p95": 12.253500055521727,
+          "p99": 12.253500055521727,
+          "max": 12.253500055521727
+        }
+      }
+    },
+    "journeys-5000": {
+      "summaryTrends": {
+        "data_sent": {
+          "count": 10312172,
+          "rate": 41236.98023475655
+        },
+        "http_req_connecting": {
+          "avg": 0.0019224056023684807,
+          "med": 0,
+          "p(95)": 0,
+          "p(99)": 0,
+          "max": 18.632671
+        },
+        "http_req_blocked": {
+          "avg": 0.007716776816215034,
+          "med": 0.004323,
+          "p(95)": 0.0096703,
+          "p(99)": 0.020213239999999917,
+          "max": 18.725652
+        },
+        "data_received": {
+          "count": 2280244483,
+          "rate": 9118389.091636918
+        }
+      },
+      "syncCounts": {},
+      "postgres": {
+        "samples": 61,
+        "maxWaitingLocks": 0,
+        "maxConnections": 5,
+        "databaseDelta": {
+          "xact_commit": 34292,
+          "xact_rollback": 50,
+          "deadlocks": 0,
+          "blks_read": 0,
+          "blks_hit": 4646891,
+          "temp_bytes": 18627149824
+        }
+      },
+      "redis": {
+        "connected_clients": {
+          "first": 7,
+          "last": 7,
+          "max": 7,
+          "delta": 0
+        },
+        "blocked_clients": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "rejected_connections": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "evicted_keys": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "total_error_replies": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "used_memory": {
+          "first": 7706160,
+          "last": 8549248,
+          "max": 8688768,
+          "delta": 843088
+        },
+        "used_memory_peak": {
+          "first": 10298632,
+          "last": 10298632,
+          "max": 10298632,
+          "delta": 0
+        }
+      }
+    },
+    "open-L1": {
+      "summaryTrends": {
+        "http_req_connecting": {
+          "avg": 0.0123925498231132,
+          "med": 0,
+          "p(95)": 0,
+          "p(99)": 0.24409467,
+          "max": 21.267284
+        },
+        "phase19_poll_interval_ms": {
+          "p(99)": 27305.859999999993,
+          "max": 30518,
+          "avg": 1444.2736807058432,
+          "med": 1000,
+          "p(95)": 1001
+        },
+        "phase19_max_inflight": {
+          "value": 0,
+          "min": 0,
+          "max": 1
+        },
+        "data_received": {
+          "count": 17652071,
+          "rate": 168855.25753492358
+        },
+        "http_req_blocked": {
+          "avg": 0.0231388011497642,
+          "med": 0.007749,
+          "p(95)": 0.011365799999999973,
+          "p(99)": 0.32927596000000003,
+          "max": 21.340411
+        },
+        "data_sent": {
+          "count": 3636141,
+          "rate": 34782.40740071205
+        }
+      },
+      "syncCounts": {
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"bootstrap\"}": 200.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers0\"}": 600.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers1\"}": 601.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers2\"}": 601.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers3\"}": 601.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers4\"}": 601.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers5\"}": 601.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers6\"}": 600.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers7\"}": 600.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers8\"}": 601.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers9\"}": 601.0
+      },
+      "postgres": {
+        "samples": 26,
+        "maxWaitingLocks": 0,
+        "maxConnections": 5,
+        "databaseDelta": {
+          "xact_commit": 8285,
+          "xact_rollback": 0,
+          "deadlocks": 0,
+          "blks_read": 0,
+          "blks_hit": 85440,
+          "temp_bytes": 0
+        }
+      },
+      "redis": {
+        "connected_clients": {
+          "first": 7,
+          "last": 7,
+          "max": 7,
+          "delta": 0
+        },
+        "blocked_clients": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "rejected_connections": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "evicted_keys": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "total_error_replies": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "used_memory": {
+          "first": 7403312,
+          "last": 7544136,
+          "max": 7546600,
+          "delta": 140824
+        },
+        "used_memory_peak": {
+          "first": 10298632,
+          "last": 10298632,
+          "max": 10298632,
+          "delta": 0
+        }
+      }
+    },
+    "open-L2": {
+      "summaryTrends": {
+        "phase19_max_inflight": {
+          "min": 0,
+          "max": 1,
+          "value": 0
+        },
+        "http_req_blocked": {
+          "med": 0.006234,
+          "p(95)": 0.009012149999999997,
+          "p(99)": 0.023007659999999975,
+          "max": 36.218482,
+          "avg": 0.010802365339295439
+        },
+        "phase19_poll_interval_ms": {
+          "avg": 489.94324279286786,
+          "med": 400,
+          "p(95)": 401,
+          "p(99)": 403,
+          "max": 30017
+        },
+        "data_sent": {
+          "count": 17791530,
+          "rate": 107342.09753018114
+        },
+        "data_received": {
+          "count": 43082415,
+          "rate": 259930.24730114493
+        },
+        "http_req_connecting": {
+          "max": 36.138385,
+          "avg": 0.0036244317783551876,
+          "med": 0,
+          "p(95)": 0,
+          "p(99)": 0
+        }
+      },
+      "syncCounts": {
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"bootstrap\"}": 200.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers0\"}": 3000.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers1\"}": 3001.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers2\"}": 3000.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers3\"}": 3001.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers4\"}": 3001.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers5\"}": 3000.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers6\"}": 3000.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers7\"}": 3000.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers8\"}": 3001.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers9\"}": 3001.0
+      },
+      "postgres": {
+        "samples": 40,
+        "maxWaitingLocks": 0,
+        "maxConnections": 5,
+        "databaseDelta": {
+          "xact_commit": 38489,
+          "xact_rollback": 0,
+          "deadlocks": 0,
+          "blks_read": 7,
+          "blks_hit": 354877,
+          "temp_bytes": 0
+        }
+      },
+      "redis": {
+        "connected_clients": {
+          "first": 7,
+          "last": 7,
+          "max": 7,
+          "delta": 0
+        },
+        "blocked_clients": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "rejected_connections": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "evicted_keys": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "total_error_replies": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "used_memory": {
+          "first": 7339696,
+          "last": 7805400,
+          "max": 7805400,
+          "delta": 465704
+        },
+        "used_memory_peak": {
+          "first": 10298632,
+          "last": 10298632,
+          "max": 10298632,
+          "delta": 0
+        }
+      }
+    },
+    "open-L3": {
+      "summaryTrends": {
+        "phase19_max_inflight": {
+          "value": 0,
+          "min": 0,
+          "max": 1
+        },
+        "data_sent": {
+          "count": 35485675,
+          "rate": 214028.02817405126
+        },
+        "data_received": {
+          "count": 74751084,
+          "rate": 450853.11502156494
+        },
+        "http_req_blocked": {
+          "avg": 0.006822557902712562,
+          "med": 0.004706,
+          "p(95)": 0.007523,
+          "p(99)": 0.015957170000000027,
+          "max": 27.421549
+        },
+        "phase19_poll_interval_ms": {
+          "avg": 245.2301603173016,
+          "med": 200,
+          "p(95)": 201,
+          "p(99)": 203,
+          "max": 29979
+        },
+        "http_req_connecting": {
+          "avg": 0.0014610509622670102,
+          "med": 0,
+          "p(95)": 0,
+          "p(99)": 0,
+          "max": 27.339246
+        }
+      },
+      "syncCounts": {
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"bootstrap\"}": 200.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers0\"}": 6000.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers1\"}": 6001.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers2\"}": 6001.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers3\"}": 6001.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers4\"}": 6000.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers5\"}": 6001.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers6\"}": 6000.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers7\"}": 6000.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers8\"}": 6001.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers9\"}": 6001.0
+      },
+      "postgres": {
+        "samples": 41,
+        "maxWaitingLocks": 0,
+        "maxConnections": 6,
+        "databaseDelta": {
+          "xact_commit": 75667,
+          "xact_rollback": 0,
+          "deadlocks": 0,
+          "blks_read": 1,
+          "blks_hit": 664950,
+          "temp_bytes": 0
+        }
+      },
+      "redis": {
+        "connected_clients": {
+          "first": 7,
+          "last": 7,
+          "max": 7,
+          "delta": 0
+        },
+        "blocked_clients": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "rejected_connections": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "evicted_keys": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "total_error_replies": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "used_memory": {
+          "first": 7476360,
+          "last": 7977352,
+          "max": 7977352,
+          "delta": 500992
+        },
+        "used_memory_peak": {
+          "first": 10298632,
+          "last": 10298632,
+          "max": 10298632,
+          "delta": 0
+        }
+      }
+    },
+    "open-precheck": {
+      "summaryTrends": {
+        "phase19_max_inflight": {
+          "max": 1,
+          "value": 0,
+          "min": 0
+        },
+        "data_sent": {
+          "rate": 21519.603759201946,
+          "count": 935357
+        },
+        "http_req_connecting": {
+          "p(95)": 0.234768,
+          "p(99)": 0.332947,
+          "max": 21.385617,
+          "avg": 0.03893729697315818,
+          "med": 0
+        },
+        "data_received": {
+          "count": 7233364,
+          "rate": 166416.80890406124
+        },
+        "phase19_poll_interval_ms": {
+          "p(99)": 2002,
+          "max": 2018,
+          "avg": 1867.2559681697612,
+          "med": 2000,
+          "p(95)": 2001
+        },
+        "http_req_blocked": {
+          "avg": 0.055124276413477974,
+          "med": 0.008796,
+          "p(95)": 0.31963600000000003,
+          "p(99)": 0.4351615,
+          "max": 21.467836
+        }
+      },
+      "syncCounts": {
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers0\"}": 10.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers0\"}": 151.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers1\"}": 10.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers1\"}": 151.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers2\"}": 10.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers2\"}": 150.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers3\"}": 10.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers3\"}": 151.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers4\"}": 10.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers4\"}": 150.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers5\"}": 10.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers5\"}": 151.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers6\"}": 10.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers6\"}": 151.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers7\"}": 10.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers7\"}": 151.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers8\"}": 10.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers8\"}": 151.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers9\"}": 10.0,
+        "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers9\"}": 151.0
+      },
+      "postgres": {
+        "samples": 14,
+        "maxWaitingLocks": 0,
+        "maxConnections": 5,
+        "databaseDelta": {
+          "xact_commit": 2352,
+          "xact_rollback": 0,
+          "deadlocks": 0,
+          "blks_read": 5,
+          "blks_hit": 30242,
+          "temp_bytes": 0
+        }
+      },
+      "redis": {
+        "connected_clients": {
+          "first": 7,
+          "last": 7,
+          "max": 7,
+          "delta": 0
+        },
+        "blocked_clients": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "rejected_connections": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "evicted_keys": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "total_error_replies": {
+          "first": 0,
+          "last": 0,
+          "max": 0,
+          "delta": 0
+        },
+        "used_memory": {
+          "first": 7452344,
+          "last": 7238776,
+          "max": 7452344,
+          "delta": -213568
+        },
+        "used_memory_peak": {
+          "first": 10298632,
+          "last": 10298632,
+          "max": 10298632,
+          "delta": 0
+        }
+      }
+    }
+  }
+}

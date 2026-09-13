@@ -25,6 +25,15 @@ class CandidateArchiveTests(unittest.TestCase):
             (source/'result.json').write_text('{"valid":true}')
             with self.assertRaises(ValueError):archive.archive(source,target,{'result.json'})
 
+    def test_forward_slash_worktree_and_temp_paths_are_redacted(self):
+        self.assertEqual(archive.redact(archive.ROOT.as_posix()+'/frontend'),'<PHASE19_WORKTREE>/frontend')
+        self.assertEqual(archive.redact(archive.PRIVATE.as_posix()+'/proposal'),'<PRIVATE_TEMP>/proposal')
+
+    def test_home_runtime_traceback_and_json_escaped_path_are_redacted(self):
+        home=str(Path.home())
+        self.assertEqual(archive.redact(home+'/runtime'),'<USER_HOME>/runtime')
+        self.assertEqual(archive.redact(home.replace(chr(92),chr(92)*2)+'/runtime'),'<USER_HOME>/runtime')
+
     def test_local_devtools_endpoint_redacted(self):
         self.assertEqual(archive.redact('DevTools ws://127.0.0.1:54321/devtools/browser/abc-def'),'DevTools <DEVTOOLS_ENDPOINT>')
 

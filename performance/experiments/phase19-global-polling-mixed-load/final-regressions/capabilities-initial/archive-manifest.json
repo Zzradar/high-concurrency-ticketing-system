@@ -1,0 +1,48 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-final-capabilities-private",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "phase18_admission_http_test.log": {
+      "sourceSha256": "b9d9a6fab4fabc607c81e61751dbe0cc7a8516c290adfa75ea22cc402e212c68",
+      "sourceBytes": 608,
+      "archivedSha256": "21eedd833b176e79d74bb10fc6e88250c4466cbde4a98d734fb7509585967116",
+      "archivedBytes": 598
+    },
+    "phase18_off_regression.log": {
+      "sourceSha256": "07abf7cd0d1771677e0c623e80a9fe1d587272706a9ee52a7314cc0668adfc00",
+      "sourceBytes": 7095,
+      "archivedSha256": "211d54679e59c35e8a0e28d8a735e6f019dc0284d91abe36fc6018cc2f869456",
+      "archivedBytes": 6978
+    },
+    "phase18_policy_http_test.log": {
+      "sourceSha256": "bad1a1a6710c25a13194b616efd42744bb722db816088a8a8e5257027f34f418",
+      "sourceBytes": 673,
+      "archivedSha256": "0792f262d5560bc3c0d3e62ee965065e966cca237f868913cba4ffc252126cdb",
+      "archivedBytes": 661
+    },
+    "phase18_public_contract_test.log": {
+      "sourceSha256": "dd9a352e423ebddd0197d6ca9329bd3368aa32ecff45c58de07f899cb0af8a6f",
+      "sourceBytes": 317,
+      "archivedSha256": "c9f6052c8a3f042e4f56f798490b430d009eb35c5345383b92a7e84ac0ac4ca7",
+      "archivedBytes": 310
+    },
+    "phase18_schema_test.log": {
+      "sourceSha256": "445e876b96f4356090ad9ca7e2da23dbfd1deb1d8c69bc1a2816fc0323fabe1d",
+      "sourceBytes": 269,
+      "archivedSha256": "3c778698ebf0024b4b15e030e16786a082a41153b9c0662479349c7d7b0f3e81",
+      "archivedBytes": 262
+    },
+    "phase18_token_bucket_test.log": {
+      "sourceSha256": "71847d420810768a33ce89430d90cd58d469a965603ea99db0ac365b6b4b7d47",
+      "sourceBytes": 336,
+      "archivedSha256": "f717e265b262958857daaf4b634ce14c1965373e17bc4e7927f02db2ec8c8a3b",
+      "archivedBytes": 328
+    },
+    "phase18_waiting_room_test.log": {
+      "sourceSha256": "ec8538a0c8941fcd867bbdbf6e6d41f49351fa09da063eb6459ed3ef2c6c6fd1",
+      "sourceBytes": 670,
+      "archivedSha256": "2ae85306a3f3ad8902609c89218164bb0fda3a4322d603d81d37f996ad9fd1eb",
+      "archivedBytes": 658
+    }
+  }
+}

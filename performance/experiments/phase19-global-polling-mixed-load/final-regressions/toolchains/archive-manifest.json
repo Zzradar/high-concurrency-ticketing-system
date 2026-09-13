@@ -1,0 +1,36 @@
+{
+  "source": "<PRIVATE_TEMP>/Temp",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "phase19-final-build-ctest-r1.log": {
+      "sourceSha256": "7f808f0260ac649e5986a5a040b017e537b851493ea46928fe3a6d1aaf183b5e",
+      "sourceBytes": 6263,
+      "archivedSha256": "c149140341715fd38d746d372b71433c4a759bedb30ce74abd2a9fdf7ccdb18f",
+      "archivedBytes": 6149
+    },
+    "phase19-final-frontend-build-r1.log": {
+      "sourceSha256": "78db2217a4273c195bcf2d9557b23e6b3f908386a368de7428709bab62b358be",
+      "sourceBytes": 1066,
+      "archivedSha256": "30f54db2b464a2c272ba2c8077ecfcd751eedddc8458801705e03550b738ae97",
+      "archivedBytes": 1044
+    },
+    "phase19-final-performance-python-r2.log": {
+      "sourceSha256": "b2db4b7dba4b64c9571d3c7d542659a73184429e2224669b567fe869f688f381",
+      "sourceBytes": 33767,
+      "archivedSha256": "d27a7540214a3de268eb7626e518aa0ddb31b6dc3cafea313cd364ff6669621a",
+      "archivedBytes": 33431
+    },
+    "phase19-final-protocol-node.log": {
+      "sourceSha256": "71c9b5ad313738d582417723ae763e1f55d3b49442c08e9c58078855946ac2c5",
+      "sourceBytes": 426,
+      "archivedSha256": "bc4277ab1003e88dd2e800d49548fcba8b169665f9acfc1776f98716aee534bf",
+      "archivedBytes": 414
+    },
+    "phase19-final-vitest-r1.log": {
+      "sourceSha256": "b459545e43cf83df45c2bb73c3d7335a21a8a3e8761198024702e86500ae5f93",
+      "sourceBytes": 1287,
+      "archivedSha256": "e8d5bc615d939ec0514dbd03e03036974d49e8906b9e6cb2edf5af64d88a32a2",
+      "archivedBytes": 1225
+    }
+  }
+}

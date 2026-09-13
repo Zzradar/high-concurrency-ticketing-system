@@ -1,0 +1,18 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-final-financial-peer-private",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "phase18_multi_instance_test.log": {
+      "sourceSha256": "dc8930040e94a1bdf46bb80f6a429871bb80ab3b1281c5057d11d6618794783b",
+      "sourceBytes": 360,
+      "archivedSha256": "176ce76ceb22a898dab300aa3a8107de61e9ebca9aea5b3fdc8787e8a7032395",
+      "archivedBytes": 353
+    },
+    "phase18_refund_verifier_fixture.log": {
+      "sourceSha256": "9d113edea3af4290412f9d58ce3e98887e07cb29ff7471bb8e43e4c74e95b6a7",
+      "sourceBytes": 506,
+      "archivedSha256": "362b2fd34fb561df319630bc7f8cbaa3c2af6beb799234360f2a19d0cd4d48c3",
+      "archivedBytes": 497
+    }
+  }
+}

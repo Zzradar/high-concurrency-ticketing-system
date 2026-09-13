@@ -1,0 +1,395 @@
+{
+  "scene": "logout",
+  "revision": "after",
+  "diagnostic": false,
+  "environment": {
+    "playwright": "1.63.0",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+    "product": "Edg/152.0.4191.66",
+    "args": [
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-extensions",
+      "--disable-backgrounding-occluded-windows",
+      "--edge-skip-compat-layer-relaunch",
+      "--user-data-dir=PROFILE",
+      "--remote-debugging-port=0",
+      "about:blank"
+    ],
+    "connection": "headed Edge; CDP noDefaults; native timers and visibility; one context, one window, two tabs"
+  },
+  "sourceCommit": "8c36bd8a4323339a0ef0a7908f71f8f4a3d0596e",
+  "frontendTree": "1e1d6ef0696b5ad23d3b11a6b265410062dc431c",
+  "artifacts": {
+    ".openai/hosting.json": {
+      "sha256": "a449f6ac24b26a3447521292f92d3ef86d6ed2a6335d3b8cac2b642663c43f58",
+      "bytes": 66
+    },
+    "assets/adminApi-BvzBlz9I.js": {
+      "sha256": "97cbf9087d4e88eca765fd55f1157dddd06aaed79ad6f5c3c27d1877d07ad1d0",
+      "bytes": 2984
+    },
+    "assets/adminApi-BzpU8YTP.css": {
+      "sha256": "23601929a91261bfe38d431947d6e01e339d5659441ed1b2eb5c9e9fa4b7c955",
+      "bytes": 2409
+    },
+    "assets/adminDateTime-D-syJO9q.js": {
+      "sha256": "f80aeb7126aafdc3d1ca24ce9fef95b10f367690237dadc098795eac037baf99",
+      "bytes": 805
+    },
+    "assets/AdminEventEditorPage-YKeYfhX8.js": {
+      "sha256": "d27e0d7001981562a7afc6abbdafb7ff4e571364ceb6b71125f222c361bfcb23",
+      "bytes": 12520
+    },
+    "assets/AdminEventListPage-u-FtWsUf.js": {
+      "sha256": "099bb0ab85e1eceab00fd234b862ede33ba3f707598d5c21f4a5c35a3b8749d7",
+      "bytes": 1261
+    },
+    "assets/AdminVenueEditorPage-m5iufvGF.js": {
+      "sha256": "b208bb96d54dfa108a94af5bc769c4f7ab19893dcc23206f88b5d4dcec4bf767",
+      "bytes": 5262
+    },
+    "assets/AdminVenueListPage-ESohBzSH.js": {
+      "sha256": "e65442be9e6150e91e8dd5d4b8e06ab1174c971f3af05267aa14c4b52ad63703",
+      "bytes": 1379
+    },
+    "assets/index-BEyvCYky.css": {
+      "sha256": "99b01be69aedc808d3af99ec9c3236be36d104f088432c6777e9522da0266579",
+      "bytes": 30543
+    },
+    "assets/index-CNUpQwJI.js": {
+      "sha256": "a672dbdc6ab13e2249f455d92fba61116bc75cfdcdb3cb26b08c5e8fd6b46780",
+      "bytes": 246845
+    },
+    "assets/WaitingRoomPage-Clr4_T-v.js": {
+      "sha256": "9a692ab78ebe11d22ca9636ebff6b43ec3ac4652023f74dd76c3f47b6ce1c4f8",
+      "bytes": 4253
+    },
+    "favicon.svg": {
+      "sha256": "93208bb26adbe1d0f4c18e95cc92a9445456d8597218947f47c7f1ba81594861",
+      "bytes": 284
+    },
+    "images/basketball-cover.png": {
+      "sha256": "58f742818970835628ffc781fec0baa279867c2b898d188eba4d19266cb81dc8",
+      "bytes": 2350032
+    },
+    "images/concert-cover.png": {
+      "sha256": "36f996a35295213d65823aaeb759327ad84c1a26af2598d5a59f81d2f4cd4bb9",
+      "bytes": 1882602
+    },
+    "index.html": {
+      "sha256": "e0db2a220136a698f5f171f87b5ca4aec4e7b64abe5c3c67784a8e0eaf2ccc7a",
+      "bytes": 963
+    },
+    "server/index.js": {
+      "sha256": "cff7643b114f820476a62bdf2f615327e9caff7181e2d3f2d3b7fbd3748c7b82",
+      "bytes": 405
+    }
+  },
+  "protocol": {
+    "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+    "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+    "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+    "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+    "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+    "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+    "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+    "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+    "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+    "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+    "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+    "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+    "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+    "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+    "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+    "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+    "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+    "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+  },
+  "httpFixture": "browser-fixture.mjs; 75ms response delay; no provider calls; decoded bytes only, wire compression unavailable",
+  "buildRequirement": "VITE_USE_MOCK_API=false",
+  "startedUtc": "2026-09-13T14:40:23.531Z",
+  "requests": [
+    {
+      "ordinal": 0,
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789310424643,
+      "startMonotonicNs": "1230580499578300",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789310424732,
+      "durationMs": 89.709,
+      "decodedBodyBytes": 108,
+      "terminal": false
+    },
+    {
+      "ordinal": 1,
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789310424646,
+      "startMonotonicNs": "1230580502374900",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789310424754,
+      "durationMs": 108.7842,
+      "decodedBodyBytes": 108,
+      "terminal": false
+    },
+    {
+      "ordinal": 2,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789310424734,
+      "startMonotonicNs": "1230580590459500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789310424818,
+      "durationMs": 84.2426,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 3,
+      "endpoint": "/events",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789310424754,
+      "startMonotonicNs": "1230580610315800",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789310424850,
+      "durationMs": 96.8067,
+      "decodedBodyBytes": 460,
+      "terminal": false
+    },
+    {
+      "ordinal": 4,
+      "endpoint": "/auth/logout",
+      "method": "POST",
+      "business": "other",
+      "phase": "setup",
+      "action": "logout",
+      "startEpochMs": 1789310424908,
+      "startMonotonicNs": "1230580764323900",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789310425008,
+      "durationMs": 100.1,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    }
+  ],
+  "initiations": [
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789310424639,
+      "monotonicMs": 113.09999990463257
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789310424640,
+      "monotonicMs": 114.09999990463257
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789310424727,
+      "monotonicMs": 200.70000004768372
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/events",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789310424731,
+      "monotonicMs": 205.29999995231628
+    },
+    {
+      "type": "request",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789310424904,
+      "monotonicMs": 377.7000000476837
+    }
+  ],
+  "visibility": [
+    {
+      "type": "init",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789310424567,
+      "monotonicMs": 41.09999990463257
+    },
+    {
+      "type": "focus",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789310424568,
+      "monotonicMs": 42.09999990463257
+    },
+    {
+      "type": "blur",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789310426846,
+      "monotonicMs": 2319.899999856949
+    },
+    {
+      "type": "visibilitychange",
+      "trusted": true,
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789310485072,
+      "monotonicMs": 60546.39999985695
+    },
+    {
+      "type": "visibilitychange",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789310576134,
+      "monotonicMs": 151607.89999985695
+    },
+    {
+      "type": "focus",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789310576136,
+      "monotonicMs": 151610.39999985695
+    }
+  ],
+  "phases": [
+    {
+      "name": "visible",
+      "began": 1789310425048,
+      "activationEpochMs": 1789310425025,
+      "durationMs": 60000,
+      "hidden": false
+    },
+    {
+      "name": "hidden",
+      "began": 1789310485110,
+      "activationEpochMs": 1789310485065,
+      "durationMs": 91000,
+      "hidden": true
+    },
+    {
+      "name": "restored",
+      "began": 1789310576151,
+      "activationEpochMs": 1789310576113,
+      "durationMs": 30000,
+      "hidden": false
+    }
+  ],
+  "actions": [
+    {
+      "name": "logout",
+      "epochMs": 1789310424789
+    },
+    {
+      "name": "bringToFront-visible",
+      "epochMs": 1789310425025
+    },
+    {
+      "name": "bringToFront-hidden",
+      "epochMs": 1789310485065
+    },
+    {
+      "name": "bringToFront-restored",
+      "epochMs": 1789310576113
+    }
+  ],
+  "topology": [
+    {
+      "name": "subject",
+      "windowId": 61811212,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    },
+    {
+      "name": "neutral",
+      "windowId": 61811212,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    }
+  ],
+  "errors": [],
+  "passed": true,
+  "loggedOutEpochMs": 1789310425006,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Edg/152.0.4191.66",
+    "revision": "@cc2931e6363af1d70882ad63ee33b0e8cd524de0",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36 Edg/152.0.0.0",
+    "jsVersion": "15.2.23.10"
+  },
+  "checks": {
+    "hiddenNewReads": 0,
+    "hiddenInflightFromBefore": 0,
+    "maxInflight": {
+      "notifications": 1,
+      "availability": 0,
+      "payment": 0,
+      "checkout": 0,
+      "order": 0
+    },
+    "restoredImmediateCounts": {
+      "notifications": 0,
+      "availability": 0,
+      "payment": 0,
+      "checkout": 0,
+      "order": 0
+    },
+    "logoutNewReads": 0,
+    "terminalObserved": true,
+    "readsAfterTerminalSettled": null,
+    "restorationFirstReadMs": {
+      "notifications": null,
+      "availability": null,
+      "payment": null,
+      "checkout": null,
+      "order": null
+    }
+  },
+  "endedUtc": "2026-09-13T14:43:26.173Z",
+  "inflightAtClose": 0
+}

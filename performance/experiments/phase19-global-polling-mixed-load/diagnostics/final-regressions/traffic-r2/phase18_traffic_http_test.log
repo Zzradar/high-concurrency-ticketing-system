@@ -1,0 +1,15 @@
+test_enforced_429_retry_and_observe_never_intercepts (__main__.TrafficHTTP) ... ok
+test_off_read_saturation_is_bounded_and_releases_permits (__main__.TrafficHTTP) ... FAIL
+
+======================================================================
+FAIL: test_off_read_saturation_is_bounded_and_releases_permits (__main__.TrafficHTTP)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<PHASE19_WORKTREE>\backend\tests\phase18_traffic_http_test.py", line 54, in test_off_read_saturation_is_bounded_and_releases_permits
+    self.assertEqual(metric('ticketing_traffic_peak_inflight','AVAILABILITY'),16)
+AssertionError: 0.0 != 16
+
+----------------------------------------------------------------------
+Ran 2 tests in 7.918s
+
+FAILED (failures=1)

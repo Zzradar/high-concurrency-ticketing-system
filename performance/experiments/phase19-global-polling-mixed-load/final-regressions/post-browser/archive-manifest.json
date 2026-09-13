@@ -1,0 +1,18 @@
+{
+  "source": "<PRIVATE_TEMP>/Temp",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "phase19-final-build-after-browser.log": {
+      "sourceSha256": "ad4c64993718811a70d79b3640aab52be91b06ed8ff8c74a6aa4e7c2b87a261e",
+      "sourceBytes": 1066,
+      "archivedSha256": "dee5e14f8d94a68ccd500840dcad6e4ca3b91439d9a0e28037ec19b861c42475",
+      "archivedBytes": 1044
+    },
+    "phase19-final-vitest-after-browser.log": {
+      "sourceSha256": "d65f55795219e160113992091438ebdfb8aca394db55a1b7feb4f6d07835405b",
+      "sourceBytes": 1287,
+      "archivedSha256": "aedfa3f32c859d4efc781a0a1e45b34027a2c96ce7ef5cbf5d9a7fc221d36141",
+      "archivedBytes": 1225
+    }
+  }
+}

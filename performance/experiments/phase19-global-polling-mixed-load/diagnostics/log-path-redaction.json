@@ -1,0 +1,90 @@
+{
+  "utc": "2026-09-13T14:52:02.975248+00:00",
+  "reason": "Normalize forward-slash worktree/temporary paths and home runtime traceback paths; no metrics or outcome edits",
+  "changes": {
+    "diagnostics/frontend-proposal/phase19-proposal-contracts-r1.log": {
+      "priorPublishedSha256": "4cf43125ba4a17a3b0005e6965914d4d25919c10a8af1190f5f5271182266714",
+      "priorBytes": 263,
+      "redactedSha256": "31ee686ff5b5684ed1f658690968653f078c71225dd0741e97800ee33a7899ab",
+      "redactedBytes": 246,
+      "scope": "Path-only normalization; original private source and its sourceSha256 retained"
+    },
+    "diagnostics/frontend-proposal/phase19-proposal-full-r1.log": {
+      "priorPublishedSha256": "361c799fb1c374673c98b05851285e9270924595f6df75c4092a311aa7141338",
+      "priorBytes": 11596,
+      "redactedSha256": "2f657ab96cffcee0596d46d6f853beeb7dc0c446d8a3fb4746d64e7575448c91",
+      "redactedBytes": 11579,
+      "scope": "Path-only normalization; original private source and its sourceSha256 retained"
+    },
+    "diagnostics/frontend-proposal/phase19-proposal-full-r2.log": {
+      "priorPublishedSha256": "9dd8ba948b6e626d3d30333c95ef1d9c88235e05d4610445062406f4ea740aa4",
+      "priorBytes": 270,
+      "redactedSha256": "39787af2244d223292f4a3a982a5b580d51623badb27c63ccfc318a194f27a87",
+      "redactedBytes": 253,
+      "scope": "Path-only normalization; original private source and its sourceSha256 retained"
+    },
+    "diagnostics/frontend-proposal-final/phase19-proposal-activation-r1.log": {
+      "priorPublishedSha256": "bc310a6e22ded26b7dce21b7d106579c87db21404b212c26e3a6c01655ff59bd",
+      "priorBytes": 263,
+      "redactedSha256": "5556790b52c06a1b64b6a15cb5e70a6fcef78ea8ad0de62931374384451f3389",
+      "redactedBytes": 246,
+      "scope": "Path-only normalization; original private source and its sourceSha256 retained"
+    },
+    "diagnostics/frontend-proposal-final/phase19-proposal-auth-epoch-r1.log": {
+      "priorPublishedSha256": "6066a3c5e9cf8ef39168279e0b2fba8ad1cde5e2d3f70dfe2b846f1885f6cee1",
+      "priorBytes": 262,
+      "redactedSha256": "9d68c82e1b2e5376ad8b313a545be6e6d2af5fe825305507bb49da245e76ad63",
+      "redactedBytes": 245,
+      "scope": "Path-only normalization; original private source and its sourceSha256 retained"
+    },
+    "diagnostics/frontend-proposal-final/phase19-proposal-full-r3.log": {
+      "priorPublishedSha256": "afd8c0b9b2a1ec32336b41a567ab321aeb60e17de1cb940803beb784339eccb0",
+      "priorBytes": 1144,
+      "redactedSha256": "a3d8dbfa862e3ce1c1f739664aa6bf31695bbfb9a08f53d530f155b7fcdf96e8",
+      "redactedBytes": 1127,
+      "scope": "Path-only normalization; original private source and its sourceSha256 retained"
+    },
+    "diagnostics/frontend-proposal-final/phase19-proposal-full-r4.log": {
+      "priorPublishedSha256": "e3b80db0ba8a7760323b5eb14d39d949891712467fcd1273b34e58101058fbcd",
+      "priorBytes": 270,
+      "redactedSha256": "6f9327586e333365751c9444147867930769a48cb142f5555ed499764fd70bc5",
+      "redactedBytes": 253,
+      "scope": "Path-only normalization; original private source and its sourceSha256 retained"
+    },
+    "diagnostics/frontend-proposal-final/phase19-proposal-full-r5.log": {
+      "priorPublishedSha256": "43b618c6955cb7a9c36abad633f8a062304f17d876903c10ca0c47273012ee39",
+      "priorBytes": 270,
+      "redactedSha256": "cfa42fbf2f8803a04bf0cd26b1dd787ff14c93e840ea034d74e7f1df2aae5261",
+      "redactedBytes": 253,
+      "scope": "Path-only normalization; original private source and its sourceSha256 retained"
+    },
+    "diagnostics/frontend-proposal-final/phase19-proposal-full-r6.log": {
+      "priorPublishedSha256": "d924b3dcdc6f71b1c1569c771e544fa1dacaf075ea81e44506fe93dcac45c8fb",
+      "priorBytes": 270,
+      "redactedSha256": "1ae98f43748f82480336771a5fdbc6cf6098ec7ac0cccfced15fce0f4d09723e",
+      "redactedBytes": 253,
+      "scope": "Path-only normalization; original private source and its sourceSha256 retained"
+    },
+    "diagnostics/stage0/phase18_traffic_http_test.log": {
+      "priorPublishedSha256": "a036b83dbb192c6da147ba67126806e923d6e1e7a145000c29840e989e5bc704",
+      "priorBytes": 1121,
+      "redactedSha256": "0cbb3ecaa6e1e1621b106a38a5ecfab7447f71f605089e8ba83bad44fea5a8b8",
+      "redactedBytes": 1120,
+      "scope": "Path-only normalization; original private source and its sourceSha256 retained"
+    },
+    "final-regressions/post-browser/phase19-final-vitest-after-browser.log": {
+      "priorPublishedSha256": "fe28cbc8f1353292971f85da586dd779669e075e96c1dac1545331266ccec34b",
+      "priorBytes": 1272,
+      "redactedSha256": "aedfa3f32c859d4efc781a0a1e45b34027a2c96ce7ef5cbf5d9a7fc221d36141",
+      "redactedBytes": 1225,
+      "scope": "Path-only normalization; original private source and its sourceSha256 retained"
+    },
+    "final-regressions/toolchains/phase19-final-vitest-r1.log": {
+      "priorPublishedSha256": "d53982a82b56a3957ea49da86225063536996a7428f25af675625b1317262b6e",
+      "priorBytes": 1272,
+      "redactedSha256": "e8d5bc615d939ec0514dbd03e03036974d49e8906b9e6cb2edf5af64d88a32a2",
+      "redactedBytes": 1225,
+      "scope": "Path-only normalization; original private source and its sourceSha256 retained"
+    }
+  }
+}

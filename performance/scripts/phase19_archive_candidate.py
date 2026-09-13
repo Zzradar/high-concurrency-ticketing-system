@@ -14,8 +14,9 @@ def digest(data):return hashlib.sha256(data).hexdigest()
 
 
 def redact(text):
-    for value,label in [(str(ROOT),'<PHASE19_WORKTREE>'),(str(PRIVATE),'<PRIVATE_TEMP>')]:
-        text=text.replace(value.replace('\\','\\\\'),label).replace(value,label)
+    for value,label in [(str(ROOT),'<PHASE19_WORKTREE>'),(str(PRIVATE),'<PRIVATE_TEMP>'),(str(Path.home()),'<USER_HOME>')]:
+        for variant in [value, value.replace('\\','/'), value.replace('/', '\\')]:
+            text=text.replace(variant.replace('\\','\\\\'),label).replace(variant,label)
     return re.sub(r'ws://127\.0\.0\.1:\d+/devtools/browser/[\w-]+','<DEVTOOLS_ENDPOINT>',text)
 
 

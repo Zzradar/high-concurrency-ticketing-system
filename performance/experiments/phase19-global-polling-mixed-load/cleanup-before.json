@@ -1,0 +1,547 @@
+{
+  "startedUtc": "2026-09-13T14:49:45.908934+00:00",
+  "scope": "Only explicitly owned Phase19 temporary containers and networks; no volumes/images removed",
+  "containers": [
+    {
+      "id": "39e246e1fac3ba7efa36c844835640c75c488e67fbae42637a46e8f2c2a6705f",
+      "name": "phase19-final-financial-peer-admission-peer-509c1d7c",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-final-financial-peer-admission-peer-509c1d7c.log",
+        "sha256": "9eb945c8b55eec1aaf733d5f0dbfab33faf8267377f77f6a7de27bcc9ad2e990",
+        "bytes": 201
+      }
+    },
+    {
+      "id": "9112d44dcfa8e52f55126cbc2eeeea36aa1bb7808c668a7706adc35caa4adfcf",
+      "name": "phase19-final-financial-peer-backend-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-final-financial-peer-backend-1.log",
+        "sha256": "3c27c80a4be797b72a41c0ef53acfc6b45685d5830e9b4823d8f78bbbfbeaa11",
+        "bytes": 201
+      }
+    },
+    {
+      "id": "92cd4aebb025c94ac08f42aeb8968fd32f75822aa3239b07818e3e6fcace9755",
+      "name": "phase19-final-financial-peer-postgres-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-final-financial-peer-postgres-1.log",
+        "sha256": "a62668a2671358a5e4aa9523764280b7fb79d537fd25bb6448f437e726dcd737",
+        "bytes": 8579
+      }
+    },
+    {
+      "id": "fabf95bd6cabb2eac4c36f3766f3f8e36256d4391289d35373b44db3a00052df",
+      "name": "phase19-final-financial-peer-redis-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-final-financial-peer-redis-1.log",
+        "sha256": "f4f7a8d7fbe4f5c732424097d148cde44cd401333859dc7898c5fcd683eeb46e",
+        "bytes": 922
+      }
+    },
+    {
+      "id": "a9611fdb2d5c0041e6a8a27ad5b98ea3cfa86735e61c0aa004070f604b828ce3",
+      "name": "phase19-final-financial-peer-fake-stripe-1",
+      "runningBefore": false,
+      "exitCodeBefore": 137,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-final-financial-peer-fake-stripe-1.log",
+        "sha256": "dcd94e42726a99151ad287e68faeb012aec9888b3cc15772c3ca8fb6b52cc6ba",
+        "bytes": 141
+      }
+    },
+    {
+      "id": "0e2af1df8b69f9c251b21be71e8a0c4f2ee7b10d72f7f4fd2729a3e419f79812",
+      "name": "phase18-phase19-stage0-availability-fault-d48cf99f",
+      "runningBefore": false,
+      "exitCodeBefore": 87,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase18-phase19-stage0-availability-fault-d48cf99f.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "id": "23ff92f35e061e6a276e5b2bb6be733367bb5c71da993cd9ea0b5cacd1c16424",
+      "name": "phase18-phase19-stage0-availability-fault-f6c57897",
+      "runningBefore": false,
+      "exitCodeBefore": 86,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase18-phase19-stage0-availability-fault-f6c57897.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "id": "3f43feda3a96fb3d3f481454b029e0a8ed59a11865a5b72848489939044ee98f",
+      "name": "phase18-phase19-stage0-checkout-crash-aac13d97",
+      "runningBefore": false,
+      "exitCodeBefore": 88,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase18-phase19-stage0-checkout-crash-aac13d97.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "id": "f3128ef4bdd2c8224de0b0c260b0f5217ee90a69c226f498ea63e22381a40f0e",
+      "name": "phase19-final-financial-backend-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-final-financial-backend-1.log",
+        "sha256": "7e7dcd383425b8ad71233390f24b145563ce32fc326e0d38f6e214a2e4356f20",
+        "bytes": 12955
+      }
+    },
+    {
+      "id": "f817e21bc81764bc74baf4056ef9b20dc83e0fca05e3f356d05944aac8468f56",
+      "name": "phase19-final-financial-postgres-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-final-financial-postgres-1.log",
+        "sha256": "ab3718ecd37de4f9964971e07eccb93e18d26e8b52c1189db2e11da7f29a1e44",
+        "bytes": 16895
+      }
+    },
+    {
+      "id": "cb0bc867e5b5ecfd42e352b380bbab5293d8eab4830193140bc833af52ecb9a9",
+      "name": "phase19-final-financial-redis-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-final-financial-redis-1.log",
+        "sha256": "8f0e873ff9453db9a9a79fe7b579643c226fc587b14d629caad5696b69f0ed6d",
+        "bytes": 1614
+      }
+    },
+    {
+      "id": "2e423daf3a1dc28cb13564c9fea8a4363c87abac4bdf85aefa0af20c257c83d9",
+      "name": "phase19-final-financial-fake-stripe-1",
+      "runningBefore": false,
+      "exitCodeBefore": 137,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-final-financial-fake-stripe-1.log",
+        "sha256": "c4045be252df6ec912908ce23a5f9ff58ca9be7f18d92fb88148944aa9b12d7d",
+        "bytes": 22075
+      }
+    },
+    {
+      "id": "bac637624fe238494cb5ac23754f4d32aa02aedc63b856a12e00787f4433aa17",
+      "name": "phase19-final-overload-backend-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-final-overload-backend-1.log",
+        "sha256": "54e1aa2caf9fd272efb8306097ca0bd09a6c2cb84f93d38e010f70751cf776d5",
+        "bytes": 201
+      }
+    },
+    {
+      "id": "67dd00fe55a9895c6b99c246c811d9c601902a24f5c02eb472d1d32a10951c51",
+      "name": "phase19-final-overload-postgres-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-final-overload-postgres-1.log",
+        "sha256": "cc306c6617c2208726a6797b40536fead199c14a503cb8ae8a7b08f0fc7074d9",
+        "bytes": 8657
+      }
+    },
+    {
+      "id": "e6812d1a0e7990226794be9f808926f571040da0eaccc6da904181205f68411a",
+      "name": "phase19-final-overload-fake-stripe-1",
+      "runningBefore": false,
+      "exitCodeBefore": 137,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-final-overload-fake-stripe-1.log",
+        "sha256": "ecdec5fd53fdd902dc11e77a4480b65bbd8cb35db78f7067ac03a608bcf38fde",
+        "bytes": 675
+      }
+    },
+    {
+      "id": "af07ae5d48187d7d3287872d9ea30335247bf94fa5e9ebfa174ca5017a7b6c75",
+      "name": "phase19-final-overload-redis-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-final-overload-redis-1.log",
+        "sha256": "e98e80928f656542246717c3b8be8f2e087734f20a3862ca6c7dae2093db7935",
+        "bytes": 922
+      }
+    },
+    {
+      "id": "2dfba446a68247fb7749f612d9e4d372b8ba4742374ce263ab33fce0879905b9",
+      "name": "phase19-formal-r2-frontend",
+      "runningBefore": true,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-formal-r2-frontend.log",
+        "sha256": "4d5ca2d56c6a26feec211b9d452e2253e4a2012ecdf90d0a8fbc303eab98cdd2",
+        "bytes": 755
+      }
+    },
+    {
+      "id": "a86c92e08d9453640ed00cde3b4310154fe68b8acd624b5561dc994578ebf52e",
+      "name": "phase19-formal-r2-api",
+      "runningBefore": true,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-formal-r2-api.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "id": "7c272dd3209e38f29e65a23f3d316a0ea08745c52ad634f501c51e12cae9f21e",
+      "name": "phase19-formal-r2-redis",
+      "runningBefore": true,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-formal-r2-redis.log",
+        "sha256": "5d872f04e16a2518d6a305a75eeb1471a96fba918e2762a3ac6cb9c15e232668",
+        "bytes": 4568
+      }
+    },
+    {
+      "id": "1f2c976d0213c6f1d45e578734a6dd323beb33eb655d2df4f6cff412495510a6",
+      "name": "phase19-formal-r2-postgres",
+      "runningBefore": true,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-formal-r2-postgres.log",
+        "sha256": "a7108bcae569748c7b7511771e48dbe6f448d0d7d4829bf47182e8ceca7c379f",
+        "bytes": 6263
+      }
+    },
+    {
+      "id": "75c3043cc48a0aab0258290c9a8cc61ca547f7fef5ec98e21137e5c2df4c9621",
+      "name": "phase19-formal-baseline-frontend",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-formal-baseline-frontend.log",
+        "sha256": "4d5ca2d56c6a26feec211b9d452e2253e4a2012ecdf90d0a8fbc303eab98cdd2",
+        "bytes": 755
+      }
+    },
+    {
+      "id": "6051dd2341b4d319e31d40b00ebb15d50119da9fc003e541caed311876440a0c",
+      "name": "phase19-formal-baseline-api",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-formal-baseline-api.log",
+        "sha256": "30d95c1361aa2a6958d2295ce474e6164a5b8478a576a5e40b30ec5e571d093c",
+        "bytes": 209
+      }
+    },
+    {
+      "id": "8938a26ea4efa18f46a0c37940c643f09113cdf86f5aca509b30f651704c4265",
+      "name": "phase19-formal-baseline-redis",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-formal-baseline-redis.log",
+        "sha256": "e205964d380ba8b2a1ec8ef838cda082f917789088e051612d9c03b966ef18e4",
+        "bytes": 7378
+      }
+    },
+    {
+      "id": "a7018f2356f3a872c9add0688c0f038773daf8ad567719fe9e21ecb0cfb2af3a",
+      "name": "phase19-formal-baseline-postgres",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-formal-baseline-postgres.log",
+        "sha256": "3e8ad22c7ccecf689507b5c2a1183334f7cfebe869b9cea3a51480c1a8689503",
+        "bytes": 8819
+      }
+    },
+    {
+      "id": "34a65ecc06185bafcc0a3139026ceaac3226addad6ec00b661863871229d353e",
+      "name": "phase19-protocol-smoke-frontend",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-protocol-smoke-frontend.log",
+        "sha256": "4d5ca2d56c6a26feec211b9d452e2253e4a2012ecdf90d0a8fbc303eab98cdd2",
+        "bytes": 755
+      }
+    },
+    {
+      "id": "d4b15108462eca8b9de40776004acdabbe1f45fcbdf6fe14e6c32b05b805cdce",
+      "name": "phase19-protocol-smoke-api",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-protocol-smoke-api.log",
+        "sha256": "7ac762e9de0a7a371cb902b9e1c9bdea7313a86a5047ac53779e4183e7f6d0fb",
+        "bytes": 449
+      }
+    },
+    {
+      "id": "3ef1097987aff5a754a201faa6bac5bd4862659319a2be6afa8ac84c10ee6ab1",
+      "name": "phase19-protocol-smoke-redis",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-protocol-smoke-redis.log",
+        "sha256": "a424b43ef1d7014169d0aa0a51b5ab29e7b0a386f80487f104a96a6c264310de",
+        "bytes": 4141
+      }
+    },
+    {
+      "id": "5ebca82b7a51656aff4888408d48a39f6110e76e320275e5ef00af883942c54e",
+      "name": "phase19-protocol-smoke-postgres",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-protocol-smoke-postgres.log",
+        "sha256": "62d2336cf93d425ee4b9640525c010e8c5f57b13259b5dda7e302a564a49016e",
+        "bytes": 7651
+      }
+    },
+    {
+      "id": "fb4334dd5612e5d9d653fdb99bdc52eb8a24a63a73be7ebe8098a2585458285c",
+      "name": "phase18-phase19-stage0-availability-fault-d0a8b134",
+      "runningBefore": false,
+      "exitCodeBefore": 87,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase18-phase19-stage0-availability-fault-d0a8b134.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "id": "886d3b9bfbb2106c79aef87c78bdfe0fdefa7f530ef63e9a55a1d059b00f1015",
+      "name": "phase18-phase19-stage0-availability-fault-74b30e28",
+      "runningBefore": false,
+      "exitCodeBefore": 86,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase18-phase19-stage0-availability-fault-74b30e28.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "id": "2ff80d73b8708b5f0701fb3adec90a39ed68a1783d011a220ec5db69408835b1",
+      "name": "phase18-phase19-stage0-checkout-crash-d7d3228d",
+      "runningBefore": false,
+      "exitCodeBefore": 88,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase18-phase19-stage0-checkout-crash-d7d3228d.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "id": "4d96958d9060cc59b2abae9d0d704c0fc1d3219277c0d4f5eb11fb914159d514",
+      "name": "phase19-financial-peer-admission-peer-2bb02654",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-financial-peer-admission-peer-2bb02654.log",
+        "sha256": "c41a7330c5f9210fd68807afad985be641517b293beae1b9cb064910604418a4",
+        "bytes": 201
+      }
+    },
+    {
+      "id": "5ba3ab89630dbd74afeb308a28ed931d644647b2d785d6b62e4c6878933cbf23",
+      "name": "phase19-financial-peer-backend-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-financial-peer-backend-1.log",
+        "sha256": "d162fd22c063efee100c5d005e11ba32fd22e8ee9db99875287eac9b8a1c8fe2",
+        "bytes": 201
+      }
+    },
+    {
+      "id": "8a5d048060298924ee4480bde0306bfbd77fa791ed96db2b6e9c6e1b86a78fd0",
+      "name": "phase19-financial-peer-postgres-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-financial-peer-postgres-1.log",
+        "sha256": "d5dfdde2296765f90c31ea46fd44da73d0b7c5258f6e852c3f473a96849689f5",
+        "bytes": 8578
+      }
+    },
+    {
+      "id": "134276fd1ff34d876bb74a6a04438ed0716204fbcd94aea26f29a1f9221f6b6a",
+      "name": "phase19-financial-peer-redis-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-financial-peer-redis-1.log",
+        "sha256": "0bf2daa533c0c719ce385987ef717d039f803483aef373f28ca78aac52bcf1ae",
+        "bytes": 922
+      }
+    },
+    {
+      "id": "e15bf5b03b67fcdd6444afcb7eeb3bed9c0d8f3773f2658fcfdcb7b952b49bda",
+      "name": "phase19-financial-peer-fake-stripe-1",
+      "runningBefore": false,
+      "exitCodeBefore": 137,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-financial-peer-fake-stripe-1.log",
+        "sha256": "dcd94e42726a99151ad287e68faeb012aec9888b3cc15772c3ca8fb6b52cc6ba",
+        "bytes": 141
+      }
+    },
+    {
+      "id": "9a0cc6fd4f4f2a7f106cb4270fdf49a81cb9e48433e1f426f11c318cf6edfb39",
+      "name": "phase18-phase19-stage0-no-secret-api",
+      "runningBefore": true,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase18-phase19-stage0-no-secret-api.log",
+        "sha256": "ae584779329842c13cdf7f2f45e4cacb3f51fea870b20bbeb0cce9253c4762d1",
+        "bytes": 1324
+      }
+    },
+    {
+      "id": "29b33c1d8e9ca61261866d6a3870fc713bf4a279a3482bf4c9b741ca0529f55b",
+      "name": "phase19-financial-backend-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-financial-backend-1.log",
+        "sha256": "08289dca6ec13ec85b8969488884149b1f73d5907d02ddac95e5b32658d7dd09",
+        "bytes": 12955
+      }
+    },
+    {
+      "id": "58b44a708af9b4c79d7788426ac1a32278f3a8eeb5f90a42c87cb85d797afdae",
+      "name": "phase19-financial-fake-stripe-1",
+      "runningBefore": false,
+      "exitCodeBefore": 137,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-financial-fake-stripe-1.log",
+        "sha256": "dae1f40274cf9702db86155887deb314b9119ae4323860bb83f5745d3a8c5b3f",
+        "bytes": 22377
+      }
+    },
+    {
+      "id": "1b46c9f5930b35cd76e00b13a5ba2cb3d58f193d40bcd2e86c939c14f0acae99",
+      "name": "phase19-financial-postgres-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-financial-postgres-1.log",
+        "sha256": "4d370167ce587e49c610e09f6f2e8342cecbf19fa750012bd9c87f7630ee449a",
+        "bytes": 16895
+      }
+    },
+    {
+      "id": "15ab5216ddaaa67d2fd1bfa7f976e8ee2e04c30c319dba4ca8cc58e1fce04a3c",
+      "name": "phase19-financial-redis-1",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-financial-redis-1.log",
+        "sha256": "0b31ee5bf76ea2d2133a0d11dd5f06b594b6db9289a346ce88dc383ceec7c9ce",
+        "bytes": 1614
+      }
+    },
+    {
+      "id": "ae560dda95803b55b89ef49c7ea1b82afb19d278676abff918244fc8c328e442",
+      "name": "phase18-phase19-stage0-api",
+      "runningBefore": true,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase18-phase19-stage0-api.log",
+        "sha256": "2558a287da55ed576665cbe13fe0dc23c60ec40058575978957fef387ed204f6",
+        "bytes": 22731
+      }
+    },
+    {
+      "id": "82080e0b1d5092dd56012b9b2b8e277e356afa548d918d40c7a0ca08086d596a",
+      "name": "phase18-phase19-stage0-redis",
+      "runningBefore": true,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase18-phase19-stage0-redis.log",
+        "sha256": "a6ce5e74e38d04c5f33bd01582022b3903f1ff3a56d3a708e20c9e21de1ee666",
+        "bytes": 65868
+      }
+    },
+    {
+      "id": "465ffe787aa83a35b90bfc89f0900df589f6f83a3b918ec060ff4c45165ff0db",
+      "name": "phase18-phase19-stage0-postgres",
+      "runningBefore": true,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase18-phase19-stage0-postgres.log",
+        "sha256": "a05bf6fbd7be5d9394187862d7f805f05e45ea2019cafcf2c73d6d6083035863",
+        "bytes": 32671
+      }
+    },
+    {
+      "id": "6c84799ea19832261522ab62131b4f70ebe01ab3084b7dbb42b6880a24129a23",
+      "name": "phase19-baseline-build",
+      "runningBefore": false,
+      "exitCodeBefore": 0,
+      "oomKilled": false,
+      "log": {
+        "privatePath": "<PRIVATE_TEMP>/phase19-final-container-logs/phase19-baseline-build.log",
+        "sha256": "4f2d4fcf5349c1c5e6323a2ddba7952d9f2f9d482615af41626f1afa5086fa55",
+        "bytes": 87598
+      }
+    }
+  ],
+  "networks": []
+}

@@ -1,0 +1,12 @@
+Phase19 controlled browser fixture assertions passed
+✔ performance\experiments\phase19-global-polling-mixed-load\protocol\test_browser_fixture.mjs (80.1841ms)
+Phase19 workload policy assertions passed
+✔ performance\experiments\phase19-global-polling-mixed-load\protocol\test_policy.mjs (67.8289ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 88.3386

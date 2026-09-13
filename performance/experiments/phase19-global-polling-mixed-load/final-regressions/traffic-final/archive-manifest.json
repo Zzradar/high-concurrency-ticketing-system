@@ -1,0 +1,12 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-final-traffic-r3-private",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "phase18_traffic_http_test.log": {
+      "sourceSha256": "337786148245cba92738b8e286a045621727c99a01748f042672bda5f1a11897",
+      "sourceBytes": 468,
+      "archivedSha256": "1f37cbcc39e064a65d645e98e9e434d826b10dd9761f2193a0759086c3222481",
+      "archivedBytes": 459
+    }
+  }
+}

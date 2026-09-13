@@ -1,0 +1,26 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-r2-after-browser-panel",
+  "normalization": "UTF-8 newline and private-path redaction; gzip is lossless with mtime=0",
+  "classification": "Result fields are preserved verbatim, including invalid outcomes",
+  "files": {
+    "browser.json": {
+      "sourceSha256": "00fc874542d1b18890164b5dd98418865ccf508e303b604fbd0fbdde78ec12c5",
+      "sourceBytes": 13117,
+      "normalizedSha256": "00fc874542d1b18890164b5dd98418865ccf508e303b604fbd0fbdde78ec12c5",
+      "normalizedBytes": 13117,
+      "storedAs": "browser.json",
+      "storedSha256": "00fc874542d1b18890164b5dd98418865ccf508e303b604fbd0fbdde78ec12c5",
+      "storedBytes": 13117
+    },
+    "browser.log": {
+      "sourceSha256": "8d1d70141a5c7e99360828dc05b6311de204a4e90816d3033ef2303c126a0a2b",
+      "sourceBytes": 594,
+      "normalizedSha256": "bf7e7c4fbed775b95968314a8b9453bb1aa8f292167f9621189197be716cd989",
+      "normalizedBytes": 535,
+      "storedAs": "browser.log",
+      "storedSha256": "bf7e7c4fbed775b95968314a8b9453bb1aa8f292167f9621189197be716cd989",
+      "storedBytes": 535
+    }
+  },
+  "privateRawPoints": null
+}
