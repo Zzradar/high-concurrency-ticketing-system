@@ -1,0 +1,227 @@
+{
+  "normalization": "Private paths and UTF-8 newlines only",
+  "files": {
+    "regression/phase19-authfix-regression/availability-outage-diagnostic.json": {
+      "sourceSha256": "65410fc32ef102d62cfca7990a9e7f349f6c8c2f878e3f7eb4b2053c3458eb0e",
+      "sourceBytes": 326,
+      "archivedSha256": "3240cb510be20e49427c104e4260bb79486cc6692494d616ff32a9d14758dc99",
+      "archivedBytes": 312
+    },
+    "regression/phase19-authfix-regression/off-regression-r2.log": {
+      "sourceSha256": "5599a5b1057bd61e8fe58152679d13c84d62d5c192c01bbc4682590859a8213f",
+      "sourceBytes": 7094,
+      "archivedSha256": "ffc8a3a006b583f5739e53a36ef89a766bc431dd2bac375850541cf430ab8f5c",
+      "archivedBytes": 6977
+    },
+    "regression/phase19-authfix-regression/off-regression.log": {
+      "sourceSha256": "576870e247f9ee93f29376c546e2019a7c76a12479ccd8b1dc308b86b5c65463",
+      "sourceBytes": 3509,
+      "archivedSha256": "c2107698262df4b8935894a8cf2d176fdb857d6c1151d71e8ce1879fc56ff1ef",
+      "archivedBytes": 3314
+    },
+    "regression/phase19-authfix-regression/phase18_admission_http_test.log": {
+      "sourceSha256": "73c82d2d1e908d9f271678222ca6c000fd235cedbd3ef5d4476f60aea74ce585",
+      "sourceBytes": 608,
+      "archivedSha256": "a6164e88c26779e749d1287de2a3cb46a34ac7e0869099a3792265ecf4d1b4cc",
+      "archivedBytes": 598
+    },
+    "regression/phase19-authfix-regression/phase18_availability_fault_test-r2.log": {
+      "sourceSha256": "8e4084083752dd789a19e7585c1a89d60f44b659dfb6ff4e446754228b2c775d",
+      "sourceBytes": 2304,
+      "archivedSha256": "302ea2f41e9938de845c1c0a29aa0976a019af903507113346cd69334f04273c",
+      "archivedBytes": 2173
+    },
+    "regression/phase19-authfix-regression/phase18_availability_fault_test.log": {
+      "sourceSha256": "4a0f05e9fc82c1d089f15db2c76c049e8af530d2379d62a713e412675733bbce",
+      "sourceBytes": 2304,
+      "archivedSha256": "82af42ea04de89773dcde3ebf2b92a6fecbb6cbb4a1bdee113117c24457c08d3",
+      "archivedBytes": 2173
+    },
+    "regression/phase19-authfix-regression/phase18_checkout_crash_test.log": {
+      "sourceSha256": "29bbe928024a26bc073e76d13f394ab8c4ac054ec8148ab9028d537dfd674b8b",
+      "sourceBytes": 309,
+      "archivedSha256": "b63550f7afb1ee60ebfee6039f4b6281598d56dbeac4ddd7bdd9b220d74eedeb",
+      "archivedBytes": 302
+    },
+    "regression/phase19-authfix-regression/phase18_inventory_fault_test.log": {
+      "sourceSha256": "ef0d66ce806c370a9a4fb5f4ba90711347d4d309db7c1a6bf1c4f9482b013b09",
+      "sourceBytes": 371,
+      "archivedSha256": "91cc99adce82ffd4c1335c800144f022b591391f7b2085e554ca6fdc0cd87b1d",
+      "archivedBytes": 364
+    },
+    "regression/phase19-authfix-regression/phase18_layout_http_test-r2.log": {
+      "sourceSha256": "1489598a46ea2001039f3a74d8fae8468a4565e6cdde15fd21b66d6d8a1bad90",
+      "sourceBytes": 512,
+      "archivedSha256": "b28303b61e7925f90600a8d3c981c27e5a9f69aa422b0975bfd258277a40530d",
+      "archivedBytes": 503
+    },
+    "regression/phase19-authfix-regression/phase18_layout_http_test.log": {
+      "sourceSha256": "303c5da74cdb3bd7c728e9eef4424541234ff161125056459eba5c76566a6942",
+      "sourceBytes": 1170,
+      "archivedSha256": "9b102dcf1b4a3a5caedce9e91f31095124f267022574d6c24689acbe92086ea1",
+      "archivedBytes": 1106
+    },
+    "regression/phase19-authfix-regression/phase18_layout_resolution_http_test.log": {
+      "sourceSha256": "2bfd2107ee97a6cd8ce3cc85286b8e9ac42d7d93a7bc603953b3c7056359f495",
+      "sourceBytes": 195,
+      "archivedSha256": "d8420c830791d084254df732cfd1694131d1a5136f4651cb98e12b3fabb6823f",
+      "archivedBytes": 189
+    },
+    "regression/phase19-authfix-regression/phase18_layout_revision_http_test.log": {
+      "sourceSha256": "bca7ceab0269e75388e8df427bf1c23de2a728a34849ea16e170878f53da66c7",
+      "sourceBytes": 677,
+      "archivedSha256": "6ba81fd06247ff3b2631eca8b6607219b63b3f00942698cd7a835565ee18ecf2",
+      "archivedBytes": 665
+    },
+    "regression/phase19-authfix-regression/phase18_metrics_http_test.log": {
+      "sourceSha256": "29f9da0641dc8fca2e868456d5321f85be8d776fc6f5e7bafb2089aaf7056a12",
+      "sourceBytes": 296,
+      "archivedSha256": "7df6da1e3f431a93544ceeaacd088188a91d4189065a348f03b9e989a2ab1da4",
+      "archivedBytes": 289
+    },
+    "regression/phase19-authfix-regression/phase18_policy_http_test.log": {
+      "sourceSha256": "dcf0ded9175ccb7783ca2822ae8125652935616b2b668e805aa2c168b266ad5b",
+      "sourceBytes": 673,
+      "archivedSha256": "949d67cd61468b52184d141fa8acefaa159ddb49b43ea6f2214c0942bf561f75",
+      "archivedBytes": 661
+    },
+    "regression/phase19-authfix-regression/phase18_public_contract_test.log": {
+      "sourceSha256": "a37a6a8a0ea51aa0b2bdf1a84e6b4f9db82a62333a61b7468c96d8fe7fe712f6",
+      "sourceBytes": 317,
+      "archivedSha256": "45163d285088347104fe22efe4e25fe0ab0a824c85361d039bff4ea33f053b1a",
+      "archivedBytes": 310
+    },
+    "regression/phase19-authfix-regression/phase18_schema_test.log": {
+      "sourceSha256": "84135ce95a837ac65357dc946cea0fc4f9147b6a032a8a7ebd50aed15c318505",
+      "sourceBytes": 269,
+      "archivedSha256": "e68d104a9c22b2ba68db657899b6d7d37f39b82ff4516bac5c0790b4738e2201",
+      "archivedBytes": 262
+    },
+    "regression/phase19-authfix-regression/phase18_token_bucket_test.log": {
+      "sourceSha256": "789753274ead1b2aa768aca2c95b845213041d7fd7b159a610e8e9d8ce5112c7",
+      "sourceBytes": 336,
+      "archivedSha256": "e12049f6a739cd0d585ca84cb1671aef5cc14b3739cddcb91157932e62f42a8f",
+      "archivedBytes": 328
+    },
+    "regression/phase19-authfix-regression/phase18_traffic_http_test.log": {
+      "sourceSha256": "72d6cce9281e43210444f23708138235f42be43145866123d5b2811ad012973f",
+      "sourceBytes": 468,
+      "archivedSha256": "5e20ff1dec9465f035e179785585b51c11b06c81aef65c9db3ff194b5a0f3f57",
+      "archivedBytes": 459
+    },
+    "regression/phase19-authfix-regression/phase18_verifier_test.log": {
+      "sourceSha256": "d615acef17ee63e5321b371a5a5ac1011c37c0c008be24784e25eaf41b9df522",
+      "sourceBytes": 179,
+      "archivedSha256": "65798e14bac9ff312e9f0823f1fc9a35c1b012f287aa114d8e7ffc360d5743aa",
+      "archivedBytes": 173
+    },
+    "regression/phase19-authfix-regression/phase18_waiting_room_test.log": {
+      "sourceSha256": "73ed7a5fd3e2b70d3c2cec71d6aedde2b382cf4d76a858b1200f8995b45a2b1a",
+      "sourceBytes": 670,
+      "archivedSha256": "16021b68b9956478e57f573cdf5d05d702fba2f776983c6ff2ea62a67cfb3e7c",
+      "archivedBytes": 658
+    },
+    "regression/phase19-authfix-financial/backend.log": {
+      "sourceSha256": "7375510121cb16c5423a4d147b87046921e6d7e66f09b4ec89c39b97b47b19aa",
+      "sourceBytes": 15125,
+      "archivedSha256": "7375510121cb16c5423a4d147b87046921e6d7e66f09b4ec89c39b97b47b19aa",
+      "archivedBytes": 15125
+    },
+    "regression/phase19-authfix-financial/overload-recovery.json": {
+      "sourceSha256": "a9755d3685ea28ec9c49d81d3d2f9b15bb31b817148308cbefe1c01648db3684",
+      "sourceBytes": 560,
+      "archivedSha256": "0d3baa7240379d9f815aa47049df54b42ea09001a85ea458caa6502cabbfa543",
+      "archivedBytes": 541
+    },
+    "regression/phase19-authfix-financial/phase11_crash_window_integration_test.log": {
+      "sourceSha256": "219a800666860a3591c2b1cd05b315ca1ab38366c2ad32b0fb5eff1a92100906",
+      "sourceBytes": 1446,
+      "archivedSha256": "f9767a4789a445f96546b6b3ba71ff88fdccb7c22f0255167149b83d231ea393",
+      "archivedBytes": 1427
+    },
+    "regression/phase19-authfix-financial/phase11_stripe_integration_test.log": {
+      "sourceSha256": "0b3f053940f52122d375351d210a0da74dd9a10ce019b8b7492ad4458d1ef910",
+      "sourceBytes": 1322,
+      "archivedSha256": "5915d94bdffb6cd58a32ba26538ecdc4041bdb9cc5257083d2504c686549aa87",
+      "archivedBytes": 1306
+    },
+    "regression/phase19-authfix-financial/phase12_buyer_refund_integration_test.log": {
+      "sourceSha256": "50de8fe1afe71d9795765b3dc5a73e06687903e40d939cf5db80863282ff6061",
+      "sourceBytes": 2912,
+      "archivedSha256": "e309547f4bc311990b76e4eaa1d96149995e0f89cbe99e0e0b39d1a4cad4659a",
+      "archivedBytes": 2869
+    },
+    "regression/phase19-authfix-financial/phase18_multi_instance_test.log": {
+      "sourceSha256": "83b5f58a21f0318617585b88cd2c88b2bb67995e04bce3d42147e529cb2d26d3",
+      "sourceBytes": 360,
+      "archivedSha256": "dfb128a7d2f9f6f62d20f2d4d26993527f809f47331461e11ee09219f52eaa21",
+      "archivedBytes": 353
+    },
+    "regression/phase19-authfix-financial/phase18_refund_verifier_fixture.log": {
+      "sourceSha256": "294bd8a3f2f2de1ff28515e8bc48b6d0d23b446f07bbc79cdf4e1f6ca858b672",
+      "sourceBytes": 506,
+      "archivedSha256": "0a2a31aedd91a976605d000adc261e2ca03ba40726a9585ddef0b77a277e9daf",
+      "archivedBytes": 497
+    },
+    "regression/phase19-authfix-financial/phase19_overload_recovery_test.log": {
+      "sourceSha256": "570c976bca3fd44d70bf35e734a57b53e8602814cc2d553bef945ac3a4c7b482",
+      "sourceBytes": 852,
+      "archivedSha256": "013a098a390cdc9878eab8d2d82b1ad346b391a2fbab1760ee10fe3bb6a9cb3b",
+      "archivedBytes": 790
+    },
+    "regression/phase19-authfix-financial/setup.log": {
+      "sourceSha256": "e72c157d713533f4d34eaa64377b3ad87f995e9e10860f0f9f161c7fdbf95395",
+      "sourceBytes": 1240,
+      "archivedSha256": "e72c157d713533f4d34eaa64377b3ad87f995e9e10860f0f9f161c7fdbf95395",
+      "archivedBytes": 1240
+    },
+    "regression/phase19-authfix-financial/stop.log": {
+      "sourceSha256": "5196f92d0bfc2aee97ff41706d05739b787dc3699a11a7f045ea5df2743d169f",
+      "sourceBytes": 458,
+      "archivedSha256": "5196f92d0bfc2aee97ff41706d05739b787dc3699a11a7f045ea5df2743d169f",
+      "archivedBytes": 458
+    },
+    "regression/phase19-authfix-overload/backend.log": {
+      "sourceSha256": "d7a2c3525bf5ad3a1cedbebad3d58d2d13e8345333bfa5da20dd5283f3f3e92b",
+      "sourceBytes": 122,
+      "archivedSha256": "d7a2c3525bf5ad3a1cedbebad3d58d2d13e8345333bfa5da20dd5283f3f3e92b",
+      "archivedBytes": 122
+    },
+    "regression/phase19-authfix-overload/overload-recovery.json": {
+      "sourceSha256": "7d799860753d8fa368a023e90c1ed2b9a54eef8eb4b82070b0a853a99a464297",
+      "sourceBytes": 460136,
+      "archivedSha256": "323d9a2b100aec09d136b8a474350fa9ac528f3ef578336ce84675cc926c8925",
+      "archivedBytes": 444318
+    },
+    "regression/phase19-authfix-overload/phase19_overload_recovery_test.log": {
+      "sourceSha256": "5d804b8cdc76c8bef02fd16820206a58735fe97af0cf1e3f3ebde8d0c3fb8de7",
+      "sourceBytes": 300,
+      "archivedSha256": "c9982e60b3b96895bb526a14cadb9a0091de343403181fe6f3479466100f8ebc",
+      "archivedBytes": 293
+    },
+    "regression/phase19-authfix-overload/setup.log": {
+      "sourceSha256": "8ccc3dc1115de9329a9a0f2b65181d5c86d40d7a17d187b9eabc0cdf47137198",
+      "sourceBytes": 1218,
+      "archivedSha256": "8ccc3dc1115de9329a9a0f2b65181d5c86d40d7a17d187b9eabc0cdf47137198",
+      "archivedBytes": 1218
+    },
+    "regression/phase19-authfix-overload/stop.log": {
+      "sourceSha256": "cf430e91be685c533606251e06fd7520eae2b87ce292a28a38c3d1aea1f317a7",
+      "sourceBytes": 450,
+      "archivedSha256": "cf430e91be685c533606251e06fd7520eae2b87ce292a28a38c3d1aea1f317a7",
+      "archivedBytes": 450
+    },
+    "regression/phase19-authfix-real-identity/identity-browser.json": {
+      "sourceSha256": "03040ac63f1aec0217818546acbd743b5ebeb05d8d8f1a4b720d6b074696e6ff",
+      "sourceBytes": 1354,
+      "archivedSha256": "03040ac63f1aec0217818546acbd743b5ebeb05d8d8f1a4b720d6b074696e6ff",
+      "archivedBytes": 1354
+    },
+    "regression/phase19-authfix-real-identity/vite.log": {
+      "sourceSha256": "9479c68b42802e412a59f63247a8bd6d0e520b4a4665b885354f96615621c6d3",
+      "sourceBytes": 111,
+      "archivedSha256": "9479c68b42802e412a59f63247a8bd6d0e520b4a4665b885354f96615621c6d3",
+      "archivedBytes": 111
+    }
+  }
+}

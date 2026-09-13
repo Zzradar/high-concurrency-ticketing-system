@@ -1,0 +1,19 @@
+{
+  "startedUtc": "2026-09-13T18:00:57.716201+00:00",
+  "scriptSha256": "e359c0dce88cae5ce5ca5cbb0040009e53f99b003336a0ec206f69a914ca6c70",
+  "kind": "bounded functional ENFORCED flood; no throughput or SLA claim",
+  "provider": "local Fake Stripe only",
+  "floodLimits": {
+    "workers": 4,
+    "seconds": 4,
+    "maxRequestsPerWorker": 300,
+    "minimumPauseSeconds": 0.01
+  },
+  "phases": [],
+  "passed": false,
+  "beforeVerifier": {
+    "newFixtureSeats": 2,
+    "sqlAvailable": 2
+  },
+  "endedUtc": "2026-09-13T18:00:59.361214+00:00"
+}

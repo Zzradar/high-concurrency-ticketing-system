@@ -1,0 +1,17 @@
+test_conditional_body_sql_and_distinct_identity (__main__.LayoutHTTP) ... ok
+test_draft_and_absent_never_validate_even_with_forged_redis (__main__.LayoutHTTP) ... ok
+test_snapshot_delta_poll_hints_and_dynamic_no_store (__main__.LayoutHTTP) ... FAIL
+
+======================================================================
+FAIL: test_snapshot_delta_poll_hints_and_dynamic_no_store (__main__.LayoutHTTP)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<PHASE19_WORKTREE>\backend\tests\phase18_layout_http_test.py", line 42, in test_snapshot_delta_poll_hints_and_dynamic_no_store
+    status,degraded,_=fixture.anonymous_request(path);self.assertEqual(status,200,degraded)
+AssertionError: 503 != 200 : {'code': 'ADMISSION_UNAVAILABLE', 'message': 'ADMISSION_UNAVAILABLE'}
+
+----------------------------------------------------------------------
+Ran 3 tests in 6.483s
+
+FAILED (failures=1)
+Conditional layout: five 304, empty bodies, full-layout SQL delta=0; unchanged 200 body hash=c2ac9689f6fdeb130404994cf4fc7abe917189b37886995fd3da9b4e9c97dbd2

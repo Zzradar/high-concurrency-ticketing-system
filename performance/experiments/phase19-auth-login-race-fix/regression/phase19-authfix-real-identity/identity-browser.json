@@ -1,0 +1,54 @@
+{
+  "sourceCommit": "a7a96d357dfc00bded20ced68755e2dd0d3a2c2a",
+  "fixture": "Exact source via Vite HTTP mode; native Edge with real backend Set-Cookie; proxy holds complete upstream response until explicit release; no identity response mocks",
+  "cases": [
+    {
+      "name": "pending A / logout / late success",
+      "front": null,
+      "status": 401,
+      "server": null,
+      "notifications": 0
+    },
+    {
+      "name": "A held / B queued / real final B cookie",
+      "front": "admin",
+      "status": 200,
+      "server": "admin"
+    },
+    {
+      "name": "leave LoginView / late success / discarded cookie removed",
+      "front": null,
+      "status": 401,
+      "server": null,
+      "notifications": 0
+    },
+    {
+      "name": "A failure / B succeeds / no stale error",
+      "front": "admin",
+      "status": 200,
+      "server": "admin"
+    },
+    {
+      "name": "valid UI login / navigation / polling",
+      "front": "demo",
+      "status": 200,
+      "server": "demo",
+      "notifications": 1
+    },
+    {
+      "name": "logout consistency",
+      "front": null,
+      "status": 401,
+      "server": null
+    },
+    {
+      "name": "relogin B consistency",
+      "front": "admin",
+      "status": 200,
+      "server": "admin"
+    }
+  ],
+  "passed": true,
+  "browser": "152.0.4191.66",
+  "endedUtc": "2026-09-13T17:08:55.522Z"
+}

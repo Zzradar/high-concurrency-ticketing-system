@@ -1,0 +1,15 @@
+{
+  "sessionPolicy": "p18-s-5000|OFF",
+  "nonOffPolicies": "16",
+  "before": {
+    "status": 200,
+    "code": null,
+    "degraded": false
+  },
+  "binarySha256": "d9082f28bdf8d5bb8312cee40c9e6a79345b559554d4cbd2a301e742fae0bad5",
+  "duringOutage": {
+    "status": 200,
+    "code": null,
+    "degraded": true
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "metricSummaryAvailable": true,
+  "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+  "valid": true,
+  "diagnostic": false,
+  "reason": null,
+  "exitCode": 0,
+  "observerErrors": [],
+  "startedIterations": 1000,
+  "completedBusinessIterations": 1000,
+  "k6CompletedIterations": 1000,
+  "interruptedIterations": 0,
+  "droppedIterations": 0,
+  "httpRequestCount": 1000,
+  "cursorAdvances": 0,
+  "initializedActiveVUs": 1000,
+  "endedUtc": "2026-09-13T17:26:11.923865+00:00",
+  "rawPointsSha256": "f96efb72c368aa411f95bf73a19231199f1a8eeed499b4768d28500c8103ab26",
+  "rawPointsBytes": 180282,
+  "inventoryChanges": {
+    "formalGenerated": 0,
+    "formalProjected": 0,
+    "allStreamEntriesAdded": 2,
+    "temporaryVisibleEntriesAdded": 2,
+    "streamEntriesBySessionZone": {
+      "phase19-session-001-001/Zone-0": 0,
+      "phase19-session-001-001/Zone-1": 0,
+      "phase19-session-001-001/Zone-2": 0,
+      "phase19-session-001-001/Zone-3": 0,
+      "phase19-session-001-001/Zone-4": 0,
+      "phase19-session-001-002/Zone-0": 0,
+      "phase19-session-001-002/Zone-1": 0,
+      "phase19-session-001-002/Zone-2": 0,
+      "phase19-session-001-002/Zone-3": 0,
+      "phase19-session-001-002/Zone-4": 0,
+      "phase19-session-001-003/Zone-0": 0,
+      "phase19-session-001-003/Zone-1": 0,
+      "phase19-session-001-003/Zone-2": 0,
+      "phase19-session-001-003/Zone-3": 2,
+      "phase19-session-001-003/Zone-4": 0,
+      "phase19-session-001-004/Zone-0": 0,
+      "phase19-session-001-004/Zone-1": 0,
+      "phase19-session-001-004/Zone-2": 0,
+      "phase19-session-001-004/Zone-3": 0,
+      "phase19-session-001-004/Zone-4": 0,
+      "phase19-session-001-005/Zone-0": 0,
+      "phase19-session-001-005/Zone-1": 0,
+      "phase19-session-001-005/Zone-2": 0,
+      "phase19-session-001-005/Zone-3": 0,
+      "phase19-session-001-005/Zone-4": 0
+    },
+    "generationsUnchanged": true,
+    "scope": "entire point including drain and separately logged cleanup; not just observe window"
+  },
+  "accounting": {
+    "planned": {},
+    "startedByKind": {
+      "hotspot": 1000
+    },
+    "completedByKind": {
+      "hotspot": 1000
+    },
+    "startedByScenario": {
+      "wave": 1000
+    },
+    "errors": [],
+    "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+  },
+  "hotspotWinners": 1,
+  "controlProbeFailures": 0
+}

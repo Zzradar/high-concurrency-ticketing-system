@@ -1,0 +1,26 @@
+{
+  "source": "<PRIVATE_TEMP>/submitting",
+  "normalization": "UTF-8 newline and private-path redaction; gzip is lossless with mtime=0",
+  "classification": "Result fields are preserved verbatim, including invalid outcomes",
+  "files": {
+    "browser.json": {
+      "sourceSha256": "1e2a61a11d2b112abd426d5eb162f7f664c55e1c23891ee4e25ec3dc0a6c03d4",
+      "sourceBytes": 32607,
+      "normalizedSha256": "1e2a61a11d2b112abd426d5eb162f7f664c55e1c23891ee4e25ec3dc0a6c03d4",
+      "normalizedBytes": 32607,
+      "storedAs": "browser.json",
+      "storedSha256": "1e2a61a11d2b112abd426d5eb162f7f664c55e1c23891ee4e25ec3dc0a6c03d4",
+      "storedBytes": 32607
+    },
+    "browser.log": {
+      "sourceSha256": "ec52cb0de406be570445401eb22d62b623bb9f6739c25ddca0364b1c6d492859",
+      "sourceBytes": 595,
+      "normalizedSha256": "21f76a18757241193e1da756d47f980e7b574547e49eedf6488d0c0bbc339251",
+      "normalizedBytes": 536,
+      "storedAs": "browser.log",
+      "storedSha256": "21f76a18757241193e1da756d47f980e7b574547e49eedf6488d0c0bbc339251",
+      "storedBytes": 536
+    }
+  },
+  "privateRawPoints": null
+}

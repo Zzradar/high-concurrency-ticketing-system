@@ -1,0 +1,1718 @@
+{
+  "capacity": {
+    "closed-2000-10m": {
+      "identity": {
+        "startedUtc": "2026-09-13T17:13:19.155015+00:00",
+        "diagnostic": false,
+        "stack": {
+          "prefix": "phase19-authfix-final",
+          "apiPort": 18422,
+          "frontendPort": 18423,
+          "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+          "binarySha256": "d9082f28bdf8d5bb8312cee40c9e6a79345b559554d4cbd2a301e742fae0bad5",
+          "images": {
+            "api": {
+              "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+              "digests": [
+                "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+              ]
+            },
+            "postgres": {
+              "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+              "digests": [
+                "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+              ]
+            },
+            "redis": {
+              "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+              "digests": [
+                "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+              ]
+            },
+            "frontend": {
+              "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+              "digests": [
+                "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+              ]
+            },
+            "k6": {
+              "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+              "digests": [
+                "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+              ]
+            }
+          },
+          "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+          "sourceCommit": "a7a96d357dfc00bded20ced68755e2dd0d3a2c2a"
+        },
+        "runtimeConfigSha256": "e7e2168dd7a6753aef582d614f6cc1b93b30d368185a592bf178d4ce3fc48af7",
+        "protocolSha256": {
+          "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+          "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+          "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+          "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+          "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+          "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+          "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+          "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+          "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+          "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+          "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+          "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+          "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+          "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+          "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+          "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+          "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+          "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+        },
+        "model": "closed",
+        "actualVUsRequested": 2000,
+        "warmupSeconds": 30,
+        "observeSeconds": 600,
+        "targetDeltaIterationsPerSecond": null,
+        "targetStateTransitionsPerSecond": null,
+        "plannedReadIterationsTotal": null,
+        "bootstrapSnapshotsPlanned": 0,
+        "bootstrapSnapshotRate": null,
+        "plannedWriteFlowsTotal": null,
+        "generatorLimits": {
+          "cpus": 2,
+          "memoryBytes": 4294967296,
+          "nofile": 16384,
+          "pids": 256
+        },
+        "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+      },
+      "result": {
+        "metricSummaryAvailable": true,
+        "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+        "valid": true,
+        "diagnostic": false,
+        "reason": null,
+        "exitCode": 0,
+        "observerErrors": [],
+        "startedIterations": 49527,
+        "completedBusinessIterations": 49527,
+        "k6CompletedIterations": 49527,
+        "interruptedIterations": 0,
+        "droppedIterations": 0,
+        "httpRequestCount": 49527,
+        "cursorAdvances": 0,
+        "initializedActiveVUs": 2000,
+        "endedUtc": "2026-09-13T17:24:34.017717+00:00",
+        "rawPointsSha256": "518e5cbc42bbaff62e144a4a8068c7887e097e9ab2e1364fa89e85c5754c39b2",
+        "rawPointsBytes": 10106359,
+        "inventoryChanges": {
+          "formalGenerated": 0,
+          "formalProjected": 0,
+          "allStreamEntriesAdded": 0,
+          "temporaryVisibleEntriesAdded": 0,
+          "streamEntriesBySessionZone": {
+            "phase19-session-001-001/Zone-0": 0,
+            "phase19-session-001-001/Zone-1": 0,
+            "phase19-session-001-001/Zone-2": 0,
+            "phase19-session-001-001/Zone-3": 0,
+            "phase19-session-001-001/Zone-4": 0,
+            "phase19-session-001-002/Zone-0": 0,
+            "phase19-session-001-002/Zone-1": 0,
+            "phase19-session-001-002/Zone-2": 0,
+            "phase19-session-001-002/Zone-3": 0,
+            "phase19-session-001-002/Zone-4": 0,
+            "phase19-session-001-003/Zone-0": 0,
+            "phase19-session-001-003/Zone-1": 0,
+            "phase19-session-001-003/Zone-2": 0,
+            "phase19-session-001-003/Zone-3": 0,
+            "phase19-session-001-003/Zone-4": 0,
+            "phase19-session-001-004/Zone-0": 0,
+            "phase19-session-001-004/Zone-1": 0,
+            "phase19-session-001-004/Zone-2": 0,
+            "phase19-session-001-004/Zone-3": 0,
+            "phase19-session-001-004/Zone-4": 0,
+            "phase19-session-001-005/Zone-0": 0,
+            "phase19-session-001-005/Zone-1": 0,
+            "phase19-session-001-005/Zone-2": 0,
+            "phase19-session-001-005/Zone-3": 0,
+            "phase19-session-001-005/Zone-4": 0
+          },
+          "generationsUnchanged": true,
+          "scope": "entire point including drain and separately logged cleanup; not just observe window"
+        },
+        "accounting": {
+          "planned": {},
+          "startedByKind": {
+            "closed": 49527
+          },
+          "completedByKind": {
+            "closed": 49527
+          },
+          "startedByScenario": {
+            "readers": 49527
+          },
+          "errors": [],
+          "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+        }
+      },
+      "observeHttpLatencyMs": {
+        "GET delta|observe|200": {
+          "samples": 43326,
+          "p50": 1.960352,
+          "p95": 2.751271,
+          "p99": 3.237369,
+          "max": 19.98644
+        }
+      },
+      "observeSuccessfulHttp": 43326.0,
+      "observeSuccessfulHttpPerSecond": 72.21,
+      "observeDeltaRequests": 43326.0,
+      "observeDeltaReqPerSecond": 72.21,
+      "observeHttpStatusCounts": {
+        "200": 43326.0,
+        "201": 0,
+        "409": 0,
+        "429": 0,
+        "503": 0,
+        "0": 0
+      },
+      "observeHttpWriteRequests": 0,
+      "observeHttpWriteReqPerSecond": 0.0,
+      "resourcePeaks": {
+        "generator": {
+          "memory": 1088348160,
+          "rss": 1099898880,
+          "rssPeak": 1099898880,
+          "fd": 2007,
+          "tcpTableEntries": 2001,
+          "threads": 9,
+          "pids": 11,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.5894291764705882,
+          "cpuQuotaFractionPeak": 0.2947145882352941,
+          "minWslAvailableBytes": 13404524544,
+          "sampledOom": false,
+          "sampledRestart": false
+        },
+        "backend": {
+          "memory": 87539712,
+          "rss": 72347648,
+          "rssPeak": 72347648,
+          "fd": 2459,
+          "tcpTableEntries": 2065,
+          "threads": 147,
+          "pids": 149,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.37856261509771805,
+          "cpuQuotaFractionPeak": 0.18928130754885902,
+          "minWslAvailableBytes": 13404266496,
+          "sampledOom": false,
+          "sampledRestart": false
+        },
+        "postgres": {
+          "memory": 184696832,
+          "rss": 29806592,
+          "rssPeak": 29806592,
+          "fd": 10,
+          "tcpTableEntries": 7,
+          "threads": 1,
+          "pids": 18,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.08500463822053958,
+          "cpuQuotaFractionPeak": 0.08500463822053958,
+          "minWslAvailableBytes": 13404016640,
+          "sampledOom": false,
+          "sampledRestart": false
+        },
+        "redis": {
+          "memory": 23654400,
+          "rss": 17690624,
+          "rssPeak": 19927040,
+          "fd": 16,
+          "tcpTableEntries": 95,
+          "threads": 6,
+          "pids": 14,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.5761660250297426,
+          "cpuQuotaFractionPeak": 0.5761660250297426,
+          "minWslAvailableBytes": 13404016640,
+          "sampledOom": false,
+          "sampledRestart": false
+        }
+      },
+      "limits": [
+        "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+        "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+        "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+      ],
+      "observeFlowCompletions": {
+        "closed": 45326.0
+      }
+    },
+    "open-l3": {
+      "identity": {
+        "startedUtc": "2026-09-13T17:39:37.552923+00:00",
+        "diagnostic": false,
+        "stack": {
+          "prefix": "phase19-authfix-final",
+          "apiPort": 18422,
+          "frontendPort": 18423,
+          "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+          "binarySha256": "d9082f28bdf8d5bb8312cee40c9e6a79345b559554d4cbd2a301e742fae0bad5",
+          "images": {
+            "api": {
+              "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+              "digests": [
+                "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+              ]
+            },
+            "postgres": {
+              "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+              "digests": [
+                "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+              ]
+            },
+            "redis": {
+              "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+              "digests": [
+                "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+              ]
+            },
+            "frontend": {
+              "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+              "digests": [
+                "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+              ]
+            },
+            "k6": {
+              "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+              "digests": [
+                "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+              ]
+            }
+          },
+          "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+          "sourceCommit": "a7a96d357dfc00bded20ced68755e2dd0d3a2c2a"
+        },
+        "runtimeConfigSha256": "e7e2168dd7a6753aef582d614f6cc1b93b30d368185a592bf178d4ce3fc48af7",
+        "protocolSha256": {
+          "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+          "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+          "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+          "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+          "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+          "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+          "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+          "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+          "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+          "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+          "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+          "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+          "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+          "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+          "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+          "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+          "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+          "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+        },
+        "model": "open",
+        "actualVUsRequested": 200,
+        "warmupSeconds": 30,
+        "observeSeconds": 120,
+        "targetDeltaIterationsPerSecond": 500,
+        "targetStateTransitionsPerSecond": 50,
+        "plannedReadIterationsTotal": 60000,
+        "bootstrapSnapshotsPlanned": 200,
+        "bootstrapSnapshotRate": 50,
+        "plannedWriteFlowsTotal": 2142.8571428571427,
+        "generatorLimits": {
+          "cpus": 2,
+          "memoryBytes": 4294967296,
+          "nofile": 16384,
+          "pids": 256
+        },
+        "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+      },
+      "result": {
+        "metricSummaryAvailable": true,
+        "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+        "valid": true,
+        "diagnostic": false,
+        "reason": null,
+        "exitCode": 0,
+        "observerErrors": [],
+        "startedIterations": 62353,
+        "completedBusinessIterations": 62353,
+        "k6CompletedIterations": 62353,
+        "interruptedIterations": 0,
+        "droppedIterations": 0,
+        "httpRequestCount": 65994,
+        "cursorAdvances": 12008,
+        "initializedActiveVUs": 200,
+        "endedUtc": "2026-09-13T17:42:38.827046+00:00",
+        "rawPointsSha256": "a29d35eee8fbce0f92831020786b3d2504e4d2da1df87105aac72b6dd7229077",
+        "rawPointsBytes": 15223998,
+        "inventoryChanges": {
+          "formalGenerated": 856,
+          "formalProjected": 856,
+          "allStreamEntriesAdded": 5978,
+          "temporaryVisibleEntriesAdded": 5122,
+          "streamEntriesBySessionZone": {
+            "phase19-session-001-001/Zone-0": 0,
+            "phase19-session-001-001/Zone-1": 0,
+            "phase19-session-001-001/Zone-2": 0,
+            "phase19-session-001-001/Zone-3": 0,
+            "phase19-session-001-001/Zone-4": 0,
+            "phase19-session-001-002/Zone-0": 5978,
+            "phase19-session-001-002/Zone-1": 0,
+            "phase19-session-001-002/Zone-2": 0,
+            "phase19-session-001-002/Zone-3": 0,
+            "phase19-session-001-002/Zone-4": 0,
+            "phase19-session-001-003/Zone-0": 0,
+            "phase19-session-001-003/Zone-1": 0,
+            "phase19-session-001-003/Zone-2": 0,
+            "phase19-session-001-003/Zone-3": 0,
+            "phase19-session-001-003/Zone-4": 0,
+            "phase19-session-001-004/Zone-0": 0,
+            "phase19-session-001-004/Zone-1": 0,
+            "phase19-session-001-004/Zone-2": 0,
+            "phase19-session-001-004/Zone-3": 0,
+            "phase19-session-001-004/Zone-4": 0,
+            "phase19-session-001-005/Zone-0": 0,
+            "phase19-session-001-005/Zone-1": 0,
+            "phase19-session-001-005/Zone-2": 0,
+            "phase19-session-001-005/Zone-3": 0,
+            "phase19-session-001-005/Zone-4": 0
+          },
+          "generationsUnchanged": true,
+          "scope": "entire point including drain and separately logged cleanup; not just observe window"
+        },
+        "accounting": {
+          "planned": {
+            "readerIterationsNominal": 60000,
+            "writerFlowsNominal": 2142.8571428571427,
+            "bootstrapSnapshots": 200
+          },
+          "startedByKind": {
+            "bootstrap": 200,
+            "read": 60010,
+            "abandon": 1073,
+            "adjust": 428,
+            "cancel": 428,
+            "expiry": 214
+          },
+          "completedByKind": {
+            "bootstrap": 200,
+            "read": 60010,
+            "abandon": 1073,
+            "adjust": 428,
+            "cancel": 428,
+            "expiry": 214
+          },
+          "startedByScenario": {
+            "bootstrap": 200,
+            "readers0": 6001,
+            "writers": 2143,
+            "readers1": 6001,
+            "readers2": 6001,
+            "readers3": 6001,
+            "readers4": 6001,
+            "readers5": 6001,
+            "readers6": 6001,
+            "readers7": 6001,
+            "readers8": 6001,
+            "readers9": 6001
+          },
+          "errors": [],
+          "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+        }
+      },
+      "observeHttpLatencyMs": {
+        "GET delta|observe|200": {
+          "samples": 60009,
+          "p50": 1.414,
+          "p95": 2.235608,
+          "p99": 4.754379,
+          "max": 30.348811
+        },
+        "POST checkout|observe|201": {
+          "samples": 2143,
+          "p50": 4.066788,
+          "p95": 5.19863,
+          "p99": 5.953885,
+          "max": 25.596486
+        },
+        "POST abandon|observe|200": {
+          "samples": 1501,
+          "p50": 2.770111,
+          "p95": 3.91262,
+          "p99": 4.701399,
+          "max": 8.511343
+        },
+        "PUT checkout seats|observe|200": {
+          "samples": 428,
+          "p50": 3.927819,
+          "p95": 5.274358,
+          "p99": 6.916436,
+          "max": 11.305929
+        },
+        "POST confirm|observe|200": {
+          "samples": 428,
+          "p50": 9.104628,
+          "p95": 11.839013,
+          "p99": 13.960211,
+          "max": 38.264146
+        },
+        "GET order|observe|200": {
+          "samples": 428,
+          "p50": 1.464083,
+          "p95": 2.174493,
+          "p99": 2.880702,
+          "max": 6.351606
+        },
+        "POST cancel|observe|200": {
+          "samples": 428,
+          "p50": 4.580671,
+          "p95": 6.153151,
+          "p99": 7.519256,
+          "max": 34.367527
+        },
+        "GET expiry snapshot|observe|200": {
+          "samples": 214,
+          "p50": 9.870407,
+          "p95": 12.250968,
+          "p99": 13.904092,
+          "max": 17.455511
+        },
+        "POST expired checkout cleanup|observe|200": {
+          "samples": 214,
+          "p50": 3.522705,
+          "p95": 5.720894,
+          "p99": 6.716709,
+          "max": 8.31573
+        }
+      },
+      "observeSuccessfulHttp": 65793.0,
+      "observeSuccessfulHttpPerSecond": 548.275,
+      "observeDeltaRequests": 60009.0,
+      "observeDeltaReqPerSecond": 500.075,
+      "observeHttpStatusCounts": {
+        "200": 63650.0,
+        "201": 2143.0,
+        "409": 0,
+        "429": 0,
+        "503": 0,
+        "0": 0
+      },
+      "observeHttpWriteRequests": 5142.0,
+      "observeHttpWriteReqPerSecond": 42.85,
+      "resourcePeaks": {
+        "generator": {
+          "memory": 138203136,
+          "rss": 160473088,
+          "rssPeak": 160473088,
+          "fd": 207,
+          "tcpTableEntries": 201,
+          "threads": 8,
+          "pids": 10,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.44359677420729166,
+          "cpuQuotaFractionPeak": 0.22179838710364583,
+          "minWslAvailableBytes": 14313058304,
+          "sampledOom": false,
+          "sampledRestart": false
+        },
+        "backend": {
+          "memory": 127578112,
+          "rss": 119226368,
+          "rssPeak": 136613888,
+          "fd": 702,
+          "tcpTableEntries": 288,
+          "threads": 161,
+          "pids": 163,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.410128,
+          "cpuQuotaFractionPeak": 0.205064,
+          "minWslAvailableBytes": 14313881600,
+          "sampledOom": false,
+          "sampledRestart": false
+        },
+        "postgres": {
+          "memory": 213590016,
+          "rss": 29806592,
+          "rssPeak": 29806592,
+          "fd": 10,
+          "tcpTableEntries": 7,
+          "threads": 1,
+          "pids": 12,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.20147267356388773,
+          "cpuQuotaFractionPeak": 0.20147267356388773,
+          "minWslAvailableBytes": 14313938944,
+          "sampledOom": false,
+          "sampledRestart": false
+        },
+        "redis": {
+          "memory": 23281664,
+          "rss": 18821120,
+          "rssPeak": 19927040,
+          "fd": 16,
+          "tcpTableEntries": 122,
+          "threads": 6,
+          "pids": 14,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.3586338243112264,
+          "cpuQuotaFractionPeak": 0.3586338243112264,
+          "minWslAvailableBytes": 14313754624,
+          "sampledOom": false,
+          "sampledRestart": false
+        }
+      },
+      "limits": [
+        "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+        "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+        "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+      ],
+      "observeFlowCompletions": {
+        "bootstrap": 0,
+        "read": 60010.0,
+        "abandon": 1073.0,
+        "adjust": 428.0,
+        "cancel": 428.0,
+        "expiry": 214.0
+      }
+    },
+    "journeys-5001": {
+      "identity": {
+        "startedUtc": "2026-09-13T17:28:43.114188+00:00",
+        "diagnostic": false,
+        "stack": {
+          "prefix": "phase19-authfix-final",
+          "apiPort": 18422,
+          "frontendPort": 18423,
+          "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+          "binarySha256": "d9082f28bdf8d5bb8312cee40c9e6a79345b559554d4cbd2a301e742fae0bad5",
+          "images": {
+            "api": {
+              "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+              "digests": [
+                "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+              ]
+            },
+            "postgres": {
+              "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+              "digests": [
+                "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+              ]
+            },
+            "redis": {
+              "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+              "digests": [
+                "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+              ]
+            },
+            "frontend": {
+              "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+              "digests": [
+                "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+              ]
+            },
+            "k6": {
+              "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+              "digests": [
+                "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+              ]
+            }
+          },
+          "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+          "sourceCommit": "a7a96d357dfc00bded20ced68755e2dd0d3a2c2a"
+        },
+        "runtimeConfigSha256": "e7e2168dd7a6753aef582d614f6cc1b93b30d368185a592bf178d4ce3fc48af7",
+        "protocolSha256": {
+          "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+          "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+          "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+          "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+          "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+          "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+          "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+          "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+          "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+          "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+          "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+          "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+          "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+          "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+          "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+          "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+          "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+          "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+        },
+        "model": "journeys",
+        "actualVUsRequested": 100,
+        "warmupSeconds": 0,
+        "observeSeconds": 250,
+        "targetDeltaIterationsPerSecond": null,
+        "targetStateTransitionsPerSecond": null,
+        "plannedReadIterationsTotal": null,
+        "bootstrapSnapshotsPlanned": 0,
+        "bootstrapSnapshotRate": null,
+        "plannedWriteFlowsTotal": null,
+        "generatorLimits": {
+          "cpus": 2,
+          "memoryBytes": 4294967296,
+          "nofile": 16384,
+          "pids": 256
+        },
+        "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+      },
+      "result": {
+        "metricSummaryAvailable": true,
+        "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+        "valid": true,
+        "diagnostic": false,
+        "reason": null,
+        "exitCode": 0,
+        "observerErrors": [],
+        "startedIterations": 5001,
+        "completedBusinessIterations": 5001,
+        "k6CompletedIterations": 5001,
+        "interruptedIterations": 0,
+        "droppedIterations": 0,
+        "httpRequestCount": 21955,
+        "cursorAdvances": 0,
+        "initializedActiveVUs": 100,
+        "endedUtc": "2026-09-13T17:33:05.621418+00:00",
+        "rawPointsSha256": "fc40b62d6ad72f9b5829027b33fb3db395a5e007d924da945fef36f458de1742",
+        "rawPointsBytes": 2717614,
+        "inventoryChanges": {
+          "formalGenerated": 800,
+          "formalProjected": 800,
+          "allStreamEntriesAdded": 3199,
+          "temporaryVisibleEntriesAdded": 2399,
+          "streamEntriesBySessionZone": {
+            "phase19-session-001-001/Zone-0": 0,
+            "phase19-session-001-001/Zone-1": 0,
+            "phase19-session-001-001/Zone-2": 0,
+            "phase19-session-001-001/Zone-3": 0,
+            "phase19-session-001-001/Zone-4": 0,
+            "phase19-session-001-002/Zone-0": 0,
+            "phase19-session-001-002/Zone-1": 0,
+            "phase19-session-001-002/Zone-2": 0,
+            "phase19-session-001-002/Zone-3": 0,
+            "phase19-session-001-002/Zone-4": 0,
+            "phase19-session-001-003/Zone-0": 100,
+            "phase19-session-001-003/Zone-1": 0,
+            "phase19-session-001-003/Zone-2": 0,
+            "phase19-session-001-003/Zone-3": 0,
+            "phase19-session-001-003/Zone-4": 0,
+            "phase19-session-001-004/Zone-0": 0,
+            "phase19-session-001-004/Zone-1": 0,
+            "phase19-session-001-004/Zone-2": 0,
+            "phase19-session-001-004/Zone-3": 0,
+            "phase19-session-001-004/Zone-4": 0,
+            "phase19-session-001-005/Zone-0": 620,
+            "phase19-session-001-005/Zone-1": 619,
+            "phase19-session-001-005/Zone-2": 620,
+            "phase19-session-001-005/Zone-3": 620,
+            "phase19-session-001-005/Zone-4": 620
+          },
+          "generationsUnchanged": true,
+          "scope": "entire point including drain and separately logged cleanup; not just observe window"
+        },
+        "accounting": {
+          "planned": {
+            "journeysNominal": 5000
+          },
+          "startedByKind": {
+            "journey_browse": 3751,
+            "journey_hold": 750,
+            "journey_order_cancel": 400,
+            "journey_hotspot": 100
+          },
+          "completedByKind": {
+            "journey_browse": 3751,
+            "journey_hold": 750,
+            "journey_order_cancel": 400,
+            "journey_hotspot": 100
+          },
+          "startedByScenario": {
+            "journeys": 5001
+          },
+          "errors": [],
+          "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+        },
+        "journeyHotspotGroups": {
+          "0": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "1": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "2": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "3": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "4": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "5": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "6": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "7": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "8": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "9": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "10": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "11": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "12": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "13": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "14": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "15": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "16": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "17": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "18": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "19": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "20": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "21": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "22": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "23": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "24": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "25": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "26": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "27": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "28": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "29": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "30": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "31": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "32": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "33": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "34": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "35": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "36": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "37": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "38": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "39": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "40": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "41": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "42": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "43": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "44": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "45": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "46": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "47": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "48": {
+            "contenders": 2.0,
+            "winners": 1.0
+          },
+          "49": {
+            "contenders": 2.0,
+            "winners": 1.0
+          }
+        },
+        "plannedJourneysNominal": 5000
+      },
+      "observeHttpLatencyMs": {
+        "GET events|observe|200": {
+          "samples": 3751,
+          "p50": 1.177398,
+          "p95": 1.970919,
+          "p99": 12.038456,
+          "max": 14.848052
+        },
+        "GET sessions|observe|200": {
+          "samples": 3751,
+          "p50": 25.371045,
+          "p95": 28.622076,
+          "p99": 32.28356,
+          "max": 68.001171
+        },
+        "GET layout|observe|200": {
+          "samples": 3751,
+          "p50": 22.133323,
+          "p95": 25.416083,
+          "p99": 34.734887,
+          "max": 49.718766
+        },
+        "GET journey snapshot|observe|200": {
+          "samples": 3751,
+          "p50": 16.68554,
+          "p95": 19.438931,
+          "p99": 21.451523,
+          "max": 42.925671
+        },
+        "GET journey delta|observe|200": {
+          "samples": 3751,
+          "p50": 1.901179,
+          "p95": 2.481551,
+          "p99": 3.201806,
+          "max": 9.066604
+        },
+        "POST journey checkout|observe|201": {
+          "samples": 1150,
+          "p50": 6.385216,
+          "p95": 8.214634,
+          "p99": 9.437976,
+          "max": 23.626056
+        },
+        "POST journey abandon|observe|200": {
+          "samples": 750,
+          "p50": 2.751767,
+          "p95": 4.384084,
+          "p99": 9.031889,
+          "max": 17.335718
+        },
+        "POST journey confirm|observe|200": {
+          "samples": 400,
+          "p50": 8.585966,
+          "p95": 11.991464,
+          "p99": 13.488306,
+          "max": 17.244195
+        },
+        "GET journey order|observe|200": {
+          "samples": 400,
+          "p50": 1.443687,
+          "p95": 2.247251,
+          "p99": 2.720872,
+          "max": 3.972431
+        },
+        "POST journey cancel|observe|200": {
+          "samples": 400,
+          "p50": 4.192437,
+          "p95": 6.103845,
+          "p99": 6.781816,
+          "max": 7.108303
+        },
+        "POST hotspot|observe|201": {
+          "samples": 50,
+          "p50": 6.22618,
+          "p95": 7.74566,
+          "p99": 8.171011,
+          "max": 8.171011
+        },
+        "POST hotspot|observe|409": {
+          "samples": 50,
+          "p50": 5.358997,
+          "p95": 7.449157,
+          "p99": 7.916164,
+          "max": 7.916164
+        }
+      },
+      "observeSuccessfulHttp": 21905.0,
+      "observeSuccessfulHttpPerSecond": 87.62,
+      "observeDeltaRequests": 0,
+      "observeDeltaReqPerSecond": 0.0,
+      "observeHttpStatusCounts": {
+        "200": 20705.0,
+        "201": 1200.0,
+        "409": 50.0,
+        "429": 0,
+        "503": 0,
+        "0": 0
+      },
+      "observeHttpWriteRequests": 2800.0,
+      "observeHttpWriteReqPerSecond": 11.2,
+      "resourcePeaks": {
+        "generator": {
+          "memory": 88051712,
+          "rss": 111902720,
+          "rssPeak": 111902720,
+          "fd": 107,
+          "tcpTableEntries": 101,
+          "threads": 9,
+          "pids": 11,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.26153248656308814,
+          "cpuQuotaFractionPeak": 0.13076624328154407,
+          "minWslAvailableBytes": 14312284160,
+          "sampledOom": false,
+          "sampledRestart": false
+        },
+        "backend": {
+          "memory": 143294464,
+          "rss": 135794688,
+          "rssPeak": 136613888,
+          "fd": 601,
+          "tcpTableEntries": 165,
+          "threads": 161,
+          "pids": 163,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.8137277203512285,
+          "cpuQuotaFractionPeak": 0.40686386017561427,
+          "minWslAvailableBytes": 14313701376,
+          "sampledOom": false,
+          "sampledRestart": false
+        },
+        "postgres": {
+          "memory": 210497536,
+          "rss": 29806592,
+          "rssPeak": 29806592,
+          "fd": 10,
+          "tcpTableEntries": 7,
+          "threads": 1,
+          "pids": 14,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.7365602014733212,
+          "cpuQuotaFractionPeak": 0.7365602014733212,
+          "minWslAvailableBytes": 14323634176,
+          "sampledOom": false,
+          "sampledRestart": false
+        },
+        "redis": {
+          "memory": 25915392,
+          "rss": 18907136,
+          "rssPeak": 19927040,
+          "fd": 16,
+          "tcpTableEntries": 97,
+          "threads": 6,
+          "pids": 14,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.19849926721833558,
+          "cpuQuotaFractionPeak": 0.19849926721833558,
+          "minWslAvailableBytes": 14321889280,
+          "sampledOom": false,
+          "sampledRestart": false
+        }
+      },
+      "limits": [
+        "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+        "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+        "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+      ],
+      "observeFlowCompletions": {
+        "journey_browse": 3751.0,
+        "journey_hold": 750.0,
+        "journey_order_cancel": 400.0,
+        "journey_hotspot": 100.0
+      }
+    },
+    "hotspot-1000": {
+      "identity": {
+        "startedUtc": "2026-09-13T17:25:54.496995+00:00",
+        "diagnostic": false,
+        "stack": {
+          "prefix": "phase19-authfix-final",
+          "apiPort": 18422,
+          "frontendPort": 18423,
+          "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+          "binarySha256": "d9082f28bdf8d5bb8312cee40c9e6a79345b559554d4cbd2a301e742fae0bad5",
+          "images": {
+            "api": {
+              "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+              "digests": [
+                "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+              ]
+            },
+            "postgres": {
+              "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+              "digests": [
+                "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+              ]
+            },
+            "redis": {
+              "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+              "digests": [
+                "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+              ]
+            },
+            "frontend": {
+              "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+              "digests": [
+                "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+              ]
+            },
+            "k6": {
+              "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+              "digests": [
+                "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+              ]
+            }
+          },
+          "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+          "sourceCommit": "a7a96d357dfc00bded20ced68755e2dd0d3a2c2a"
+        },
+        "runtimeConfigSha256": "e7e2168dd7a6753aef582d614f6cc1b93b30d368185a592bf178d4ce3fc48af7",
+        "protocolSha256": {
+          "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+          "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+          "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+          "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+          "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+          "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+          "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+          "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+          "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+          "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+          "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+          "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+          "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+          "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+          "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+          "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+          "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+          "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+        },
+        "model": "hotspot",
+        "actualVUsRequested": 1000,
+        "warmupSeconds": 0,
+        "observeSeconds": 30,
+        "targetDeltaIterationsPerSecond": null,
+        "targetStateTransitionsPerSecond": null,
+        "plannedReadIterationsTotal": null,
+        "bootstrapSnapshotsPlanned": 0,
+        "bootstrapSnapshotRate": null,
+        "plannedWriteFlowsTotal": null,
+        "generatorLimits": {
+          "cpus": 2,
+          "memoryBytes": 4294967296,
+          "nofile": 16384,
+          "pids": 256
+        },
+        "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+      },
+      "result": {
+        "metricSummaryAvailable": true,
+        "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+        "valid": true,
+        "diagnostic": false,
+        "reason": null,
+        "exitCode": 0,
+        "observerErrors": [],
+        "startedIterations": 1000,
+        "completedBusinessIterations": 1000,
+        "k6CompletedIterations": 1000,
+        "interruptedIterations": 0,
+        "droppedIterations": 0,
+        "httpRequestCount": 1000,
+        "cursorAdvances": 0,
+        "initializedActiveVUs": 1000,
+        "endedUtc": "2026-09-13T17:26:11.923865+00:00",
+        "rawPointsSha256": "f96efb72c368aa411f95bf73a19231199f1a8eeed499b4768d28500c8103ab26",
+        "rawPointsBytes": 180282,
+        "inventoryChanges": {
+          "formalGenerated": 0,
+          "formalProjected": 0,
+          "allStreamEntriesAdded": 2,
+          "temporaryVisibleEntriesAdded": 2,
+          "streamEntriesBySessionZone": {
+            "phase19-session-001-001/Zone-0": 0,
+            "phase19-session-001-001/Zone-1": 0,
+            "phase19-session-001-001/Zone-2": 0,
+            "phase19-session-001-001/Zone-3": 0,
+            "phase19-session-001-001/Zone-4": 0,
+            "phase19-session-001-002/Zone-0": 0,
+            "phase19-session-001-002/Zone-1": 0,
+            "phase19-session-001-002/Zone-2": 0,
+            "phase19-session-001-002/Zone-3": 0,
+            "phase19-session-001-002/Zone-4": 0,
+            "phase19-session-001-003/Zone-0": 0,
+            "phase19-session-001-003/Zone-1": 0,
+            "phase19-session-001-003/Zone-2": 0,
+            "phase19-session-001-003/Zone-3": 2,
+            "phase19-session-001-003/Zone-4": 0,
+            "phase19-session-001-004/Zone-0": 0,
+            "phase19-session-001-004/Zone-1": 0,
+            "phase19-session-001-004/Zone-2": 0,
+            "phase19-session-001-004/Zone-3": 0,
+            "phase19-session-001-004/Zone-4": 0,
+            "phase19-session-001-005/Zone-0": 0,
+            "phase19-session-001-005/Zone-1": 0,
+            "phase19-session-001-005/Zone-2": 0,
+            "phase19-session-001-005/Zone-3": 0,
+            "phase19-session-001-005/Zone-4": 0
+          },
+          "generationsUnchanged": true,
+          "scope": "entire point including drain and separately logged cleanup; not just observe window"
+        },
+        "accounting": {
+          "planned": {},
+          "startedByKind": {
+            "hotspot": 1000
+          },
+          "completedByKind": {
+            "hotspot": 1000
+          },
+          "startedByScenario": {
+            "wave": 1000
+          },
+          "errors": [],
+          "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+        },
+        "hotspotWinners": 1,
+        "controlProbeFailures": 0
+      },
+      "observeHttpLatencyMs": {
+        "POST hotspot|observe|409": {
+          "samples": 999,
+          "p50": 453.278893,
+          "p95": 738.110834,
+          "p99": 761.197551,
+          "max": 766.545977
+        },
+        "POST hotspot|observe|201": {
+          "samples": 1,
+          "p50": 33.514353,
+          "p95": 33.514353,
+          "p99": 33.514353,
+          "max": 33.514353
+        }
+      },
+      "observeSuccessfulHttp": 1.0,
+      "observeSuccessfulHttpPerSecond": 0.03333333333333333,
+      "observeDeltaRequests": 0,
+      "observeDeltaReqPerSecond": 0.0,
+      "observeHttpStatusCounts": {
+        "200": 0,
+        "201": 1.0,
+        "409": 999.0,
+        "429": 0,
+        "503": 0,
+        "0": 0
+      },
+      "observeHttpWriteRequests": 1000.0,
+      "observeHttpWriteReqPerSecond": 33.333333333333336,
+      "resourcePeaks": {
+        "generator": {
+          "memory": 280150016,
+          "rss": 303161344,
+          "rssPeak": 303161344,
+          "fd": 7,
+          "tcpTableEntries": 1,
+          "threads": 7,
+          "pids": 9,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.1249,
+          "cpuQuotaFractionPeak": 0.06245,
+          "minWslAvailableBytes": 14193049600,
+          "sampledOom": false,
+          "sampledRestart": false
+        },
+        "backend": {
+          "memory": 81555456,
+          "rss": 74428416,
+          "rssPeak": 74428416,
+          "fd": 492,
+          "tcpTableEntries": 115,
+          "threads": 158,
+          "pids": 160,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.015729471031933798,
+          "cpuQuotaFractionPeak": 0.007864735515966899,
+          "minWslAvailableBytes": 14189105152,
+          "sampledOom": false,
+          "sampledRestart": false
+        },
+        "postgres": {
+          "memory": 192880640,
+          "rss": 29806592,
+          "rssPeak": 29806592,
+          "fd": 10,
+          "tcpTableEntries": 7,
+          "threads": 1,
+          "pids": 12,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.024688508065281015,
+          "cpuQuotaFractionPeak": 0.024688508065281015,
+          "minWslAvailableBytes": 14191349760,
+          "sampledOom": false,
+          "sampledRestart": false
+        },
+        "redis": {
+          "memory": 19369984,
+          "rss": 17690624,
+          "rssPeak": 19927040,
+          "fd": 16,
+          "tcpTableEntries": 119,
+          "threads": 6,
+          "pids": 8,
+          "swapOutPages": 0,
+          "cpuCoresPeak": 0.038096774194728684,
+          "cpuQuotaFractionPeak": 0.038096774194728684,
+          "minWslAvailableBytes": 14190870528,
+          "sampledOom": false,
+          "sampledRestart": false
+        }
+      },
+      "limits": [
+        "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+        "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+        "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+      ],
+      "observeFlowCompletions": {
+        "hotspot": 1000.0
+      }
+    }
+  },
+  "browser": {
+    "events": {
+      "allHttpIncludingSetup": 11,
+      "timedHttp": 7,
+      "timedGet": 7,
+      "timedGovernedGet": 7,
+      "timedDecodedBodyBytes": 14,
+      "timedGovernedDecodedBodyBytes": 14,
+      "timedEndpointCounts": {
+        "GET /notifications": 7
+      },
+      "timedGovernedByFamily": {
+        "notifications": 7
+      },
+      "checks": {
+        "hiddenNewReads": 0,
+        "hiddenInflightFromBefore": 0,
+        "maxInflight": {
+          "notifications": 1,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "restoredImmediateCounts": {
+          "notifications": 1,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "logoutNewReads": 0,
+        "terminalObserved": true,
+        "readsAfterTerminalSettled": null,
+        "restorationFirstReadMs": {
+          "notifications": 57,
+          "availability": null,
+          "payment": null,
+          "checkout": null,
+          "order": null
+        }
+      },
+      "errors": [],
+      "scope": "Timed counts include explicit scripted actions and lifecycle; setup kept separately. No compressed-wire claim."
+    },
+    "panel": {
+      "allHttpIncludingSetup": 10,
+      "timedHttp": 6,
+      "timedGet": 6,
+      "timedGovernedGet": 6,
+      "timedDecodedBodyBytes": 12,
+      "timedGovernedDecodedBodyBytes": 12,
+      "timedEndpointCounts": {
+        "GET /notifications": 6
+      },
+      "timedGovernedByFamily": {
+        "notifications": 6
+      },
+      "checks": {
+        "hiddenNewReads": 0,
+        "hiddenInflightFromBefore": 0,
+        "maxInflight": {
+          "notifications": 1,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "restoredImmediateCounts": {
+          "notifications": 1,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "logoutNewReads": 0,
+        "terminalObserved": true,
+        "readsAfterTerminalSettled": null,
+        "restorationFirstReadMs": {
+          "notifications": 23,
+          "availability": null,
+          "payment": null,
+          "checkout": null,
+          "order": null
+        }
+      },
+      "errors": [],
+      "scope": "Timed counts include explicit scripted actions and lifecycle; setup kept separately. No compressed-wire claim."
+    },
+    "seat": {
+      "allHttpIncludingSetup": 21,
+      "timedHttp": 17,
+      "timedGet": 17,
+      "timedGovernedGet": 11,
+      "timedDecodedBodyBytes": 647846,
+      "timedGovernedDecodedBodyBytes": 114696,
+      "timedEndpointCounts": {
+        "GET /events/phase19-browser-event": 1,
+        "GET /sessions/phase19-browser-session/seat-layout": 1,
+        "GET /sessions/phase19-browser-session/seat-availability": 9,
+        "GET /checkout-sessions": 1,
+        "GET /orders": 2,
+        "GET /notifications": 2,
+        "GET /sessions/phase19-browser-session": 1
+      },
+      "timedGovernedByFamily": {
+        "availability": 9,
+        "notifications": 2
+      },
+      "checks": {
+        "hiddenNewReads": 0,
+        "hiddenInflightFromBefore": 0,
+        "maxInflight": {
+          "notifications": 1,
+          "availability": 1,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "restoredImmediateCounts": {
+          "notifications": 1,
+          "availability": 1,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "logoutNewReads": 0,
+        "terminalObserved": true,
+        "readsAfterTerminalSettled": null,
+        "restorationFirstReadMs": {
+          "notifications": 24,
+          "availability": 27,
+          "payment": null,
+          "checkout": null,
+          "order": null
+        }
+      },
+      "errors": [],
+      "scope": "Timed counts include explicit scripted actions and lifecycle; setup kept separately. No compressed-wire claim."
+    },
+    "payment": {
+      "allHttpIncludingSetup": 21,
+      "timedHttp": 17,
+      "timedGet": 16,
+      "timedGovernedGet": 13,
+      "timedDecodedBodyBytes": 832193,
+      "timedGovernedDecodedBodyBytes": 3386,
+      "timedEndpointCounts": {
+        "GET /sessions/phase19-browser-session": 1,
+        "GET /events/phase19-browser-event": 1,
+        "GET /sessions/phase19-browser-session/seats": 1,
+        "GET /notifications": 3,
+        "GET /orders/phase19-browser-order": 6,
+        "POST /orders/phase19-browser-order/pay": 1,
+        "GET /payment-attempts/phase19-browser-attempt": 4
+      },
+      "timedGovernedByFamily": {
+        "notifications": 3,
+        "order": 6,
+        "payment": 4
+      },
+      "checks": {
+        "hiddenNewReads": 0,
+        "hiddenInflightFromBefore": 0,
+        "maxInflight": {
+          "notifications": 1,
+          "availability": 0,
+          "payment": 1,
+          "checkout": 0,
+          "order": 1
+        },
+        "restoredImmediateCounts": {
+          "notifications": 1,
+          "availability": 0,
+          "payment": 1,
+          "checkout": 0,
+          "order": 1
+        },
+        "logoutNewReads": 0,
+        "terminalObserved": true,
+        "readsAfterTerminalSettled": 0,
+        "restorationFirstReadMs": {
+          "notifications": 27,
+          "availability": null,
+          "payment": 118,
+          "checkout": null,
+          "order": 27
+        }
+      },
+      "errors": [],
+      "scope": "Timed counts include explicit scripted actions and lifecycle; setup kept separately. No compressed-wire claim."
+    },
+    "refund": {
+      "allHttpIncludingSetup": 17,
+      "timedHttp": 13,
+      "timedGet": 12,
+      "timedGovernedGet": 9,
+      "timedDecodedBodyBytes": 831465,
+      "timedGovernedDecodedBodyBytes": 3092,
+      "timedEndpointCounts": {
+        "GET /sessions/phase19-browser-session": 1,
+        "GET /events/phase19-browser-event": 1,
+        "GET /sessions/phase19-browser-session/seats": 1,
+        "GET /notifications": 4,
+        "GET /orders/phase19-browser-order": 5,
+        "POST /orders/phase19-browser-order/refunds": 1
+      },
+      "timedGovernedByFamily": {
+        "notifications": 4,
+        "order": 5
+      },
+      "checks": {
+        "hiddenNewReads": 0,
+        "hiddenInflightFromBefore": 0,
+        "maxInflight": {
+          "notifications": 1,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 1
+        },
+        "restoredImmediateCounts": {
+          "notifications": 1,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 1
+        },
+        "logoutNewReads": 0,
+        "terminalObserved": true,
+        "readsAfterTerminalSettled": 0,
+        "restorationFirstReadMs": {
+          "notifications": 24,
+          "availability": null,
+          "payment": null,
+          "checkout": null,
+          "order": 25
+        }
+      },
+      "errors": [],
+      "scope": "Timed counts include explicit scripted actions and lifecycle; setup kept separately. No compressed-wire claim."
+    },
+    "submitting": {
+      "allHttpIncludingSetup": 34,
+      "timedHttp": 30,
+      "timedGet": 29,
+      "timedGovernedGet": 18,
+      "timedDecodedBodyBytes": 1534006,
+      "timedGovernedDecodedBodyBytes": 171318,
+      "timedEndpointCounts": {
+        "GET /events/phase19-browser-event": 2,
+        "GET /sessions/phase19-browser-session/seat-layout": 1,
+        "GET /sessions/phase19-browser-session/seat-availability": 10,
+        "GET /checkout-sessions": 1,
+        "GET /orders": 3,
+        "GET /notifications": 4,
+        "GET /sessions/phase19-browser-session": 3,
+        "GET /checkout-sessions/phase19-browser-checkout": 3,
+        "POST /checkout-sessions/phase19-browser-checkout/confirm": 1,
+        "GET /orders/phase19-browser-order": 1,
+        "GET /sessions/phase19-browser-session/seats": 1
+      },
+      "timedGovernedByFamily": {
+        "availability": 10,
+        "notifications": 4,
+        "checkout": 3,
+        "order": 1
+      },
+      "checks": {
+        "hiddenNewReads": 0,
+        "hiddenInflightFromBefore": 0,
+        "maxInflight": {
+          "notifications": 1,
+          "availability": 1,
+          "payment": 0,
+          "checkout": 1,
+          "order": 1
+        },
+        "restoredImmediateCounts": {
+          "notifications": 1,
+          "availability": 1,
+          "payment": 0,
+          "checkout": 1,
+          "order": 0
+        },
+        "logoutNewReads": 0,
+        "terminalObserved": true,
+        "readsAfterTerminalSettled": 0,
+        "restorationFirstReadMs": {
+          "notifications": 30,
+          "availability": 31,
+          "payment": null,
+          "checkout": 206,
+          "order": 10171
+        }
+      },
+      "errors": [],
+      "scope": "Timed counts include explicit scripted actions and lifecycle; setup kept separately. No compressed-wire claim."
+    },
+    "logout": {
+      "allHttpIncludingSetup": 5,
+      "timedHttp": 0,
+      "timedGet": 0,
+      "timedGovernedGet": 0,
+      "timedDecodedBodyBytes": 0,
+      "timedGovernedDecodedBodyBytes": 0,
+      "timedEndpointCounts": {},
+      "timedGovernedByFamily": {},
+      "checks": {
+        "hiddenNewReads": 0,
+        "hiddenInflightFromBefore": 0,
+        "maxInflight": {
+          "notifications": 1,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "restoredImmediateCounts": {
+          "notifications": 0,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "logoutNewReads": 0,
+        "terminalObserved": true,
+        "readsAfterTerminalSettled": null,
+        "restorationFirstReadMs": {
+          "notifications": null,
+          "availability": null,
+          "payment": null,
+          "checkout": null,
+          "order": null
+        }
+      },
+      "errors": [],
+      "scope": "Timed counts include explicit scripted actions and lifecycle; setup kept separately. No compressed-wire claim."
+    }
+  }
+}

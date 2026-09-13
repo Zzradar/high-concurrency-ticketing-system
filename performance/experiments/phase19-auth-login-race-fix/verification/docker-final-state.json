@@ -1,0 +1,265 @@
+{
+  "scope": "Only containers created with this follow-up prefix; all containers and volumes retained for diagnosis",
+  "containers": [
+    {
+      "name": "phase19-authfix-overload-backend-1",
+      "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000
+    },
+    {
+      "name": "phase19-authfix-overload-postgres-1",
+      "imageId": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 536870912,
+      "nanoCpus": 1000000000
+    },
+    {
+      "name": "phase19-authfix-overload-redis-1",
+      "imageId": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 536870912,
+      "nanoCpus": 1000000000
+    },
+    {
+      "name": "phase19-authfix-overload-fake-stripe-1",
+      "imageId": "sha256:b64631e04e4920160c50fbe8d8df828f7f35f06f425cb44aa09bca53e708a35a",
+      "running": false,
+      "exitCode": 137,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 268435456,
+      "nanoCpus": 1000000000
+    },
+    {
+      "name": "phase19-authfix-financial-admission-peer-8d0021e5",
+      "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000
+    },
+    {
+      "name": "phase18-phase19-authfix-availability-fault-574d305f",
+      "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "running": false,
+      "exitCode": 87,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000
+    },
+    {
+      "name": "phase18-phase19-authfix-availability-fault-76ccda08",
+      "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "running": false,
+      "exitCode": 86,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000
+    },
+    {
+      "name": "phase19-authfix-financial-backend-1",
+      "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000
+    },
+    {
+      "name": "phase19-authfix-financial-postgres-1",
+      "imageId": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 536870912,
+      "nanoCpus": 1000000000
+    },
+    {
+      "name": "phase19-authfix-financial-fake-stripe-1",
+      "imageId": "sha256:b64631e04e4920160c50fbe8d8df828f7f35f06f425cb44aa09bca53e708a35a",
+      "running": false,
+      "exitCode": 137,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 268435456,
+      "nanoCpus": 1000000000
+    },
+    {
+      "name": "phase19-authfix-financial-redis-1",
+      "imageId": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 536870912,
+      "nanoCpus": 1000000000
+    },
+    {
+      "name": "phase18-phase19-authfix-availability-fault-53396f8b",
+      "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "running": false,
+      "exitCode": 87,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000
+    },
+    {
+      "name": "phase18-phase19-authfix-availability-fault-a57c0b33",
+      "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "running": false,
+      "exitCode": 86,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000
+    },
+    {
+      "name": "phase18-phase19-authfix-checkout-crash-4b8bd156",
+      "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "running": false,
+      "exitCode": 88,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000
+    },
+    {
+      "name": "phase18-phase19-authfix-no-secret-api",
+      "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000
+    },
+    {
+      "name": "phase19-authfix-final-frontend",
+      "imageId": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 134217728,
+      "nanoCpus": 500000000
+    },
+    {
+      "name": "phase19-authfix-final-api",
+      "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000
+    },
+    {
+      "name": "phase19-authfix-final-redis",
+      "imageId": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 536870912,
+      "nanoCpus": 1000000000
+    },
+    {
+      "name": "phase19-authfix-final-postgres",
+      "imageId": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 536870912,
+      "nanoCpus": 1000000000
+    },
+    {
+      "name": "phase18-phase19-authfix-api",
+      "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000
+    },
+    {
+      "name": "phase18-phase19-authfix-redis",
+      "imageId": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 536870912,
+      "nanoCpus": 1000000000
+    },
+    {
+      "name": "phase18-phase19-authfix-postgres",
+      "imageId": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 536870912,
+      "nanoCpus": 1000000000
+    },
+    {
+      "name": "phase19-authfix-frontend",
+      "imageId": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 134217728,
+      "nanoCpus": 500000000
+    },
+    {
+      "name": "phase19-authfix-api",
+      "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000
+    },
+    {
+      "name": "phase19-authfix-redis",
+      "imageId": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 536870912,
+      "nanoCpus": 1000000000
+    },
+    {
+      "name": "phase19-authfix-postgres",
+      "imageId": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+      "running": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "restartCount": 0,
+      "memoryLimit": 536870912,
+      "nanoCpus": 1000000000
+    }
+  ]
+}

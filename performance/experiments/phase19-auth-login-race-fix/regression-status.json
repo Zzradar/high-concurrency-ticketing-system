@@ -1,0 +1,137 @@
+{
+  "status": "blocked_by_frozen_backend_availability_regression",
+  "frontend": {
+    "passed": 344,
+    "newTests": 16,
+    "targetedPassed": 27,
+    "productionBuildPassed": true,
+    "redBaselineFailed": 8,
+    "redBaselinePassed": 2
+  },
+  "browser": {
+    "afterScenariosPassed": 7,
+    "realIdentityCasesPassed": 7
+  },
+  "backend": {
+    "total": 166,
+    "passed": 165,
+    "failed": 1,
+    "suites": [
+      {
+        "log": "phase19-authfix-regression/off-regression-r2.log",
+        "tests": 57,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_schema_test.log",
+        "tests": 2,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_token_bucket_test.log",
+        "tests": 3,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_waiting_room_test.log",
+        "tests": 7,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_public_contract_test.log",
+        "tests": 2,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_policy_http_test.log",
+        "tests": 7,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_admission_http_test.log",
+        "tests": 5,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_traffic_http_test.log",
+        "tests": 2,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_metrics_http_test.log",
+        "tests": 1,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_layout_http_test-r2.log",
+        "tests": 3,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_layout_revision_http_test.log",
+        "tests": 7,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_layout_resolution_http_test.log",
+        "tests": 1,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_inventory_fault_test.log",
+        "tests": 1,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_checkout_crash_test.log",
+        "tests": 1,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_availability_fault_test-r2.log",
+        "tests": 1,
+        "passed": false
+      },
+      {
+        "log": "phase19-authfix-regression/phase18_verifier_test.log",
+        "tests": 1,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-financial/phase11_stripe_integration_test.log",
+        "tests": 11,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-financial/phase11_crash_window_integration_test.log",
+        "tests": 11,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-financial/phase12_buyer_refund_integration_test.log",
+        "tests": 38,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-financial/phase18_multi_instance_test.log",
+        "tests": 1,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-financial/phase18_refund_verifier_fixture.log",
+        "tests": 3,
+        "passed": true
+      },
+      {
+        "log": "phase19-authfix-overload/phase19_overload_recovery_test.log",
+        "tests": 1,
+        "passed": true
+      }
+    ]
+  },
+  "performance": {
+    "requiredPointsPassed": 4,
+    "openL3Condition": "Original precheck -> L1 -> L2 -> L3 sequence; direct L3 attempts failed with 65 and 12 Delta 503s; failures retained, 503 excluded from success throughput"
+  },
+  "boundary": "No backend production code, frozen workload, assertion or safety-gate changes. Further backend scope awaits user decision."
+}

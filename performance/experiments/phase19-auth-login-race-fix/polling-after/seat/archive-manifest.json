@@ -1,0 +1,26 @@
+{
+  "source": "<PRIVATE_TEMP>/seat",
+  "normalization": "UTF-8 newline and private-path redaction; gzip is lossless with mtime=0",
+  "classification": "Result fields are preserved verbatim, including invalid outcomes",
+  "files": {
+    "browser.json": {
+      "sourceSha256": "5d96a27247f790525f812a4510ddc907706f1efeaeeb49aa2efbe90cb717a677",
+      "sourceBytes": 23207,
+      "normalizedSha256": "5d96a27247f790525f812a4510ddc907706f1efeaeeb49aa2efbe90cb717a677",
+      "normalizedBytes": 23207,
+      "storedAs": "browser.json",
+      "storedSha256": "5d96a27247f790525f812a4510ddc907706f1efeaeeb49aa2efbe90cb717a677",
+      "storedBytes": 23207
+    },
+    "browser.log": {
+      "sourceSha256": "c04080fa7f123814158ff66cd95c38f51239bd49f25312b684d0d5bbf7fcb241",
+      "sourceBytes": 595,
+      "normalizedSha256": "2d733cac81361034a5d6988df0db3c7aff4d5a83c5d92f16c044ae67784f14e1",
+      "normalizedBytes": 536,
+      "storedAs": "browser.log",
+      "storedSha256": "2d733cac81361034a5d6988df0db3c7aff4d5a83c5d92f16c044ae67784f14e1",
+      "storedBytes": 536
+    }
+  },
+  "privateRawPoints": null
+}

@@ -1,0 +1,133 @@
+backend-1  | 20260913 17:50:53.430138 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:50:58.545211 UTC 22 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 17:50:58.549571 UTC 23 INFO  Order expiry round completed: scanned=2, expired=1, skipped=1 - OrderExpiryWorker.cpp:51
+backend-1  | 20260913 17:51:03.557341 UTC 22 INFO  Order expiry round completed: scanned=1, expired=1, skipped=0 - OrderExpiryWorker.cpp:51
+backend-1  | 20260913 17:51:09.651306 UTC 1 WARN  SIGTERM signal received. - HttpAppFrameworkImpl.cc:172
+backend-1  | 20260913 17:51:10.029367 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:51:35.130003 UTC 23 INFO  Order expiry round completed: scanned=1, expired=1, skipped=0 - OrderExpiryWorker.cpp:51
+backend-1  | 20260913 17:52:12.398855 UTC 23 ERROR ERROR:  forced inbox failure
+backend-1  | CONTEXT:  PL/pgSQL function phase11_fail_inbox() line 2 at RAISE
+backend-1  |  - PgBatchConnection.cc:535
+backend-1  | 20260913 17:52:12.399989 UTC 23 ERROR Provider event inbox insert failed: ERROR:  forced inbox failure
+backend-1  | CONTEXT:  PL/pgSQL function phase11_fail_inbox() line 2 at RAISE
+backend-1  |  - ProviderEventRepository.cpp:21
+backend-1  | 20260913 17:52:23.746501 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:52:31.881115 UTC 22 ERROR ERROR:  phase11 injected rollback
+backend-1  | CONTEXT:  PL/pgSQL function phase11_fault() line 2 at RAISE
+backend-1  |  - PgBatchConnection.cc:535
+backend-1  | 20260913 17:52:31.882544 UTC 22 ERROR Failed to insert notification: ERROR:  phase11 injected rollback
+backend-1  | CONTEXT:  PL/pgSQL function phase11_fault() line 2 at RAISE
+backend-1  |  - NotificationRepository.cpp:15
+backend-1  | 20260913 17:52:31.882762 UTC 22 ERROR Payment reconciliation failures=1 - PaymentReconciliationWorker.cpp:37
+backend-1  | 20260913 17:52:31.883078 UTC 22 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 17:52:31.883087 UTC 22 ERROR Transaction roll back error - TransactionImpl.cc:175
+backend-1  | 20260913 17:53:07.385971 UTC 1 WARN  SIGTERM signal received. - HttpAppFrameworkImpl.cc:172
+backend-1  | 20260913 17:53:09.138575 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:53:14.352977 UTC 1 WARN  SIGTERM signal received. - HttpAppFrameworkImpl.cc:172
+backend-1  | 20260913 17:53:16.135070 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:53:26.249800 UTC 22 INFO  Order expiry round completed: scanned=1, expired=1, skipped=0 - OrderExpiryWorker.cpp:51
+backend-1  | 20260913 17:53:40.166677 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:53:56.401231 UTC 23 ERROR ERROR:  phase11 injected rollback
+backend-1  | CONTEXT:  PL/pgSQL function phase11_fault() line 2 at RAISE
+backend-1  |  - PgBatchConnection.cc:535
+backend-1  | 20260913 17:53:56.403644 UTC 23 ERROR REFUND_INVARIANT stage=notification refund=RFD-a1331dc5-a49e-48d8-96f4-ba26ef320fb4 - RefundLifecycleService.cpp:42
+backend-1  | 20260913 17:53:56.403678 UTC 23 ERROR Payment reconciliation failures=1 - PaymentReconciliationWorker.cpp:37
+backend-1  | 20260913 17:53:56.404154 UTC 23 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 17:53:56.404187 UTC 23 ERROR Transaction roll back error - TransactionImpl.cc:175
+backend-1  | 20260913 17:53:57.399430 UTC 1 WARN  SIGTERM signal received. - HttpAppFrameworkImpl.cc:172
+backend-1  | 20260913 17:53:57.814618 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:54:36.822289 UTC 1 WARN  SIGTERM signal received. - HttpAppFrameworkImpl.cc:172
+backend-1  | 20260913 17:54:41.217923 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:54:47.243510 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:54:55.521745 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:54:58.144787 UTC 1 WARN  SIGTERM signal received. - HttpAppFrameworkImpl.cc:172
+backend-1  | 20260913 17:54:59.902850 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:55:00.309912 UTC 1 WARN  SIGTERM signal received. - HttpAppFrameworkImpl.cc:172
+backend-1  | 20260913 17:55:02.064464 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:55:02.445062 UTC 1 WARN  SIGTERM signal received. - HttpAppFrameworkImpl.cc:172
+backend-1  | 20260913 17:55:04.199710 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:55:04.597741 UTC 1 WARN  SIGTERM signal received. - HttpAppFrameworkImpl.cc:172
+backend-1  | 20260913 17:55:06.422604 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:55:06.809776 UTC 1 WARN  SIGTERM signal received. - HttpAppFrameworkImpl.cc:172
+backend-1  | 20260913 17:55:08.486450 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:55:08.866125 UTC 1 WARN  SIGTERM signal received. - HttpAppFrameworkImpl.cc:172
+backend-1  | 20260913 17:55:10.565260 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:55:30.752281 UTC 1 INFO  Starting ticketing backend with config: /sut/config.json - main.cpp:208
+backend-1  | 20260913 17:55:53.048229 UTC 22 ERROR REFUND_INVARIANT stage=ownership_conflict refund=RFD-65302335-90e1-406e-8910-b528ca0d1511 - RefundLifecycleService.cpp:42
+backend-1  | 20260913 17:55:53.048267 UTC 22 ERROR Payment reconciliation failures=1 - PaymentReconciliationWorker.cpp:37
+backend-1  | 20260913 17:55:53.048860 UTC 22 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 17:55:59.114313 UTC 22 ERROR ERROR:  phase12 injected rollback
+backend-1  | CONTEXT:  PL/pgSQL function phase12_fault() line 1 at RAISE
+backend-1  |  - PgBatchConnection.cc:535
+backend-1  | 20260913 17:55:59.115435 UTC 22 ERROR REFUND_INVARIANT stage=refund_update refund=RFD-dca012f0-e7d4-4612-b3c2-f429961ea378 - RefundLifecycleService.cpp:42
+backend-1  | 20260913 17:55:59.115450 UTC 22 ERROR Payment reconciliation failures=1 - PaymentReconciliationWorker.cpp:37
+backend-1  | 20260913 17:55:59.115611 UTC 22 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 17:55:59.115623 UTC 22 ERROR Transaction roll back error - TransactionImpl.cc:175
+backend-1  | 20260913 17:56:05.194449 UTC 22 ERROR ERROR:  phase12 injected rollback
+backend-1  | CONTEXT:  PL/pgSQL function phase12_fault() line 1 at RAISE
+backend-1  |  - PgBatchConnection.cc:535
+backend-1  | 20260913 17:56:05.194506 UTC 22 ERROR REFUND_INVARIANT stage=order_update refund=RFD-2aecf6f3-3626-4495-9203-209496b470f1 - RefundLifecycleService.cpp:42
+backend-1  | 20260913 17:56:05.194513 UTC 22 ERROR Payment reconciliation failures=1 - PaymentReconciliationWorker.cpp:37
+backend-1  | 20260913 17:56:05.194691 UTC 22 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 17:56:05.194704 UTC 22 ERROR Transaction roll back error - TransactionImpl.cc:175
+backend-1  | 20260913 17:56:11.268415 UTC 22 ERROR ERROR:  phase12 injected rollback
+backend-1  | CONTEXT:  PL/pgSQL function phase12_fault() line 1 at RAISE
+backend-1  |  - PgBatchConnection.cc:535
+backend-1  | 20260913 17:56:11.268489 UTC 22 ERROR REFUND_INVARIANT stage=reservation_update refund=RFD-bd3d5220-d77c-4c7f-9327-e36e0bf22fdb - RefundLifecycleService.cpp:42
+backend-1  | 20260913 17:56:11.268498 UTC 22 ERROR Payment reconciliation failures=1 - PaymentReconciliationWorker.cpp:37
+backend-1  | 20260913 17:56:11.268618 UTC 22 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 17:56:11.268637 UTC 22 ERROR Transaction roll back error - TransactionImpl.cc:175
+backend-1  | 20260913 17:56:17.344892 UTC 22 ERROR ERROR:  phase12 injected rollback
+backend-1  | CONTEXT:  PL/pgSQL function phase12_fault() line 1 at RAISE
+backend-1  |  - PgBatchConnection.cc:535
+backend-1  | 20260913 17:56:17.344948 UTC 22 ERROR REFUND_INVARIANT stage=seat_update refund=RFD-898329b8-8094-4c9f-8e98-228d13e3273a - RefundLifecycleService.cpp:42
+backend-1  | 20260913 17:56:17.344955 UTC 22 ERROR Payment reconciliation failures=1 - PaymentReconciliationWorker.cpp:37
+backend-1  | 20260913 17:56:17.345236 UTC 22 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 17:56:17.345258 UTC 22 ERROR Transaction roll back error - TransactionImpl.cc:175
+backend-1  | 20260913 17:56:23.426757 UTC 22 ERROR ERROR:  phase12 injected rollback
+backend-1  | CONTEXT:  PL/pgSQL function phase12_fault() line 1 at RAISE
+backend-1  |  - PgBatchConnection.cc:535
+backend-1  | 20260913 17:56:23.426814 UTC 22 ERROR REFUND_INVARIANT stage=notification refund=RFD-445e1ad7-3798-4628-ac90-77d82de526f0 - RefundLifecycleService.cpp:42
+backend-1  | 20260913 17:56:23.426819 UTC 22 ERROR Payment reconciliation failures=1 - PaymentReconciliationWorker.cpp:37
+backend-1  | 20260913 17:56:23.427076 UTC 22 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 17:56:23.427083 UTC 22 ERROR Transaction roll back error - TransactionImpl.cc:175
+backend-1  | 20260913 17:56:43.520427 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_EXTERNAL_REFUND_CONFLICT refund=RFD-3f01a210-e7c7-4c0b-b0d3-055d3318b510 - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 17:56:49.576381 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_EXTERNAL_REFUND_CONFLICT refund=RFD-6354c4fc-4de7-4c8d-82f4-e8174efa376e - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 17:56:57.636431 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_IDEMPOTENCY_CONFLICT refund=RFD-a425380c-290a-4429-8c39-e17b8e1d7503 - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 17:57:11.754595 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_OPERATIONAL refund=RFD-bbb32ee1-75d7-4d92-846d-59fbb7a4e5e2 - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 17:57:19.814575 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_OPERATIONAL refund=RFD-dd3945ad-cfbb-4a45-8fad-9a321029f512 - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 17:57:51.412162 UTC 22 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 17:57:52.349169 UTC 22 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 17:58:16.247884 UTC 20 INFO  REFUND_FENCED_BEFORE_RIGHTS refund=RFD-47efd42d-e94d-402e-93fb-063885aeb532 - RefundLifecycleService.cpp:94
+backend-1  | 20260913 17:58:16.248187 UTC 20 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 17:58:21.008417 UTC 20 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 17:58:21.456153 UTC 20 ERROR REFUND_ACCEPTED_PAYMENT_INVARIANT - RefundService.cpp:108
+backend-1  | 20260913 17:58:21.456701 UTC 20 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 17:58:28.318749 UTC 1 ERROR REFUND_REQUIRES_ACTION refund=RFD-f458923a-b6a2-4a85-a255-a016f28ef1b8 - PaymentReconciliationService.cpp:263
+backend-1  | 20260913 17:58:54.443832 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_REFUND_MISMATCH refund=RFD-452a131e-e633-43ec-b145-21a513b3dace - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 17:59:02.459114 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_REFUND_MISMATCH refund=RFD-050eefcf-474d-4ecd-b750-b86218d66a59 - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 17:59:10.473023 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_REFUND_MISMATCH refund=RFD-7192d146-45eb-4e3e-8cb5-87dab0795b2e - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 17:59:18.491464 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_REFUND_PAGINATION refund=RFD-6727819a-dbb3-4ca9-9229-acc23e783879 - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 17:59:34.538685 UTC 1 ERROR * Line 1, Column 2
+backend-1  |   Missing '}' or object member name
+backend-1  |  - HttpResponseImpl.cc:1156
+backend-1  | 20260913 17:59:34.538726 UTC 1 ERROR body: {broken-json - HttpResponseImpl.cc:1157
+backend-1  | 20260913 17:59:36.542452 UTC 1 ERROR * Line 1, Column 2
+backend-1  |   Missing '}' or object member name
+backend-1  |  - HttpResponseImpl.cc:1156
+backend-1  | 20260913 17:59:36.542467 UTC 1 ERROR body: {broken-json - HttpResponseImpl.cc:1157
+backend-1  | 20260913 17:59:42.557438 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_REFUND_PAGINATION refund=RFD-07043bd7-b660-48cc-a9e0-0e6b502fe7a8 - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 17:59:50.576729 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_MULTIPLE_REFUND_CONFLICT refund=RFD-6bf0ffa8-e4f5-4b02-8d00-26520daa7c4c - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 17:59:58.596807 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_REFUND_MISMATCH refund=RFD-a1978f6c-63eb-43f7-813b-cb512480d718 - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 18:00:07.017587 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_REFUND_PAGINATION refund=RFD-9cdb0818-fed5-40df-9d64-a1f40e7c2bb7 - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 18:00:15.039632 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_REFUND_MISMATCH refund=RFD-845a7155-2948-40db-a7cd-3d089f2f62fd - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 18:00:23.101554 UTC 1 ERROR REFUND_PROVIDER_BLOCKED code=STRIPE_REFUND_PAGINATION refund=RFD-a0de13d3-180b-43cc-9bae-4952f8ca1b0c - PaymentReconciliationService.cpp:243
+backend-1  | 20260913 18:00:39.276744 UTC 22 ERROR REFUND_INVARIANT stage=seat_shape refund=RFD-63ffd742-6c65-408b-9926-d67ad18d805f - RefundLifecycleService.cpp:42
+backend-1  | 20260913 18:00:39.276765 UTC 22 ERROR Payment reconciliation failures=1 - PaymentReconciliationWorker.cpp:37
+backend-1  | 20260913 18:00:39.276845 UTC 22 DEBUG [operator()] Transaction roll back! - TransactionImpl.cc:169
+backend-1  | 20260913 18:00:59.359919 UTC 20 ERROR ERROR:  duplicate key value violates unique constraint "payment_attempts_provider_payment_unique_idx"
+backend-1  | DETAIL:  Key (provider, provider_payment_id)=(stripe, pi_fake_1) already exists.
+backend-1  |  - PgBatchConnection.cc:535
+backend-1  | 20260913 18:00:59.359962 UTC 20 ERROR Failed to record provider payment: ERROR:  duplicate key value violates unique constraint "payment_attempts_provider_payment_unique_idx"
+backend-1  | DETAIL:  Key (provider, provider_payment_id)=(stripe, pi_fake_1) already exists.
+backend-1  |  - PaymentRepository.cpp:31
