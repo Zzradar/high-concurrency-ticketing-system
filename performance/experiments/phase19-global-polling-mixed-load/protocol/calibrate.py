@@ -61,8 +61,9 @@ def main():
     fixture = out / "fixture"
     fixture.mkdir()
     # Synthetic credentials are inert stub data, never valid SUT sessions.
-    save(fixture / "users.json", [{"userId": f"phase19-stub-{i}", "sessionToken": "stub", "csrfToken": "stub"} for i in range(5000)])
-    save(fixture / "config.json", {"zones": [f"Zone {i}" for i in range(5)], "readerSession": "phase19-reader", "writerSession": "phase19-writer", "writerSeats": [], "holdTtlSeconds": 5})
+    save(fixture / "users.json", [{"userId": f"phase19-user-{i:06d}", "username": f"phase19-user-{i:06d}", "authSessionId": f"phase19-auth-{i:06d}", "sessionToken": "0"*64, "csrfToken": "1"*64} for i in range(5000)])
+    save(fixture / "config.json", {"zones": [f"Zone {i}" for i in range(5)], "readerSession": "phase19-session-001-001", "writerSession": "phase19-session-001-002", "holdTtlSeconds": 15})
+    save(fixture / "seats.json", [f"phase19-ss-001-002-{i:06d}" for i in range(1,801)])
     prefix = "phase19-calibration-" + str(args.vus)
     network, stub, generator = prefix + "-network", prefix + "-stub", prefix + "-k6"
     images = {role: json.loads(run("docker", "image", "inspect", image))[0]

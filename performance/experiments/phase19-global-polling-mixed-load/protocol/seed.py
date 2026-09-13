@@ -42,10 +42,11 @@ UPDATE events SET published_at=clock_timestamp(),published_by='U-ADMIN-DEMO' WHE
     config = {'zones': [f'Zone-{i}' for i in range(5)], 'readerSession': 'phase19-session-001-001',
         'writerSession': 'phase19-session-001-002', 'hotspotSession': 'phase19-session-001-003',
         'sentinelSession': 'phase19-session-001-004', 'journeySession': 'phase19-session-001-005',
-        'writerSeats': [f'phase19-ss-001-002-{i:06d}' for i in range(1, 801)], 'holdTtlSeconds': 5,
+        'holdTtlSeconds': 15,
         'observerSeatRange': [4501, 5000], 'readerUserRange': [0, 2999], 'writerUserRange': [3000, 3399],
         'observerUser': 3500, 'sentinelUser': 3501, 'hotspotUserRange': [4000, 4999]}
     (private_output/'config.json').write_text(json.dumps(config), encoding='utf-8')
+    (private_output/'seats.json').write_text(json.dumps([f'phase19-ss-001-002-{i:06d}' for i in range(1, 801)]), encoding='utf-8')
     raw = sql("SELECT id,session_id,seat_id,status,price,formal_version FROM session_seats WHERE id LIKE 'phase19-ss-%' ORDER BY id")
     return {'registeredUsers': shape.registered_users, 'activeAuthSessions': shape.active_auth_sessions,
             'sessions': shape.sessions, 'seatsPerSession': shape.seats, 'totalSessionSeats': shape.session_seats,

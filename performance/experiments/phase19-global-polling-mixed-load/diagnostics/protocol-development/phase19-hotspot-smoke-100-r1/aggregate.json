@@ -1,0 +1,27 @@
+{
+  "httpDurationMs": {
+    "POST hotspot|observe|409": {
+      "samples": 99,
+      "p50": 40.892931,
+      "p95": 74.136556,
+      "p99": 77.207895,
+      "max": 77.207895
+    },
+    "POST hotspot|observe|201": {
+      "samples": 1,
+      "p50": 9.167453,
+      "p95": 9.167453,
+      "p99": 9.167453,
+      "max": 9.167453
+    }
+  },
+  "counts": {
+    "phase19_started|{\"kind\":\"hotspot\",\"phase\":\"observe\",\"scenario\":\"wave\"}": 100.0,
+    "phase19_errors|{\"scenario\":\"wave\"}": 0.0,
+    "phase19_http_started|{\"method\":\"POST\",\"name\":\"POST hotspot\",\"phase\":\"observe\",\"scenario\":\"wave\"}": 100.0,
+    "phase19_write_requests|{\"name\":\"POST hotspot\",\"phase\":\"observe\",\"scenario\":\"wave\"}": 100.0,
+    "http_reqs|{\"error_code\":\"1409\",\"expected_response\":\"true\",\"method\":\"POST\",\"name\":\"POST hotspot\",\"phase\":\"observe\",\"scenario\":\"wave\",\"status\":\"409\"}": 99.0,
+    "phase19_completed|{\"kind\":\"hotspot\",\"phase\":\"observe\",\"scenario\":\"wave\"}": 100.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"POST\",\"name\":\"POST hotspot\",\"phase\":\"observe\",\"scenario\":\"wave\",\"status\":\"201\"}": 1.0
+  }
+}

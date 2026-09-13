@@ -17,6 +17,12 @@ export function flowKind(index) {
   return n < 5 ? 'abandon' : n < 7 ? 'adjust' : n < 9 ? 'cancel' : 'expiry';
 }
 
+// k6 allocates global VU IDs across scenarios without promising scenario order.
+export function writerSlot(globalId, totalVus, capacity) {
+  if (!Number.isInteger(globalId) || globalId < 1 || globalId > totalVus || totalVus > capacity) throw new Error('Writer slot outside disjoint pool');
+  return globalId - 1;
+}
+
 export function validateSync(body, session, zone) {
   if (!body || body.sessionId !== session || body.zone !== zone || body.degraded ||
       !['snapshot', 'delta'].includes(body.mode) || typeof body.generation !== 'string' ||

@@ -1,0 +1,18 @@
+{
+  "valid": false,
+  "diagnostic": true,
+  "reason": null,
+  "exitCode": 99,
+  "observerErrors": [],
+  "startedIterations": 519,
+  "completedBusinessIterations": 518,
+  "k6CompletedIterations": 519,
+  "interruptedIterations": 0,
+  "droppedIterations": 0,
+  "httpRequestCount": 567,
+  "cursorAdvances": 136,
+  "initializedActiveVUs": 30,
+  "endedUtc": "2026-09-13T10:51:38.946097+00:00",
+  "rawPointsSha256": "02288aef6e1a62a5caba24bc9eee9537c743bdee9780675ff2c41dcbc5a6d274",
+  "rawPointsBytes": 2214479
+}

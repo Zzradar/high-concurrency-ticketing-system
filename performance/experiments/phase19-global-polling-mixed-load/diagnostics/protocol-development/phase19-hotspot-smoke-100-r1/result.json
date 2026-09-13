@@ -1,0 +1,20 @@
+{
+  "valid": true,
+  "diagnostic": true,
+  "reason": null,
+  "exitCode": 0,
+  "observerErrors": [],
+  "startedIterations": 100,
+  "completedBusinessIterations": 100,
+  "k6CompletedIterations": 100,
+  "interruptedIterations": 0,
+  "droppedIterations": 0,
+  "httpRequestCount": 100,
+  "cursorAdvances": 0,
+  "initializedActiveVUs": 100,
+  "endedUtc": "2026-09-13T10:55:23.355595+00:00",
+  "rawPointsSha256": "54d238e312c7845269a377396a88c1a9eef63598bdc0ad19468c33aceb5d29d6",
+  "rawPointsBytes": 414887,
+  "hotspotWinners": 1,
+  "controlProbeFailures": 0
+}

@@ -3,9 +3,10 @@ import exec from 'k6/execution';
 import { sleep } from 'k6';
 import { SharedArray } from 'k6/data';
 import { Counter, Trend, Gauge } from 'k6/metrics';
-import { delayMs, compareCursor, flowKind, validateSync } from './policy.mjs';
+import { delayMs, compareCursor, flowKind, validateSync, writerSlot } from './policy.mjs';
 
 const users = new SharedArray('phase19 users', () => JSON.parse(open('/fixture/users.json')));
+const writerSeats = new SharedArray('phase19 writer seats', () => JSON.parse(open('/fixture/seats.json')));
 const cfg = JSON.parse(open('/fixture/config.json'));
 const mode = __ENV.MODE || 'closed';
 const vus = Number(__ENV.VUS || 100);
@@ -26,23 +27,29 @@ const syncs = new Counter('phase19_sync');
 const advanced = new Counter('phase19_cursor_advances');
 const changes = new Counter('phase19_changed_seats');
 const writeRequests = new Counter('phase19_write_requests');
+const httpStarted = new Counter('phase19_http_started');
 const flows = new Counter('phase19_flows');
 const intervals = new Trend('phase19_poll_interval_ms', true);
 const inflight = new Gauge('phase19_max_inflight');
+const hotOutcomes = new Counter('phase19_hot_outcomes');
+const hotWinners = new Counter('phase19_hot_winners');
 
+if (mode === 'open' && (rate % 10 || readerVus % 10)) throw new Error('Open readers require ten equal arrival streams');
 const scenarios = mode === 'open' ? {
-  readers: { executor: 'constant-arrival-rate', exec: 'openReader', rate, timeUnit: '1s', duration: `${duration}s`, preAllocatedVUs: readerVus, maxVUs: readerVus, gracefulStop: '40s' },
+  ...Object.fromEntries(Array.from({ length: 10 }, (_, i) => [`readers${i}`, { executor: 'constant-arrival-rate', exec: 'openReader', rate: rate / 10, timeUnit: '1s', duration: `${duration}s`, preAllocatedVUs: readerVus / 10, maxVUs: readerVus / 10, gracefulStop: '40s' }])),
   // Weighted mean is 2.8 target seat-state transitions per journey (2/4/4/2).
   writers: { executor: 'constant-arrival-rate', exec: 'writer', rate: transitions * 5, timeUnit: '14s', duration: `${duration}s`, preAllocatedVUs: writerVus, maxVUs: writerVus, gracefulStop: '40s' },
-} : { readers: { executor: 'constant-vus', exec: 'closedReader', vus, duration: `${duration}s`, gracefulStop: '40s' } };
+} : mode === 'hotspot' ? { wave: { executor: 'per-vu-iterations', exec: 'hotspot', vus, iterations: 1, maxDuration: '40s' } }
+  : mode === 'journeys' ? { journeys: { executor: 'constant-arrival-rate', exec: 'journey', rate: Number(__ENV.JOURNEY_RATE || 20), timeUnit: '1s', duration: `${duration}s`, preAllocatedVUs: vus, maxVUs: vus, gracefulStop: '40s' } }
+  : { readers: { executor: 'constant-vus', exec: 'closedReader', vus, duration: `${duration}s`, gracefulStop: '40s' } };
 
 export const options = {
   scenarios, systemTags: ['status', 'method', 'name', 'scenario', 'expected_response', 'error_code'],
-  thresholds: { phase19_errors: ['count==0'], dropped_iterations: ['count==0'], http_req_failed: ['rate==0'] },
+  thresholds: { phase19_errors: ['count==0'], dropped_iterations: ['count==0'], http_req_failed: ['rate==0'], ...(mode === 'hotspot' ? { phase19_hot_winners: ['count==1'] } : {}) },
   summaryTrendStats: ['avg', 'med', 'p(95)', 'p(99)', 'max'],
   discardResponseBodies: false,
 };
-http.setResponseCallback(http.expectedStatuses(200, 201));
+http.setResponseCallback(http.expectedStatuses(...(['hotspot', 'journeys'].includes(mode) ? [200, 201, 409, 429] : [200, 201])));
 
 let initialized = false, state, lastStart, empty = 0;
 function phase() { return exec.instance.currentTestRunDuration < warmup * 1000 ? 'warmup' : 'observe'; }
@@ -50,9 +57,11 @@ function identity() {
   if (!initialized) {
     initialized = true; actual.add(1); errors.add(0);
     if (Number(__ENV.INIT_IDLE_SECONDS || 0)) sleep(Number(__ENV.INIT_IDLE_SECONDS));
+    if (mode === 'closed' && Number(__ENV.INIT_SPREAD_SECONDS || 0)) sleep((exec.vu.idInTest - 1) / vus * Number(__ENV.INIT_SPREAD_SECONDS));
   }
   const index = exec.vu.idInTest - 1;
-  return { user: users[index], zone: cfg.zones[index % cfg.zones.length] };
+  const stream = mode === 'open' && exec.scenario.name.startsWith('readers') ? Number(exec.scenario.name.slice(7)) : 0;
+  return { user: users[index], zone: cfg.zones[(index + stream) % cfg.zones.length] };
 }
 function headers(user) {
   return { Accept: 'application/json', 'Content-Type': 'application/json',
@@ -60,6 +69,7 @@ function headers(user) {
     'X-CSRF-Token': user.csrfToken, Origin: 'http://performance.local' };
 }
 function request(method, path, user, name, body) {
+  httpStarted.add(1, { name, method, phase: phase() });
   if (method !== 'GET') writeRequests.add(1, { name, phase: phase() });
   const response = http.request(method, base + path, body === undefined ? null : JSON.stringify(body), {
     headers: headers(user), tags: { name, phase: phase() }, timeout: '10s',
@@ -108,7 +118,8 @@ export function closedReader() {
 export function openReader() {
   guarded('read', () => {
     if (!state) readOnce(true); // Each actual VU establishes its own snapshot, never a shared cursor.
-    readOnce(); // Arrival rate is independent of completion; no pacing sleep in an open iteration.
+    let body = readOnce(); // Arrival rate is independent of completion; no pacing sleep in an open iteration.
+    while (body.hasMore) { sleep(.001); body = readOnce(); }
   });
 }
 
@@ -116,10 +127,9 @@ export function writer() {
   const kind = flowKind(exec.scenario.iterationInTest);
   guarded(kind, () => {
     identity();
-    const slot = exec.vu.idInTest - readerVus - 1;
-    if (slot < 0 || slot >= writerVus) throw new Error('Writer slot outside disjoint pool');
+    const slot = writerSlot(exec.vu.idInTest, readerVus + writerVus, writerSeats.length / 2);
     const user = users[3000 + slot];
-    const seat = cfg.writerSeats[slot * 2], other = cfg.writerSeats[slot * 2 + 1];
+    const seat = writerSeats[slot * 2], other = writerSeats[slot * 2 + 1];
     if (!seat || !other) throw new Error('Writer seat pool exhausted');
     let checkout = request('POST', '/checkout-sessions', user, 'POST checkout', { sessionId: cfg.writerSession, seatIds: [seat] });
     if (kind === 'adjust') checkout = request('PUT', `/checkout-sessions/${checkout.id}/seats`, user, 'PUT checkout seats', { seatIds: [other], expectedRevision: checkout.revision });
@@ -132,12 +142,83 @@ export function writer() {
       if (cancelled.order?.status !== 'CANCELLED') throw new Error('Cancellation contract');
     } else if (kind === 'expiry') {
       sleep(cfg.holdTtlSeconds + 1);
-      const expired = request('GET', `/checkout-sessions/${checkout.id}`, user, 'GET expired checkout');
-      if (expired.status !== 'EXPIRED') throw new Error('Natural expiry did not complete');
+      // Redis TTL/read-model cleanup expires temporary ownership. The production
+      // Checkout state remains SELECTING; EXPIRED is an Order state, not Checkout.
+      const expired = request('GET', `/sessions/${cfg.writerSession}/seat-availability?zone=${encodeURIComponent(cfg.zones[0])}`, user, 'GET expiry snapshot');
+      if (expired.degraded || expired.seats?.find(s => s.id === seat)?.status !== 'AVAILABLE') throw new Error('Natural hold expiry did not complete');
+      request('POST', `/checkout-sessions/${checkout.id}/abandon`, user, 'POST expired checkout cleanup');
     } else {
       request('POST', `/checkout-sessions/${checkout.id}/abandon`, user, 'POST abandon');
     }
     flows.add(1, { kind, phase: phase() });
+  });
+}
+
+function contend(user, group, seat) {
+  const began = Date.now();
+  httpStarted.add(1, { name: 'POST hotspot', method: 'POST', phase: phase() });
+  writeRequests.add(1, { name: 'POST hotspot', phase: phase() });
+  const r = http.post(base + '/checkout-sessions', JSON.stringify({ sessionId: cfg.hotspotSession, seatIds: [seat] }), {
+    headers: headers(user), tags: { name: 'POST hotspot', phase: phase() }, timeout: '10s',
+  });
+  let body;
+  try { body = r.json(); } catch { body = {}; }
+  const outcome = r.status === 201 && body.id ? 'winner'
+    : r.status === 409 && ['SEAT_CONFLICT', 'SEAT_TEMPORARILY_HELD'].includes(body.code) ? 'conflict'
+      : r.status === 429 && body.code === 'RATE_LIMITED' ? 'rate_limited' : 'unexpected';
+  hotOutcomes.add(1, { group: String(group), outcome, status: String(r.status) });
+  if (outcome === 'winner') hotWinners.add(1);
+  if (outcome === 'unexpected') errors.add(1, { kind: 'hotspot_status', status: String(r.status) });
+  // Bounded ordinal timing, never account/session credentials or seat identifiers as tags.
+  console.log(JSON.stringify({ type: 'phase19-hot-timing', ordinal: exec.vu.idInTest, group, startEpochMs: began, endEpochMs: Date.now(), status: r.status, outcome }));
+}
+
+export function setup() { return { waveEpochMs: Date.now() + 5000 }; }
+
+export function hotspot(data) {
+  guarded('hotspot', () => {
+    identity(); hotWinners.add(0);
+    sleep(Math.max(0, data.waveEpochMs - Date.now()) / 1000);
+    contend(users[4000 + exec.vu.idInTest - 1], 'wave', 'phase19-ss-001-003-004000');
+  });
+}
+
+export function journey() {
+  const index = exec.scenario.iterationInTest;
+  const part = index % 100;
+  const kind = part < 75 ? 'browse' : part < 90 ? 'hold' : part < 98 ? 'order_cancel' : 'hotspot';
+  guarded('journey_' + kind, () => {
+    identity();
+    const user = users[index % users.length];
+    const session = cfg.journeySession;
+    const seat = `phase19-ss-001-005-${String(index % 5000 + 1).padStart(6, '0')}`;
+    if (kind === 'browse') {
+      request('GET', '/events', user, 'GET events');
+      request('GET', '/events/phase19-event-001/sessions', user, 'GET sessions');
+      request('GET', `/sessions/${session}/seat-layout`, user, 'GET layout');
+      const zone = cfg.zones[index % cfg.zones.length];
+      let body = validateSync(request('GET', `/sessions/${session}/seat-availability?zone=${encodeURIComponent(zone)}`, user, 'GET journey snapshot'), session, zone);
+      do {
+        body = validateSync(request('GET', `/sessions/${session}/seat-availability?zone=${encodeURIComponent(zone)}&generation=${encodeURIComponent(body.generation)}&since=${encodeURIComponent(body.cursor)}`, user, 'GET journey delta'), session, zone);
+        if (body.hasMore) sleep(.001);
+      } while (body.hasMore);
+    } else if (kind === 'hotspot') {
+      const group = Math.floor(index / 100) % 50;
+      contend(user, group, `phase19-ss-001-003-${String(group + 1).padStart(6, '0')}`);
+    } else {
+      const checkout = request('POST', '/checkout-sessions', user, 'POST journey checkout', { sessionId: session, seatIds: [seat] });
+      if (kind === 'hold') {
+        request('POST', `/checkout-sessions/${checkout.id}/abandon`, user, 'POST journey abandon');
+      } else {
+        const result = request('POST', `/checkout-sessions/${checkout.id}/confirm`, user, 'POST journey confirm');
+        const order = result.checkoutSession?.order;
+        if (!order) throw new Error('Journey confirmation');
+        request('GET', `/orders/${order.id}`, user, 'GET journey order');
+        const cancelled = request('POST', `/orders/${order.id}/cancel`, user, 'POST journey cancel');
+        if (cancelled.order?.status !== 'CANCELLED') throw new Error('Journey cancellation');
+      }
+    }
+    flows.add(1, { kind: 'journey_' + kind, phase: phase() });
   });
 }
 

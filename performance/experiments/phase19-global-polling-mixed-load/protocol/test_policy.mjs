@@ -1,5 +1,9 @@
 import assert from 'node:assert/strict';
-import { delayMs, compareCursor, flowKind, validateSync } from './policy.mjs';
+import { delayMs, compareCursor, flowKind, validateSync, writerSlot } from './policy.mjs';
+assert.deepEqual([1, 30, 7, 21].map(id => writerSlot(id, 30, 400)), [0, 29, 6, 20]);
+assert.throws(() => writerSlot(31, 30, 400));
+assert.throws(() => writerSlot(1, 401, 400));
+assert.throws(() => writerSlot(0, 30, 400));
 assert.equal(delayMs(5000, 3, 0, () => .5), 20000);
 assert.equal(delayMs(5000, 6, 0, () => 1), 30000);
 assert.equal(delayMs(2000, 0, 0, () => 0), 2000);

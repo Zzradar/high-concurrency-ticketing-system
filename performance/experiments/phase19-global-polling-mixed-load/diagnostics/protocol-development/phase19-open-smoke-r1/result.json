@@ -1,0 +1,23 @@
+{
+  "valid": false,
+  "diagnostic": true,
+  "reason": null,
+  "exitCode": 99,
+  "observerErrors": [
+    "Expecting value: line 1 column 1 (char 0)",
+    "Expecting value: line 1 column 1 (char 0)",
+    "Expecting value: line 1 column 1 (char 0)",
+    "Expecting value: line 1 column 1 (char 0)"
+  ],
+  "startedIterations": 528,
+  "completedBusinessIterations": 513,
+  "k6CompletedIterations": 528,
+  "interruptedIterations": 0,
+  "droppedIterations": 0,
+  "httpRequestCount": 542,
+  "cursorAdvances": 23,
+  "initializedActiveVUs": 30,
+  "endedUtc": "2026-09-13T10:41:11.773998+00:00",
+  "rawPointsSha256": "1e8bfcc77e7a7355f9e118ef829584a34042e52694945c6836a602224ae5ee3d",
+  "rawPointsBytes": 2141556
+}

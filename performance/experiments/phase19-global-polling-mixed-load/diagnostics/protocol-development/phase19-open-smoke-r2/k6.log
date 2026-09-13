@@ -1,0 +1,2 @@
+time="2026-09-13T10:51:35Z" level=error msg="Error: Natural expiry did not complete\n\tat file:///protocol/workload.js:146:47(196)\n\tat guarded (file:///protocol/workload.js:107:15(16))\n\tat writer (file:///protocol/workload.js:128:10(12))\n" executor=constant-arrival-rate hint="script exception" scenario=writers source=stacktrace
+time="2026-09-13T10:51:35Z" level=error msg="thresholds on metrics 'phase19_errors' have been crossed"

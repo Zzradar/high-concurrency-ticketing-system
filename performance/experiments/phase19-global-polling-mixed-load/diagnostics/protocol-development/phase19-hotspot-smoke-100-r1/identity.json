@@ -1,0 +1,73 @@
+{
+  "startedUtc": "2026-09-13T10:55:12.895729+00:00",
+  "diagnostic": true,
+  "stack": {
+    "prefix": "phase19-protocol-smoke",
+    "apiPort": 18392,
+    "frontendPort": 18393,
+    "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+    "binarySha256": "d9082f28bdf8d5bb8312cee40c9e6a79345b559554d4cbd2a301e742fae0bad5",
+    "images": {
+      "api": {
+        "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+        "digests": [
+          "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+        ]
+      },
+      "postgres": {
+        "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+        "digests": [
+          "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+        ]
+      },
+      "redis": {
+        "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+        "digests": [
+          "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+        ]
+      },
+      "frontend": {
+        "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+        "digests": [
+          "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+        ]
+      },
+      "k6": {
+        "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+        "digests": [
+          "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+        ]
+      }
+    },
+    "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+    "sourceCommit": "4d80bfdaaaa03ec4bb84ad7f903f0c27b9520cac"
+  },
+  "runtimeConfigSha256": "877e54aaf6882ee6f0365fd3686816fcf014b63bdde2ffcf693827bbc1f9da7d",
+  "protocolSha256": {
+    "calibrate.py": "6c0caa1167fb9cf85ffc1c30077434c9e87ef8b08ed9768673f802eff85dce94",
+    "harness.py": "1abaf8aaf1b2462e82bbb8fa76dba07d80a2750ce51ae4c8ea63229613799cc8",
+    "measure.py": "0e5fc4ab22ad9bebc10f6d8b1deb0454c357961a35201729535a9316c30e770f",
+    "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+    "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+    "resource_gate.py": "07869480d7946700e203f821ee65d05e011deac846e4f3fc9476d7e8d9764994",
+    "seed.py": "0bce2c718c78dc9851c67f0392dc52fb1e5d01451db7add54f3130582dd542f5",
+    "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+    "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+    "workload.js": "add1a65fd22779223ef3c1fc2c79b346c670a3cdb770e3da2cf4326bdaefe0c7"
+  },
+  "model": "hotspot",
+  "actualVUsRequested": 100,
+  "warmupSeconds": 0,
+  "observeSeconds": 40,
+  "targetDeltaIterationsPerSecond": null,
+  "targetStateTransitionsPerSecond": null,
+  "plannedReadIterationsTotal": null,
+  "plannedWriteFlowsTotal": null,
+  "generatorLimits": {
+    "cpus": 2,
+    "memoryBytes": 2147483648,
+    "nofile": 16384,
+    "pids": 256
+  },
+  "rawPoints": "private point output/k6-points.jsonl; no auth headers, bodies or high-cardinality identifiers in metric tags"
+}
