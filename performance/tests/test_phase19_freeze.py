@@ -25,6 +25,12 @@ class FreezeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'outside core'):
             freeze.qualification(result,identity,{**hashes,'resource_gate.py':'new-safety-rule'},1000,4)
 
+    def test_higher_maximum_requires_every_preceding_qualification(self):
+        self.assertEqual(freeze.qualified_tiers(1000),[100,250,500,1000])
+        self.assertEqual(freeze.qualified_tiers(2000),[100,250,500,1000,2000])
+        self.assertEqual(freeze.qualified_tiers(3000),[100,250,500,1000,2000,3000])
+        with self.assertRaises(ValueError):freeze.qualified_tiers(5000)
+
     def test_new_qualification_identity_cannot_escape_private_parent(self):
         parent=Path('private')
         self.assertEqual(freeze.qualification_directory(parent,4,2000,'phase19-r2-4g-{vus}'),parent/'phase19-r2-4g-2000')

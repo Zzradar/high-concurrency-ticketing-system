@@ -37,6 +37,11 @@ def qualification_directory(parent,memory_gib,vus,template=None):
     return parent/(f'phase19-calibration-4g-{vus}-r1' if memory_gib==4 else f'phase19-calibration-{vus}-r3')
 
 
+def qualified_tiers(max_vus):
+    if max_vus not in [1000,2000,3000]:raise ValueError('Unsupported qualified maximum')
+    return [n for n in [100,250,500,1000,2000,3000] if n<=max_vus]
+
+
 def main(args):
     frozen=EVIDENCE/'protocol-sha256.json'
     if frozen.exists():raise ValueError('Refuse replacing a frozen protocol')
@@ -45,11 +50,11 @@ def main(args):
         raise ValueError('Production changed before baseline freeze')
     files={p.name:sha(p) for p in PROTOCOL.iterdir() if p.is_file()}
     points={}
-    tiers=[100,250,500,1000]
     template=getattr(args,'qualification_template',None)
     max_vus=getattr(args,'max_vus',None)
     next_point=qualification_directory(args.private,args.memory_gib,2000,template)
-    if max_vus==2000 or max_vus is None and args.memory_gib==4 and (next_point/'result.json').exists():tiers.append(2000)
+    if max_vus is None:max_vus=2000 if args.memory_gib==4 and (next_point/'result.json').exists() else 1000
+    tiers=qualified_tiers(max_vus)
     for vus in tiers:
         directory=qualification_directory(args.private,args.memory_gib,vus,template)
         result=json.loads((directory/'result.json').read_text())
@@ -68,5 +73,5 @@ if __name__=='__main__':
     parser.add_argument('--private',type=Path,required=True)
     parser.add_argument('--memory-gib',type=int,choices=[2,4],required=True)
     parser.add_argument('--qualification-template')
-    parser.add_argument('--max-vus',type=int,choices=[1000,2000])
+    parser.add_argument('--max-vus',type=int,choices=[1000,2000,3000])
     main(parser.parse_args())

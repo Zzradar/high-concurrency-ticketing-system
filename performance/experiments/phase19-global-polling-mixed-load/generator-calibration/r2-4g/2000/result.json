@@ -1,0 +1,23 @@
+{
+  "valid": true,
+  "reason": null,
+  "exitCode": 0,
+  "vus": 2000,
+  "initializedVUs": 2000,
+  "droppedIterations": 0,
+  "startedIterations": 11620,
+  "completedIterations": 11620,
+  "interruptedOrUncompletedIterations": 0,
+  "peakBytes": 1086799872,
+  "peakCgroupBytes": 1075404800,
+  "cpuPeakQuotaFraction": 0.3710561877775286,
+  "fdPeak": 2007,
+  "tcpTableEntriesPeak": 2001,
+  "idleRssBytes": 524709888,
+  "elapsedSeconds": 138.9680000001099,
+  "sampling": "approximately 1-2s; startup before first sample can be missed",
+  "cleanup": "only point-owned containers and network removed",
+  "endedUtc": "2026-09-13T13:25:46.008605+00:00",
+  "rawPointsSha256": "3bb0f493bc30832da2522629587a51cf3b44b07ced7cea5dcc07630e8dee3841",
+  "rawPointsBytes": 2377198
+}

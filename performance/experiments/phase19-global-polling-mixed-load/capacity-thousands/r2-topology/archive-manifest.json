@@ -1,0 +1,24 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-formal-r2-private",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "fixture-manifest.json": {
+      "sourceSha256": "20c10083656138ffc835418405e6ca1ca97e2a45139e621319629874bb2eaa77",
+      "sourceBytes": 404,
+      "archivedSha256": "faa28f95cd7b81e94c5f62fd2275c40183150d74b5b1f6d9c69973ac28a0e340",
+      "archivedBytes": 394
+    },
+    "initial-verifier.json": {
+      "sourceSha256": "66f1873a9a01a6b7d6099204a452db2f7e9a08b44d8d3163f1950e23f09135b3",
+      "sourceBytes": 719,
+      "archivedSha256": "26bf8eced1a42b2f4cd158c1e6db1e02b9e4f280e46ebe8f197673a704c77b02",
+      "archivedBytes": 696
+    },
+    "stack.json": {
+      "sourceSha256": "707a4130d5bebc5d54c59043e685aa6e23088db99d48b2500f486deb781db0e9",
+      "sourceBytes": 1590,
+      "archivedSha256": "c4477e1dd16b755aa25bba4dfcb5978c1b53c6264d4ea49cf2e185e341929bf5",
+      "archivedBytes": 1549
+    }
+  }
+}
