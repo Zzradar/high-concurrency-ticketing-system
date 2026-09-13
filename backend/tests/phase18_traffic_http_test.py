@@ -2,6 +2,7 @@
 import concurrent.futures,hashlib,os,re,subprocess,time,unittest,urllib.request
 import phase18_admission_http_test as fixture
 from auth_test_support import anonymous_request
+from phase18_fixture_topology import topology
 
 def metric(name,resource):
  with urllib.request.urlopen(os.environ['PHASE18_BASE_URL']+'/metrics',timeout=5) as r:text=r.read().decode()
@@ -50,7 +51,7 @@ class TrafficHTTP(unittest.TestCase):
   fixture.until(lambda:metric('ticketing_traffic_inflight','AVAILABILITY')==0)
   self.assertEqual(metric('ticketing_traffic_peak_inflight','AVAILABILITY'),16)
   for _ in range(20):self.assertEqual(anonymous_request('/sessions/'+self.s+'/seats')[0],200)
-  observed=subprocess.run(['docker','exec','phase18-policy-api','cat','/proc/1/status'],capture_output=True,text=True,check=True).stdout
+  observed=subprocess.run(['docker','exec',topology()['api'],'cat','/proc/1/status'],capture_output=True,text=True,check=True).stdout
   values={k:int(re.search(r'^'+k+r':\s+(\d+)',observed,re.M).group(1)) for k in ['VmHWM','VmRSS','Threads']}
   self.assertLess(values['VmHWM'],1024*1024);self.assertLess(values['Threads'],256)
   print('Isolated API process sample (KiB, threads): '+str(values))

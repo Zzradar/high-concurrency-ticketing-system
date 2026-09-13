@@ -1,6 +1,7 @@
 """Actual Phase16 projector/initializer exits and recovery under Phase18, own namespace only."""
 import concurrent.futures,json,os,secrets,subprocess,time,unittest,uuid,urllib.request
 from pathlib import Path
+from phase18_fixture_topology import topology
 import phase18_admission_http_test as f
 SESSION='p18-s-5000';PREFIX='ticketing:seat-availability:{'+SESSION+'}';SEAT=SESSION+'-ss-00001'
 class AvailabilityFault(unittest.TestCase):
@@ -16,7 +17,7 @@ class AvailabilityFault(unittest.TestCase):
    docker('start',f.REDIS)
    f.sql("UPDATE session_seats SET status='AVAILABLE' WHERE id='"+SEAT+"'")
    for name in names:docker('stop',name)
-   docker('start','phase18-policy-api','phase18-policy-no-secret-api')
+   docker('start',topology()['api'],topology()['no_secret_api'])
   self.addCleanup(restore)
   def request(at=base,query=''):
    return json.load(urllib.request.urlopen(at+'/sessions/'+SESSION+'/seat-availability?zone=Zone%200'+query,timeout=12))
@@ -26,9 +27,9 @@ class AvailabilityFault(unittest.TestCase):
     except Exception:return False
    return f.until(check,seconds=25)
   def fault(flag):
-   name='phase18-availability-fault-'+uuid.uuid4().hex[:8];names.append(name)
-   docker('create','--name',name,'--network','phase18-policy-data','-p','127.0.0.1:18189:8080','--cpus','2','--memory','1g','--pids-limit','256','-e',flag+'=1','-e','TICKETING_ADMISSION_HMAC_SECRET='+secrets.token_hex(32),'--mount','type=bind,source='+str(Path(os.environ['PHASE18_BINARY']))+',target=/sut/ticketing_backend,readonly','--mount','type=bind,source='+str(folder/'config.json')+',target=/sut/config.json,readonly','--workdir','/tmp','--entrypoint','/sut/ticketing_backend','phase14-engineering-build:20260910-v3','/sut/config.json')
-   docker('network','connect','phase18-policy-ingress',name);docker('start',name);return name
+   name=topology()['prefix']+'-availability-fault-'+uuid.uuid4().hex[:8];names.append(name)
+   docker('create','--name',name,'--network',topology()['data'],'-p','127.0.0.1:18189:8080','--cpus','2','--memory','1g','--pids-limit','256','-e',flag+'=1','-e','TICKETING_ADMISSION_HMAC_SECRET='+secrets.token_hex(32),'--mount','type=bind,source='+str(Path(os.environ['PHASE18_BINARY']))+',target=/sut/ticketing_backend,readonly','--mount','type=bind,source='+str(folder/'config.json')+',target=/sut/config.json,readonly','--workdir','/tmp','--entrypoint','/sut/ticketing_backend','phase14-engineering-build:20260910-v3','/sut/config.json')
+   docker('network','connect',topology()['ingress'],name);docker('start',name);return name
   # Forty-eight cold reads, concurrency eight: below the new deliberate local limit sixteen.
   # This capability is not the frozen A/B protocol and makes no 24-concurrency all-200 claim.
   healthy();f.until(lambda:f.sql('SELECT count(*) FROM seat_availability_outbox')=='0')
@@ -38,23 +39,23 @@ class AvailabilityFault(unittest.TestCase):
   with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:responses=list(pool.map(lambda _:request(),range(48)))
   self.assertEqual(len({r['generation'] for r in responses}),1);self.assertEqual(int(f.sql(query))-before,1)
   evidence['cold']={'requests':48,'concurrency':8,'fullPgQueries':1,'totalSessionSeats':5000};print('cold singleflight PASS',flush=True)
-  docker('stop','phase18-policy-no-secret-api');old=request();docker('stop','phase18-policy-api')
+  docker('stop',topology()['no_secret_api']);old=request();docker('stop',topology()['api'])
   length=f.redis('XLEN',PREFIX+':zone:Zone 0:changes');f.sql("UPDATE session_seats SET status='SOLD' WHERE id='"+SEAT+"'")
   name=fault('PHASE16_FAULT_AFTER_REDIS_APPLY');f.until(lambda:docker('inspect','-f','{{.State.Running}}',name)=='false')
   self.assertEqual(docker('inspect','-f','{{.State.ExitCode}}',name),'86');self.assertGreater(int(f.sql('SELECT count(*) FROM seat_availability_outbox')),0)
   self.assertEqual(f.redis('XLEN',PREFIX+':zone:Zone 0:changes'),length+1)
-  docker('start','phase18-policy-api');healthy();f.until(lambda:f.sql('SELECT count(*) FROM seat_availability_outbox')=='0')
+  docker('start',topology()['api']);healthy();f.until(lambda:f.sql('SELECT count(*) FROM seat_availability_outbox')=='0')
   self.assertEqual(f.redis('XLEN',PREFIX+':zone:Zone 0:changes'),length+1)
   delta=request(query='&generation='+old['generation']+'&since='+str(old['cursor']));self.assertIn({'id':SEAT,'status':'SOLD'},delta['changes'])
   f.sql("UPDATE session_seats SET status='AVAILABLE' WHERE id='"+SEAT+"'");f.until(lambda:f.sql('SELECT count(*) FROM seat_availability_outbox')=='0')
   evidence['projectorCrash']={'exitCode':86,'duplicateChanges':0,'outboxDrained':True};print('projector crash PASS',flush=True)
-  old=request();docker('stop','phase18-policy-api');f.redis('DEL',PREFIX+':meta');name=fault('PHASE16_FAULT_AFTER_PG_SNAPSHOT');healthy('http://127.0.0.1:18189')
+  old=request();docker('stop',topology()['api']);f.redis('DEL',PREFIX+':meta');name=fault('PHASE16_FAULT_AFTER_PG_SNAPSHOT');healthy('http://127.0.0.1:18189')
   try:request(at='http://127.0.0.1:18189')
   except Exception:pass
   f.until(lambda:docker('inspect','-f','{{.State.Running}}',name)=='false');self.assertEqual(docker('inspect','-f','{{.State.ExitCode}}',name),'87')
   self.assertEqual(f.redis('EXISTS',PREFIX+':meta'),0)
   f.until(lambda:f.redis('EXISTS',PREFIX+':init-lock')==0,seconds=20)
-  docker('start','phase18-policy-api');healthy();self.assertNotEqual(request()['generation'],old['generation'])
+  docker('start',topology()['api']);healthy();self.assertNotEqual(request()['generation'],old['generation'])
   evidence['initializerCrash']={'exitCode':87,'newGeneration':True};print('initializer crash PASS',flush=True)
   old=request();docker('stop',f.REDIS)
   try:

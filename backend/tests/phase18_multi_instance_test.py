@@ -2,7 +2,7 @@
 import os,subprocess,time,unittest,uuid,hashlib,concurrent.futures,urllib.request
 os.environ['PHASE18_BASE_URL']=os.environ['TICKETING_BASE_URL']
 project=os.environ.get('COMPOSE_PROJECT_NAME','phase18-financial')
-assert project.startswith('phase18-')
+assert project.startswith(('phase18-', 'phase19-'))
 os.environ['PHASE18_POSTGRES_CONTAINER']=project+'-postgres-1'
 os.environ['PHASE18_REDIS_CONTAINER']=project+'-redis-1'
 import phase18_admission_http_test as f
@@ -19,7 +19,7 @@ class PeerHandler(urllib.request.BaseHandler):
   request.full_url=request.full_url.replace('127.0.0.1:18186','127.0.0.1:18188');return request
 class MultiInstance(unittest.TestCase):
  def test_duplicate_join_and_release_are_atomic_across_two_apis(self):
-  name='phase18-financial-admission-peer-'+uuid.uuid4().hex[:8]
+  name=project+'-admission-peer-'+uuid.uuid4().hex[:8]
   r=subprocess.run(['docker','compose','run','-d','--no-deps','--name',name,'-p','127.0.0.1:18188:8080','backend'],capture_output=True,text=True)
   self.assertEqual(r.returncode,0,r.stderr)
   self.addCleanup(lambda:subprocess.run(['docker','stop',name],check=True,capture_output=True))

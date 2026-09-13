@@ -4,12 +4,13 @@ from pathlib import Path
 import phase18_admission_http_test as f
 from phase18_traffic_http_test import metric
 from auth_test_support import anonymous_request
+from phase18_fixture_topology import topology
 class InventoryFault(unittest.TestCase):
  setUp=f.AdmissionHTTP.setUp
  policy=f.AdmissionHTTP.policy
  def test_inventory_timeout_rolls_back_and_cools_scheduler(self):
   config=Path(os.environ['PHASE18_FAULT_CONFIG']); original=config.read_bytes()
-  self.assertEqual(os.environ['PHASE18_FAULT_API'],'phase18-policy-api')
+  self.assertEqual(os.environ['PHASE18_FAULT_API'],topology()['api'])
   def restart():
    subprocess.run(['docker','restart',os.environ['PHASE18_FAULT_API']],capture_output=True,check=True)
    def healthy():
