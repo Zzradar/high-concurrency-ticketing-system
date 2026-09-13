@@ -30,6 +30,7 @@ let wrapper: VueWrapper | undefined
 let testRouter: ReturnType<typeof createRouter>
 
 beforeEach(() => {
+  vi.spyOn(Math, 'random').mockReturnValue(.5)
   vi.useFakeTimers()
   vi.stubEnv('VITE_STRIPE_PUBLISHABLE_KEY', 'pk_test_unit')
   vi.clearAllMocks()
@@ -353,7 +354,9 @@ describe('declined payment recovery', () => {
 
     attempt = { ...attempt, status: 'FAILED', failureReason: 'card_declined' }
     const orderReads = vi.mocked(ticketApi.getOrder).mock.calls.length
-    await vi.advanceTimersByTimeAsync(1000)
+    await vi.advanceTimersByTimeAsync(1999)
+    expect(ticketApi.getPaymentAttempt).toHaveBeenCalledTimes(2)
+    await vi.advanceTimersByTimeAsync(1)
     expect(fake.instances[0]!.destroy).toHaveBeenCalledOnce()
     expect(wrapper!.findComponent(StripePaymentPanel).exists()).toBe(false)
     expect(wrapper!.get('.order-pay-button').attributes('disabled')).toBeUndefined()
@@ -437,7 +440,7 @@ describe('declined payment recovery', () => {
     expect(ticketApi.payOrder).toHaveBeenCalledOnce()
   })
 
-  it('late old Attempt reads cannot replace B or destroy its Element', async () => {
+  it('drains A before another payment can start and never destroys B with old work', async () => {
     fake.confirmPayment.mockResolvedValue({ error: { type: 'card_error', message: '拒付' } })
     let resolveOld!: (value: PaymentAttempt) => void
     vi.mocked(ticketApi.getPaymentAttempt).mockImplementationOnce(() => new Promise((resolve) => { resolveOld = resolve }))
@@ -445,10 +448,15 @@ describe('declined payment recovery', () => {
     const failed = { ...attempt, status: 'FAILED' as const }
     attempt = failed
     await refresh()
+    expect(ticketApi.getPaymentAttempt).toHaveBeenCalledTimes(1)
+    await start()
+    expect(ticketApi.payOrder).toHaveBeenCalledTimes(1)
+    resolveOld(failed); await flushPromises()
+    expect(fake.instances[0]!.destroy).toHaveBeenCalledOnce()
     attempt = { ...attempt, id: 'P2', status: 'PROCESSING' }
     vi.mocked(ticketApi.payOrder).mockResolvedValue({ disposition: 'STARTED_NEW', order: currentOrder, paymentAttempt: attempt, paymentAction: { ...action, clientSecret: 'pi_B_secret_fake' } })
     await start()
-    resolveOld(failed); await flushPromises()
+    await vi.advanceTimersByTimeAsync(5000)
     expect(wrapper!.findComponent(StripePaymentPanel).props('paymentAttemptId')).toBe('P2')
     expect(fake.instances[1]!.destroy).not.toHaveBeenCalled()
     expect(fake.instances[0]!.destroy).toHaveBeenCalledOnce()

@@ -1,6 +1,6 @@
-# 全局网络轮询治理设计（实现前）
+# 全局网络轮询治理设计
 
-当前状态：本文件记录已审阅的实现约束。前端生产源码仍为 Phase18 准确基线；只有重新冻结协议后的完整 Stage2 基线结束，才应用实现。验收测试位于 frontend/tests/phase19.*，当前刻意暴露基线缺陷，不能记为通过。
+当前状态：完整 Stage2 基线已封存于 capacity-thousands/baseline/manifest.json 后应用实现。实施工作树完整 Vitest 为 328 tests / 42 files 通过，HTTP 模式 production build 通过；浏览器 after 单独按冻结协议验收。隔离副本的早期失败和修正保留在 diagnostics/frontend-proposal*，不计为正式 A/B。
 
 ## 复用边界
 
@@ -25,3 +25,9 @@ salesWindow、OrderSummary 的本地倒计时继续更新，不纳入网络请�
 ## 验证
 
 fake timers、固定 RNG、可控延迟 Promise 验证单在途、身份隔离、两个 visibility/focus 顺序、长 Retry-After、隐藏跨期限及终态。完整既有组件测试和 TypeScript production build 必须通过。随后使用同一冻结协议运行七场景 60s visible / 91s hidden / 30s restored 浏览器 A/B，以实际 XHR/fetch 发起时间和原生 visibility 判断，不替换 document.hidden 或浏览器定时器。
+
+## 身份与激活边界
+
+认证生命周期递增本地 epoch，HTTP 401 只有与发起请求相同的当前 epoch 才能清除会话；旧账号的迟到 401 不得退出新账号。logout 在网络响应前清除本地身份，迟到退出响应不再清除新登录。真实 hidden/blur 重置激活合并窗口，保证快速切回也有一次权威读取；同一激活的 visible/focus 和派生业务事件在 500ms 内合并。
+
+手动订单刷新加入已有请求，避免在途结束后再排队一次相同读取。Payment/Checkout 恢复使用业务身份和可见性代次核对每个异步结果。原 Admission 和 Availability 的状态机保持复用，身份退出时同时停止旧页面的 Availability，并保留既有登录跳转。

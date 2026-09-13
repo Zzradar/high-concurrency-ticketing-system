@@ -20,7 +20,7 @@ describe('bounded server-directed polling',()=>{
   expect(validPollHint(0,true)).toBe(true);expect(validPollHint(0)).toBe(false)
   expect(retryHint('2000','2',0)).toBe(2000)
   expect(retryHint(1000,'Thu, 01 Jan 1970 00:00:05 GMT',0)).toBe(5000)
-  expect(retryHint(undefined,'999999999999999999999',0)).toBe(30000)
+  expect(retryHint(undefined,'999999999999999999999',0)).toBeUndefined()
   expect(retryHint(undefined,'garbage')).toBeUndefined()
  })
  it('validates the complete availability runtime contract before applying it',()=>{

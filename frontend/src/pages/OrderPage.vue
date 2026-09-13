@@ -2,6 +2,9 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ticketApi, TicketApiError } from '../api/ticketApi'
+import { authState } from '../auth/authState'
+import { SingleFlight } from '../utils/singleFlight'
+import { nextPollDelay } from '../utils/pollingPolicy'
 import PageBreadcrumbs from '../components/PageBreadcrumbs.vue'
 import PageState from '../components/PageState.vue'
 import StripePaymentPanel from '../components/StripePaymentPanel.vue'
@@ -30,6 +33,8 @@ const error = ref('')
 const refundSubmitting = ref(false)
 const refundMessage = ref('')
 let refundTimer: number | undefined
+let refundHint = 2000, refundEmpty = 0, refundErrors = 0
+let refundRetry: number | undefined
 let foreground = document.visibilityState !== 'hidden' && document.hasFocus()
 let resumedByVisibility = false
 let disposed = false
@@ -40,11 +45,18 @@ let pageGeneration = 0
 let readGeneration = 0
 let attemptReadGeneration = 0
 let paymentTimer: number | undefined
+let paymentDeadline = 0, paymentEmpty = 0, paymentErrors = 0
+let paymentRetry: number | undefined
+let visibilityGeneration = 0
+let paymentWork: { generation: number; visible: number; promise: Promise<void> } | undefined
+const attemptReads = new SingleFlight<PaymentAttempt>()
 
 function stopPayment() {
   paymentGeneration++
   attemptReadGeneration++
   window.clearTimeout(paymentTimer)
+  paymentDeadline = 0
+  paymentEmpty = 0; paymentErrors = 0; paymentRetry = undefined
   paymentPolling.value = false
   paymentAttempt.value = null
   paymentAction.value = null
@@ -85,7 +97,10 @@ async function readOrder(page: number, read: number, silent: boolean) {
     const orderId = String(route.params.orderId)
     let value = await ticketApi.getOrder(orderId)
     if (page !== pageGeneration || read !== readGeneration) return false
-    const completed = order.value?.buyerRefund?.status === 'PROCESSING' && value.buyerRefund?.status === 'SUCCEEDED'
+    const previousRefund = order.value?.buyerRefund?.status
+    refundEmpty = previousRefund === 'PROCESSING' && value.buyerRefund?.status === previousRefund ? Math.min(6, refundEmpty + 1) : 0
+    refundErrors = 0; refundRetry = undefined
+    const completed = previousRefund === 'PROCESSING' && value.buyerRefund?.status === 'SUCCEEDED'
     adoptOrder(value)
     refundMessage.value = ''
     if (completed) {
@@ -102,6 +117,8 @@ async function readOrder(page: number, read: number, silent: boolean) {
     return true
   } catch (cause) {
     if (page !== pageGeneration || read !== readGeneration) return false
+    refundErrors = Math.min(5, refundErrors + 1)
+    refundRetry = cause instanceof TicketApiError ? cause.retryAfterMs : undefined
     if (cause instanceof TicketApiError && cause.code === 'ORDER_NOT_FOUND') order.value = null
     error.value = '订单加载失败，请稍后刷新。'
     return false
@@ -113,7 +130,7 @@ async function readOrder(page: number, read: number, silent: boolean) {
 function scheduleRefund() {
   window.clearTimeout(refundTimer)
   if (disposed || !foreground || orderRead || refundSubmitting.value || order.value?.buyerRefund?.source !== 'BUYER' || order.value.buyerRefund.status !== 'PROCESSING') return
-  refundTimer = window.setTimeout(() => void refreshOrder(true), 2000)
+  refundTimer = window.setTimeout(() => void refreshOrder(true), nextPollDelay({ pollAfterMs: refundHint, emptyStreak: refundEmpty, errorStreak: refundErrors, retryAfterMs: refundRetry }))
 }
 
 async function requestRefund() {
@@ -127,6 +144,8 @@ async function requestRefund() {
   try {
     const result = await ticketApi.createRefund(current.id)
     if (page !== pageGeneration) return
+    refundHint = result.pollAfterMs
+    refundEmpty = 0; refundErrors = 0; refundRetry = undefined
     const refund = result.refund
     if (refund.source !== 'BUYER' || refund.reason !== 'BUYER_REQUESTED' || refund.orderId !== current.id) {
       throw new Error('Refund identity mismatch')
@@ -164,30 +183,86 @@ async function requestRefund() {
   }
 }
 
+async function readAttempt(attemptId: string, generation: number) {
+  const page = pageGeneration, visible = visibilityGeneration
+  const current = () => !disposed && page === pageGeneration && generation === paymentGeneration && visible === visibilityGeneration
+  return attemptReads.run(`${page}:${generation}:${visible}:${attemptId}`, () => ticketApi.getPaymentAttempt(attemptId), current)
+}
 async function syncAttempt(attemptId: string, generation: number) {
   const read = ++attemptReadGeneration
-  const attempt = await ticketApi.getPaymentAttempt(attemptId)
-  if (generation !== paymentGeneration || read !== attemptReadGeneration) return
+  const attempt = await readAttempt(attemptId, generation)
+  if (!attempt || generation !== paymentGeneration || read !== attemptReadGeneration) return
   if (attempt.id !== attemptId || attempt.orderId !== order.value?.id) {
     error.value = '支付恢复信息与当前订单不匹配，已忽略。'
     return
   }
+  paymentEmpty = paymentAttempt.value?.status === attempt.status ? Math.min(6, paymentEmpty + 1) : 0
+  paymentErrors = 0; paymentRetry = undefined
   paymentAttempt.value = attempt
   if (attempt.status === 'FAILED' || attempt.status === 'SUCCEEDED' || (attempt.status === 'TIMED_OUT' && !paymentAction.value)) {
     stopPayment()
-    // Do not reopen payment until the authoritative Order has also been refreshed.
     paymentBlocked.value = true
     const settledGeneration = paymentGeneration
     const refreshed = await refreshOrder(true)
-    if (settledGeneration === paymentGeneration && refreshed) paymentBlocked.value = false
+    if (settledGeneration !== paymentGeneration || disposed) return
+    if (refreshed) paymentBlocked.value = false
     requestNotificationRefresh()
     showNotice(attempt.status === 'SUCCEEDED' ? '支付结果已处理，订单状态已同步。' : '支付未完成，请查看最新订单状态。')
   }
   return attempt.status
 }
+function paymentReadFailed(cause: unknown) {
+  paymentErrors = Math.min(5, paymentErrors + 1)
+  paymentRetry = cause instanceof TicketApiError ? cause.retryAfterMs : undefined
+  error.value = '支付结果暂未确认，请稍后刷新订单状态。'
+}
+function finishPaymentWindow() {
+  window.clearTimeout(paymentTimer)
+  paymentPolling.value = false
+  error.value = '支付结果仍在处理中，请稍后刷新订单和通知。'
+}
+function schedulePayment() {
+  window.clearTimeout(paymentTimer)
+  if (disposed || !foreground || document.hidden || !paymentPolling.value || paymentWork || !paymentAttempt.value) return
+  const remaining = paymentDeadline - Date.now()
+  if (remaining <= 0) { finishPaymentWindow(); return }
+  const delay = nextPollDelay({ emptyStreak: paymentEmpty, errorStreak: paymentErrors, retryAfterMs: paymentRetry }, Math.random, { baseMs: 1000, maxMs: 5000 })
+  paymentTimer = window.setTimeout(() => {
+    if (Date.now() >= paymentDeadline) finishPaymentWindow()
+    else void paymentTick(paymentAttempt.value!.id)
+  }, Math.min(delay, remaining))
+}
+async function paymentTick(attemptId: string) {
+  const generation = paymentGeneration, visible = visibilityGeneration
+  const current = () => !disposed && generation === paymentGeneration && visible === visibilityGeneration
+  if (paymentWork) {
+    const pending = paymentWork
+    if (pending.generation === generation && pending.visible === visible) return pending.promise
+    await pending.promise
+    if (current()) return paymentTick(attemptId)
+    return
+  }
+  if (disposed || document.hidden || !foreground || !paymentPolling.value) return
+  const work = (async () => {
+    try {
+      await syncAttempt(attemptId, generation)
+      if (!current() || document.hidden || !paymentPolling.value) return
+      if (Date.now() >= paymentDeadline) { finishPaymentWindow(); return }
+      if (!await refreshOrder(true)) {
+        if (current()) { paymentErrors = refundErrors; paymentRetry = refundRetry }
+      }
+    } catch (cause) {
+      if (current()) paymentReadFailed(cause)
+    }
+  })()
+  paymentWork = { generation, visible, promise: work }
+  try { await work } finally {
+    if (paymentWork?.promise === work) paymentWork = undefined
+    if (current()) schedulePayment()
+  }
+}
 
 async function refreshStatus(silent = false) {
-  if (!silent) readGeneration++
   const generation = paymentGeneration
   const attemptId = paymentAttempt.value?.id
   const refreshed = await refreshOrder(silent)
@@ -199,33 +274,21 @@ async function refreshStatus(silent = false) {
   if (!attemptId) return
   try {
     await syncAttempt(attemptId, generation)
-  } catch {
-    if (generation === paymentGeneration) error.value = '支付结果暂未确认，请稍后刷新订单状态。'
+  } catch (cause) {
+    if (generation === paymentGeneration) paymentReadFailed(cause)
+  } finally {
+    if (generation === paymentGeneration && paymentDeadline && Date.now() >= paymentDeadline && paymentAttempt.value) finishPaymentWindow()
+    else schedulePayment()
   }
 }
 
 function pollPayment(attemptId: string) {
   window.clearTimeout(paymentTimer)
-  const generation = ++paymentGeneration
+  paymentGeneration++
   paymentPolling.value = true
-  const started = Date.now()
-  const poll = async () => {
-    if (generation !== paymentGeneration) return
-    try {
-      await syncAttempt(attemptId, generation)
-      if (generation !== paymentGeneration) return
-      await refreshOrder(true)
-      if (generation !== paymentGeneration) { requestNotificationRefresh(); return }
-    } catch { /* retry transient reads */ }
-    if (generation !== paymentGeneration) return
-    if (Date.now() - started >= 15000) {
-      paymentPolling.value = false
-      error.value = '支付结果仍在处理中，请稍后刷新订单和通知。'
-      return
-    }
-    paymentTimer = window.setTimeout(poll, 1000)
-  }
-  void poll()
+  paymentDeadline = Date.now() + 15000
+  paymentEmpty = 0; paymentErrors = 0; paymentRetry = undefined
+  void paymentTick(attemptId)
 }
 
 async function pay() {
@@ -328,6 +391,8 @@ function blurSync() {
   foreground = false
   resumedByVisibility = false
   window.clearTimeout(refundTimer)
+  window.clearTimeout(paymentTimer)
+  visibilityGeneration++
 }
 
 function visibilitySync() {
@@ -351,8 +416,8 @@ async function restore() {
       error.value = '支付恢复信息无效，请刷新订单状态。'
       return
     }
-    const attempt = await ticketApi.getPaymentAttempt(hint)
-    if (page !== pageGeneration) return
+    const attempt = await readAttempt(hint, paymentGeneration)
+    if (!attempt || page !== pageGeneration) return
     if (attempt.orderId !== order.value.id) {
       error.value = '支付恢复信息与当前订单不匹配，已忽略。'
       return
@@ -368,7 +433,7 @@ async function restore() {
   }
 }
 
-watch(() => route.params.orderId, () => {
+function resetPage() {
   pageGeneration++
   readGeneration++
   window.clearTimeout(refundTimer)
@@ -382,7 +447,14 @@ watch(() => route.params.orderId, () => {
   paymentStarting.value = false
   cancelling.value = false
   stripeMode.value = Boolean(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY?.trim())
-  void restore()
+  refundHint = 2000; refundEmpty = 0; refundErrors = 0; refundRetry = undefined
+  focusRead = null
+}
+watch(() => route.params.orderId, () => { resetPage(); void restore() })
+watch(() => authState.currentUser.value?.id, user => {
+  resetPage()
+  if (user) void restore()
+  else { loading.value = false; error.value = '请登录后查看订单。' }
 })
 
 onMounted(() => {

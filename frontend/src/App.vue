@@ -3,8 +3,10 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Bell, ChevronDown, CircleUserRound, Database, TicketCheck } from '@lucide/vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { authState } from './auth/authState'
-import { isMockMode, ticketApi } from './api/ticketApi'
+import { isMockMode, ticketApi, TicketApiError } from './api/ticketApi'
 import { routeNames } from './navigation'
+import { SingleFlight } from './utils/singleFlight'
+import { nextPollDelay } from './utils/pollingPolicy'
 import type { UserNotification } from './types'
 
 const router = useRouter()
@@ -28,6 +30,7 @@ function toggleAccount() {
 function toggleNotifications() {
   notificationsOpen.value = !notificationsOpen.value
   accountOpen.value = false
+  if (notificationsOpen.value) void refreshNotifications()
 }
 
 function closeAccountOutside(event: Event) {
@@ -48,16 +51,51 @@ let noticeTimer: number | null = null
 
 const unreadCount = computed(() => notifications.value.filter((item) => !item.readAt).length)
 
+const notificationReads = new SingleFlight<void>()
+let notificationEpoch = 0
+let notificationDisposed = false
+let loggingOut = false
+let notificationWasHidden = document.hidden
+let lastActivation = -Infinity
+let notificationSignature: string | undefined
+let notificationEmpty = 0
+let notificationErrors = 0
+let notificationRetry: number | undefined
+
+function clearNotificationTimer() {
+  if (notificationTimer !== null) window.clearTimeout(notificationTimer)
+  notificationTimer = null
+}
+function invalidateNotifications() {
+  notificationEpoch++
+  clearNotificationTimer()
+}
 async function refreshNotifications() {
-  if (!authState.currentUser.value) {
-    notifications.value = []
-    return
-  }
-  try {
-    notifications.value = await ticketApi.getNotifications()
-  } catch {
-    // Notifications are only signals; route pages re-fetch authoritative state.
-  }
+  const epoch = notificationEpoch, userId = authState.currentUser.value?.id
+  const current = () => !notificationDisposed && !loggingOut && !document.hidden && !!userId &&
+    epoch === notificationEpoch && userId === authState.currentUser.value?.id
+  if (!current()) return
+  clearNotificationTimer()
+  await notificationReads.run(`${epoch}:${userId}`, async () => {
+    try {
+      const value = await ticketApi.getNotifications()
+      if (!current()) return
+      const signature = JSON.stringify(value.map(item => [item.id, item.readAt ?? null]).sort((a, b) => String(a[0]).localeCompare(String(b[0]))))
+      notificationEmpty = signature === notificationSignature ? Math.min(6, notificationEmpty + 1) : 0
+      notificationSignature = signature
+      notificationErrors = 0; notificationRetry = undefined
+      notifications.value = value
+    } catch (cause) {
+      if (!current()) return
+      notificationErrors = Math.min(5, notificationErrors + 1)
+      notificationRetry = cause instanceof TicketApiError ? cause.retryAfterMs : undefined
+      // Notifications are only signals; their failure never blocks navigation.
+    } finally {
+      if (current()) notificationTimer = window.setTimeout(() => void refreshNotifications(), nextPollDelay({
+        emptyStreak: notificationEmpty, errorStreak: notificationErrors, retryAfterMs: notificationRetry,
+      }, Math.random, { baseMs: 30000, maxMs: 60000 }))
+    }
+  }, current)
 }
 
 async function openNotification(notification: UserNotification) {
@@ -70,8 +108,13 @@ async function openNotification(notification: UserNotification) {
 }
 
 async function logout() {
+  loggingOut = true
+  invalidateNotifications()
+  notifications.value = []
+  notificationsOpen.value = false
   accountOpen.value = false
   const result = await authState.logout()
+  if (notificationDisposed || authState.currentUser.value) return
   notifications.value = []
   notificationsOpen.value = false
   await router.replace({ name: routeNames.login })
@@ -87,28 +130,55 @@ function handleNotice(event: Event) {
 }
 
 function handleFocus() {
+  if (document.hidden || notificationDisposed || loggingOut) return
+  notificationWasHidden = false
+  // A page's authority read may emit its notification signal after focus completes.
+  if (Date.now() - lastActivation < 500) return
+  lastActivation = Date.now()
   void refreshNotifications()
 }
-
-watch(() => authState.currentUser.value?.id, () => void refreshNotifications())
+function notificationVisibility() {
+  if (document.hidden) {
+    notificationWasHidden = true
+    lastActivation = -Infinity
+    invalidateNotifications()
+  } else if (notificationWasHidden) handleFocus()
+}
+function notificationBlur() { lastActivation = -Infinity }
+function notificationSignal() {
+  if (Date.now() - lastActivation < 500) return
+  void refreshNotifications()
+}
+watch(() => authState.currentUser.value?.id, () => {
+  invalidateNotifications()
+  notifications.value = []
+  notificationSignature = undefined
+  notificationEmpty = 0; notificationErrors = 0; notificationRetry = undefined
+  lastActivation = -Infinity; loggingOut = false
+  void refreshNotifications()
+}, { immediate: true })
 
 onMounted(() => {
   document.addEventListener('click', closeAccountOutside)
   document.addEventListener('keydown', closeAccountOnEscape)
-  void authState.refreshMe().then(refreshNotifications)
+  void authState.refreshMe().catch(() => { /* Authentication failure is handled by the auth state. */ })
   window.addEventListener('focus', handleFocus)
+  window.addEventListener('blur', notificationBlur)
   window.addEventListener('ticketing:notice', handleNotice)
-  window.addEventListener('ticketing:refresh-notifications', handleFocus)
-  notificationTimer = window.setInterval(() => void refreshNotifications(), 5000)
+  window.addEventListener('ticketing:refresh-notifications', notificationSignal)
+  document.addEventListener('visibilitychange', notificationVisibility)
 })
 
 onBeforeUnmount(() => {
+  notificationDisposed = true
+  invalidateNotifications()
   document.removeEventListener('click', closeAccountOutside)
   document.removeEventListener('keydown', closeAccountOnEscape)
   window.removeEventListener('focus', handleFocus)
+  window.removeEventListener('blur', notificationBlur)
   window.removeEventListener('ticketing:notice', handleNotice)
-  window.removeEventListener('ticketing:refresh-notifications', handleFocus)
-  if (notificationTimer !== null) window.clearInterval(notificationTimer)
+  window.removeEventListener('ticketing:refresh-notifications', notificationSignal)
+  document.removeEventListener('visibilitychange', notificationVisibility)
   if (noticeTimer !== null) window.clearTimeout(noticeTimer)
 })
 </script>

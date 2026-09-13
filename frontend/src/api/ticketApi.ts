@@ -81,7 +81,12 @@ function cookieValue(name: string) {
   return item ? decodeURIComponent(item.slice(prefix.length)) : ''
 }
 
+let authenticationEpoch = 0
+const requestAuthentication = new WeakMap<object, number>()
+export function advanceAuthenticationEpoch() { authenticationEpoch++ }
+
 http.interceptors.request.use((config) => {
+  requestAuthentication.set(config, authenticationEpoch)
   const method = (config.method ?? 'get').toUpperCase()
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
     const csrf = cookieValue('ticketing_csrf')
@@ -98,7 +103,7 @@ export function onUnauthenticated(handler: () => void) {
 http.interceptors.response.use(
   (response) => response,
   (error: unknown) => {
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
+    if (axios.isAxiosError(error) && error.response?.status === 401 && error.config && requestAuthentication.get(error.config) === authenticationEpoch) {
       unauthenticatedHandler?.()
     }
     return Promise.reject(normalizeApiError(error))

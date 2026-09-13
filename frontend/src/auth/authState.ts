@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { readonly, ref } from 'vue'
-import { onUnauthenticated, ticketApi, TicketApiError } from '../api/ticketApi'
+import { advanceAuthenticationEpoch, onUnauthenticated, ticketApi, TicketApiError } from '../api/ticketApi'
 import type { CurrentUser } from '../types'
 
 const currentUserState = ref<CurrentUser | null>(null)
@@ -10,6 +10,7 @@ let authRevision = 0
 
 function clearAuth() {
   authRevision++
+  advanceAuthenticationEpoch()
   currentUserState.value = null
 }
 
@@ -40,8 +41,11 @@ async function ensureAuthLoaded() {
 
 async function login(username: string, password: string) {
   authRevision++
+  advanceAuthenticationEpoch()
   const previous = currentUserState.value?.id
   const user = await ticketApi.login(username, password)
+  authRevision++
+  advanceAuthenticationEpoch()
   if (previous && previous !== user.id) {
     sessionStorage.removeItem(`ticketing.checkout.${previous}`)
   }
@@ -52,8 +56,10 @@ async function login(username: string, password: string) {
 
 async function logout() {
   const userId = currentUserState.value?.id
-  // Invalidate an in-flight /me before it can restore the session during logout.
-  authRevision++
+  // Stop every user-owned poll before waiting for a potentially slow logout POST.
+  clearAuth()
+  initialized = true
+  if (userId) sessionStorage.removeItem(`ticketing.checkout.${userId}`)
   try {
     await ticketApi.logout()
     return { confirmed: true }
@@ -61,10 +67,6 @@ async function logout() {
     const expired = (error instanceof TicketApiError && (error.status === 401 || error.code === 'UNAUTHENTICATED')) ||
       (axios.isAxiosError(error) && error.response?.status === 401)
     return { confirmed: expired }
-  } finally {
-    initialized = true
-    if (userId) sessionStorage.removeItem(`ticketing.checkout.${userId}`)
-    clearAuth()
   }
 }
 

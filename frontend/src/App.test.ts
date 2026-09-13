@@ -19,6 +19,7 @@ describe('Phase 9 application shell and routes', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
+    vi.useRealTimers()
   })
 
   it('registers real deep-link routes with protected order pages', () => {
@@ -135,10 +136,12 @@ describe('Phase 9 application shell and routes', () => {
 
   it('refreshes account notifications on focus', async () => {
     await authState.login('demo', 'Ticketing123!')
-    const getNotifications = vi.spyOn(ticketApi, 'getNotifications')
+    vi.useFakeTimers()
+    const getNotifications = vi.spyOn(ticketApi, 'getNotifications').mockResolvedValue([])
     const wrapper = mount(App, { global: { plugins: [router] } })
     await flushPromises()
     const callsBeforeFocus = getNotifications.mock.calls.length
+    await vi.advanceTimersByTimeAsync(501)
     window.dispatchEvent(new Event('focus'))
     await flushPromises()
     expect(getNotifications.mock.calls.length).toBeGreaterThan(callsBeforeFocus)

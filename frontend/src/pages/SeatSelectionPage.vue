@@ -12,6 +12,7 @@ import { admissionApi,admissionErrorText } from '../api/admissionApi'
 import { AdmissionPolling } from '../utils/admissionPolling'
 import RecoverableCheckoutPanel from '../components/RecoverableCheckoutPanel.vue'
 import { nextPollDelay } from '../utils/pollingPolicy'
+import { SingleFlight } from '../utils/singleFlight'
 import { ZoneAvailabilityState } from '../utils/zoneAvailability'
 import SeatSelectionView from '../views/SeatSelectionView.vue'
 import type { CheckoutSession, Seat, SeatStatic, TicketEvent, TicketOrder, TicketSession, SeatZoneAvailabilitySummary } from '../types'
@@ -36,6 +37,14 @@ const submitUncertain = ref(false)
 const error = ref('')
 const availabilityWarning = ref('')
 let pollingGeneration = 0
+let submittingTimer: ReturnType<typeof setTimeout> | undefined
+let submittingDeadline = 0, submittingEmpty = 0, submittingErrors = 0
+let submittingRetry: number | undefined
+let submittingVisibility = 0
+let submittingWork: { generation: number; visible: number; promise: Promise<void> } | undefined
+const checkoutReads = new SingleFlight<CheckoutSession>()
+const focusReads = new SingleFlight<void>()
+let lastFocusActivation = -Infinity
 const activeZone = ref('')
 const zoneSummaries = ref<SeatZoneAvailabilitySummary[]>([])
 let availability = new ZoneAvailabilityState([])
@@ -44,6 +53,7 @@ let pageLoadEpoch = 0
 let availabilityTimer: ReturnType<typeof setTimeout> | undefined
 let ownContext = ''
 let disposed = false
+let identityPaused = false
 const zoneRequests = new Map<string, Promise<boolean>>()
 let refreshWork: Promise<boolean> | undefined
 let queuedRefresh = false
@@ -52,7 +62,7 @@ let activeRefreshEpoch = -1
 let activeSnapshot = false
 let wasHidden = document.hidden
 let focusNeedsRead = true
-function handleBlur() { focusNeedsRead = true }
+function handleBlur() { focusNeedsRead = true; lastFocusActivation = -Infinity }
 let foregroundTimer: ReturnType<typeof setTimeout> | undefined
 let pollAfterMs = 2000
 let emptyStreak = 0
@@ -106,9 +116,7 @@ async function refreshSalesSession() {
 }
 async function handleSalesFailure(cause: unknown) {
   if (!(cause instanceof TicketApiError) || !['SALES_NOT_STARTED', 'SALES_ENDED'].includes(cause.code)) return false
-  pollingGeneration++
-  submittingPolling.value = false
-  submitUncertain.value = false
+  stopSubmitting()
   stopAvailabilityTimer()
   error.value = cause.code === 'SALES_NOT_STARTED' ? '售票尚未开始。' : '售票已结束。'
   try { await refreshSalesSession() } catch { /* Keep the map and fail closed until a successful read. */
@@ -129,7 +137,7 @@ function stopAvailabilityTimer() {
 }
 function scheduleAvailability() {
   stopAvailabilityTimer()
-  if (admissionBlocked.value || disposed || document.hidden || !salesOpen.value || !seatMapLoaded.value || !activeZone.value) return
+  if (identityPaused || admissionBlocked.value || disposed || document.hidden || !salesOpen.value || !seatMapLoaded.value || !activeZone.value) return
   if (refreshWork) return
   availabilityTimer = setTimeout(() => { void refreshSeats(false) }, nextPollDelay({pollAfterMs,emptyStreak,errorStreak,retryAfterMs}))
 }
@@ -177,8 +185,8 @@ function requestForeground() {
 }
 function visibilityChanged() {
   leasePolling?.visibility()
-  if (document.hidden) { wasHidden=true; focusNeedsRead=true; stopAvailabilityTimer(); if(foregroundTimer!==undefined)clearTimeout(foregroundTimer);foregroundTimer=undefined }
-  else if (wasHidden) { wasHidden=false; focusNeedsRead=false; requestForeground() }
+  if (document.hidden) { wasHidden=true; focusNeedsRead=true; lastFocusActivation=-Infinity; submittingVisibility++; clearTimeout(submittingTimer); stopAvailabilityTimer(); if(foregroundTimer!==undefined)clearTimeout(foregroundTimer);foregroundTimer=undefined }
+  else if (wasHidden) { wasHidden=false; focusNeedsRead=false; requestForeground(); void handleFocus() }
 }
 
 const selectedSeats = computed(() => seats.value.filter((seat) => selectedSeatIds.value.includes(seat.id)))
@@ -196,7 +204,7 @@ function locatorClear() {
 }
 
 async function refreshSeats(authoritative = true): Promise<boolean> {
-  if (!session.value || !seatMapLoaded.value || !activeZone.value || disposed || document.hidden || admissionBlocked.value) return false
+  if (identityPaused || !session.value || !seatMapLoaded.value || !activeZone.value || disposed || document.hidden || admissionBlocked.value) return false
   stopAvailabilityTimer()
   const context = (authState.currentUser.value?.id ?? '') + '|' + (checkout.value?.id ?? '')
   const changed = context !== ownContext
@@ -243,50 +251,60 @@ async function refreshSeats(authoritative = true): Promise<boolean> {
   }
 }
 
-async function refreshSessionOrders() {
-  if (!session.value || !authState.currentUser.value) {
-    sessionOrders.value = []
-    return
-  }
-  sessionOrders.value = await ticketApi.getOrders({ sessionId: session.value.id, limit: 20 })
+function pageContext() {
+  const page = pageLoadEpoch, user = authState.currentUser.value?.id
+  return () => !disposed && page === pageLoadEpoch && user === authState.currentUser.value?.id
 }
-
+async function readCheckout(id: string) {
+  const currentPage = pageContext(), generation = pollingGeneration, visible = submittingVisibility
+  const current = () => currentPage() && generation === pollingGeneration && visible === submittingVisibility
+  return checkoutReads.run(`${pageLoadEpoch}:${authState.currentUser.value?.id}:${generation}:${visible}:${id}`, () => ticketApi.getCheckoutSession(id), current)
+}
+async function refreshSessionOrders() {
+  if (!session.value || !authState.currentUser.value) { sessionOrders.value = []; return }
+  const current = pageContext(), id = session.value.id
+  const values = await ticketApi.getOrders({ sessionId: id, limit: 20 })
+  if (current() && session.value?.id === id) sessionOrders.value = values
+}
 async function activate(value: CheckoutSession) {
+  const current = pageContext()
+  if (!current() || value.userId !== authState.currentUser.value?.id || value.sessionId !== session.value?.id) return false
+  if (value.status !== 'SUBMITTING') stopSubmitting()
   checkout.value = value
   selectedSeatIds.value = [...value.seatIds]
   recoverable.value = []
   locatorWrite(value)
   const refreshed = await refreshSeats()
+  if (!current() || checkout.value?.id !== value.id) return false
   if (value.status === 'RESERVED' && value.order) {
     showNotice('该购票会话此前已经确认，已同步现有订单。')
     await router.push({ name: routeNames.orderDetail, params: { orderId: value.order.id } })
-  } else if (value.status === 'SUBMITTING') {
-    startSubmittingPoll(value.id)
-  }
+  } else if (value.status === 'SUBMITTING') startSubmittingPoll(value.id)
   return refreshed
 }
-
 async function recoverCheckout() {
   if (!session.value || !authState.currentUser.value) return
-  const key = checkoutLocatorKey()
+  const current = pageContext(), id = session.value.id, key = checkoutLocatorKey()
   if (key) {
     try {
       const locator = JSON.parse(sessionStorage.getItem(key) ?? '{}') as { checkoutSessionId?: string; sessionId?: string }
-      if (locator.sessionId === session.value.id && locator.checkoutSessionId) {
-        const value = await ticketApi.getCheckoutSession(locator.checkoutSessionId)
-        if (value.status !== 'ABANDONED') {
-          await activate(value)
-          return
-        }
+      if (locator.sessionId === id && locator.checkoutSessionId) {
+        const value = await readCheckout(locator.checkoutSessionId)
+        if (!current()) return
+        if (value && value.status !== 'ABANDONED') { await activate(value); return }
       }
     } catch {
-      locatorClear()
+      if (!current()) return
+      sessionStorage.removeItem(key)
     }
   }
-  recoverable.value = await ticketApi.listRecoverableCheckoutSessions(session.value.id)
+  const values = await ticketApi.listRecoverableCheckoutSessions(id)
+  if (current() && session.value?.id === id) recoverable.value = values
 }
 
 async function load() {
+  identityPaused = false
+  stopSubmitting()
   leasePolling?.stop();admissionBlocked.value=false
   const loadEpoch = ++pageLoadEpoch
   availabilityEpoch++
@@ -348,6 +366,7 @@ async function toggleSeat(seat: Seat) {
     error.value = '每个订单最多选择 6 个座位。'
     return
   }
+  const current = pageContext(), previousCheckout = checkout.value?.id
   syncing.value = true
   error.value = ''
   try {
@@ -356,6 +375,7 @@ async function toggleSeat(seat: Seat) {
       : next.length && session.value
         ? await ticketApi.createCheckoutSession(session.value.id, next)
         : null
+    if (!current() || checkout.value?.id !== previousCheckout) return
     if (value) {
       checkout.value = value
       selectedSeatIds.value = [...value.seatIds]
@@ -363,15 +383,17 @@ async function toggleSeat(seat: Seat) {
     }
     await refreshSeats()
   } catch (cause) {
+    if (!current()) return
     if (isAdmissionFailure(cause)) return
     if (await handleSalesFailure(cause)) return
+    if (!current()) return
     error.value = cause instanceof TicketApiError && [429,503].includes(cause.status??0) ? admissionErrorText(cause) : cause instanceof TicketApiError ? cause.message : '座位选择同步失败。'
     const isHoldConflict = cause instanceof TicketApiError && cause.code === 'SEAT_TEMPORARILY_HELD'
     let refreshed: boolean | undefined
     if (checkout.value) {
       try {
-        const recovered = await ticketApi.getCheckoutSession(checkout.value.id)
-        refreshed = await activate(recovered)
+        const recovered = await readCheckout(checkout.value.id)
+        if (recovered) refreshed = await activate(recovered)
       } catch { /* keep visible state */ }
     }
     if (isHoldConflict) {
@@ -381,30 +403,35 @@ async function toggleSeat(seat: Seat) {
         : '所选座位刚被其他用户临时锁定，最新座位状态暂未取得，请点击“刷新座位状态”后重试。'
     }
   } finally {
-    syncing.value = false
+    if (current()) syncing.value = false
   }
 }
 
 async function clearSeats() {
   if (!checkout.value) return
+  const current = pageContext(), id = checkout.value.id
   syncing.value = true
   try {
-    checkout.value = await ticketApi.replaceCheckoutSessionSeats(checkout.value.id, [], checkout.value.revision)
+    const value = await ticketApi.replaceCheckoutSessionSeats(id, [], checkout.value.revision)
+    if (!current() || checkout.value?.id !== id) return
+    checkout.value = value
     selectedSeatIds.value = []
     locatorWrite(checkout.value)
     await refreshSeats()
   } finally {
-    syncing.value = false
+    if (current()) syncing.value = false
   }
 }
 
 async function confirmCheckout() {
   if (!(await requireLogin()) || !checkout.value || !selectedSeatIds.value.length) return
   if (checkout.value.status === 'SELECTING' && !salesOpen.value) return
+  const current = pageContext(), id = checkout.value.id
   confirming.value = true
   error.value = ''
   try {
-    const result = await ticketApi.confirmCheckoutSession(checkout.value.id)
+    const result = await ticketApi.confirmCheckoutSession(id)
+    if (!current() || checkout.value?.id !== id) return
     checkout.value = result.checkoutSession
     locatorWrite(result.checkoutSession)
     const messages = {
@@ -419,69 +446,126 @@ async function confirmCheckout() {
         name: routeNames.orderDetail,
         params: { orderId: result.checkoutSession.order.id },
       })
-    }
+    } else if (result.checkoutSession.status === 'SUBMITTING') startSubmittingPoll(id)
   } catch (cause) {
+    if (!current() || checkout.value?.id !== id) return
     if (isAdmissionFailure(cause)) return
     if (await handleSalesFailure(cause)) return
+    if (!current() || checkout.value?.id !== id) return
     error.value = cause instanceof TicketApiError && [429,503].includes(cause.status??0) ? admissionErrorText(cause) : cause instanceof TicketApiError ? cause.message : '确认结果暂时未知，正在恢复同一购票会话。'
     if (!(cause instanceof TicketApiError) || cause.status !== undefined && cause.status >= 500 || cause.code === 'INTERNAL_ERROR') startSubmittingPoll(checkout.value.id)
   } finally {
-    confirming.value = false
+    if (current()) confirming.value = false
   }
 }
 
-function startSubmittingPoll(id: string) {
-  const generation = ++pollingGeneration
-  submittingPolling.value = true
+function stopSubmitting() {
+  pollingGeneration++
+  clearTimeout(submittingTimer)
+  submittingDeadline = 0
+  submittingPolling.value = false
   submitUncertain.value = false
-  const started = Date.now()
-  const poll = async () => {
-    if (generation !== pollingGeneration) return
+}
+function finishSubmittingWindow() {
+  clearTimeout(submittingTimer)
+  submittingPolling.value = false
+  submitUncertain.value = true
+}
+function scheduleSubmitting(id: string) {
+  clearTimeout(submittingTimer)
+  if (disposed || document.hidden || !submittingPolling.value || submittingWork || checkout.value?.id !== id) return
+  const remaining = submittingDeadline - Date.now()
+  if (remaining <= 0) { finishSubmittingWindow(); return }
+  const delay = nextPollDelay({ emptyStreak: submittingEmpty, errorStreak: submittingErrors, retryAfterMs: submittingRetry }, Math.random, { baseMs: 2000, maxMs: 10000 })
+  submittingTimer = setTimeout(() => {
+    if (Date.now() >= submittingDeadline) finishSubmittingWindow()
+    else void submittingTick(id)
+  }, Math.min(delay, remaining))
+}
+async function submittingTick(id: string, finalAuthority = false): Promise<void> {
+  const currentPage = pageContext(), generation = pollingGeneration, visible = submittingVisibility
+  const current = () => currentPage() && generation === pollingGeneration && visible === submittingVisibility && checkout.value?.id === id
+  if (submittingWork) {
+    const pending = submittingWork
+    if (pending.generation === generation && pending.visible === visible) return pending.promise
+    await pending.promise
+    if (current()) return submittingTick(id, finalAuthority)
+    return
+  }
+  if (!current() || document.hidden || (!submittingPolling.value && !finalAuthority)) return
+  if (!finalAuthority && Date.now() >= submittingDeadline) { finishSubmittingWindow(); return }
+  clearTimeout(submittingTimer)
+  const work = (async () => {
     try {
-      const value = await ticketApi.getCheckoutSession(id)
+      const value = await readCheckout(id)
+      if (!value || !current()) return
       checkout.value = value
-      if (value.status === 'RESERVED' && value.order) {
-        submittingPolling.value = false
-        showNotice('该购票会话此前已经生成订单，已同步现有订单。')
-        await router.push({ name: routeNames.orderDetail, params: { orderId: value.order.id } })
-        return
-      }
+      submittingErrors = 0; submittingRetry = undefined
       if (value.status !== 'SUBMITTING') {
-        submittingPolling.value = false
+        stopSubmitting()
         await activate(value)
         return
       }
-    } catch { /* unknown result remains recoverable */ }
-    if (Date.now() - started >= 15000) {
-      submittingPolling.value = false
-      submitUncertain.value = true
-      return
+      submittingEmpty = Math.min(6, submittingEmpty + 1)
+      if (Date.now() >= submittingDeadline) finishSubmittingWindow()
+    } catch (cause) {
+      if (!current()) return
+      submittingErrors = Math.min(5, submittingErrors + 1)
+      submittingRetry = cause instanceof TicketApiError ? cause.retryAfterMs : undefined
+      if (Date.now() >= submittingDeadline) finishSubmittingWindow()
     }
-    window.setTimeout(poll, 2000)
+  })()
+  submittingWork = { generation, visible, promise: work }
+  try { await work } finally {
+    if (submittingWork?.promise === work) submittingWork = undefined
+    if (current()) scheduleSubmitting(id)
   }
-  void poll()
+}
+function startSubmittingPoll(id: string) {
+  pollingGeneration++
+  clearTimeout(submittingTimer)
+  submittingPolling.value = true
+  submitUncertain.value = false
+  submittingDeadline = Date.now() + 15000
+  submittingEmpty = 0; submittingErrors = 0; submittingRetry = undefined
+  void submittingTick(id)
 }
 
 async function abandon(value: CheckoutSession) {
+  const current = pageContext()
   try {
     await ticketApi.abandonCheckoutSession(value.id)
+    if (!current()) return
     recoverable.value = recoverable.value.filter((item) => item.id !== value.id)
     locatorClear()
     await refreshSeats()
   } catch (cause) {
+    if (!current()) return
     error.value = cause instanceof TicketApiError ? cause.message : '放弃购票会话失败。'
   }
 }
 
 async function handleFocus() {
-  if (document.hidden) return
+  if (identityPaused || disposed || document.hidden || Date.now() - lastFocusActivation < 500) return
+  lastFocusActivation = Date.now()
   if (wasHidden || focusNeedsRead) { wasHidden=false; focusNeedsRead=false; requestForeground() }
-  await refreshSalesSession().catch(() => { /* existing state remains authoritative */ })
-  requestNotificationRefresh()
-  await refreshSessionOrders()
-  if (checkout.value) {
-    try { const fresh=await ticketApi.getCheckoutSession(checkout.value.id); if(checkout.value && (fresh.revision!==checkout.value.revision || fresh.status!==checkout.value.status))await activate(fresh) } catch { /* best effort */ }
-  }
+  const currentPage = pageContext(), visible = submittingVisibility
+  const current = () => currentPage() && visible === submittingVisibility && !document.hidden
+  await focusReads.run(`${pageLoadEpoch}:${visible}`, async () => {
+    await refreshSalesSession().catch(() => { /* Retain the last authoritative sales state. */ })
+    if (!current()) return
+    requestNotificationRefresh()
+    await refreshSessionOrders().catch(() => { /* Explicit refresh can retry. */ })
+    if (!current() || !checkout.value) return
+    if (submittingDeadline || checkout.value.status === 'SUBMITTING') {
+      await submittingTick(checkout.value.id, true)
+    } else {
+      try {
+        const fresh = await readCheckout(checkout.value.id)
+        if (current() && fresh && checkout.value && (fresh.revision !== checkout.value.revision || fresh.status !== checkout.value.status)) await activate(fresh)
+      } catch { /* Keep the recoverable state visible. */ }
+    }
+  }, current)
 }
 
 onMounted(() => {
@@ -498,15 +582,31 @@ onBeforeUnmount(() => {
   availabilityEpoch++
   stopAvailabilityTimer()
   document.removeEventListener('visibilitychange', visibilityChanged)
-  pollingGeneration += 1
+  stopSubmitting()
   window.removeEventListener('focus', handleFocus)
   window.removeEventListener('blur', handleBlur)
 })
-watch(() => authState.currentUser.value?.id, () => {
- if(formalAdmission.value){leasePolling?.stop();checkout.value=null;recoverable.value=[];selectedSeatIds.value=[];void load()}
- else void refreshSeats()
+watch(() => authState.currentUser.value?.id, user => {
+  stopSubmitting(); leasePolling?.stop()
+  checkout.value = null; recoverable.value = []; selectedSeatIds.value = []; sessionOrders.value = []
+  lastFocusActivation = -Infinity
+  if (user) void load()
+  else {
+    identityPaused = true
+    pageLoadEpoch++; availabilityEpoch++
+    stopAvailabilityTimer()
+    if (foregroundTimer !== undefined) clearTimeout(foregroundTimer)
+    foregroundTimer = undefined
+    loading.value = false
+    error.value = '登录状态已结束，请重新登录后继续购票。'
+    if (formalAdmission.value && session.value) void router.replace({ name: routeNames.login, query: { redirect: router.resolve(waitingTarget()).fullPath } })
+  }
 })
-watch(() => route.params.sessionId, () => { pollingGeneration++; checkout.value = null; selectedSeatIds.value = []; void load() })
+watch(() => route.params.sessionId, () => {
+  stopSubmitting(); checkout.value = null; recoverable.value = []; selectedSeatIds.value = []; sessionOrders.value = []
+  lastFocusActivation = -Infinity
+  void load()
+})
 </script>
 
 <template>

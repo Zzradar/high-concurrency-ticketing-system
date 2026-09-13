@@ -17,6 +17,7 @@ function deferred<T>() {
   return { promise, resolve, reject }
 }
 beforeEach(() => {
+  vi.spyOn(Math, 'random').mockReturnValue(.5)
   vi.useFakeTimers(); vi.setSystemTime(new Date('2026-09-09T02:00:00Z'))
   vi.spyOn(document, 'hasFocus').mockReturnValue(true)
   vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible')
@@ -228,7 +229,9 @@ describe('Phase 12-2A buyer refund page', () => {
     expect(page().text()).toContain('订单加载失败')
     expect(refundText()).toContain('退款处理中')
     expect(page().text()).not.toContain('private provider error')
-    await vi.advanceTimersByTimeAsync(2000)
+    await vi.advanceTimersByTimeAsync(3999)
+    expect(ticketApi.getOrder).toHaveBeenCalledTimes(2)
+    await vi.advanceTimersByTimeAsync(1)
     expect(ticketApi.getOrder).toHaveBeenCalledTimes(3)
     expect(page().text()).not.toContain('订单加载失败')
   })
@@ -276,7 +279,7 @@ describe('Phase 12-2A buyer refund page', () => {
     expect(page().findComponent(BuyerRefundPanel).exists()).toBe(false)
   })
 
-  it('manual refresh invalidates a late poll and still serializes GETs', async () => {
+  it('manual refresh joins the in-flight authority read without adding another GET', async () => {
     processing(); await open()
     const pending = deferred<TicketOrder>()
     vi.mocked(ticketApi.getOrder).mockReturnValueOnce(pending.promise)
@@ -284,8 +287,8 @@ describe('Phase 12-2A buyer refund page', () => {
     await click('刷新状态')
     expect(ticketApi.getOrder).toHaveBeenCalledTimes(2)
     current.buyerRefund = { ...summaryFixture, status: 'FAILED' }
-    pending.resolve({ ...orderFixture }); await flushPromises()
-    expect(ticketApi.getOrder).toHaveBeenCalledTimes(3)
+    pending.resolve(structuredClone(current)); await flushPromises()
+    expect(ticketApi.getOrder).toHaveBeenCalledTimes(2)
     expect(refundText()).toContain('退款失败')
   })
 
