@@ -49,7 +49,10 @@ class TrafficHTTP(unittest.TestCase):
    self.assertGreater(body['retryAfterMs'],0)
   self.assertTrue(all(status in [200,503] for status,_,_ in results),[x[0] for x in results])
   fixture.until(lambda:metric('ticketing_traffic_inflight','AVAILABILITY')==0)
-  self.assertEqual(metric('ticketing_traffic_peak_inflight','AVAILABILITY'),16)
+  # AdmissionRuntime publishes asynchronously; PromExporter caches each response for 5s.
+  # Assert the converged sample itself: a second scrape can hit another stale cache.
+  peak=fixture.until(lambda: value if (value:=metric('ticketing_traffic_peak_inflight','AVAILABILITY'))==16 else None,seconds=10)
+  self.assertEqual(peak,16)
   for _ in range(20):self.assertEqual(anonymous_request('/sessions/'+self.s+'/seats')[0],200)
   observed=subprocess.run(['docker','exec',topology()['api'],'cat','/proc/1/status'],capture_output=True,text=True,check=True).stdout
   values={k:int(re.search(r'^'+k+r':\s+(\d+)',observed,re.M).group(1)) for k in ['VmHWM','VmRSS','Threads']}
