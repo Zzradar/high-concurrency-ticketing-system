@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+  "reviewKind": "static source inspection; runtime evidence separate",
+  "pollers": [
+    {
+      "id": "notifications",
+      "file": "frontend/src/App.vue",
+      "page": "All authenticated pages",
+      "endpoints": [
+        "GET /notifications"
+      ],
+      "intervalMs": 5000,
+      "maxDurationMs": null,
+      "serial": false,
+      "hiddenPause": false,
+      "retryAfter": false,
+      "terminal": "Unauthenticated reads return locally; interval survives until unmount",
+      "risk": "Timer, login, refreshMe and focus can overlap; late responses can restore old-user notifications",
+      "sourceSha256": "a0af663a7a5b18b0614c9c817a113f680593de0f008a33a3c825cafdb8a0c088"
+    },
+    {
+      "id": "availability",
+      "file": "frontend/src/pages/SeatSelectionPage.vue",
+      "page": "Seat selection",
+      "endpoints": [
+        "GET /sessions/{sessionId}/seat-availability"
+      ],
+      "intervalMs": "pollAfterMs; 500..30000; hasMore yields at 0",
+      "maxDurationMs": null,
+      "serial": true,
+      "hiddenPause": true,
+      "retryAfter": true,
+      "terminal": "Unmount/session switch invalidates epoch; hidden drains existing work",
+      "risk": "Existing adaptive policy; long Retry-After is capped at 30000 ms; shared identity lifecycle needs contract checks",
+      "sourceSha256": "6062398acb17e94cbf3664c2383733636c33c2d94e47799c3d446d5781b3cb9e"
+    },
+    {
+      "id": "admission",
+      "file": "frontend/src/utils/admissionPolling.ts",
+      "page": "Waiting room and active checkout lease",
+      "endpoints": [
+        "GET /events/{eventId}/admission",
+        "POST /events/{eventId}/admission/heartbeat"
+      ],
+      "intervalMs": "pollAfterMs with independent heartbeatAfterMs deadline",
+      "maxDurationMs": null,
+      "serial": true,
+      "hiddenPause": true,
+      "retryAfter": true,
+      "terminal": "RESET_REQUIRED, SALES_ENDED, NOT_REQUIRED, stop/unmount",
+      "risk": "Status and heartbeat share single flight; verify identity change and foreground contracts in consumers",
+      "sourceSha256": "2d15e1af56c9243e0d968254d4a6db2250e3de97828d8c92b1563eaf3e92f499"
+    },
+    {
+      "id": "refund",
+      "file": "frontend/src/pages/OrderPage.vue",
+      "page": "Order with PROCESSING buyer refund",
+      "endpoints": [
+        "GET /orders/{orderId}"
+      ],
+      "intervalMs": 2000,
+      "maxDurationMs": null,
+      "serial": true,
+      "hiddenPause": true,
+      "retryAfter": false,
+      "terminal": "Buyer refund no longer PROCESSING; route switch/unmount",
+      "risk": "createRefund pollAfterMs unused; no error backoff; already has order-read coalescing and foreground handling",
+      "sourceSha256": "88858468d0d847635f8f088e684f9b5c519006bf698d55be59cd776a53077564"
+    },
+    {
+      "id": "payment",
+      "file": "frontend/src/pages/OrderPage.vue",
+      "page": "Processing payment/recovery",
+      "endpoints": [
+        "GET /payment-attempts/{attemptId}",
+        "GET /orders/{orderId}"
+      ],
+      "intervalMs": 1000,
+      "maxDurationMs": 15000,
+      "serial": "Timer loop only; focus/manual attempt reads may overlap",
+      "hiddenPause": false,
+      "retryAfter": false,
+      "terminal": "Attempt settles, order leaves PENDING_PAYMENT, route/unmount, 15s checked after response",
+      "risk": "Timer continues hidden; no request time-inclusive hard deadline or error backoff",
+      "sourceSha256": "88858468d0d847635f8f088e684f9b5c519006bf698d55be59cd776a53077564"
+    },
+    {
+      "id": "submitting",
+      "file": "frontend/src/pages/SeatSelectionPage.vue",
+      "page": "Unknown checkout confirmation result",
+      "endpoints": [
+        "GET /checkout-sessions/{checkoutId}"
+      ],
+      "intervalMs": 2000,
+      "maxDurationMs": 15000,
+      "serial": "Timer loop only; focus/manual checkout reads may overlap",
+      "hiddenPause": false,
+      "retryAfter": false,
+      "terminal": "Checkout leaves SUBMITTING, route/unmount invalidates next iteration, 15s checked after response",
+      "risk": "Missing epoch check after awaited GET; stale response can adopt state or navigate; timeout handle not retained",
+      "sourceSha256": "6062398acb17e94cbf3664c2383733636c33c2d94e47799c3d446d5781b3cb9e"
+    },
+    {
+      "id": "sales-boundary",
+      "file": "frontend/src/utils/salesWindow.ts",
+      "page": "Event/session/seat sales countdown",
+      "endpoints": [
+        "Consumer-provided authoritative refresh once per state/boundary"
+      ],
+      "intervalMs": 1000,
+      "maxDurationMs": null,
+      "serial": "Not a recurring HTTP loop",
+      "hiddenPause": false,
+      "retryAfter": false,
+      "terminal": "One refresh per visited state/boundary; unmount clears local timer",
+      "risk": "Display timer with one-off boundary refresh; must not classify as HTTP every second",
+      "sourceSha256": "543f6b034bf79141ced61c259c8cbdc42dd25226c17eb8b0d4234e571df2b056"
+    },
+    {
+      "id": "order-countdown",
+      "file": "frontend/src/components/OrderSummary.vue",
+      "page": "Order summary",
+      "endpoints": [],
+      "intervalMs": 1000,
+      "maxDurationMs": null,
+      "serial": "Not a recurring HTTP loop",
+      "hiddenPause": false,
+      "retryAfter": false,
+      "terminal": "Unmount clears local timer",
+      "risk": "Local expiry countdown; no recurring API request",
+      "sourceSha256": "ab566bd4128539b15051bf85f84e7b068c1961aa9369e24e04dd1c6ada270314"
+    }
+  ],
+  "phase18BrowserScope": {
+    "file": "performance/experiments/phase18-admission-overload/protocol/browser.mjs",
+    "sourceSha256": "b7739573cdc4f103d587f64584fbaff6041f3bd62d82d9ebe15a06eda9d0a274",
+    "filter": "/seat-availability",
+    "provesGlobalPolling": false
+  }
+}
