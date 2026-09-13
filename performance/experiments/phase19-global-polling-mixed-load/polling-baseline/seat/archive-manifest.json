@@ -1,0 +1,26 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-formal-baseline-browser-seat",
+  "normalization": "UTF-8 newline and private-path redaction; gzip is lossless with mtime=0",
+  "classification": "Result fields are preserved verbatim, including invalid outcomes",
+  "files": {
+    "browser.json": {
+      "sourceSha256": "b428fd3b3574453f509d7d1dcd593fc5e9c009ac8e4dcbaa03f0775e9d1e513f",
+      "sourceBytes": 45117,
+      "normalizedSha256": "b428fd3b3574453f509d7d1dcd593fc5e9c009ac8e4dcbaa03f0775e9d1e513f",
+      "normalizedBytes": 45117,
+      "storedAs": "browser.json",
+      "storedSha256": "b428fd3b3574453f509d7d1dcd593fc5e9c009ac8e4dcbaa03f0775e9d1e513f",
+      "storedBytes": 45117
+    },
+    "browser.log": {
+      "sourceSha256": "a6b04157e05040fd70b869392905fb5ad70cc44759c066ba78c85fffdabb58e1",
+      "sourceBytes": 595,
+      "normalizedSha256": "cd88dac359e825136045d3ad0cb4623c9690f44c6b2bbfc98b38c07e677fcc8d",
+      "normalizedBytes": 536,
+      "storedAs": "browser.log",
+      "storedSha256": "cd88dac359e825136045d3ad0cb4623c9690f44c6b2bbfc98b38c07e677fcc8d",
+      "storedBytes": 536
+    }
+  },
+  "privateRawPoints": null
+}

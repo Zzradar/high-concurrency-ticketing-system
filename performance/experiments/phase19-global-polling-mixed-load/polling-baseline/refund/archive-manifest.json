@@ -1,0 +1,26 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-formal-baseline-browser-refund-r2",
+  "normalization": "UTF-8 newline and private-path redaction; gzip is lossless with mtime=0",
+  "classification": "Result fields are preserved verbatim, including invalid outcomes",
+  "files": {
+    "browser.json": {
+      "sourceSha256": "54188b272248e747f35d94423aab3dd4ba2253c19390373f1e3aca5fdca10502",
+      "sourceBytes": 44794,
+      "normalizedSha256": "54188b272248e747f35d94423aab3dd4ba2253c19390373f1e3aca5fdca10502",
+      "normalizedBytes": 44794,
+      "storedAs": "browser.json",
+      "storedSha256": "54188b272248e747f35d94423aab3dd4ba2253c19390373f1e3aca5fdca10502",
+      "storedBytes": 44794
+    },
+    "browser.log": {
+      "sourceSha256": "c9326e57e814c7a51c5213120c5b441bff4b5d5908c063e2c3ffb9c351d0c4cc",
+      "sourceBytes": 595,
+      "normalizedSha256": "9d3e1499cba6554930605575b2923cc11039a1b1c7c1a18ba3073f2ce32ffdc8",
+      "normalizedBytes": 536,
+      "storedAs": "browser.log",
+      "storedSha256": "9d3e1499cba6554930605575b2923cc11039a1b1c7c1a18ba3073f2ce32ffdc8",
+      "storedBytes": 536
+    }
+  },
+  "privateRawPoints": null
+}

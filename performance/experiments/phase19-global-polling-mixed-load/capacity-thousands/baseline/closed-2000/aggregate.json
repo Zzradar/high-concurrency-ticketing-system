@@ -1,0 +1,42 @@
+{
+  "httpDurationMs": {
+    "GET snapshot|warmup|200": {
+      "samples": 2000,
+      "p50": 9.696821,
+      "p95": 12.320251,
+      "p99": 18.145677,
+      "max": 47.908006
+    },
+    "GET delta|warmup|200": {
+      "samples": 4188,
+      "p50": 2.305647,
+      "p95": 8.61355,
+      "p99": 11.154515,
+      "max": 31.065901
+    },
+    "GET delta|observe|200": {
+      "samples": 9653,
+      "p50": 2.057333,
+      "p95": 2.778854,
+      "p99": 3.244021,
+      "max": 19.306495
+    }
+  },
+  "counts": {
+    "phase19_started|{\"kind\":\"closed\",\"phase\":\"warmup\",\"scenario\":\"readers\"}": 6188.0,
+    "phase19_errors|{\"scenario\":\"readers\"}": 0.0,
+    "phase19_http_started|{\"method\":\"GET\",\"name\":\"GET snapshot\",\"phase\":\"warmup\",\"scenario\":\"readers\"}": 2000.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"GET\",\"name\":\"GET snapshot\",\"phase\":\"warmup\",\"scenario\":\"readers\",\"status\":\"200\"}": 2000.0,
+    "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"readers\"}": 1999.0,
+    "phase19_completed|{\"kind\":\"closed\",\"phase\":\"warmup\",\"scenario\":\"readers\"}": 4188.0,
+    "phase19_http_started|{\"method\":\"GET\",\"name\":\"GET delta\",\"phase\":\"warmup\",\"scenario\":\"readers\"}": 4188.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"GET\",\"name\":\"GET delta\",\"phase\":\"warmup\",\"scenario\":\"readers\",\"status\":\"200\"}": 4188.0,
+    "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"warmup\",\"reset\":\"false\",\"scenario\":\"readers\"}": 4187.0,
+    "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"delta\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers\"}": 9654.0,
+    "phase19_sync|{\"hasMore\":\"false\",\"mode\":\"snapshot\",\"phase\":\"observe\",\"reset\":\"false\",\"scenario\":\"readers\"}": 1.0,
+    "phase19_completed|{\"kind\":\"closed\",\"phase\":\"observe\",\"scenario\":\"readers\"}": 11653.0,
+    "phase19_started|{\"kind\":\"closed\",\"phase\":\"observe\",\"scenario\":\"readers\"}": 9653.0,
+    "phase19_http_started|{\"method\":\"GET\",\"name\":\"GET delta\",\"phase\":\"observe\",\"scenario\":\"readers\"}": 9653.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"GET\",\"name\":\"GET delta\",\"phase\":\"observe\",\"scenario\":\"readers\",\"status\":\"200\"}": 9653.0
+  }
+}
