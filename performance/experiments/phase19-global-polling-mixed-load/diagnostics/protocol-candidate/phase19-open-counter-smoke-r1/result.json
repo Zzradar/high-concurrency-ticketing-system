@@ -1,0 +1,26 @@
+{
+  "valid": true,
+  "diagnostic": true,
+  "reason": null,
+  "exitCode": 0,
+  "observerErrors": [],
+  "startedIterations": 522,
+  "completedBusinessIterations": 522,
+  "k6CompletedIterations": 522,
+  "interruptedIterations": 0,
+  "droppedIterations": 0,
+  "httpRequestCount": 571,
+  "cursorAdvances": 34,
+  "initializedActiveVUs": 30,
+  "endedUtc": "2026-09-13T11:17:18.589191+00:00",
+  "rawPointsSha256": "22ed89655a1cb1a18a8137d78f454fd5184d48da82a4afad2004cc08b4d50f0a",
+  "rawPointsBytes": 2212797,
+  "inventoryChanges": {
+    "formalGenerated": 6,
+    "formalProjected": 6,
+    "allStreamEntriesAdded": 50,
+    "temporaryVisibleEntriesAdded": 44,
+    "generationsUnchanged": true,
+    "scope": "entire point including drain and separately logged cleanup; not just observe window"
+  }
+}

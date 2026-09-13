@@ -1,0 +1,4 @@
+time="2026-09-13T11:14:26Z" level=info msg="{\"type\":\"phase19-hot-timing\",\"ordinal\":9,\"group\":0,\"startEpochMs\":1789298066071,\"endEpochMs\":1789298066079,\"status\":201,\"outcome\":\"winner\"}" source=console
+time="2026-09-13T11:14:26Z" level=info msg="{\"type\":\"phase19-hot-timing\",\"ordinal\":10,\"group\":0,\"startEpochMs\":1789298066121,\"endEpochMs\":1789298066126,\"status\":409,\"outcome\":\"conflict\"}" source=console
+time="2026-09-13T11:14:31Z" level=info msg="{\"type\":\"phase19-hot-timing\",\"ordinal\":19,\"group\":1,\"startEpochMs\":1789298071071,\"endEpochMs\":1789298071077,\"status\":201,\"outcome\":\"winner\"}" source=console
+time="2026-09-13T11:14:31Z" level=info msg="{\"type\":\"phase19-hot-timing\",\"ordinal\":20,\"group\":1,\"startEpochMs\":1789298071121,\"endEpochMs\":1789298071126,\"status\":409,\"outcome\":\"conflict\"}" source=console

@@ -1,0 +1,18 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-browser-seat-smoke-r2",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "browser.json": {
+      "sourceSha256": "8c524e962ddf8037e750bdbe06f9c9da41d0c7e202730ff283a16571f4f89704",
+      "sourceBytes": 19703,
+      "archivedSha256": "8c524e962ddf8037e750bdbe06f9c9da41d0c7e202730ff283a16571f4f89704",
+      "archivedBytes": 19703
+    },
+    "browser.log": {
+      "sourceSha256": "1f64fdc029d9c5bb266211c8761fd7671abaf7d46007a1dce16cc2653a7a8cf6",
+      "sourceBytes": 595,
+      "archivedSha256": "5e90a242af9ce6c946e519c1e4b517f58762ceb7cb0d46ca0b564da8309e7dd6",
+      "archivedBytes": 536
+    }
+  }
+}

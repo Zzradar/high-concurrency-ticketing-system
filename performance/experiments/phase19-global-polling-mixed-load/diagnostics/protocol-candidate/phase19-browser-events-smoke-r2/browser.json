@@ -1,0 +1,427 @@
+{
+  "scene": "events",
+  "revision": "baseline",
+  "diagnostic": true,
+  "environment": {
+    "playwright": "1.63.0",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+    "product": "Edg/152.0.4191.66",
+    "args": [
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-extensions",
+      "--disable-backgrounding-occluded-windows",
+      "--edge-skip-compat-layer-relaunch",
+      "--user-data-dir=PROFILE",
+      "--remote-debugging-port=0",
+      "about:blank"
+    ],
+    "connection": "headed Edge; CDP noDefaults; native timers and visibility; one context, one window, two tabs"
+  },
+  "startedUtc": "2026-09-13T11:16:38.934Z",
+  "requests": [
+    {
+      "ordinal": 0,
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789298199881,
+      "startMonotonicNs": "1218355738064700",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789298199970,
+      "durationMs": 89.2948,
+      "decodedBodyBytes": 108
+    },
+    {
+      "ordinal": 1,
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789298199883,
+      "startMonotonicNs": "1218355740377800",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789298199985,
+      "durationMs": 102.0685,
+      "decodedBodyBytes": 108
+    },
+    {
+      "ordinal": 2,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789298199971,
+      "startMonotonicNs": "1218355827921400",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789298200059,
+      "durationMs": 88.6256,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 3,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789298199972,
+      "startMonotonicNs": "1218355828849300",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789298200061,
+      "durationMs": 89.0658,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 4,
+      "endpoint": "/events",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789298199984,
+      "startMonotonicNs": "1218355841715100",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789298200064,
+      "durationMs": 79.5518,
+      "decodedBodyBytes": 460
+    },
+    {
+      "ordinal": 5,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789298204887,
+      "startMonotonicNs": "1218360744589100",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789298204980,
+      "durationMs": 92.5514,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 6,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789298209888,
+      "startMonotonicNs": "1218365744911400",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789298209977,
+      "durationMs": 89.8118,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 7,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "hidden",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789298213162,
+      "startMonotonicNs": "1218369019422100",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789298213246,
+      "durationMs": 84.0182,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 8,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789298214888,
+      "startMonotonicNs": "1218370745549900",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789298214982,
+      "durationMs": 93.9334,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 9,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789298219891,
+      "startMonotonicNs": "1218375748198100",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789298219983,
+      "durationMs": 92.286,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 10,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789298224880,
+      "startMonotonicNs": "1218380737600500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789298224975,
+      "durationMs": 94.5813,
+      "decodedBodyBytes": 2
+    }
+  ],
+  "initiations": [
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298199878,
+      "monotonicMs": 85.5
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298199879,
+      "monotonicMs": 86.29999995231628
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298199966,
+      "monotonicMs": 173.40000009536743
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298199966,
+      "monotonicMs": 173.79999995231628
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/events",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298199970,
+      "monotonicMs": 177.90000009536743
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298204885,
+      "monotonicMs": 5092.799999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298209883,
+      "monotonicMs": 10090.799999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298213152,
+      "monotonicMs": 13359.799999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298214886,
+      "monotonicMs": 15093.900000095367
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298219889,
+      "monotonicMs": 20096.200000047684
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298224879,
+      "monotonicMs": 25086.299999952316
+    }
+  ],
+  "visibility": [
+    {
+      "type": "init",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298199814,
+      "monotonicMs": 21.200000047683716
+    },
+    {
+      "type": "focus",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298199815,
+      "monotonicMs": 22.600000143051147
+    },
+    {
+      "type": "blur",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298200550,
+      "monotonicMs": 758
+    },
+    {
+      "type": "visibilitychange",
+      "trusted": true,
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789298210089,
+      "monotonicMs": 10296.700000047684
+    },
+    {
+      "type": "visibilitychange",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298213150,
+      "monotonicMs": 13357.200000047684
+    },
+    {
+      "type": "focus",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789298213152,
+      "monotonicMs": 13359.400000095367
+    }
+  ],
+  "phases": [
+    {
+      "name": "visible",
+      "began": 1789298200065,
+      "durationMs": 10000,
+      "hidden": false
+    },
+    {
+      "name": "hidden",
+      "began": 1789298210130,
+      "durationMs": 3000,
+      "hidden": true
+    },
+    {
+      "name": "restored",
+      "began": 1789298213164,
+      "durationMs": 15000,
+      "hidden": false
+    }
+  ],
+  "actions": [
+    {
+      "name": "bringToFront-visible",
+      "epochMs": 1789298200038
+    },
+    {
+      "name": "bringToFront-hidden",
+      "epochMs": 1789298210082
+    },
+    {
+      "name": "bringToFront-restored",
+      "epochMs": 1789298213135
+    }
+  ],
+  "topology": [
+    {
+      "name": "subject",
+      "windowId": 1088910270,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    },
+    {
+      "name": "neutral",
+      "windowId": 1088910270,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    }
+  ],
+  "errors": [],
+  "passed": true,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Edg/152.0.4191.66",
+    "revision": "@cc2931e6363af1d70882ad63ee33b0e8cd524de0",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36 Edg/152.0.0.0",
+    "jsVersion": "15.2.23.10"
+  },
+  "checks": {
+    "hiddenNewReads": 0,
+    "hiddenInflightFromBefore": 0,
+    "maxInflight": {
+      "notifications": 2,
+      "availability": 0,
+      "payment": 0,
+      "checkout": 0,
+      "order": 0
+    },
+    "restoredImmediateCounts": {
+      "notifications": 0,
+      "availability": 0,
+      "payment": 0,
+      "checkout": 0,
+      "order": 0
+    },
+    "logoutNewReads": 0
+  },
+  "endedUtc": "2026-09-13T11:17:08.185Z",
+  "inflightAtClose": 0
+}

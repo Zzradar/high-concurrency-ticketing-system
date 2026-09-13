@@ -1,0 +1,18 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-browser-events-smoke-r2",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "browser.json": {
+      "sourceSha256": "e47c94d7815c0fc672d4f685c80e8ec444031e575304dc34073b4c82c71884c2",
+      "sourceBytes": 10739,
+      "archivedSha256": "e47c94d7815c0fc672d4f685c80e8ec444031e575304dc34073b4c82c71884c2",
+      "archivedBytes": 10739
+    },
+    "browser.log": {
+      "sourceSha256": "c18c0add86e832dfce714d5a8cf944296a40bbc4de91f0aee36628b6811c6357",
+      "sourceBytes": 595,
+      "archivedSha256": "9af184047585c79c1d3fadf35e0e75a966f6499852a902a1b7a1e520cfe13868",
+      "archivedBytes": 536
+    }
+  }
+}

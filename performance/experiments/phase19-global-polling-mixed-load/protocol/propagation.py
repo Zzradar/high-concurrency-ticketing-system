@@ -9,7 +9,7 @@ from harness import Stack, request, save
 
 
 class Observer:
-    def __init__(self, stack):
+    def __init__(self, stack, cancel=None):
         self.stack = stack
         self.session = stack.fixture['writerSession']
         self.zone = stack.fixture['zones'][4]
@@ -20,9 +20,13 @@ class Observer:
         self.next_read = 0
         self.timeline = []
         self.changed = set()
+        self.cancel = cancel
 
     def read(self):
-        time.sleep(max(0, self.next_read-time.perf_counter()))
+        wait=max(0,self.next_read-time.perf_counter())
+        if self.cancel:
+            if self.cancel.wait(wait):raise RuntimeError('Propagation stopped by resource gate')
+        else:time.sleep(wait)
         query = {'zone':self.zone}
         if self.cursor is not None:
             query.update(generation=self.generation, since=self.cursor)
@@ -72,10 +76,10 @@ class Observer:
         return value,ended
 
 
-def collect(stack, out, cycles):
+def collect(stack, out, cycles, cancel=None):
     if out.exists():raise ValueError('Refuse overwriting propagation point')
     out.mkdir(parents=True)
-    observer=Observer(stack)
+    observer=Observer(stack,cancel)
     result={'clock':'single process time.perf_counter, seconds','startedUtc':datetime.now(timezone.utc).isoformat(),
         'dwellSeconds':10,'cyclesPlanned':cycles,'samples':[],'passed':False}
     active_checkout=None
@@ -85,6 +89,7 @@ def collect(stack, out, cycles):
         for cycle in range(cycles):
             seat=f'phase19-ss-001-002-{4501+cycle:06d}'
             for flow in ['abandon','confirm_cancel']:
+                if cancel and cancel.is_set():raise RuntimeError('Propagation stopped by resource gate')
                 checkout,ended=observer.write('/checkout-sessions',{'sessionId':observer.session,'seatIds':[seat]})
                 active_checkout=checkout['id']
                 result['samples'].append(observer.wait_for(seat,'HELD',ended,'temporary','hold'))

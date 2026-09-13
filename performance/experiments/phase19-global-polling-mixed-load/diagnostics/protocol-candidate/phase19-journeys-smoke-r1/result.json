@@ -1,0 +1,29 @@
+{
+  "valid": true,
+  "diagnostic": true,
+  "reason": null,
+  "exitCode": 0,
+  "observerErrors": [],
+  "startedIterations": 200,
+  "completedBusinessIterations": 200,
+  "k6CompletedIterations": 200,
+  "interruptedIterations": 0,
+  "droppedIterations": 0,
+  "httpRequestCount": 878,
+  "cursorAdvances": 0,
+  "initializedActiveVUs": 30,
+  "endedUtc": "2026-09-13T11:14:35.112523+00:00",
+  "rawPointsSha256": "710897315abaa5764331ac886d69f59e4ad3092b0649b1d367684a88f22e82ea",
+  "rawPointsBytes": 2314244,
+  "journeyHotspotGroups": {
+    "0": {
+      "contenders": 2.0,
+      "winners": 1.0
+    },
+    "1": {
+      "contenders": 2.0,
+      "winners": 1.0
+    }
+  },
+  "plannedJourneysNominal": 200
+}

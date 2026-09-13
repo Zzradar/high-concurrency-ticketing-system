@@ -101,6 +101,22 @@ class Stack:
             'redis':{section:self.redis('INFO',section) for section in ['memory','clients','stats','commandstats']},
             'backendMetrics':metrics}
 
+    def inventory_counters(self):
+        sessions=[self.fixture[k] for k in ['readerSession','writerSession','hotspotSession','sentinelSession','journeySession']]
+        streams={}
+        projected=0
+        generations={}
+        for session in sessions:
+            prefix='ticketing:seat-availability:{'+session+'}'
+            generations[session]=self.redis('HGET',prefix+':meta','generation')
+            projected+=sum(int(value.rsplit('|',1)[1]) for value in self.redis('HVALS',prefix+':formal'))
+            for zone in self.fixture['zones']:
+                values=self.redis('XINFO','STREAM',prefix+':zone:'+zone+':changes')
+                info=dict(zip(values[::2],values[1::2])) if isinstance(values,list) else values
+                streams[session+'/'+zone]={key:info[key] for key in ['length','entries-added','last-generated-id']}
+        return {'utc':datetime.now(timezone.utc).isoformat(),'formalVersionSum':int(self.sql("SELECT coalesce(sum(formal_version),0) FROM session_seats WHERE session_id LIKE 'phase19-session-%'")),
+            'projectedFormalVersionSum':projected,'generations':generations,'streams':streams}
+
 
 def setup(args):
     private = args.private.resolve()

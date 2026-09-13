@@ -2,6 +2,7 @@ import importlib.util
 from pathlib import Path
 import sys
 import unittest
+import threading
 from unittest.mock import patch
 
 PROTOCOL = Path(__file__).resolve().parents[1] / 'experiments/phase19-global-polling-mixed-load/protocol'
@@ -12,6 +13,14 @@ spec.loader.exec_module(propagation)
 
 
 class PropagationTests(unittest.TestCase):
+    def test_resource_stop_prevents_new_observer_request(self):
+        observer=object.__new__(propagation.Observer)
+        observer.cancel=threading.Event()
+        observer.cancel.set()
+        observer.next_read=0
+        with self.assertRaisesRegex(RuntimeError,'resource gate'):
+            observer.read()
+
     def test_cached_held_cannot_prove_formal_projection(self):
         observer = object.__new__(propagation.Observer)
         observer.state = {'seat': 'HELD'}

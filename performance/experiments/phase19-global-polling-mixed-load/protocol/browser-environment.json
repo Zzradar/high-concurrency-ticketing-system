@@ -1,0 +1,7 @@
+{
+  "playwright": "1.63.0",
+  "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+  "product": "Edg/152.0.4191.66",
+  "args": ["--no-first-run", "--no-default-browser-check", "--disable-extensions", "--disable-backgrounding-occluded-windows", "--edge-skip-compat-layer-relaunch", "--user-data-dir=PROFILE", "--remote-debugging-port=0", "about:blank"],
+  "connection": "headed Edge; CDP noDefaults; native timers and visibility; one context, one window, two tabs"
+}

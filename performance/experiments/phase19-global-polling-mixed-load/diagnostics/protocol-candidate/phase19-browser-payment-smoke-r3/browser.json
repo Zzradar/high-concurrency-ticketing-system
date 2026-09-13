@@ -1,0 +1,468 @@
+{
+  "scene": "payment",
+  "revision": "baseline",
+  "diagnostic": true,
+  "environment": {
+    "playwright": "1.63.0",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+    "product": "Edg/152.0.4191.66",
+    "args": [
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-extensions",
+      "--disable-backgrounding-occluded-windows",
+      "--edge-skip-compat-layer-relaunch",
+      "--user-data-dir=PROFILE",
+      "--remote-debugging-port=0",
+      "about:blank"
+    ],
+    "connection": "headed Edge; CDP noDefaults; native timers and visibility; one context, one window, two tabs"
+  },
+  "startedUtc": "2026-09-13T11:10:31.761Z",
+  "requests": [
+    {
+      "ordinal": 0,
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789297832693,
+      "startMonotonicNs": "1217988550052600",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297832788,
+      "durationMs": 94.6563,
+      "decodedBodyBytes": 108
+    },
+    {
+      "ordinal": 1,
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789297832696,
+      "startMonotonicNs": "1217988552491600",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789297832791,
+      "durationMs": 95.3986,
+      "decodedBodyBytes": 108
+    },
+    {
+      "ordinal": 2,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789297832787,
+      "startMonotonicNs": "1217988643611400",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297832877,
+      "durationMs": 89.9417,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 3,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789297832788,
+      "startMonotonicNs": "1217988645319300",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789297832878,
+      "durationMs": 89.4975,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 4,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789297832791,
+      "startMonotonicNs": "1217988648330100",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297832882,
+      "durationMs": 90.7058,
+      "decodedBodyBytes": 420
+    },
+    {
+      "ordinal": 5,
+      "endpoint": "/sessions/phase19-browser-session",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789297832883,
+      "startMonotonicNs": "1217988739557700",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297832969,
+      "durationMs": 86.3518,
+      "decodedBodyBytes": 369
+    },
+    {
+      "ordinal": 6,
+      "endpoint": "/events/phase19-browser-event",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789297832883,
+      "startMonotonicNs": "1217988740152200",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789297832970,
+      "durationMs": 86.8976,
+      "decodedBodyBytes": 380
+    },
+    {
+      "ordinal": 7,
+      "endpoint": "/sessions/phase19-browser-session/seats",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789297832884,
+      "startMonotonicNs": "1217988740645500",
+      "inflightAtStart": 3,
+      "status": 200,
+      "endEpochMs": 1789297833002,
+      "durationMs": 118.0648,
+      "decodedBodyBytes": 827191
+    },
+    {
+      "ordinal": 8,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789297837705,
+      "startMonotonicNs": "1217993562075600",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297837799,
+      "durationMs": 93.834,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 9,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "pay",
+      "startEpochMs": 1789297842704,
+      "startMonotonicNs": "1217998561000700",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297842798,
+      "durationMs": 93.9977,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 10,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "pay",
+      "startEpochMs": 1789297847692,
+      "startMonotonicNs": "1218003549068500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297847785,
+      "durationMs": 92.9786,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 11,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "pay",
+      "startEpochMs": 1789297852691,
+      "startMonotonicNs": "1218008547982600",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297852784,
+      "durationMs": 92.902,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 12,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "pay",
+      "startEpochMs": 1789297857700,
+      "startMonotonicNs": "1218013557132700",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297857794,
+      "durationMs": 93.4918,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 13,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "pay",
+      "startEpochMs": 1789297862699,
+      "startMonotonicNs": "1218018556134300",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297862795,
+      "durationMs": 96.1698,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 14,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "pay",
+      "startEpochMs": 1789297867700,
+      "startMonotonicNs": "1218023557359700",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297867792,
+      "durationMs": 91.7515,
+      "decodedBodyBytes": 2
+    }
+  ],
+  "initiations": [
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297832690,
+      "monotonicMs": 90.59999990463257
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297832691,
+      "monotonicMs": 91.40000009536743
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297832782,
+      "monotonicMs": 182.40000009536743
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297832783,
+      "monotonicMs": 183
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297832785,
+      "monotonicMs": 185.79999995231628
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297832876,
+      "monotonicMs": 276.2999999523163
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/events/phase19-browser-event",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297832876,
+      "monotonicMs": 276.59999990463257
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session/seats",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297832876,
+      "monotonicMs": 276.7999999523163
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297837702,
+      "monotonicMs": 5102.799999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297842700,
+      "monotonicMs": 10100.799999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297847689,
+      "monotonicMs": 15089.700000047684
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297852690,
+      "monotonicMs": 20089.900000095367
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297857698,
+      "monotonicMs": 25098.599999904633
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297862695,
+      "monotonicMs": 30095.5
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297867698,
+      "monotonicMs": 35098.59999990463
+    }
+  ],
+  "visibility": [
+    {
+      "type": "init",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297832624,
+      "monotonicMs": 23.90000009536743
+    },
+    {
+      "type": "focus",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297832627,
+      "monotonicMs": 27.299999952316284
+    },
+    {
+      "type": "blur",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789297833154,
+      "monotonicMs": 554.5
+    }
+  ],
+  "phases": [
+    {
+      "name": "visible",
+      "began": 1789297832886,
+      "durationMs": 10000,
+      "hidden": false
+    }
+  ],
+  "actions": [
+    {
+      "name": "bringToFront-visible",
+      "epochMs": 1789297832856
+    },
+    {
+      "name": "pay",
+      "epochMs": 1789297837888
+    }
+  ],
+  "topology": [
+    {
+      "name": "subject",
+      "windowId": 2010796465,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    },
+    {
+      "name": "neutral",
+      "windowId": 2010796465,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    }
+  ],
+  "errors": [],
+  "passed": false,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Edg/152.0.4191.66",
+    "revision": "@cc2931e6363af1d70882ad63ee33b0e8cd524de0",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36 Edg/152.0.0.0",
+    "jsVersion": "15.2.23.10"
+  },
+  "error": {
+    "message": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.order-pay-button')\u001b[22m\n",
+    "stack": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.order-pay-button')\u001b[22m\n\n    at <PHASE19_WORKTREE>\\performance\\experiments\\phase19-global-polling-mixed-load\\protocol\\browser.mjs:123:138\n    at doAction (<PHASE19_WORKTREE>\\performance\\experiments\\phase19-global-polling-mixed-load\\protocol\\browser.mjs:44:9)\n    at <PHASE19_WORKTREE>\\performance\\experiments\\phase19-global-polling-mixed-load\\protocol\\browser.mjs:131:111"
+  },
+  "endedUtc": "2026-09-13T11:11:07.913Z",
+  "inflightAtClose": 0
+}

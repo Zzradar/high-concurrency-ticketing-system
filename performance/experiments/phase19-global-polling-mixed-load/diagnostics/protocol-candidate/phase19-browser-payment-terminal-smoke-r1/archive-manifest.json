@@ -1,0 +1,18 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-browser-payment-terminal-smoke-r1",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "browser.json": {
+      "sourceSha256": "60e4db2d0e619f0f0028e461b052f0dbfa5b779578b6c7d21a9cbbab86114eec",
+      "sourceBytes": 41727,
+      "archivedSha256": "60e4db2d0e619f0f0028e461b052f0dbfa5b779578b6c7d21a9cbbab86114eec",
+      "archivedBytes": 41727
+    },
+    "browser.log": {
+      "sourceSha256": "f704eb30c10934906844ba8f66382974d77a1d1fcfa5fc555057c9af6367fbfc",
+      "sourceBytes": 595,
+      "archivedSha256": "d0e95d6f8cec44b51c9fedf1f496509ecc08341c68e4d81278171fbaf3c9555e",
+      "archivedBytes": 536
+    }
+  }
+}

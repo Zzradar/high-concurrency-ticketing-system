@@ -1,0 +1,136 @@
+{
+  "httpDurationMs": {
+    "GET events|observe|200": {
+      "samples": 150,
+      "p50": 1.147376,
+      "p95": 3.974725,
+      "p99": 12.205345,
+      "max": 16.001267
+    },
+    "GET sessions|observe|200": {
+      "samples": 150,
+      "p50": 28.915307,
+      "p95": 33.397204,
+      "p99": 37.436273,
+      "max": 46.851049
+    },
+    "GET layout|observe|200": {
+      "samples": 150,
+      "p50": 22.81747,
+      "p95": 39.156081,
+      "p99": 48.689324,
+      "max": 49.380808
+    },
+    "GET journey snapshot|observe|200": {
+      "samples": 150,
+      "p50": 16.424737,
+      "p95": 19.620998,
+      "p99": 22.304324,
+      "max": 23.813294
+    },
+    "GET journey delta|observe|200": {
+      "samples": 150,
+      "p50": 1.791545,
+      "p95": 2.408426,
+      "p99": 2.837551,
+      "max": 2.885285
+    },
+    "POST journey checkout|observe|201": {
+      "samples": 46,
+      "p50": 6.18275,
+      "p95": 7.943137,
+      "p99": 10.098077,
+      "max": 10.098077
+    },
+    "POST journey abandon|observe|200": {
+      "samples": 30,
+      "p50": 2.753249,
+      "p95": 4.379907,
+      "p99": 4.433534,
+      "max": 4.433534
+    },
+    "POST journey confirm|observe|200": {
+      "samples": 16,
+      "p50": 8.015313,
+      "p95": 11.980746,
+      "p99": 11.980746,
+      "max": 11.980746
+    },
+    "GET journey order|observe|200": {
+      "samples": 16,
+      "p50": 1.46462,
+      "p95": 2.499547,
+      "p99": 2.499547,
+      "max": 2.499547
+    },
+    "POST journey cancel|observe|200": {
+      "samples": 16,
+      "p50": 3.989724,
+      "p95": 5.574289,
+      "p99": 5.574289,
+      "max": 5.574289
+    },
+    "POST hotspot|observe|201": {
+      "samples": 2,
+      "p50": 6.115238,
+      "p95": 7.096098,
+      "p99": 7.096098,
+      "max": 7.096098
+    },
+    "POST hotspot|observe|409": {
+      "samples": 2,
+      "p50": 5.088689,
+      "p95": 5.339082,
+      "p99": 5.339082,
+      "max": 5.339082
+    }
+  },
+  "counts": {
+    "phase19_started|{\"kind\":\"journey_browse\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 150.0,
+    "phase19_errors|{\"scenario\":\"journeys\"}": 0.0,
+    "phase19_http_started|{\"method\":\"GET\",\"name\":\"GET events\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 150.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"GET\",\"name\":\"GET events\",\"phase\":\"observe\",\"scenario\":\"journeys\",\"status\":\"200\"}": 150.0,
+    "phase19_http_started|{\"method\":\"GET\",\"name\":\"GET sessions\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 150.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"GET\",\"name\":\"GET sessions\",\"phase\":\"observe\",\"scenario\":\"journeys\",\"status\":\"200\"}": 150.0,
+    "phase19_http_started|{\"method\":\"GET\",\"name\":\"GET layout\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 150.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"GET\",\"name\":\"GET layout\",\"phase\":\"observe\",\"scenario\":\"journeys\",\"status\":\"200\"}": 150.0,
+    "phase19_http_started|{\"method\":\"GET\",\"name\":\"GET journey snapshot\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 150.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"GET\",\"name\":\"GET journey snapshot\",\"phase\":\"observe\",\"scenario\":\"journeys\",\"status\":\"200\"}": 150.0,
+    "phase19_http_started|{\"method\":\"GET\",\"name\":\"GET journey delta\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 150.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"GET\",\"name\":\"GET journey delta\",\"phase\":\"observe\",\"scenario\":\"journeys\",\"status\":\"200\"}": 150.0,
+    "phase19_flows|{\"kind\":\"journey_browse\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 150.0,
+    "phase19_completed|{\"kind\":\"journey_browse\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 150.0,
+    "phase19_started|{\"kind\":\"journey_hold\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 30.0,
+    "phase19_http_started|{\"method\":\"POST\",\"name\":\"POST journey checkout\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 46.0,
+    "phase19_write_requests|{\"name\":\"POST journey checkout\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 46.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"POST\",\"name\":\"POST journey checkout\",\"phase\":\"observe\",\"scenario\":\"journeys\",\"status\":\"201\"}": 46.0,
+    "phase19_http_started|{\"method\":\"POST\",\"name\":\"POST journey abandon\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 30.0,
+    "phase19_write_requests|{\"name\":\"POST journey abandon\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 30.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"POST\",\"name\":\"POST journey abandon\",\"phase\":\"observe\",\"scenario\":\"journeys\",\"status\":\"200\"}": 30.0,
+    "phase19_flows|{\"kind\":\"journey_hold\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 30.0,
+    "phase19_completed|{\"kind\":\"journey_hold\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 30.0,
+    "phase19_started|{\"kind\":\"journey_order_cancel\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 16.0,
+    "phase19_http_started|{\"method\":\"POST\",\"name\":\"POST journey confirm\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 16.0,
+    "phase19_write_requests|{\"name\":\"POST journey confirm\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 16.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"POST\",\"name\":\"POST journey confirm\",\"phase\":\"observe\",\"scenario\":\"journeys\",\"status\":\"200\"}": 16.0,
+    "phase19_http_started|{\"method\":\"GET\",\"name\":\"GET journey order\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 16.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"GET\",\"name\":\"GET journey order\",\"phase\":\"observe\",\"scenario\":\"journeys\",\"status\":\"200\"}": 16.0,
+    "phase19_http_started|{\"method\":\"POST\",\"name\":\"POST journey cancel\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 16.0,
+    "phase19_write_requests|{\"name\":\"POST journey cancel\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 16.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"POST\",\"name\":\"POST journey cancel\",\"phase\":\"observe\",\"scenario\":\"journeys\",\"status\":\"200\"}": 16.0,
+    "phase19_flows|{\"kind\":\"journey_order_cancel\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 16.0,
+    "phase19_completed|{\"kind\":\"journey_order_cancel\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 16.0,
+    "phase19_started|{\"kind\":\"journey_hotspot\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 4.0,
+    "phase19_http_started|{\"method\":\"POST\",\"name\":\"POST hotspot\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 4.0,
+    "phase19_write_requests|{\"name\":\"POST hotspot\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 4.0,
+    "http_reqs|{\"expected_response\":\"true\",\"method\":\"POST\",\"name\":\"POST hotspot\",\"phase\":\"observe\",\"scenario\":\"journeys\",\"status\":\"201\"}": 2.0,
+    "phase19_hot_outcomes|{\"group\":\"0\",\"outcome\":\"winner\",\"scenario\":\"journeys\",\"status\":\"201\"}": 1.0,
+    "phase19_hot_winners|{\"scenario\":\"journeys\"}": 2.0,
+    "phase19_flows|{\"kind\":\"journey_hotspot\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 4.0,
+    "phase19_completed|{\"kind\":\"journey_hotspot\",\"phase\":\"observe\",\"scenario\":\"journeys\"}": 4.0,
+    "http_reqs|{\"error_code\":\"1409\",\"expected_response\":\"true\",\"method\":\"POST\",\"name\":\"POST hotspot\",\"phase\":\"observe\",\"scenario\":\"journeys\",\"status\":\"409\"}": 2.0,
+    "phase19_hot_outcomes|{\"group\":\"0\",\"outcome\":\"conflict\",\"scenario\":\"journeys\",\"status\":\"409\"}": 1.0,
+    "phase19_hot_outcomes|{\"group\":\"1\",\"outcome\":\"winner\",\"scenario\":\"journeys\",\"status\":\"201\"}": 1.0,
+    "phase19_hot_outcomes|{\"group\":\"1\",\"outcome\":\"conflict\",\"scenario\":\"journeys\",\"status\":\"409\"}": 1.0
+  }
+}

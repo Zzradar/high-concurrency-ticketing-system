@@ -1,0 +1,18 @@
+{
+  "source": "<PRIVATE_TEMP>/propagation",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "observer-timeline.json": {
+      "sourceSha256": "17bb3c3995b54dec5c933a2553d6cc137e1c3ba5f8b7645c2546a110170d87cd",
+      "sourceBytes": 4149,
+      "archivedSha256": "ece602371f81786d9de064b8d940412b5665938b2a387068f3ca9f3941ac50f9",
+      "archivedBytes": 3982
+    },
+    "result.json": {
+      "sourceSha256": "fefa1af8e032c50192c6befe5414e8a0828c0dc99d9985b7847f4c1aa844786b",
+      "sourceBytes": 1861,
+      "archivedSha256": "5e43d89b12fe4a44798642d59f55079c4d6cfbdaf736f01dd567462906670197",
+      "archivedBytes": 1796
+    }
+  }
+}

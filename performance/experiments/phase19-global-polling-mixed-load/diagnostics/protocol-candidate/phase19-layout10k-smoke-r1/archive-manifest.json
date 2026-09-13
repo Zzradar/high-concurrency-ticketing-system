@@ -1,0 +1,12 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-layout10k-smoke-r1",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "result.json": {
+      "sourceSha256": "09a8303c08f04706c5580526970d12e22eff117fc522f9b9a2bcbd55ba9b3aeb",
+      "sourceBytes": 2552,
+      "archivedSha256": "53b7d15a7a54a1b35bd6bd3f5842ad66571d29be92c1e949d93a7ed9239bdcb1",
+      "archivedBytes": 2430
+    }
+  }
+}

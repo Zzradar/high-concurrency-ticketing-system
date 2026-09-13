@@ -1,0 +1,18 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-browser-payment-smoke-r4",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "browser.json": {
+      "sourceSha256": "dad3712d73c47c1211224a4757b5316d31756ae1957d8a7df77ef653a37a7a9d",
+      "sourceBytes": 35960,
+      "archivedSha256": "dad3712d73c47c1211224a4757b5316d31756ae1957d8a7df77ef653a37a7a9d",
+      "archivedBytes": 35960
+    },
+    "browser.log": {
+      "sourceSha256": "fef5d87e3e36b24939896482401675e335e6bcd073a374ed19e5d24c38ffdb7a",
+      "sourceBytes": 595,
+      "archivedSha256": "b6cde59211bff3eb1c2d4454f180d55be9d491cce57614c35c073f3473530d3f",
+      "archivedBytes": 536
+    }
+  }
+}

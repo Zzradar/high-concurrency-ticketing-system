@@ -1,0 +1,42 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-calibration-4g-500-r1",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "identity.json": {
+      "sourceSha256": "116ae9df0f483116b574d948cc241ba19659b7ce6d7d63ab3729a4410d387d19",
+      "sourceBytes": 2409,
+      "archivedSha256": "e823a765353bf5adb130eda5b508a717eb16ce053396d09e3377ecdf2110d94d",
+      "archivedBytes": 2358
+    },
+    "k6-summary.json": {
+      "sourceSha256": "e002766cec9942482721aed046c2f484661fe439791ba1d844613477f0442b75",
+      "sourceBytes": 6632,
+      "archivedSha256": "e002766cec9942482721aed046c2f484661fe439791ba1d844613477f0442b75",
+      "archivedBytes": 6632
+    },
+    "k6.log": {
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceBytes": 0,
+      "archivedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archivedBytes": 0
+    },
+    "resource-samples.json": {
+      "sourceSha256": "215542c5bf754eca20666cee79f0b51404ee929f99cf42c079f0832368a3fd87",
+      "sourceBytes": 49559,
+      "archivedSha256": "acfb8c4da3281e3191d1eece41d645388a205668a9e8ae8a761eb1670666a62d",
+      "archivedBytes": 47682
+    },
+    "result.json": {
+      "sourceSha256": "0782b737eb950f3285e325e01f48533afbb3785b6936846e9be805085143b4cd",
+      "sourceBytes": 607,
+      "archivedSha256": "c42d146f123d0ebd86fabba353b838ce5b0a1c94a0cf0cfcddd0eb460f2f3e59",
+      "archivedBytes": 587
+    },
+    "stub.log": {
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceBytes": 0,
+      "archivedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archivedBytes": 0
+    }
+  }
+}

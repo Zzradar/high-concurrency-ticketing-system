@@ -1,0 +1,167 @@
+[
+  {
+    "utc": "2026-09-13T11:28:05.333454+00:00",
+    "monotonic": 1219041.1896705,
+    "mode": "snapshot",
+    "cursor": "1789297216549-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 2000,
+    "seconds": 0.053393200039863586,
+    "bytes": 56567
+  },
+  {
+    "utc": "2026-09-13T11:28:07.365822+00:00",
+    "monotonic": 1219043.2217575,
+    "mode": "delta",
+    "cursor": "1789298885359-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 2000,
+    "seconds": 0.019189000129699707,
+    "bytes": 617
+  },
+  {
+    "utc": "2026-09-13T11:28:09.381616+00:00",
+    "monotonic": 1219045.2375206,
+    "mode": "delta",
+    "cursor": "1789298885359-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 5000,
+    "seconds": 0.005279699806123972,
+    "bytes": 567
+  },
+  {
+    "utc": "2026-09-13T11:28:14.403961+00:00",
+    "monotonic": 1219050.2600207,
+    "mode": "delta",
+    "cursor": "1789298885359-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 5000,
+    "seconds": 0.018573799869045615,
+    "bytes": 566
+  },
+  {
+    "utc": "2026-09-13T11:28:19.431234+00:00",
+    "monotonic": 1219055.2872568,
+    "mode": "delta",
+    "cursor": "1789298885359-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 5000,
+    "seconds": 0.019454199820756912,
+    "bytes": 566
+  },
+  {
+    "utc": "2026-09-13T11:28:24.463563+00:00",
+    "monotonic": 1219060.3196995,
+    "mode": "delta",
+    "cursor": "1789298899446-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 2000,
+    "seconds": 0.018744099885225296,
+    "bytes": 622
+  },
+  {
+    "utc": "2026-09-13T11:28:26.478406+00:00",
+    "monotonic": 1219062.3345271,
+    "mode": "delta",
+    "cursor": "1789298904477-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 2000,
+    "seconds": 0.006055299891158938,
+    "bytes": 616
+  },
+  {
+    "utc": "2026-09-13T11:28:28.485695+00:00",
+    "monotonic": 1219064.3418599,
+    "mode": "delta",
+    "cursor": "1789298904477-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 5000,
+    "seconds": 0.0044848001562058926,
+    "bytes": 566
+  },
+  {
+    "utc": "2026-09-13T11:28:33.495290+00:00",
+    "monotonic": 1219069.3514917,
+    "mode": "delta",
+    "cursor": "1789298904477-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 5000,
+    "seconds": 0.005493800155818462,
+    "bytes": 566
+  },
+  {
+    "utc": "2026-09-13T11:28:38.528169+00:00",
+    "monotonic": 1219074.3840186,
+    "mode": "delta",
+    "cursor": "1789298904477-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 5000,
+    "seconds": 0.01828450011089444,
+    "bytes": 566
+  },
+  {
+    "utc": "2026-09-13T11:28:43.547856+00:00",
+    "monotonic": 1219079.4041954,
+    "mode": "delta",
+    "cursor": "1789298918566-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 2000,
+    "seconds": 0.0054617999121546745,
+    "bytes": 616
+  },
+  {
+    "utc": "2026-09-13T11:28:45.567777+00:00",
+    "monotonic": 1219081.4239618,
+    "mode": "delta",
+    "cursor": "1789298918566-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 5000,
+    "seconds": 0.01884009991772473,
+    "bytes": 566
+  },
+  {
+    "utc": "2026-09-13T11:28:50.579776+00:00",
+    "monotonic": 1219086.4357596,
+    "mode": "delta",
+    "cursor": "1789298918566-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 5000,
+    "seconds": 0.0042934000957757235,
+    "bytes": 567
+  },
+  {
+    "utc": "2026-09-13T11:28:55.594767+00:00",
+    "monotonic": 1219091.4510081,
+    "mode": "delta",
+    "cursor": "1789298918566-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 5000,
+    "seconds": 0.004402599995955825,
+    "bytes": 567
+  },
+  {
+    "utc": "2026-09-13T11:29:00.609293+00:00",
+    "monotonic": 1219096.46555,
+    "mode": "delta",
+    "cursor": "1789298936098-0",
+    "reset": false,
+    "hasMore": false,
+    "pollAfterMs": 2000,
+    "seconds": 0.005127499811351299,
+    "bytes": 623
+  }
+]

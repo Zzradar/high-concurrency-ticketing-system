@@ -1,0 +1,59 @@
+{
+  "scene": "payment",
+  "revision": "baseline",
+  "diagnostic": true,
+  "environment": {
+    "playwright": "1.63.0",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+    "product": "Edg/152.0.4191.66",
+    "args": [
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-extensions",
+      "--edge-skip-compat-layer-relaunch",
+      "--user-data-dir=PROFILE",
+      "--remote-debugging-port=0",
+      "about:blank"
+    ],
+    "connection": "headed Edge; CDP noDefaults; native timers and visibility; one context, one window, two tabs"
+  },
+  "startedUtc": "2026-09-13T11:07:43.216Z",
+  "requests": [],
+  "initiations": [],
+  "visibility": [
+    {
+      "type": "init",
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789297664046,
+      "monotonicMs": 27.299999952316284
+    },
+    {
+      "type": "focus",
+      "trusted": true,
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789297664047,
+      "monotonicMs": 28.799999952316284
+    },
+    {
+      "type": "blur",
+      "trusted": true,
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789297666295,
+      "monotonicMs": 2276.9000000953674
+    }
+  ],
+  "phases": [],
+  "actions": [],
+  "topology": [],
+  "errors": [],
+  "passed": false,
+  "error": {
+    "message": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '通知中心', exact: true }) to be visible\u001b[22m\n",
+    "stack": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '通知中心', exact: true }) to be visible\u001b[22m\n\n    at <PHASE19_WORKTREE>\\performance\\experiments\\phase19-global-polling-mixed-load\\protocol\\browser.mjs:104:65"
+  },
+  "endedUtc": "2026-09-13T11:08:14.125Z",
+  "inflightAtClose": 0
+}

@@ -1,0 +1,18 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-browser-refund-smoke-r2",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "browser.json": {
+      "sourceSha256": "eec47d5a37bfd33d811f61d48c18f7e29b8dafd6c095d173906ad8eff8bafa10",
+      "sourceBytes": 22888,
+      "archivedSha256": "eec47d5a37bfd33d811f61d48c18f7e29b8dafd6c095d173906ad8eff8bafa10",
+      "archivedBytes": 22888
+    },
+    "browser.log": {
+      "sourceSha256": "d53a9b766462037d127db9bb5dd79df6bab7679c033500c307d55dde19917df0",
+      "sourceBytes": 591,
+      "archivedSha256": "4bc636e8d050934b167759aa0ec3e9787fcf0b1535fbe1f25c6e514d6145d7e4",
+      "archivedBytes": 532
+    }
+  }
+}

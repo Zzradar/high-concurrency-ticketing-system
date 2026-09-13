@@ -1,0 +1,18 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-browser-panel-smoke-r2",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "browser.json": {
+      "sourceSha256": "291791b3c8a83e123d2da0028660a3c2a8ba7cc6906710a64efc380986844086",
+      "sourceBytes": 10861,
+      "archivedSha256": "291791b3c8a83e123d2da0028660a3c2a8ba7cc6906710a64efc380986844086",
+      "archivedBytes": 10861
+    },
+    "browser.log": {
+      "sourceSha256": "f152220067571947472710210f956d07ca35720760a2f39451288fbb7edae29f",
+      "sourceBytes": 595,
+      "archivedSha256": "fd350468340e0047527dd1afb999e9d8522d6382360ab19f9fea1036b4f31fb2",
+      "archivedBytes": 536
+    }
+  }
+}

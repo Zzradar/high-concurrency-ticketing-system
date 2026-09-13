@@ -1,0 +1,59 @@
+{
+  "frozenUtc": "2026-09-13T11:51:00.664735+00:00",
+  "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+  "protocolParentCommit": "92d254164d250a4f7ea2d7aad19df804fcd29ca4",
+  "productionTrees": {
+    "backend/src": "1530bcc058a0002760010f604f50697664579fa8",
+    "backend/config": "758d23f2a8168a6e6e3ba7fa44e2ebbd7be54b98",
+    "backend/db/migrations": "027f13b7c52b3156c00921cceadaddb05dbaf5ca",
+    "frontend/src": "5c182d9b7c547562db849c68483e61dcb52d2101",
+    "frontend/public": "a6c8ce8c108948bc23c54e4ac09632691b97f55d"
+  },
+  "generatorMemoryGiB": 4,
+  "qualification": {
+    "100": {
+      "resultSha256": "4d85ea4d4732e0b155470bf18dc7f78be8901759b3f758f38515179a6311cd16",
+      "identitySha256": "40add67f8a3cdadf4a9a01951e38b555505a1ff80fa299b8ee4ada32fb20f355",
+      "valid": true
+    },
+    "250": {
+      "resultSha256": "1148cb5d3688f152c7efd20c5e5a9fb436a6f8817129f2f72b6577ad938d3d0b",
+      "identitySha256": "338aa3dcb6684d33ddacd6b2055365894fcf74ef1bf5bffa911d84befdf580ac",
+      "valid": true
+    },
+    "500": {
+      "resultSha256": "0782b737eb950f3285e325e01f48533afbb3785b6936846e9be805085143b4cd",
+      "identitySha256": "116ae9df0f483116b574d948cc241ba19659b7ce6d7d63ab3729a4410d387d19",
+      "valid": true
+    },
+    "1000": {
+      "resultSha256": "cf7fdfca9a543d8695ecd16ca4d1f5bd2ec3c0f68057a822963cbf61c5af2dd1",
+      "identitySha256": "62d0c074b9a2e41d961d6aa2c6a96d797aefea1870aea8ed6dea0275254ccb30",
+      "valid": true
+    },
+    "2000": {
+      "resultSha256": "891f52239a73f83664c3d8da6d92f659a2fca7cfa57c4096a1d36a3598ca3386",
+      "identitySha256": "82af6972825ba901e31d9023dbc4888ea376d9d83d91d846c4b73eebe05bbfdb",
+      "valid": true
+    }
+  },
+  "files": {
+    "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+    "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+    "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+    "calibrate.py": "6e0301d2ed06fac9da0c9fd00b5eddf284d83eb58a06fbbea686c9bd0c38a661",
+    "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+    "layout_probe.py": "3d862bd52d5f85c31fd2df68c29dc8cfb56277570ca380da7022633e2da5b1fc",
+    "measure.py": "6b65f1fe52ef4bf5aa1235c622e2159acf8789670c5e325fa41720f1a30da485",
+    "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+    "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+    "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+    "PROTOCOL.md": "53fd7009fd96405abc49d9d2e3aceb32676d6bec6411c65a4b199f951d4328b2",
+    "resource_gate.py": "07869480d7946700e203f821ee65d05e011deac846e4f3fc9476d7e8d9764994",
+    "seed.py": "0bce2c718c78dc9851c67f0392dc52fb1e5d01451db7add54f3130582dd542f5",
+    "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+    "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+    "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+    "workload.js": "add1a65fd22779223ef3c1fc2c79b346c670a3cdb770e3da2cf4326bdaefe0c7"
+  }
+}

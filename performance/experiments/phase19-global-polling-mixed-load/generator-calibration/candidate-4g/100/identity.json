@@ -1,0 +1,51 @@
+{
+  "startedUtc": "2026-09-13T11:34:27.710995+00:00",
+  "actualVUsRequested": 100,
+  "observationSeconds": 60,
+  "initialIdleSeconds": 15,
+  "protocolSha256": {
+    "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+    "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+    "browser.mjs": "cfc5c34daddb42e93eb9b2543879a697bde654878d52ea8575499ab827e79b48",
+    "calibrate.py": "6e0301d2ed06fac9da0c9fd00b5eddf284d83eb58a06fbbea686c9bd0c38a661",
+    "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+    "layout_probe.py": "3d862bd52d5f85c31fd2df68c29dc8cfb56277570ca380da7022633e2da5b1fc",
+    "measure.py": "a88324bc626aaf138ab45c2846f1225e20741dcb75dcec8fb4e789acb5793674",
+    "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+    "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+    "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+    "PROTOCOL.md": "f394df5398cf5a029ba04124e2ec2e06d11e5d80f2d8d5c761dd8f978f94db5f",
+    "resource_gate.py": "07869480d7946700e203f821ee65d05e011deac846e4f3fc9476d7e8d9764994",
+    "seed.py": "0bce2c718c78dc9851c67f0392dc52fb1e5d01451db7add54f3130582dd542f5",
+    "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+    "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+    "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+    "workload.js": "add1a65fd22779223ef3c1fc2c79b346c670a3cdb770e3da2cf4326bdaefe0c7"
+  },
+  "images": {
+    "k6": {
+      "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+      "digests": [
+        "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+      ]
+    },
+    "stub": {
+      "id": "sha256:b64631e04e4920160c50fbe8d8df828f7f35f06f425cb44aa09bca53e708a35a",
+      "digests": [
+        "python@sha256:b64631e04e4920160c50fbe8d8df828f7f35f06f425cb44aa09bca53e708a35a"
+      ]
+    }
+  },
+  "limits": {
+    "generator": {
+      "cpus": 2,
+      "memoryBytes": 4294967296,
+      "pids": 256,
+      "nofile": 16384
+    },
+    "stub": {
+      "cpus": 1,
+      "memoryBytes": 268435456
+    }
+  }
+}

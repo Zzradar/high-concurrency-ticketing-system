@@ -1,0 +1,18 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-browser-logout-smoke-r2",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "browser.json": {
+      "sourceSha256": "2300c65acbb8f4d8b57a7d934948f414fbcec8976e11c10f6090ed86c8bf2892",
+      "sourceBytes": 7555,
+      "archivedSha256": "2300c65acbb8f4d8b57a7d934948f414fbcec8976e11c10f6090ed86c8bf2892",
+      "archivedBytes": 7555
+    },
+    "browser.log": {
+      "sourceSha256": "22acc0f7645049b0fcac4edb2e55ff5669a481cf0abcf0c2c42d5370c95aa5d8",
+      "sourceBytes": 594,
+      "archivedSha256": "56e4348b0e516e73bb09bb98a61ed0194e66c44aa65ddb1d345b3cf92bb34601",
+      "archivedBytes": 535
+    }
+  }
+}

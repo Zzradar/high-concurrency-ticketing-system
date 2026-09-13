@@ -1,0 +1,288 @@
+{
+  "scene": "payment",
+  "revision": "baseline",
+  "diagnostic": true,
+  "environment": {
+    "playwright": "1.63.0",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+    "product": "Edg/152.0.4191.66",
+    "args": [
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-extensions",
+      "--edge-skip-compat-layer-relaunch",
+      "--user-data-dir=PROFILE",
+      "--remote-debugging-port=0",
+      "about:blank"
+    ],
+    "connection": "headed Edge; CDP noDefaults; native timers and visibility; one context, one window, two tabs"
+  },
+  "startedUtc": "2026-09-13T11:09:39.737Z",
+  "requests": [
+    {
+      "ordinal": 0,
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789297780634,
+      "startMonotonicNs": "1217936490729700",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297780731,
+      "durationMs": 96.7706,
+      "decodedBodyBytes": 108
+    },
+    {
+      "ordinal": 1,
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789297780636,
+      "startMonotonicNs": "1217936493040100",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789297780736,
+      "durationMs": 99.1328,
+      "decodedBodyBytes": 108
+    },
+    {
+      "ordinal": 2,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789297780732,
+      "startMonotonicNs": "1217936588186400",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297780812,
+      "durationMs": 80.7667,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 3,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789297780732,
+      "startMonotonicNs": "1217936588870700",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789297780813,
+      "durationMs": 81.1106,
+      "decodedBodyBytes": 2
+    },
+    {
+      "ordinal": 4,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789297780735,
+      "startMonotonicNs": "1217936591567900",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297780819,
+      "durationMs": 83.5429,
+      "decodedBodyBytes": 420
+    },
+    {
+      "ordinal": 5,
+      "endpoint": "/sessions/phase19-browser-session",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789297780818,
+      "startMonotonicNs": "1217936674076400",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789297780910,
+      "durationMs": 92.7456,
+      "decodedBodyBytes": 369
+    },
+    {
+      "ordinal": 6,
+      "endpoint": "/events/phase19-browser-event",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789297780819,
+      "startMonotonicNs": "1217936675454200",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789297780911,
+      "durationMs": 92.0471,
+      "decodedBodyBytes": 380
+    },
+    {
+      "ordinal": 7,
+      "endpoint": "/sessions/phase19-browser-session/seats",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789297780820,
+      "startMonotonicNs": "1217936676245000",
+      "inflightAtStart": 3,
+      "status": 200,
+      "endEpochMs": 1789297780943,
+      "durationMs": 123.0797,
+      "decodedBodyBytes": 827191
+    }
+  ],
+  "initiations": [
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789297780631,
+      "monotonicMs": 80.90000009536743
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789297780632,
+      "monotonicMs": 81.90000009536743
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789297780724,
+      "monotonicMs": 173.79999995231628
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789297780724,
+      "monotonicMs": 174.09999990463257
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789297780731,
+      "monotonicMs": 180.59999990463257
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session",
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789297780813,
+      "monotonicMs": 263.2999999523163
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/events/phase19-browser-event",
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789297780814,
+      "monotonicMs": 263.7999999523163
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session/seats",
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789297780814,
+      "monotonicMs": 264
+    }
+  ],
+  "visibility": [
+    {
+      "type": "init",
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789297780569,
+      "monotonicMs": 18.59999990463257
+    },
+    {
+      "type": "focus",
+      "trusted": true,
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789297780570,
+      "monotonicMs": 19.90000009536743
+    },
+    {
+      "type": "blur",
+      "trusted": true,
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789297782145,
+      "monotonicMs": 1594.7999999523163
+    }
+  ],
+  "phases": [],
+  "actions": [
+    {
+      "name": "bringToFront-visible",
+      "epochMs": 1789297780778
+    }
+  ],
+  "topology": [
+    {
+      "name": "subject",
+      "windowId": 1592352154,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    },
+    {
+      "name": "neutral",
+      "windowId": 1592352154,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    }
+  ],
+  "errors": [],
+  "passed": false,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Edg/152.0.4191.66",
+    "revision": "@cc2931e6363af1d70882ad63ee33b0e8cd524de0",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36 Edg/152.0.0.0",
+    "jsVersion": "15.2.23.10"
+  },
+  "error": {
+    "message": "page.waitForFunction: Timeout 5000ms exceeded.",
+    "stack": "page.waitForFunction: Timeout 5000ms exceeded.\n    at <PHASE19_WORKTREE>\\performance\\experiments\\phase19-global-polling-mixed-load\\protocol\\browser.mjs:118:16"
+  },
+  "endedUtc": "2026-09-13T11:09:45.822Z",
+  "inflightAtClose": 0
+}

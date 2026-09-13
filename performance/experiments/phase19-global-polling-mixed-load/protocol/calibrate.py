@@ -26,7 +26,7 @@ def save(path, value):
 
 def sample(name, previous=None):
     raw = run("docker", "exec", "--user", "0", name, "sh", "-c",
-        "cat /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.max /sys/fs/cgroup/cpu.stat /proc/meminfo /proc/vmstat /proc/1/status /proc/1/limits; ls /proc/1/fd | wc -l; cat /proc/1/net/tcp /proc/1/net/tcp6 | wc -l")
+        "cat /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.max /sys/fs/cgroup/pids.current /sys/fs/cgroup/pids.max /sys/fs/cgroup/memory.events /sys/fs/cgroup/cpu.stat /proc/meminfo /proc/vmstat /proc/1/status /proc/1/limits /proc/1/net/dev; ls /proc/1/fd | wc -l; cat /proc/1/net/tcp /proc/1/net/tcp6 | wc -l")
     def value(pattern):
         found = re.search(pattern, raw, re.M)
         if not found:
@@ -35,8 +35,12 @@ def sample(name, previous=None):
     now = time.monotonic()
     usage = value(r"^usage_usec (\d+)")
     swap = value(r"^pswpout (\d+)")
+    interfaces=[list(map(int,match.split())) for match in re.findall(r'^\s*[^\s:]+:\s+((?:\d+\s+){15}\d+)\s*$',raw,re.M)]
     row = {"utc": datetime.now(timezone.utc).isoformat(), "monotonic": now,
         "memory": int(raw.splitlines()[0]), "memoryLimit": int(raw.splitlines()[1]),
+        "pids":int(raw.splitlines()[2]),"pidsLimit":int(raw.splitlines()[3]),"threads":value(r'^Threads:\s+(\d+)'),
+        "oom":value(r'^oom_kill (\d+)')>0,"restarted":previous is not None and usage<previous['usageUsec'],
+        "networkRxBytes":sum(row[0] for row in interfaces),"networkTxBytes":sum(row[8] for row in interfaces),
         "rss": value(r"^VmRSS:\s+(\d+)")*1024, "rssPeak": value(r"^VmHWM:\s+(\d+)")*1024,
         "linuxAvailable": value(r"^MemAvailable:\s+(\d+)")*1024,
         "linuxTotal": value(r"^MemTotal:\s+(\d+)")*1024,
@@ -53,6 +57,7 @@ def main():
     parser.add_argument("--vus", type=int, choices=[100, 250, 500, 1000, 2000, 3000], required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--seconds", type=int, default=60)
+    parser.add_argument("--generator-memory-gib",type=int,choices=[2,4],default=2)
     args = parser.parse_args()
     out = args.out.resolve()
     if out.exists():
@@ -72,7 +77,7 @@ def main():
         "observationSeconds": args.seconds, "initialIdleSeconds": 15,
         "protocolSha256": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in HERE.iterdir() if p.is_file()},
         "images": {role: {"id": obj["Id"], "digests": obj["RepoDigests"]} for role, obj in images.items()},
-        "limits": {"generator": {"cpus": 2, "memoryBytes": 2147483648, "pids": 256, "nofile": 16384}, "stub": {"cpus": 1, "memoryBytes": 268435456}}}
+        "limits": {"generator": {"cpus": 2, "memoryBytes": args.generator_memory_gib*1024**3, "pids": 256, "nofile": 16384}, "stub": {"cpus": 1, "memoryBytes": 268435456}}}
     save(out / "identity.json", identity)
     created = []
     rows, stop, exit_code = [], None, None
@@ -85,7 +90,7 @@ def main():
             "--mount", f"type=bind,source={HERE},target=/protocol,readonly", images["stub"]["Id"], "python", "/protocol/stub.py")
         created.append(stub)
         run("docker", "run", "-d", "--name", generator, "--network", network,
-            "--cpus", "2", "--memory", "2g", "--pids-limit", "256", "--ulimit", "nofile=16384:16384",
+            "--cpus", "2", "--memory", f"{args.generator_memory_gib}g", "--pids-limit", "256", "--ulimit", "nofile=16384:16384",
             "--mount", f"type=bind,source={HERE},target=/protocol,readonly",
             "--mount", f"type=bind,source={fixture},target=/fixture,readonly", "--mount", f"type=bind,source={out},target=/output",
             "-e", "MODE=closed", "-e", f"VUS={args.vus}", "-e", f"SECONDS={args.seconds+15}",

@@ -1,0 +1,66 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-journeys-smoke-r1",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "aggregate.json": {
+      "sourceSha256": "0c9443b1058d0d7459cd90526137bc3ed636cae42bf215b5df4316f2db824c49",
+      "sourceBytes": 8138,
+      "archivedSha256": "7b19d5817975f438f4c4a25e766014021ea2b41342b4f95a3dc4bc8fd1929476",
+      "archivedBytes": 8002
+    },
+    "cleanup.json": {
+      "sourceSha256": "2df0980a988a78547a3f5eb15db149118ffb7a8c31bc63b51b996077a55e3331",
+      "sourceBytes": 163,
+      "archivedSha256": "39dbc449168301175385739156cc4997d42c609ed70dd60a44f9d6bb5555c0e5",
+      "archivedBytes": 151
+    },
+    "identity.json": {
+      "sourceSha256": "310a1a97cd03e98c47e3826d3ce9b8e64ebeddba3d2f1170db77b7a1541143e7",
+      "sourceBytes": 3754,
+      "archivedSha256": "7d359f0a898e2e50e9d54893e0e4207ee087db6b8063d695850ac9b7195d5c74",
+      "archivedBytes": 3676
+    },
+    "k6-summary.json": {
+      "sourceSha256": "3a8fd4b46b73c4878b4b567e7732d306025a88b4bdb041c9fe91e26fc90d4266",
+      "sourceBytes": 6637,
+      "archivedSha256": "3a8fd4b46b73c4878b4b567e7732d306025a88b4bdb041c9fe91e26fc90d4266",
+      "archivedBytes": 6637
+    },
+    "k6.log": {
+      "sourceSha256": "0d7ed693afba0addd8311d7c9108d8701837bd4a80452f045bde5b9237d6fe26",
+      "sourceBytes": 883,
+      "archivedSha256": "eec7c3a92471f14dc4321af431afd3212395a09c039f63727476b8d3094c5245",
+      "archivedBytes": 879
+    },
+    "resources.json": {
+      "sourceSha256": "440c985ec84c3b6119d5cdb1ee0f61e61e03a0bde672af900f2c04975f212cef",
+      "sourceBytes": 6270,
+      "archivedSha256": "86b5862b874e23f39f382f7fe0eeb1f838992b4f99753cde55b80e666520681e",
+      "archivedBytes": 6046
+    },
+    "result.json": {
+      "sourceSha256": "2a07d72d4c96415303fa604696612614d08de7529aaee5d8baab9dd35b7fee5f",
+      "sourceBytes": 725,
+      "archivedSha256": "4be48be8bc37021f49fbe5a601306c15dd6f4525b48872a61a18dc1c0659f056",
+      "archivedBytes": 696
+    },
+    "system-observations.json": {
+      "sourceSha256": "f3aa41f3d8e0eca893d9fd72d61cb4392f03f5aa8e7c1754074bf34ba4271df4",
+      "sourceBytes": 852521,
+      "archivedSha256": "2214dec044b01061d1dc2fa2d6229c1df58bc10b18dd50d953743c1bfbdfd3c0",
+      "archivedBytes": 851562
+    },
+    "verifier-after.json": {
+      "sourceSha256": "594480ec81149b0dc21fa73179cb7357a4ec5934d4c06bd961a278af54f5dd12",
+      "sourceBytes": 719,
+      "archivedSha256": "8eae535eda504b389a66b55d428966f924a1b2e7e5bddd9733ec0768db0fc4c0",
+      "archivedBytes": 696
+    },
+    "verifier-before.json": {
+      "sourceSha256": "763af2a279e50b6e079af1bc8e0302476734a0249e913206d799fe3ee9e483c8",
+      "sourceBytes": 719,
+      "archivedSha256": "89005afa3935961e83ce4d0049b45d8005f78bcb62c21b28527da0859cd8e9a1",
+      "archivedBytes": 696
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-browser-submitting-smoke-r2",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "browser.json": {
+      "sourceSha256": "483188b3388fbb0f2ed43209469cf9c26ca9e2ded094bfa54aaa81e05936ac34",
+      "sourceBytes": 30995,
+      "archivedSha256": "483188b3388fbb0f2ed43209469cf9c26ca9e2ded094bfa54aaa81e05936ac34",
+      "archivedBytes": 30995
+    },
+    "browser.log": {
+      "sourceSha256": "6cbb13f6c8ef4df600f7fd0ecca98d7cb184772ea08ddfb4b1ed26c00e83fc97",
+      "sourceBytes": 595,
+      "archivedSha256": "7a3adc9d415dbd8bc455e7895a81f167fe4e9de427b630dc4b970894e5f118fe",
+      "archivedBytes": 536
+    }
+  }
+}

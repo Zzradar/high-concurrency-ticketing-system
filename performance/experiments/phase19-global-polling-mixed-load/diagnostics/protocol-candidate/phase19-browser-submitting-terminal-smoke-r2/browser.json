@@ -1,0 +1,1273 @@
+{
+  "scene": "submitting",
+  "revision": "baseline",
+  "diagnostic": true,
+  "environment": {
+    "playwright": "1.63.0",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+    "product": "Edg/152.0.4191.66",
+    "args": [
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-extensions",
+      "--disable-backgrounding-occluded-windows",
+      "--edge-skip-compat-layer-relaunch",
+      "--user-data-dir=PROFILE",
+      "--remote-debugging-port=0",
+      "about:blank"
+    ],
+    "connection": "headed Edge; CDP noDefaults; native timers and visibility; one context, one window, two tabs"
+  },
+  "sourceCommit": "92d254164d250a4f7ea2d7aad19df804fcd29ca4",
+  "frontendTree": "5c182d9b7c547562db849c68483e61dcb52d2101",
+  "artifacts": {
+    ".openai/hosting.json": {
+      "sha256": "a449f6ac24b26a3447521292f92d3ef86d6ed2a6335d3b8cac2b642663c43f58",
+      "bytes": 66
+    },
+    "assets/adminApi-BzpU8YTP.css": {
+      "sha256": "23601929a91261bfe38d431947d6e01e339d5659441ed1b2eb5c9e9fa4b7c955",
+      "bytes": 2409
+    },
+    "assets/adminApi-D5cVGy_c.js": {
+      "sha256": "7a51f4ef9b0aedfa1ee62877fadbfb2c825b628fab6f7b3f65603f5cde6efadc",
+      "bytes": 2984
+    },
+    "assets/adminDateTime-D-syJO9q.js": {
+      "sha256": "f80aeb7126aafdc3d1ca24ce9fef95b10f367690237dadc098795eac037baf99",
+      "bytes": 805
+    },
+    "assets/AdminEventEditorPage-aMRxyCBY.js": {
+      "sha256": "3459c087118095bac01bacef0528a803fa5ebc690c0625459dda50c80d85c503",
+      "bytes": 12520
+    },
+    "assets/AdminEventListPage-DKbe_hXo.js": {
+      "sha256": "318a2c14569abc73fde5bc2ece1546c2a4cad6869324c8528d18c3f0c6e80f0a",
+      "bytes": 1261
+    },
+    "assets/AdminVenueEditorPage-lz64tfPH.js": {
+      "sha256": "f0f1569771c356d7441cedec9018bf5e5b4ee15f7ba7aa881bad0e3ad0a4a1ae",
+      "bytes": 5262
+    },
+    "assets/AdminVenueListPage-Bew2NI_t.js": {
+      "sha256": "fb9953997e017012b0d120f7e7c49db5e203b58ab382137ca828bfd97c204aed",
+      "bytes": 1379
+    },
+    "assets/index-aoJiY5Nd.js": {
+      "sha256": "74dbd9b2e8b8ddaa6af51431d1748e7d0f7569443419501ab2b5738c4969f34a",
+      "bytes": 241425
+    },
+    "assets/index-BEyvCYky.css": {
+      "sha256": "99b01be69aedc808d3af99ec9c3236be36d104f088432c6777e9522da0266579",
+      "bytes": 30543
+    },
+    "assets/WaitingRoomPage-DB-ugbDT.js": {
+      "sha256": "6519da327aa83430dccae7cf83a0a0fe8e4bde30c712a12d9f39f49028ee891f",
+      "bytes": 4253
+    },
+    "favicon.svg": {
+      "sha256": "93208bb26adbe1d0f4c18e95cc92a9445456d8597218947f47c7f1ba81594861",
+      "bytes": 284
+    },
+    "images/basketball-cover.png": {
+      "sha256": "58f742818970835628ffc781fec0baa279867c2b898d188eba4d19266cb81dc8",
+      "bytes": 2350032
+    },
+    "images/concert-cover.png": {
+      "sha256": "36f996a35295213d65823aaeb759327ad84c1a26af2598d5a59f81d2f4cd4bb9",
+      "bytes": 1882602
+    },
+    "index.html": {
+      "sha256": "0325a1a0fdd14e55572603f14cde5c6abe46b3751eb2e8ace76381d5b9191164",
+      "bytes": 963
+    },
+    "server/index.js": {
+      "sha256": "cff7643b114f820476a62bdf2f615327e9caff7181e2d3f2d3b7fbd3748c7b82",
+      "bytes": 405
+    }
+  },
+  "protocol": {
+    "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+    "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+    "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+    "calibrate.py": "6e0301d2ed06fac9da0c9fd00b5eddf284d83eb58a06fbbea686c9bd0c38a661",
+    "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+    "layout_probe.py": "3d862bd52d5f85c31fd2df68c29dc8cfb56277570ca380da7022633e2da5b1fc",
+    "measure.py": "a88324bc626aaf138ab45c2846f1225e20741dcb75dcec8fb4e789acb5793674",
+    "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+    "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+    "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+    "PROTOCOL.md": "f394df5398cf5a029ba04124e2ec2e06d11e5d80f2d8d5c761dd8f978f94db5f",
+    "resource_gate.py": "07869480d7946700e203f821ee65d05e011deac846e4f3fc9476d7e8d9764994",
+    "seed.py": "0bce2c718c78dc9851c67f0392dc52fb1e5d01451db7add54f3130582dd542f5",
+    "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+    "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+    "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+    "workload.js": "add1a65fd22779223ef3c1fc2c79b346c670a3cdb770e3da2cf4326bdaefe0c7"
+  },
+  "httpFixture": "browser-fixture.mjs; 75ms response delay; no provider calls; decoded bytes only, wire compression unavailable",
+  "buildRequirement": "VITE_USE_MOCK_API=false",
+  "startedUtc": "2026-09-13T11:36:40.188Z",
+  "requests": [
+    {
+      "ordinal": 0,
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789299401192,
+      "startMonotonicNs": "1219557048959600",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299401279,
+      "durationMs": 86.9596,
+      "decodedBodyBytes": 108,
+      "terminal": false
+    },
+    {
+      "ordinal": 1,
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789299401195,
+      "startMonotonicNs": "1219557051584100",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789299401286,
+      "durationMs": 91.1342,
+      "decodedBodyBytes": 108,
+      "terminal": false
+    },
+    {
+      "ordinal": 2,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789299401280,
+      "startMonotonicNs": "1219557136763400",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299401372,
+      "durationMs": 92.4105,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 3,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789299401281,
+      "startMonotonicNs": "1219557137539500",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789299401374,
+      "durationMs": 93.0405,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 4,
+      "endpoint": "/sessions/phase19-browser-session",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789299401285,
+      "startMonotonicNs": "1219557142203500",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789299401377,
+      "durationMs": 91.4995,
+      "decodedBodyBytes": 447,
+      "terminal": false
+    },
+    {
+      "ordinal": 5,
+      "endpoint": "/events/phase19-browser-event",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299401377,
+      "startMonotonicNs": "1219557234259300",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299401472,
+      "durationMs": 94.9222,
+      "decodedBodyBytes": 458,
+      "terminal": false
+    },
+    {
+      "ordinal": 6,
+      "endpoint": "/sessions/phase19-browser-session/seat-layout",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299401378,
+      "startMonotonicNs": "1219557234629800",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789299401500,
+      "durationMs": 121.9777,
+      "decodedBodyBytes": 532239,
+      "terminal": false
+    },
+    {
+      "ordinal": 7,
+      "endpoint": "/sessions/phase19-browser-session/seat-availability",
+      "method": "GET",
+      "business": "availability",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299401498,
+      "startMonotonicNs": "1219557355161100",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299401597,
+      "durationMs": 98.8912,
+      "decodedBodyBytes": 55435,
+      "terminal": false
+    },
+    {
+      "ordinal": 8,
+      "endpoint": "/checkout-sessions",
+      "method": "GET",
+      "business": "other",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299401598,
+      "startMonotonicNs": "1219557454515200",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299401683,
+      "durationMs": 85.6596,
+      "decodedBodyBytes": 255,
+      "terminal": false
+    },
+    {
+      "ordinal": 9,
+      "endpoint": "/orders",
+      "method": "GET",
+      "business": "other",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299401598,
+      "startMonotonicNs": "1219557454957300",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789299401692,
+      "durationMs": 93.853,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 10,
+      "endpoint": "/sessions/phase19-browser-session/seat-availability",
+      "method": "GET",
+      "business": "availability",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299403602,
+      "startMonotonicNs": "1219559459198000",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299403697,
+      "durationMs": 94.944,
+      "decodedBodyBytes": 546,
+      "terminal": false
+    },
+    {
+      "ordinal": 11,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299406191,
+      "startMonotonicNs": "1219562047934100",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299406269,
+      "durationMs": 78.1124,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 12,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "resume-checkout",
+      "startEpochMs": 1789299406416,
+      "startMonotonicNs": "1219562272834700",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299406499,
+      "durationMs": 82.6088,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 13,
+      "endpoint": "/sessions/phase19-browser-session",
+      "method": "GET",
+      "business": "other",
+      "phase": "visible",
+      "action": "resume-checkout",
+      "startEpochMs": 1789299406416,
+      "startMonotonicNs": "1219562273330500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299406503,
+      "durationMs": 86.4264,
+      "decodedBodyBytes": 447,
+      "terminal": false
+    },
+    {
+      "ordinal": 14,
+      "endpoint": "/sessions/phase19-browser-session/seat-availability",
+      "method": "GET",
+      "business": "availability",
+      "phase": "visible",
+      "action": "resume-checkout",
+      "startEpochMs": 1789299406479,
+      "startMonotonicNs": "1219562335814700",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299406597,
+      "durationMs": 118.2983,
+      "decodedBodyBytes": 55435,
+      "terminal": false
+    },
+    {
+      "ordinal": 15,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "resume-checkout",
+      "startEpochMs": 1789299406503,
+      "startMonotonicNs": "1219562360078100",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299406606,
+      "durationMs": 102.7558,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 16,
+      "endpoint": "/orders",
+      "method": "GET",
+      "business": "other",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299406505,
+      "startMonotonicNs": "1219562361471100",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299406608,
+      "durationMs": 103.1913,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 17,
+      "endpoint": "/checkout-sessions/phase19-browser-checkout",
+      "method": "GET",
+      "business": "checkout",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299406598,
+      "startMonotonicNs": "1219562454773300",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299406695,
+      "durationMs": 97.5278,
+      "decodedBodyBytes": 253,
+      "terminal": false
+    },
+    {
+      "ordinal": 18,
+      "endpoint": "/checkout-sessions/phase19-browser-checkout",
+      "method": "GET",
+      "business": "checkout",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299406608,
+      "startMonotonicNs": "1219562465034500",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789299406696,
+      "durationMs": 88.2423,
+      "decodedBodyBytes": 253,
+      "terminal": false
+    },
+    {
+      "ordinal": 19,
+      "endpoint": "/checkout-sessions/phase19-browser-checkout",
+      "method": "GET",
+      "business": "checkout",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299408698,
+      "startMonotonicNs": "1219564554887500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299408794,
+      "durationMs": 96.1669,
+      "decodedBodyBytes": 253,
+      "terminal": false
+    },
+    {
+      "ordinal": 20,
+      "endpoint": "/sessions/phase19-browser-session/seat-availability",
+      "method": "GET",
+      "business": "availability",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299408746,
+      "startMonotonicNs": "1219564602998400",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299408840,
+      "durationMs": 93.7321,
+      "decodedBodyBytes": 546,
+      "terminal": false
+    },
+    {
+      "ordinal": 21,
+      "endpoint": "/checkout-sessions/phase19-browser-checkout",
+      "method": "GET",
+      "business": "checkout",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299410806,
+      "startMonotonicNs": "1219566663107400",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299410902,
+      "durationMs": 95.783,
+      "decodedBodyBytes": 253,
+      "terminal": false
+    },
+    {
+      "ordinal": 22,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299411192,
+      "startMonotonicNs": "1219567049162000",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299411272,
+      "durationMs": 79.2674,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 23,
+      "endpoint": "/checkout-sessions/phase19-browser-checkout",
+      "method": "GET",
+      "business": "checkout",
+      "phase": "hidden",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299413152,
+      "startMonotonicNs": "1219569009272600",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299413245,
+      "durationMs": 92.7837,
+      "decodedBodyBytes": 253,
+      "terminal": false
+    },
+    {
+      "ordinal": 24,
+      "endpoint": "/sessions/phase19-browser-session/seat-availability",
+      "method": "GET",
+      "business": "availability",
+      "phase": "hidden",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299414464,
+      "startMonotonicNs": "1219570320490600",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299414561,
+      "durationMs": 97.206,
+      "decodedBodyBytes": 55435,
+      "terminal": false
+    },
+    {
+      "ordinal": 25,
+      "endpoint": "/checkout-sessions/phase19-browser-checkout",
+      "method": "GET",
+      "business": "checkout",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299415255,
+      "startMonotonicNs": "1219571111602000",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299415350,
+      "durationMs": 94.7922,
+      "decodedBodyBytes": 253,
+      "terminal": false
+    },
+    {
+      "ordinal": 26,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299416204,
+      "startMonotonicNs": "1219572060828400",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299416297,
+      "durationMs": 93.2317,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 27,
+      "endpoint": "/sessions/phase19-browser-session/seat-availability",
+      "method": "GET",
+      "business": "availability",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299416573,
+      "startMonotonicNs": "1219572429698300",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299416680,
+      "durationMs": 107.3025,
+      "decodedBodyBytes": 546,
+      "terminal": false
+    },
+    {
+      "ordinal": 28,
+      "endpoint": "/checkout-sessions/phase19-browser-checkout",
+      "method": "GET",
+      "business": "checkout",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299417355,
+      "startMonotonicNs": "1219573212224200",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299417451,
+      "durationMs": 96.0964,
+      "decodedBodyBytes": 253,
+      "terminal": false
+    },
+    {
+      "ordinal": 29,
+      "endpoint": "/checkout-sessions/phase19-browser-checkout",
+      "method": "GET",
+      "business": "checkout",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299419459,
+      "startMonotonicNs": "1219575315706400",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299419556,
+      "durationMs": 97.1199,
+      "decodedBodyBytes": 253,
+      "terminal": false
+    },
+    {
+      "ordinal": 30,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299421191,
+      "startMonotonicNs": "1219577047599500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299421284,
+      "durationMs": 93.6091,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 31,
+      "endpoint": "/checkout-sessions/phase19-browser-checkout",
+      "method": "GET",
+      "business": "checkout",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299421567,
+      "startMonotonicNs": "1219577423701800",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299421662,
+      "durationMs": 95.2488,
+      "decodedBodyBytes": 253,
+      "terminal": false
+    },
+    {
+      "ordinal": 32,
+      "endpoint": "/sessions/phase19-browser-session/seat-availability",
+      "method": "GET",
+      "business": "availability",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299421681,
+      "startMonotonicNs": "1219577537698500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299421778,
+      "durationMs": 97.3705,
+      "decodedBodyBytes": 546,
+      "terminal": false
+    },
+    {
+      "ordinal": 33,
+      "endpoint": "/checkout-sessions/phase19-browser-checkout/confirm",
+      "method": "POST",
+      "business": "checkout",
+      "phase": "restored",
+      "action": "terminal-fixture-and-manual-refresh",
+      "startEpochMs": 1789299424538,
+      "startMonotonicNs": "1219580394896300",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299424645,
+      "durationMs": 106.4927,
+      "decodedBodyBytes": 740,
+      "terminal": true
+    },
+    {
+      "ordinal": 34,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299424634,
+      "startMonotonicNs": "1219580491203500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299424717,
+      "durationMs": 82.439,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 35,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299424645,
+      "startMonotonicNs": "1219580501949700",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299424735,
+      "durationMs": 89.8112,
+      "decodedBodyBytes": 424,
+      "terminal": false
+    },
+    {
+      "ordinal": 36,
+      "endpoint": "/sessions/phase19-browser-session",
+      "method": "GET",
+      "business": "other",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299424734,
+      "startMonotonicNs": "1219580591251400",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299424828,
+      "durationMs": 94.0066,
+      "decodedBodyBytes": 447,
+      "terminal": false
+    },
+    {
+      "ordinal": 37,
+      "endpoint": "/events/phase19-browser-event",
+      "method": "GET",
+      "business": "other",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299424735,
+      "startMonotonicNs": "1219580591995900",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789299424829,
+      "durationMs": 93.698,
+      "decodedBodyBytes": 458,
+      "terminal": false
+    },
+    {
+      "ordinal": 38,
+      "endpoint": "/sessions/phase19-browser-session/seats",
+      "method": "GET",
+      "business": "other",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299424735,
+      "startMonotonicNs": "1219580592220900",
+      "inflightAtStart": 3,
+      "status": 200,
+      "endEpochMs": 1789299424868,
+      "durationMs": 132.8843,
+      "decodedBodyBytes": 827191,
+      "terminal": false
+    },
+    {
+      "ordinal": 39,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299426200,
+      "startMonotonicNs": "1219582056458100",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299426293,
+      "durationMs": 93.1412,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    }
+  ],
+  "initiations": [
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299401189,
+      "monotonicMs": 85.89999985694885
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299401190,
+      "monotonicMs": 86.79999995231628
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299401274,
+      "monotonicMs": 170.89999985694885
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299401274,
+      "monotonicMs": 171.39999985694885
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299401278,
+      "monotonicMs": 175.09999990463257
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/events/phase19-browser-event",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299401370,
+      "monotonicMs": 267.2999999523163
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session/seat-layout",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299401371,
+      "monotonicMs": 267.69999980926514
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session/seat-availability",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299401495,
+      "monotonicMs": 391.89999985694885
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/checkout-sessions",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299401592,
+      "monotonicMs": 489.39999985694885
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299401593,
+      "monotonicMs": 489.69999980926514
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session/seat-availability",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299403600,
+      "monotonicMs": 2497
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299406189,
+      "monotonicMs": 5086.199999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299406412,
+      "monotonicMs": 5309.299999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299406413,
+      "monotonicMs": 5309.699999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session/seat-availability",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299406441,
+      "monotonicMs": 5338.099999904633
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299406500,
+      "monotonicMs": 5397.399999856949
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299406501,
+      "monotonicMs": 5397.699999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/checkout-sessions/phase19-browser-checkout",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299406595,
+      "monotonicMs": 5491.899999856949
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/checkout-sessions/phase19-browser-checkout",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299406605,
+      "monotonicMs": 5502
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/checkout-sessions/phase19-browser-checkout",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299408695,
+      "monotonicMs": 7591.899999856949
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session/seat-availability",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299408744,
+      "monotonicMs": 7641.199999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/checkout-sessions/phase19-browser-checkout",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299410804,
+      "monotonicMs": 9700.799999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299411190,
+      "monotonicMs": 10087.399999856949
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/checkout-sessions/phase19-browser-checkout",
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789299413150,
+      "monotonicMs": 12046.799999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session/seat-availability",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299414454,
+      "monotonicMs": 13350.899999856949
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/checkout-sessions/phase19-browser-checkout",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299415253,
+      "monotonicMs": 14150.299999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299416202,
+      "monotonicMs": 15099
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session/seat-availability",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299416571,
+      "monotonicMs": 15468.199999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/checkout-sessions/phase19-browser-checkout",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299417353,
+      "monotonicMs": 16250.199999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/checkout-sessions/phase19-browser-checkout",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299419457,
+      "monotonicMs": 18354.099999904633
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299421189,
+      "monotonicMs": 20086.099999904633
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/checkout-sessions/phase19-browser-checkout",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299421565,
+      "monotonicMs": 20461.5
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session/seat-availability",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299421679,
+      "monotonicMs": 20575.89999985695
+    },
+    {
+      "type": "request",
+      "method": "POST",
+      "path": "/api/checkout-sessions/phase19-browser-checkout/confirm",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299424536,
+      "monotonicMs": 23432.799999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299424626,
+      "monotonicMs": 23523.5
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299424637,
+      "monotonicMs": 23533.799999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299424731,
+      "monotonicMs": 23627.799999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/events/phase19-browser-event",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299424731,
+      "monotonicMs": 23628.39999985695
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session/seats",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299424732,
+      "monotonicMs": 23628.599999904633
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299426198,
+      "monotonicMs": 25094.699999809265
+    }
+  ],
+  "visibility": [
+    {
+      "type": "init",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299401127,
+      "monotonicMs": 23.699999809265137
+    },
+    {
+      "type": "focus",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299401130,
+      "monotonicMs": 26.899999856948853
+    },
+    {
+      "type": "blur",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299401998,
+      "monotonicMs": 895.1999998092651
+    },
+    {
+      "type": "focus",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299406412,
+      "monotonicMs": 5309
+    },
+    {
+      "type": "visibilitychange",
+      "trusted": true,
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789299411401,
+      "monotonicMs": 10297.399999856949
+    },
+    {
+      "type": "visibilitychange",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299414449,
+      "monotonicMs": 13346.299999952316
+    }
+  ],
+  "phases": [
+    {
+      "name": "visible",
+      "began": 1789299401381,
+      "activationEpochMs": 1789299401348,
+      "durationMs": 10000,
+      "hidden": false
+    },
+    {
+      "name": "hidden",
+      "began": 1789299411430,
+      "activationEpochMs": 1789299411393,
+      "durationMs": 3000,
+      "hidden": true
+    },
+    {
+      "name": "restored",
+      "began": 1789299414473,
+      "activationEpochMs": 1789299414437,
+      "durationMs": 15000,
+      "hidden": false
+    }
+  ],
+  "actions": [
+    {
+      "name": "bringToFront-visible",
+      "epochMs": 1789299401348
+    },
+    {
+      "name": "resume-checkout",
+      "epochMs": 1789299406391
+    },
+    {
+      "name": "bringToFront-hidden",
+      "epochMs": 1789299411393
+    },
+    {
+      "name": "bringToFront-restored",
+      "epochMs": 1789299414437
+    },
+    {
+      "name": "terminal-fixture-and-manual-refresh",
+      "epochMs": 1789299424480
+    }
+  ],
+  "topology": [
+    {
+      "name": "subject",
+      "windowId": 1375046102,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    },
+    {
+      "name": "neutral",
+      "windowId": 1375046102,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    }
+  ],
+  "errors": [],
+  "passed": true,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Edg/152.0.4191.66",
+    "revision": "@cc2931e6363af1d70882ad63ee33b0e8cd524de0",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36 Edg/152.0.0.0",
+    "jsVersion": "15.2.23.10"
+  },
+  "terminalEpochMs": 1789299424480,
+  "checks": {
+    "hiddenNewReads": 1,
+    "hiddenInflightFromBefore": 0,
+    "maxInflight": {
+      "notifications": 2,
+      "availability": 1,
+      "payment": 0,
+      "checkout": 2,
+      "order": 1
+    },
+    "restoredImmediateCounts": {
+      "notifications": 0,
+      "availability": 1,
+      "payment": 0,
+      "checkout": 0,
+      "order": 0
+    },
+    "logoutNewReads": 0,
+    "terminalObserved": true,
+    "readsAfterTerminalSettled": 0,
+    "restorationFirstReadMs": {
+      "notifications": 1767,
+      "availability": 27,
+      "payment": null,
+      "checkout": 818,
+      "order": 10208
+    }
+  },
+  "endedUtc": "2026-09-13T11:37:09.488Z",
+  "inflightAtClose": 0
+}

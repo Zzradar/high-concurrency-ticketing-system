@@ -1,0 +1,1473 @@
+{
+  "scene": "payment",
+  "revision": "baseline",
+  "diagnostic": true,
+  "environment": {
+    "playwright": "1.63.0",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c",
+    "product": "Edg/152.0.4191.66",
+    "args": [
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-extensions",
+      "--disable-backgrounding-occluded-windows",
+      "--edge-skip-compat-layer-relaunch",
+      "--user-data-dir=PROFILE",
+      "--remote-debugging-port=0",
+      "about:blank"
+    ],
+    "connection": "headed Edge; CDP noDefaults; native timers and visibility; one context, one window, two tabs"
+  },
+  "sourceCommit": "92d254164d250a4f7ea2d7aad19df804fcd29ca4",
+  "frontendTree": "5c182d9b7c547562db849c68483e61dcb52d2101",
+  "artifacts": {
+    ".openai/hosting.json": {
+      "sha256": "a449f6ac24b26a3447521292f92d3ef86d6ed2a6335d3b8cac2b642663c43f58",
+      "bytes": 66
+    },
+    "assets/adminApi-BzpU8YTP.css": {
+      "sha256": "23601929a91261bfe38d431947d6e01e339d5659441ed1b2eb5c9e9fa4b7c955",
+      "bytes": 2409
+    },
+    "assets/adminApi-D5cVGy_c.js": {
+      "sha256": "7a51f4ef9b0aedfa1ee62877fadbfb2c825b628fab6f7b3f65603f5cde6efadc",
+      "bytes": 2984
+    },
+    "assets/adminDateTime-D-syJO9q.js": {
+      "sha256": "f80aeb7126aafdc3d1ca24ce9fef95b10f367690237dadc098795eac037baf99",
+      "bytes": 805
+    },
+    "assets/AdminEventEditorPage-aMRxyCBY.js": {
+      "sha256": "3459c087118095bac01bacef0528a803fa5ebc690c0625459dda50c80d85c503",
+      "bytes": 12520
+    },
+    "assets/AdminEventListPage-DKbe_hXo.js": {
+      "sha256": "318a2c14569abc73fde5bc2ece1546c2a4cad6869324c8528d18c3f0c6e80f0a",
+      "bytes": 1261
+    },
+    "assets/AdminVenueEditorPage-lz64tfPH.js": {
+      "sha256": "f0f1569771c356d7441cedec9018bf5e5b4ee15f7ba7aa881bad0e3ad0a4a1ae",
+      "bytes": 5262
+    },
+    "assets/AdminVenueListPage-Bew2NI_t.js": {
+      "sha256": "fb9953997e017012b0d120f7e7c49db5e203b58ab382137ca828bfd97c204aed",
+      "bytes": 1379
+    },
+    "assets/index-aoJiY5Nd.js": {
+      "sha256": "74dbd9b2e8b8ddaa6af51431d1748e7d0f7569443419501ab2b5738c4969f34a",
+      "bytes": 241425
+    },
+    "assets/index-BEyvCYky.css": {
+      "sha256": "99b01be69aedc808d3af99ec9c3236be36d104f088432c6777e9522da0266579",
+      "bytes": 30543
+    },
+    "assets/WaitingRoomPage-DB-ugbDT.js": {
+      "sha256": "6519da327aa83430dccae7cf83a0a0fe8e4bde30c712a12d9f39f49028ee891f",
+      "bytes": 4253
+    },
+    "favicon.svg": {
+      "sha256": "93208bb26adbe1d0f4c18e95cc92a9445456d8597218947f47c7f1ba81594861",
+      "bytes": 284
+    },
+    "images/basketball-cover.png": {
+      "sha256": "58f742818970835628ffc781fec0baa279867c2b898d188eba4d19266cb81dc8",
+      "bytes": 2350032
+    },
+    "images/concert-cover.png": {
+      "sha256": "36f996a35295213d65823aaeb759327ad84c1a26af2598d5a59f81d2f4cd4bb9",
+      "bytes": 1882602
+    },
+    "index.html": {
+      "sha256": "0325a1a0fdd14e55572603f14cde5c6abe46b3751eb2e8ace76381d5b9191164",
+      "bytes": 963
+    },
+    "server/index.js": {
+      "sha256": "cff7643b114f820476a62bdf2f615327e9caff7181e2d3f2d3b7fbd3748c7b82",
+      "bytes": 405
+    }
+  },
+  "protocol": {
+    "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+    "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+    "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+    "calibrate.py": "6e0301d2ed06fac9da0c9fd00b5eddf284d83eb58a06fbbea686c9bd0c38a661",
+    "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+    "layout_probe.py": "3d862bd52d5f85c31fd2df68c29dc8cfb56277570ca380da7022633e2da5b1fc",
+    "measure.py": "a88324bc626aaf138ab45c2846f1225e20741dcb75dcec8fb4e789acb5793674",
+    "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+    "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+    "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+    "PROTOCOL.md": "f394df5398cf5a029ba04124e2ec2e06d11e5d80f2d8d5c761dd8f978f94db5f",
+    "resource_gate.py": "07869480d7946700e203f821ee65d05e011deac846e4f3fc9476d7e8d9764994",
+    "seed.py": "0bce2c718c78dc9851c67f0392dc52fb1e5d01451db7add54f3130582dd542f5",
+    "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+    "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+    "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+    "workload.js": "add1a65fd22779223ef3c1fc2c79b346c670a3cdb770e3da2cf4326bdaefe0c7"
+  },
+  "httpFixture": "browser-fixture.mjs; 75ms response delay; no provider calls; decoded bytes only, wire compression unavailable",
+  "buildRequirement": "VITE_USE_MOCK_API=false",
+  "startedUtc": "2026-09-13T11:36:10.079Z",
+  "requests": [
+    {
+      "ordinal": 0,
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789299370838,
+      "startMonotonicNs": "1219526694497500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299370934,
+      "durationMs": 95.8386,
+      "decodedBodyBytes": 108,
+      "terminal": false
+    },
+    {
+      "ordinal": 1,
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "business": "other",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789299370841,
+      "startMonotonicNs": "1219526697893000",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789299370937,
+      "durationMs": 95.7164,
+      "decodedBodyBytes": 108,
+      "terminal": false
+    },
+    {
+      "ordinal": 2,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789299370933,
+      "startMonotonicNs": "1219526789437300",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299371019,
+      "durationMs": 85.7848,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 3,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789299370934,
+      "startMonotonicNs": "1219526790721900",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789299371020,
+      "durationMs": 86.162,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 4,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "setup",
+      "action": "navigation",
+      "startEpochMs": 1789299370938,
+      "startMonotonicNs": "1219526794188800",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299371026,
+      "durationMs": 88.5367,
+      "decodedBodyBytes": 420,
+      "terminal": false
+    },
+    {
+      "ordinal": 5,
+      "endpoint": "/sessions/phase19-browser-session",
+      "method": "GET",
+      "business": "other",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299371024,
+      "startMonotonicNs": "1219526880429800",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299371119,
+      "durationMs": 95.3437,
+      "decodedBodyBytes": 447,
+      "terminal": false
+    },
+    {
+      "ordinal": 6,
+      "endpoint": "/events/phase19-browser-event",
+      "method": "GET",
+      "business": "other",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299371025,
+      "startMonotonicNs": "1219526881866000",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789299371120,
+      "durationMs": 94.8108,
+      "decodedBodyBytes": 458,
+      "terminal": false
+    },
+    {
+      "ordinal": 7,
+      "endpoint": "/sessions/phase19-browser-session/seats",
+      "method": "GET",
+      "business": "other",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299371027,
+      "startMonotonicNs": "1219526883229100",
+      "inflightAtStart": 3,
+      "status": 200,
+      "endEpochMs": 1789299371161,
+      "durationMs": 134.8051,
+      "decodedBodyBytes": 827191,
+      "terminal": false
+    },
+    {
+      "ordinal": 8,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299375845,
+      "startMonotonicNs": "1219531702024500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299375939,
+      "durationMs": 93.3635,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 9,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "pay",
+      "startEpochMs": 1789299376039,
+      "startMonotonicNs": "1219531895327700",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299376127,
+      "durationMs": 88.1931,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 10,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "visible",
+      "action": "pay",
+      "startEpochMs": 1789299376040,
+      "startMonotonicNs": "1219531897073900",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299376133,
+      "durationMs": 92.9798,
+      "decodedBodyBytes": 420,
+      "terminal": false
+    },
+    {
+      "ordinal": 11,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "pay",
+      "startEpochMs": 1789299376041,
+      "startMonotonicNs": "1219531897512400",
+      "inflightAtStart": 2,
+      "status": 200,
+      "endEpochMs": 1789299376134,
+      "durationMs": 93.495,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 12,
+      "endpoint": "/orders/phase19-browser-order/pay",
+      "method": "POST",
+      "business": "order",
+      "phase": "visible",
+      "action": "pay",
+      "startEpochMs": 1789299376045,
+      "startMonotonicNs": "1219531901137700",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299376141,
+      "durationMs": 96.1984,
+      "decodedBodyBytes": 711,
+      "terminal": true
+    },
+    {
+      "ordinal": 13,
+      "endpoint": "/payment-attempts/phase19-browser-attempt",
+      "method": "GET",
+      "business": "payment",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299376141,
+      "startMonotonicNs": "1219531997704100",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299376236,
+      "durationMs": 94.6282,
+      "decodedBodyBytes": 199,
+      "terminal": false
+    },
+    {
+      "ordinal": 14,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299376141,
+      "startMonotonicNs": "1219531998046000",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299376237,
+      "durationMs": 95.3879,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 15,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299376236,
+      "startMonotonicNs": "1219532093024900",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299376329,
+      "durationMs": 92.7111,
+      "decodedBodyBytes": 435,
+      "terminal": false
+    },
+    {
+      "ordinal": 16,
+      "endpoint": "/payment-attempts/phase19-browser-attempt",
+      "method": "GET",
+      "business": "payment",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299377340,
+      "startMonotonicNs": "1219533196661100",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299377432,
+      "durationMs": 91.7425,
+      "decodedBodyBytes": 199,
+      "terminal": false
+    },
+    {
+      "ordinal": 17,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299377433,
+      "startMonotonicNs": "1219533289137300",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299377526,
+      "durationMs": 93.5303,
+      "decodedBodyBytes": 435,
+      "terminal": false
+    },
+    {
+      "ordinal": 18,
+      "endpoint": "/payment-attempts/phase19-browser-attempt",
+      "method": "GET",
+      "business": "payment",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299378531,
+      "startMonotonicNs": "1219534388069400",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299378629,
+      "durationMs": 97.7856,
+      "decodedBodyBytes": 199,
+      "terminal": false
+    },
+    {
+      "ordinal": 19,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299378630,
+      "startMonotonicNs": "1219534486359100",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299378729,
+      "durationMs": 98.8829,
+      "decodedBodyBytes": 435,
+      "terminal": false
+    },
+    {
+      "ordinal": 20,
+      "endpoint": "/payment-attempts/phase19-browser-attempt",
+      "method": "GET",
+      "business": "payment",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299379735,
+      "startMonotonicNs": "1219535591339600",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299379830,
+      "durationMs": 95.2881,
+      "decodedBodyBytes": 199,
+      "terminal": false
+    },
+    {
+      "ordinal": 21,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299379830,
+      "startMonotonicNs": "1219535687081200",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299379925,
+      "durationMs": 94.9298,
+      "decodedBodyBytes": 435,
+      "terminal": false
+    },
+    {
+      "ordinal": 22,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299380842,
+      "startMonotonicNs": "1219536698393700",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299380935,
+      "durationMs": 93.6875,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 23,
+      "endpoint": "/payment-attempts/phase19-browser-attempt",
+      "method": "GET",
+      "business": "payment",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299380934,
+      "startMonotonicNs": "1219536790642900",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299381058,
+      "durationMs": 124.297,
+      "decodedBodyBytes": 199,
+      "terminal": false
+    },
+    {
+      "ordinal": 24,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "visible",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299381062,
+      "startMonotonicNs": "1219536918827900",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299381155,
+      "durationMs": 93.1085,
+      "decodedBodyBytes": 435,
+      "terminal": false
+    },
+    {
+      "ordinal": 25,
+      "endpoint": "/payment-attempts/phase19-browser-attempt",
+      "method": "GET",
+      "business": "payment",
+      "phase": "hidden",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299383158,
+      "startMonotonicNs": "1219539014131500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299383241,
+      "durationMs": 83.1284,
+      "decodedBodyBytes": 199,
+      "terminal": false
+    },
+    {
+      "ordinal": 26,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "hidden",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299383241,
+      "startMonotonicNs": "1219539097637500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299383333,
+      "durationMs": 92.4186,
+      "decodedBodyBytes": 435,
+      "terminal": false
+    },
+    {
+      "ordinal": 27,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "hidden",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299384107,
+      "startMonotonicNs": "1219539963138600",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299384195,
+      "durationMs": 88.168,
+      "decodedBodyBytes": 435,
+      "terminal": false
+    },
+    {
+      "ordinal": 28,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "hidden",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299384107,
+      "startMonotonicNs": "1219539963557500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299384196,
+      "durationMs": 88.6411,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 29,
+      "endpoint": "/payment-attempts/phase19-browser-attempt",
+      "method": "GET",
+      "business": "payment",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299384196,
+      "startMonotonicNs": "1219540052578000",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299384283,
+      "durationMs": 86.7406,
+      "decodedBodyBytes": 199,
+      "terminal": false
+    },
+    {
+      "ordinal": 30,
+      "endpoint": "/payment-attempts/phase19-browser-attempt",
+      "method": "GET",
+      "business": "payment",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299384342,
+      "startMonotonicNs": "1219540199024800",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299384436,
+      "durationMs": 93.9874,
+      "decodedBodyBytes": 199,
+      "terminal": false
+    },
+    {
+      "ordinal": 31,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299384437,
+      "startMonotonicNs": "1219540293330300",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299384531,
+      "durationMs": 94.4185,
+      "decodedBodyBytes": 435,
+      "terminal": false
+    },
+    {
+      "ordinal": 32,
+      "endpoint": "/payment-attempts/phase19-browser-attempt",
+      "method": "GET",
+      "business": "payment",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299385536,
+      "startMonotonicNs": "1219541392265900",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299385631,
+      "durationMs": 94.8754,
+      "decodedBodyBytes": 199,
+      "terminal": false
+    },
+    {
+      "ordinal": 33,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299385631,
+      "startMonotonicNs": "1219541487668500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299385728,
+      "durationMs": 96.7131,
+      "decodedBodyBytes": 435,
+      "terminal": false
+    },
+    {
+      "ordinal": 34,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299385844,
+      "startMonotonicNs": "1219541700744300",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299385942,
+      "durationMs": 98.0586,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 35,
+      "endpoint": "/payment-attempts/phase19-browser-attempt",
+      "method": "GET",
+      "business": "payment",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299386739,
+      "startMonotonicNs": "1219542595924200",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299386819,
+      "durationMs": 79.7513,
+      "decodedBodyBytes": 199,
+      "terminal": false
+    },
+    {
+      "ordinal": 36,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299386819,
+      "startMonotonicNs": "1219542675923000",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299386902,
+      "durationMs": 82.9974,
+      "decodedBodyBytes": 435,
+      "terminal": false
+    },
+    {
+      "ordinal": 37,
+      "endpoint": "/payment-attempts/phase19-browser-attempt",
+      "method": "GET",
+      "business": "payment",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299387907,
+      "startMonotonicNs": "1219543763822600",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299388001,
+      "durationMs": 94.1203,
+      "decodedBodyBytes": 199,
+      "terminal": false
+    },
+    {
+      "ordinal": 38,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299388002,
+      "startMonotonicNs": "1219543858495000",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299388096,
+      "durationMs": 94.1455,
+      "decodedBodyBytes": 435,
+      "terminal": false
+    },
+    {
+      "ordinal": 39,
+      "endpoint": "/payment-attempts/phase19-browser-attempt",
+      "method": "GET",
+      "business": "payment",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299389112,
+      "startMonotonicNs": "1219544968616400",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299389191,
+      "durationMs": 79.1991,
+      "decodedBodyBytes": 199,
+      "terminal": false
+    },
+    {
+      "ordinal": 40,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299389192,
+      "startMonotonicNs": "1219545048129600",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299389288,
+      "durationMs": 96.5735,
+      "decodedBodyBytes": 435,
+      "terminal": false
+    },
+    {
+      "ordinal": 41,
+      "endpoint": "/payment-attempts/phase19-browser-attempt",
+      "method": "GET",
+      "business": "payment",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299390304,
+      "startMonotonicNs": "1219546160164500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299390397,
+      "durationMs": 93.8651,
+      "decodedBodyBytes": 199,
+      "terminal": false
+    },
+    {
+      "ordinal": 42,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299390398,
+      "startMonotonicNs": "1219546254418600",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299390494,
+      "durationMs": 96.5286,
+      "decodedBodyBytes": 435,
+      "terminal": false
+    },
+    {
+      "ordinal": 43,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299390850,
+      "startMonotonicNs": "1219546706804700",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299390928,
+      "durationMs": 77.6663,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    },
+    {
+      "ordinal": 44,
+      "endpoint": "/payment-attempts/phase19-browser-attempt",
+      "method": "GET",
+      "business": "payment",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299391498,
+      "startMonotonicNs": "1219547354402200",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299391592,
+      "durationMs": 93.8706,
+      "decodedBodyBytes": 199,
+      "terminal": false
+    },
+    {
+      "ordinal": 45,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299391592,
+      "startMonotonicNs": "1219547448706800",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299391687,
+      "durationMs": 94.8806,
+      "decodedBodyBytes": 435,
+      "terminal": false
+    },
+    {
+      "ordinal": 46,
+      "endpoint": "/orders/phase19-browser-order",
+      "method": "GET",
+      "business": "order",
+      "phase": "restored",
+      "action": "terminal-fixture-and-manual-refresh",
+      "startEpochMs": 1789299394146,
+      "startMonotonicNs": "1219550002181500",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299394233,
+      "durationMs": 87.2764,
+      "decodedBodyBytes": 424,
+      "terminal": true
+    },
+    {
+      "ordinal": 47,
+      "endpoint": "/notifications",
+      "method": "GET",
+      "business": "notifications",
+      "phase": "restored",
+      "action": "periodic-or-lifecycle",
+      "startEpochMs": 1789299395839,
+      "startMonotonicNs": "1219551695550900",
+      "inflightAtStart": 1,
+      "status": 200,
+      "endEpochMs": 1789299395932,
+      "durationMs": 93.1167,
+      "decodedBodyBytes": 2,
+      "terminal": false
+    }
+  ],
+  "initiations": [
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299370834,
+      "monotonicMs": 78.79999995231628
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299370835,
+      "monotonicMs": 79.69999980926514
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299370928,
+      "monotonicMs": 173.29999995231628
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299370929,
+      "monotonicMs": 173.79999995231628
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299370932,
+      "monotonicMs": 177.09999990463257
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299371019,
+      "monotonicMs": 263.69999980926514
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/events/phase19-browser-event",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299371019,
+      "monotonicMs": 264.19999980926514
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/sessions/phase19-browser-session/seats",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299371020,
+      "monotonicMs": 264.5
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299375843,
+      "monotonicMs": 5088.199999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299376037,
+      "monotonicMs": 5282
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299376038,
+      "monotonicMs": 5282.599999904633
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299376038,
+      "monotonicMs": 5282.799999952316
+    },
+    {
+      "type": "request",
+      "method": "POST",
+      "path": "/api/orders/phase19-browser-order/pay",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299376042,
+      "monotonicMs": 5286.5
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/payment-attempts/phase19-browser-attempt",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299376137,
+      "monotonicMs": 5382.099999904633
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299376137,
+      "monotonicMs": 5382.399999856949
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299376233,
+      "monotonicMs": 5478.299999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/payment-attempts/phase19-browser-attempt",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299377333,
+      "monotonicMs": 6578.5
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299377429,
+      "monotonicMs": 6674
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/payment-attempts/phase19-browser-attempt",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299378528,
+      "monotonicMs": 7773.099999904633
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299378626,
+      "monotonicMs": 7871.199999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/payment-attempts/phase19-browser-attempt",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299379731,
+      "monotonicMs": 8975.799999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299379827,
+      "monotonicMs": 9072.199999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299380840,
+      "monotonicMs": 10084.699999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/payment-attempts/phase19-browser-attempt",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299380931,
+      "monotonicMs": 10175.799999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299381012,
+      "monotonicMs": 10256.699999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/payment-attempts/phase19-browser-attempt",
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789299383156,
+      "monotonicMs": 12400.5
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789299383236,
+      "monotonicMs": 12481.299999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299384092,
+      "monotonicMs": 13337.399999856949
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299384093,
+      "monotonicMs": 13338.299999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/payment-attempts/phase19-browser-attempt",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299384191,
+      "monotonicMs": 13436.399999856949
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/payment-attempts/phase19-browser-attempt",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299384340,
+      "monotonicMs": 13584.599999904633
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299384434,
+      "monotonicMs": 13679.099999904633
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/payment-attempts/phase19-browser-attempt",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299385533,
+      "monotonicMs": 14777.599999904633
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299385628,
+      "monotonicMs": 14873.099999904633
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299385842,
+      "monotonicMs": 15086.799999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/payment-attempts/phase19-browser-attempt",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299386737,
+      "monotonicMs": 15982.199999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299386817,
+      "monotonicMs": 16062.299999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/payment-attempts/phase19-browser-attempt",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299387904,
+      "monotonicMs": 17149.199999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299387999,
+      "monotonicMs": 17244.199999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/payment-attempts/phase19-browser-attempt",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299389110,
+      "monotonicMs": 18355
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299389189,
+      "monotonicMs": 18434.199999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/payment-attempts/phase19-browser-attempt",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299390301,
+      "monotonicMs": 19545.799999952316
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299390396,
+      "monotonicMs": 19640.699999809265
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299390848,
+      "monotonicMs": 20092.599999904633
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/payment-attempts/phase19-browser-attempt",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299391495,
+      "monotonicMs": 20739.89999985695
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299391589,
+      "monotonicMs": 20834.39999985695
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/orders/phase19-browser-order",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299394136,
+      "monotonicMs": 23381.39999985695
+    },
+    {
+      "type": "request",
+      "method": "GET",
+      "path": "/api/notifications",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299395837,
+      "monotonicMs": 25081.799999952316
+    }
+  ],
+  "visibility": [
+    {
+      "type": "init",
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299370775,
+      "monotonicMs": 19.5
+    },
+    {
+      "type": "focus",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299370775,
+      "monotonicMs": 20.299999952316284
+    },
+    {
+      "type": "blur",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299371460,
+      "monotonicMs": 705.1999998092651
+    },
+    {
+      "type": "focus",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299376037,
+      "monotonicMs": 5281.5
+    },
+    {
+      "type": "visibilitychange",
+      "trusted": true,
+      "hidden": true,
+      "visibilityState": "hidden",
+      "epochMs": 1789299381017,
+      "monotonicMs": 10262.299999952316
+    },
+    {
+      "type": "visibilitychange",
+      "trusted": true,
+      "hidden": false,
+      "visibilityState": "visible",
+      "epochMs": 1789299384094,
+      "monotonicMs": 13338.399999856949
+    }
+  ],
+  "phases": [
+    {
+      "name": "visible",
+      "began": 1789299371006,
+      "activationEpochMs": 1789299370985,
+      "durationMs": 10000,
+      "hidden": false
+    },
+    {
+      "name": "hidden",
+      "began": 1789299381071,
+      "activationEpochMs": 1789299381010,
+      "durationMs": 3000,
+      "hidden": true
+    },
+    {
+      "name": "restored",
+      "began": 1789299384114,
+      "activationEpochMs": 1789299384078,
+      "durationMs": 15000,
+      "hidden": false
+    }
+  ],
+  "actions": [
+    {
+      "name": "bringToFront-visible",
+      "epochMs": 1789299370985
+    },
+    {
+      "name": "pay",
+      "epochMs": 1789299376015
+    },
+    {
+      "name": "bringToFront-hidden",
+      "epochMs": 1789299381010
+    },
+    {
+      "name": "bringToFront-restored",
+      "epochMs": 1789299384078
+    },
+    {
+      "name": "terminal-fixture-and-manual-refresh",
+      "epochMs": 1789299394116
+    }
+  ],
+  "topology": [
+    {
+      "name": "subject",
+      "windowId": 1924599183,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    },
+    {
+      "name": "neutral",
+      "windowId": 1924599183,
+      "bounds": {
+        "left": 10,
+        "top": 10,
+        "width": 1050,
+        "height": 832,
+        "windowState": "normal"
+      }
+    }
+  ],
+  "errors": [],
+  "passed": true,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Edg/152.0.4191.66",
+    "revision": "@cc2931e6363af1d70882ad63ee33b0e8cd524de0",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36 Edg/152.0.0.0",
+    "jsVersion": "15.2.23.10"
+  },
+  "terminalEpochMs": 1789299394116,
+  "checks": {
+    "hiddenNewReads": 2,
+    "hiddenInflightFromBefore": 1,
+    "maxInflight": {
+      "notifications": 2,
+      "availability": 0,
+      "payment": 1,
+      "checkout": 0,
+      "order": 1
+    },
+    "restoredImmediateCounts": {
+      "notifications": 1,
+      "availability": 0,
+      "payment": 2,
+      "checkout": 0,
+      "order": 2
+    },
+    "logoutNewReads": 0,
+    "terminalObserved": true,
+    "readsAfterTerminalSettled": 0,
+    "restorationFirstReadMs": {
+      "notifications": 29,
+      "availability": null,
+      "payment": 118,
+      "checkout": null,
+      "order": 29
+    }
+  },
+  "endedUtc": "2026-09-13T11:36:39.128Z",
+  "inflightAtClose": 0
+}
