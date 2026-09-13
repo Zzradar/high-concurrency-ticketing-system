@@ -1,0 +1,80 @@
+{
+  "startedUtc": "2026-09-13T11:53:51.599889+00:00",
+  "diagnostic": false,
+  "stack": {
+    "prefix": "phase19-formal-baseline",
+    "apiPort": 18396,
+    "frontendPort": 18397,
+    "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+    "binarySha256": "d9082f28bdf8d5bb8312cee40c9e6a79345b559554d4cbd2a301e742fae0bad5",
+    "images": {
+      "api": {
+        "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+        "digests": [
+          "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+        ]
+      },
+      "postgres": {
+        "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+        "digests": [
+          "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+        ]
+      },
+      "redis": {
+        "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+        "digests": [
+          "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+        ]
+      },
+      "frontend": {
+        "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+        "digests": [
+          "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+        ]
+      },
+      "k6": {
+        "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+        "digests": [
+          "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+        ]
+      }
+    },
+    "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+    "sourceCommit": "92d254164d250a4f7ea2d7aad19df804fcd29ca4"
+  },
+  "runtimeConfigSha256": "ec4425e719812209cef1cd85b72573d0483753fe52e5160f2041bc500fccff3b",
+  "protocolSha256": {
+    "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+    "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+    "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+    "calibrate.py": "6e0301d2ed06fac9da0c9fd00b5eddf284d83eb58a06fbbea686c9bd0c38a661",
+    "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+    "layout_probe.py": "3d862bd52d5f85c31fd2df68c29dc8cfb56277570ca380da7022633e2da5b1fc",
+    "measure.py": "6b65f1fe52ef4bf5aa1235c622e2159acf8789670c5e325fa41720f1a30da485",
+    "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+    "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+    "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+    "PROTOCOL.md": "53fd7009fd96405abc49d9d2e3aceb32676d6bec6411c65a4b199f951d4328b2",
+    "resource_gate.py": "07869480d7946700e203f821ee65d05e011deac846e4f3fc9476d7e8d9764994",
+    "seed.py": "0bce2c718c78dc9851c67f0392dc52fb1e5d01451db7add54f3130582dd542f5",
+    "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+    "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+    "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+    "workload.js": "add1a65fd22779223ef3c1fc2c79b346c670a3cdb770e3da2cf4326bdaefe0c7"
+  },
+  "model": "closed",
+  "actualVUsRequested": 100,
+  "warmupSeconds": 30,
+  "observeSeconds": 120,
+  "targetDeltaIterationsPerSecond": null,
+  "targetStateTransitionsPerSecond": null,
+  "plannedReadIterationsTotal": null,
+  "plannedWriteFlowsTotal": null,
+  "generatorLimits": {
+    "cpus": 2,
+    "memoryBytes": 4294967296,
+    "nofile": 16384,
+    "pids": 256
+  },
+  "rawPoints": "private point output/k6-points.jsonl; no auth headers, bodies or high-cardinality identifiers in metric tags"
+}
