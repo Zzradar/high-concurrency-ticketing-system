@@ -1,0 +1,18 @@
+{
+  "frozenUtc": "2026-09-13T14:12:03.709752+00:00",
+  "kind": "independent capability regression; not the capacity or browser A/B protocol",
+  "baseProductionCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+  "fixture": "fresh phase19-final-overload Fake-Provider Compose; backend threads=4, PG pool unchanged at 4; not capacity identity",
+  "files": {
+    "backend/tests/phase19_overload_recovery_test.py": "e359c0dce88cae5ce5ca5cbb0040009e53f99b003336a0ec206f69a914ca6c70",
+    "backend/tests/phase18_financial_regression.py": "43b6495f09eaa264c716b595b993e7c97eda95b8cb6f4ccca40fdba53df23d97",
+    "backend/tests/phase18_admission_http_test.py": "fc4a72fee7349487d2b037d36aca358022f8731860608ba3e14dc6caba367624",
+    "backend/tests/phase11_stripe_integration_test.py": "9f48e782d7faee079832c956d2a9a84777c2797857aacbdd7c1bc7c6ffd12208",
+    "backend/tests/payment_integration_test.py": "60dd09c1afdf64e9cff2187115654870daa03b3eab0e6cfc69e7049d2eda67be",
+    "backend/tests/auth_test_support.py": "fada1f80158f562131de357fb8e00e3f3dbdb1861f4941d0c4f9e037034411db",
+    "backend/tests/fake_stripe_server.py": "aefe941cc3d6d1c0bc84d14566ee5ac4d5317a7042f983f35234c859e792d244",
+    "backend/config/config.phase14.json": "6ce42360f8ea9c0060f0cf4a89528dad4244f6c546451ef9bdf65a2d4b634133",
+    "performance/verification/verify.sql": "0c568e7e3bd024ed202327ec375a5a87473312f6228e6397d1a8c93cf7f49057"
+  },
+  "executed": false
+}
