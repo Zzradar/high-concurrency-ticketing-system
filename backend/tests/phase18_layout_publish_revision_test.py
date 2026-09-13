@@ -8,7 +8,7 @@ from auth_test_support import AuthenticatedClient
 class PublishRevision(unittest.TestCase):
     def test_5000_and_10000_seats_two_sessions(self):
         admin=AuthenticatedClient('admin');admin.login()
-        fixture.sql("CREATE TABLE p18_publish_revision_writes(session_id text);CREATE FUNCTION p18_capture_publish_revision() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN INSERT INTO p18_publish_revision_writes VALUES(NEW.session_id);RETURN NEW;END $$;CREATE TRIGGER p18_capture_publish_revision AFTER UPDATE ON session_layout_revisions FOR EACH ROW EXECUTE FUNCTION p18_capture_publish_revision()")
+        fixture.sql("CREATE TABLE p18_publish_revision_writes(session_id text);CREATE FUNCTION p18_capture_publish_revision() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN INSERT INTO public.p18_publish_revision_writes VALUES(NEW.session_id);RETURN NEW;END $$;CREATE TRIGGER p18_capture_publish_revision AFTER UPDATE ON session_layout_revisions FOR EACH ROW EXECUTE FUNCTION p18_capture_publish_revision()")
         self.addCleanup(lambda:fixture.sql('DROP TRIGGER p18_capture_publish_revision ON session_layout_revisions;DROP FUNCTION p18_capture_publish_revision();DROP TABLE p18_publish_revision_writes;'))
         def post(path,body,expected=201):
             status,result,_=admin.request(path,method='POST',body=body,timeout=30)

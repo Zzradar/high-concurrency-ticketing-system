@@ -27,7 +27,7 @@ class LayoutRevisionSchema(fixture.AdmissionSchema):
   zone=self.sql("SELECT id FROM venue_zones WHERE venue_id='"+venue+"' ORDER BY id LIMIT 1")
   self.sql("INSERT INTO sessions(id,event_id,venue_id,hall_name,start_time,gate_time,status) SELECT id||'-copy',event_id,venue_id,hall_name,start_time,gate_time,status FROM sessions WHERE id='"+sid+"'")
   copy=sid+'-copy'
-  self.sql('CREATE TABLE revision_write_audit(session_id text);CREATE FUNCTION capture_revision_write() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN INSERT INTO revision_write_audit VALUES(NEW.session_id);RETURN NEW;END $$;CREATE TRIGGER capture_revision_write AFTER UPDATE ON session_layout_revisions FOR EACH ROW EXECUTE FUNCTION capture_revision_write()')
+  self.sql('CREATE TABLE revision_write_audit(session_id text);CREATE FUNCTION capture_revision_write() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN INSERT INTO '+self.schema+'.revision_write_audit VALUES(NEW.session_id);RETURN NEW;END $$;CREATE TRIGGER capture_revision_write AFTER UPDATE ON session_layout_revisions FOR EACH ROW EXECUTE FUNCTION capture_revision_write()')
   for count in [5000,10000]:
    with self.subTest(seats=count):
     prefix='bulk'+str(count)
@@ -50,7 +50,7 @@ class LayoutRevisionSchema(fixture.AdmissionSchema):
  def test_targeting_and_noop(self):
   self.install()
   sid=self.sql('SELECT id FROM sessions ORDER BY id LIMIT 1');venue=self.sql("SELECT venue_id FROM sessions WHERE id='"+sid+"'")
-  self.sql('CREATE TABLE revision_statements(n int);CREATE FUNCTION count_revision_statement() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN INSERT INTO revision_statements VALUES(1);RETURN NULL;END $$;CREATE TRIGGER count_revision_statement AFTER UPDATE ON session_layout_revisions FOR EACH STATEMENT EXECUTE FUNCTION count_revision_statement()')
+  self.sql('CREATE TABLE revision_statements(n int);CREATE FUNCTION count_revision_statement() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN INSERT INTO '+self.schema+'.revision_statements VALUES(1);RETURN NULL;END $$;CREATE TRIGGER count_revision_statement AFTER UPDATE ON session_layout_revisions FOR EACH STATEMENT EXECUTE FUNCTION count_revision_statement()')
   before=self.sql("SELECT json_object_agg(session_id,revision ORDER BY session_id) FROM session_layout_revisions")
   self.sql('UPDATE session_seats SET price=price;UPDATE seats SET seat_label=seat_label;UPDATE venue_zones SET name=name;UPDATE venues SET name=name;')
   self.assertEqual(before,self.sql("SELECT json_object_agg(session_id,revision ORDER BY session_id) FROM session_layout_revisions"))
