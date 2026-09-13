@@ -13,3 +13,9 @@ class Comparison(unittest.TestCase):
   with patch.object(gate,'preflight',return_value=gate.read(gate.B/'manifest.json')):
    with self.assertRaisesRegex(AssertionError,'invalidated'):
     gate.compare(gate.B.parent/'after')
+
+ def test_shadow_invalidated_v2_cannot_pass_final_comparison(self):
+  from unittest.mock import patch
+  with patch.object(gate,'preflight',return_value=gate.read(gate.B/'manifest.json')):
+   with self.assertRaisesRegex(AssertionError,'invalidated by search_path'):
+    gate.compare(gate.B.parent/'after-v2')

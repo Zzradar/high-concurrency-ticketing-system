@@ -5,20 +5,15 @@
     "manifestSha256": "b1585c91e4cdb4e3aae915dc75552fb8ad2b591dd00fdf02d62af2716a7ac369",
     "reason": "Direct PostgreSQL representation changes could retain v1 ETag and return stale 304; old after is historical evidence only."
   },
+  "replacement": {
+    "directory": "after-v2",
+    "status": "VALID_COMPLETE_AWAITING_INDEPENDENT_REVERIFICATION",
+    "sutSha": "6807a01516a75cf834ca1fac46fb1ac9abcdc53e",
+    "manifestSha256": "67c848d55a499ec4d9fd898c2f34eb0fe6434e4bbd0926ebf68f4270b1117b33"
+  },
   "baselineUnchanged": true,
   "archivedPriorDeliveryManifest": {
     "path": "history/fc9e41a/phase18-delivery.json",
     "sha256": "3526dd8424d4ae9a6f33959d2840e8643a480d7d4a07f61ecc960ee65e10fc59"
-  },
-  "after-v2": {
-    "directory": "after-v2",
-    "status": "SUPERSEDED_INVALIDATED_BY_SEARCH_PATH_SHADOWING",
-    "sutSha": "6807a01516a75cf834ca1fac46fb1ac9abcdc53e",
-    "manifestSha256": "67c848d55a499ec4d9fd898c2f34eb0fe6434e4bbd0926ebf68f4270b1117b33",
-    "reason": "Temporary or preceding schema objects could redirect migration015 revision writes; retained immutable historical evidence only."
-  },
-  "replacement": {
-    "directory": "after-v3",
-    "status": "PENDING_FULL_RECOLLECTION"
   }
 }

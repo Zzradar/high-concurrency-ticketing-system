@@ -41,6 +41,7 @@ def compare(after):
  bm=preflight();am=read(after/'manifest.json')
  assert not am['source']['gitDirty'] and am['source']['sha']!=BASE_SUT
  assert am['source']['sha']!='4dd48c177516caf950103ce3f7751cc0fb056029', 'After SUT invalidated by direct-PostgreSQL ETag defect; preserve historical evidence and collect after-v2'
+ assert am['source']['sha']!='6807a01516a75cf834ca1fac46fb1ac9abcdc53e', 'After SUT invalidated by search_path shadowing; preserve after-v2 and collect after-v3'
  assert am['source']['scripts']==bm['source']['scripts'];assert am['images']==bm['images'];assert am['protocol']==bm['protocol']
  assert read(after/'data-fingerprint.json')==read(B/'data-fingerprint.json')
  for role in ['build','api','frontend','postgres','redis','k6']:

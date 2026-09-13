@@ -60,14 +60,14 @@ class DeliveryEvidence(unittest.TestCase):
         self.assertEqual(sum(r.get("mode") == "snapshot" for r in requests), 1)
         self.assertLess(requests[0]["startEpochMs"] - restored, 1000)
 
-class CurrentDeliveryEvidence(unittest.TestCase):
+class HistoricalV2DeliveryEvidence(unittest.TestCase):
     def test_current_manifest_bindings_and_capabilities(self):
-        manifest=read(EVIDENCE / "phase18-delivery.json")
+        manifest=read(EVIDENCE / "history/8a62d57/phase18-delivery.json")
         self.assertEqual(manifest["afterSutSha"],"6807a01516a75cf834ca1fac46fb1ac9abcdc53e")
         self.assertEqual(manifest["afterDirectory"],"after-v2")
         self.assertTrue(manifest["formalAbPassed"])
         for path,expected in manifest["artifacts"].items():
-            self.assertEqual(digest(EVIDENCE/path),expected,path)
+            self.assertEqual(digest(EVIDENCE/("history/8a62d57/"+path if path in ["FINAL_REPORT.md","AFTER_STATUS.json","README.md"] else path)),expected,path)
         for path,expected in manifest["frozenManifests"].items():
             self.assertEqual(digest(EVIDENCE/path),expected,path)
         for path,expected in manifest["protocolHashes"].items():

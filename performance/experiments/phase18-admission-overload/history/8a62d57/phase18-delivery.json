@@ -1,0 +1,76 @@
+{
+  "status": "COMPLETE_AWAITING_INDEPENDENT_REVERIFICATION",
+  "baselineSutSha": "ed51447154418e05ed9e4c49728f3eb114713db9",
+  "afterSutSha": "6807a01516a75cf834ca1fac46fb1ac9abcdc53e",
+  "afterDirectory": "after-v2",
+  "measurementRole": "AFTER_V2",
+  "branch": "phase18/admission-overload-control",
+  "frozenManifests": {
+    "manifest.json": "19f394034d74e027a19e62f3e61f2ab82c9806b542604d666dc24d948640f338",
+    "baseline/manifest.json": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402"
+  },
+  "afterManifestSha256": "67c848d55a499ec4d9fd898c2f34eb0fe6434e4bbd0926ebf68f4270b1117b33",
+  "invalidatedAfter": {
+    "status": "SUPERSEDED_INVALIDATED_BY_ETAG_DEFECT",
+    "sutSha": "4dd48c177516caf950103ce3f7751cc0fb056029",
+    "manifestSha256": "b1585c91e4cdb4e3aae915dc75552fb8ad2b591dd00fdf02d62af2716a7ac369",
+    "reason": "Direct PostgreSQL representation changes could retain v1 ETag and return stale 304; old after is historical evidence only."
+  },
+  "archivedPriorDelivery": {
+    "path": "history/fc9e41a/phase18-delivery.json",
+    "sha256": "3526dd8424d4ae9a6f33959d2840e8643a480d7d4a07f61ecc960ee65e10fc59"
+  },
+  "protocolHashes": {
+    "browser-environment.json": "6fa7aafb6dc3d8e4206a387d846edb4301feb56e7d2c52765c185833ee5932ed",
+    "browser.mjs": "b7739573cdc4f103d587f64584fbaff6041f3bd62d82d9ebe15a06eda9d0a274",
+    "k6.js": "f0520f15e52939ac8e0b6e9c873838ab605b3a45a779202ddd4f9e3e6f310e2d",
+    "nginx.conf": "05155eff6174b7fff341d76cf8032f2d68b36e5bfe173fc630608343a8469b66",
+    "protocol.py": "4b35b1dd707718dc5bba570598fdc8d202ed32bd4a40a1281871bffc989a96b5",
+    "seed.py": "9786864e0bc876ca88b415240593aa8f83d4e01746423ec3b501a02577ae6b80",
+    "stats.py": "3970ca8b0bc7583c1912152e9ff975fcbbbee371837d066171d54c8d2174ce8c",
+    "test_stats.py": "02d00379d8155e5e944fb04da796b1a79dda38bc36fa0953f1d3940aba83703a"
+  },
+  "browser": {
+    "edge": "152.0.4191.66",
+    "playwright": "1.63.0",
+    "binarySha256": "02aaed8823a4e4bae8f672c620c9356bddebd68651d5bfd141ed9e6576d5f03c"
+  },
+  "formalAbPassed": true,
+  "analysis": {
+    "commit": "f654886f0467e684ba926663bbe4bc3d0857977c",
+    "gitBlobSha256": {
+      "performance/scripts/phase18_revision_analysis.py": "c8f0b2e30d7c2bb7faaff91f317a471cbe60ab61ac3b6d531f8d2623a82b1137",
+      "performance/scripts/phase18_ab_gate.py": "107db6ea29d831536e751507f0d1dbe242b0100093024cf2efcb349b07b8adf2"
+    }
+  },
+  "artifacts": {
+    "manifest.json": "19f394034d74e027a19e62f3e61f2ab82c9806b542604d666dc24d948640f338",
+    "baseline/manifest.json": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402",
+    "after/manifest.json": "b1585c91e4cdb4e3aae915dc75552fb8ad2b591dd00fdf02d62af2716a7ac369",
+    "after-v2/manifest.json": "67c848d55a499ec4d9fd898c2f34eb0fe6434e4bbd0926ebf68f4270b1117b33",
+    "AFTER_STATUS.json": "7b7bcedd7c383b9da54a194f777c2db4f2f2234f461b68892ea8ecc447afa712",
+    "FINAL_REPORT.md": "5855aba913470431de736edf6affbeb7d5db1b6757188ad003b3158b2dd20324",
+    "README.md": "e9526bd56b27467416cfe0ffd92515f336637baf8bb8da8b82cf280bd2a60ec6",
+    "comparison-v2.json": "e158ba69da4db5cda0da4471f0994329511066305ab0c4ad31790ff75a04a15b",
+    "resource-and-payload-comparison-v2.json": "fb58bc6f6d8be5ce19e7f4bf63ee28e11b26b5b7279115320dacae2d6c0aec0a",
+    "query-feature-comparison-v2.json": "046dac57ce1c078998376c334ddec0a875bc2e48129160ac4cf460e8d9932dd7",
+    "after-v2-phase18-verifier.json": "a15d159893c1a73d81d584bb2430f8fce6987ff861056131892cb6395674ce21",
+    "history/fc9e41a/phase18-delivery.json": "3526dd8424d4ae9a6f33959d2840e8643a480d7d4a07f61ecc960ee65e10fc59",
+    "history/fc9e41a/FINAL_REPORT.md": "2b0ef28c175bfe72411cd03a8a7dec54e61bf2eb8783f60eeba290c38866be72",
+    "capabilities/layout-revision-final/manifest.json": "e49dff9fb20ccaebd9f7e8915c375e5ff0cb7197e5e1f844be61af94acb6b659",
+    "capabilities/final-hidden-v2/manifest.json": "6d09a3ff79e068808ca987a543906e443ff162cd52326973a4e96bc3dcc08e76"
+  },
+  "deliveryValidation": {
+    "performanceTests": 253,
+    "ctest": 36,
+    "vitest": 288,
+    "strictAbGate": true
+  },
+  "limitations": [
+    "Not production SLA; single shared-host OFF trial.",
+    "Actual k6 requests differ: 121 baseline versus 120 after, with identical offered settings.",
+    "Returned SQL rows are not physical scans; browser bytes are decoded bodies, not wire traffic.",
+    "Ordinary Layout/Delta latencies and metadata/registry cost can regress.",
+    "OBSERVE/ENFORCED and extended hidden gates are separate capability evidence."
+  ]
+}

@@ -36,3 +36,7 @@ performance/experiments/phase18-admission-overload/comparison-v2.json text eol=l
 performance/experiments/phase18-admission-overload/resource-and-payload-comparison-v2.json text eol=lf
 performance/experiments/phase18-admission-overload/query-feature-comparison-v2.json text eol=lf
 performance/experiments/phase18-admission-overload/after-v2-phase18-verifier.json text eol=lf
+
+performance/experiments/phase18-admission-overload/after-v3/** -text whitespace=cr-at-eol
+performance/experiments/phase18-admission-overload/after-v3/*.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+performance/experiments/phase18-admission-overload/capabilities/layout-resolution/**/*.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
