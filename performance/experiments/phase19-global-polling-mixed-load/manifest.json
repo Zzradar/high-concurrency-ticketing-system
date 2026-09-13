@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "status": "READY_FOR_INDEPENDENT_REVIEW_NOT_MERGED",
-  "capturedUtc": "2026-09-13T14:54:17.134691+00:00",
+  "capturedUtc": "2026-09-13T14:58:06.276348+00:00",
   "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
   "implementationCommit": "fed32789ed4cbbd91a4babbf27d37c10b516b78a",
-  "evidenceParentCommit": "67feefcb44f44b9e1ddec81e201f1fa73a84a1c2",
+  "evidenceParentCommit": "ffaacbe2c8e7165d114ec90accf0065bfb72ecf7",
   "gitBinding": "Containing delivery commit binds this manifest; its own Git SHA and the index SHA are returned externally to avoid self-referential hashes. No PR, no merge main, no force push.",
   "branch": "phase19/global-polling-mixed-load",
   "commitsThroughEvidenceParent": [
@@ -71,6 +71,10 @@
     {
       "sha": "67feefcb44f44b9e1ddec81e201f1fa73a84a1c2",
       "subject": "docs: deliver phase19 polling and mixed-load evidence with limits"
+    },
+    {
+      "sha": "ffaacbe2c8e7165d114ec90accf0065bfb72ecf7",
+      "subject": "test(performance): bind final phase19 delivery manifest"
     }
   ],
   "baseProductionTrees": {
@@ -177,8 +181,8 @@
     },
     "finalRegressions": {
       "path": "final-regressions/manifest.json",
-      "sha256": "815ba8151d4d45ead168194e6524aa3cfbe0242abf5015efa9e19660847d06d3",
-      "bytes": 15836
+      "sha256": "e6cc49323553b338a76c5880e3555a2fc52c23c6bb3764a2ac60425667246ed5",
+      "bytes": 15846
     },
     "cleanup": {
       "path": "cleanup.json",
@@ -187,8 +191,8 @@
     },
     "report": {
       "path": "FINAL_REPORT.md",
-      "sha256": "bbff1316fe6704d8764144e45dc94f05c19e63318c8ad80b84f417d8775a6d80",
-      "bytes": 16534
+      "sha256": "f0e78236fd94eac6c7ddfea23e36eaaa30767fe755e8edaa2cfa1c2adf4721d3",
+      "bytes": 16813
     },
     "resumeEvidence": {
       "path": "RESUME_EVIDENCE.md",
@@ -214,6 +218,11 @@
       "path": "capacity-details.json",
       "sha256": "4d0933b04e074583fd7c7d081620dd01ca6156c21cd13d8537ed17ab4a492de0",
       "bytes": 43540
+    },
+    "gitByteFidelity": {
+      "path": "diagnostics/git-byte-fidelity.json",
+      "sha256": "36422626362c6e80f839a58b67175230e86d4fe2143f6fa516f2db9d5f4406bd",
+      "bytes": 1059
     }
   },
   "testCounts": {
@@ -240,7 +249,7 @@
     "phase18_refund_verifier_fixture": 3,
     "ctest": 36,
     "vitest": 328,
-    "performance_python": 321,
+    "performance_python": 323,
     "protocol_node": 2,
     "phase19_overload_recovery_test": 1
   },

@@ -169,7 +169,7 @@ ENFORCED 与主容量分开。真实 Redis Token Bucket 账号/事件/操作维�
 | phase18_refund_verifier_fixture | 3 |
 | ctest | 36 |
 | vitest | 328 |
-| performance_python | 321 |
+| performance_python | 323 |
 | protocol_node | 2 |
 | phase19_overload_recovery_test | 1 |
 
@@ -193,3 +193,5 @@ Release C++20、HTTP frontend production build 通过；Vitest 为 42 个文件�
 最终 manifest 绑定 protocol、baseline、after、回归与生产 tree；EVIDENCE_SHA256.json 索引全部 Phase19 文件（排除自身和 __pycache__）。`phase19_delivery_audit.py` 只读核对字节与门禁。Git 最终 SHA/全部提交记录及普通 push 同步状态随交付返回；仅清理本阶段明确名称容器/网络，证据与卷保留。不创建 PR、不合并 main。
 
 最终日志脱敏补充：12 个测试日志的正斜杠临时路径或 Python 安装路径替换为占位符，原私有日志与 SHA 保留，路径变换映射见 diagnostics/log-path-redaction.json。未修改指标值、结果或退役 r1 正式证据。
+
+Git 字节补充：最初两个 inventory 文件的自动换行已按原始哈希绑定字节重新入库，正文和结果未变；新增 --committed 审计直接核对全部 Git blob，防止本地通过而新 checkout 哈希不同。见 diagnostics/git-byte-fidelity.json。

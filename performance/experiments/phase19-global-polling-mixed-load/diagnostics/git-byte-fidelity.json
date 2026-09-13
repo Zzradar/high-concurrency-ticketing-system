@@ -1,0 +1,22 @@
+{
+  "reason": "Initial inventory commit predated byte-preserving attributes. Git clean filter had LF while local hash-bound evidence used CRLF. Re-added exact unchanged local bytes using --renormalize under -text; no measurement changes.",
+  "before": [
+    {
+      "path": "inventory.json",
+      "gitBlobBytes": 5789,
+      "workingBytes": 5930,
+      "gitSha256": "30255e2c0bc0cacbb54671f84bc4dd6a514eb6fcb2cc7b77877b4f6431ccdc71",
+      "workingSha256": "782ca414f113b9c91c27ee4bb2f7cfd2831fb548db2b4c5c7d14d8758e8f7e72",
+      "normalizedTextEqual": true
+    },
+    {
+      "path": "POLLING_INVENTORY.md",
+      "gitBlobBytes": 3463,
+      "workingBytes": 3481,
+      "gitSha256": "c67e00dcdc0a0ec95a8e6a2c52e3a365657ec90fd83563044a83e2e1e86f7592",
+      "workingSha256": "3e52ae679951b36a4fa58933ff325e2447b58bd79cfe2afa8935c8a7ada46b39",
+      "normalizedTextEqual": true
+    }
+  ],
+  "verification": "phase19_delivery_audit.py --committed validates every stored Git blob against index, including missing-file and newline-conversion counterexamples"
+}

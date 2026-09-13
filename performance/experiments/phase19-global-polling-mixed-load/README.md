@@ -27,7 +27,7 @@ r1 因 L2 启动 503 和未压缩 JSONL 写回阻塞整组退役，原字节保�
 
 ```text
 python performance/scripts/phase19_report_tables.py
-python performance/scripts/phase19_delivery_audit.py
+python performance/scripts/phase19_delivery_audit.py --committed
 ```
 
 统计器会重新渲染派生报告；审计器本身只读。正式复跑必须使用新的独立环境和私有目录，命令参数见 protocol/PROTOCOL.md；不得复用实施容器冒充独立复验。

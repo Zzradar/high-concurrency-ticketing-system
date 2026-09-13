@@ -1,0 +1,12 @@
+{
+  "source": "<PRIVATE_TEMP>/Temp",
+  "normalization": "UTF-8 newline normalization and private-path/DevTools redaction",
+  "files": {
+    "phase19-final-performance-python-r4.log": {
+      "sourceSha256": "6dbbb7e449ca0d167fd06e66fed4dd04400e6a3c8e774f4fa7b5abdd31f01ac1",
+      "sourceBytes": 34243,
+      "archivedSha256": "45e5433e0b62cb30235401233871de5215283f9e42b8a592b35236b8ed3c5e70",
+      "archivedBytes": 33903
+    }
+  }
+}

@@ -1,4 +1,5 @@
 """Read-only final evidence integrity audit; never repairs or reclassifies a run."""
+import argparse
 import gzip
 import hashlib
 import json
@@ -46,7 +47,28 @@ def index_matches(folder):
             raise ValueError('Evidence bytes changed: '+name)
     return len(actual)
 
-def main():
+def verify_git_batch(raw, expected):
+    position = 0
+    for name, entry in expected.items():
+        end = raw.find(b'\n', position)
+        header = raw[position:end].decode().split()
+        if end < 0 or len(header) != 3 or header[1] != 'blob':
+            raise ValueError('Missing committed evidence: '+name)
+        size = int(header[2]); data = raw[end+1:end+1+size]
+        position = end+size+2
+        if size != entry['bytes'] or hashlib.sha256(data).hexdigest() != entry['sha256']:
+            raise ValueError('Committed evidence bytes differ: '+name)
+    if position != len(raw): raise ValueError('Unexpected Git batch bytes')
+
+def committed_index_matches(root, folder):
+    expected = read(folder/'EVIDENCE_SHA256.json')['files']
+    prefix = folder.relative_to(root).as_posix()
+    query = ''.join('HEAD:'+prefix+'/'+name+'\n' for name in expected).encode()
+    result = subprocess.run(['git','-C',str(root),'cat-file','--batch'],input=query,capture_output=True,check=True)
+    verify_git_batch(result.stdout,expected)
+    return len(expected)
+
+def main(committed=False):
     f = read(EVIDENCE/'protocol-sha256.json')
     if f['files'] != {p.name:sha(p) for p in (EVIDENCE/'protocol').iterdir() if p.is_file()}:
         raise ValueError('Frozen protocol drift')
@@ -82,7 +104,10 @@ def main():
         path = 'performance/experiments/'+name
         if git('rev-parse','HEAD:'+path) != tree or git('diff','HEAD','--',path):
             raise ValueError('Historical evidence changed: '+name)
-    print(json.dumps({'passed':True,'stableCapacityPoints':len(stable),'browserScenesPerGroup':7,
+    committed_files = committed_index_matches(ROOT,EVIDENCE) if committed else None
+    print(json.dumps({'committedFilesVerified':committed_files,'passed':True,'stableCapacityPoints':len(stable),'browserScenesPerGroup':7,
                       'indexedFiles':index_matches(EVIDENCE),'protocolSha256':sha(EVIDENCE/'protocol-sha256.json')}))
 
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--committed',action='store_true')
+    main(parser.parse_args().committed)

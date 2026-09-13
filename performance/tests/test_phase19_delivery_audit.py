@@ -6,7 +6,7 @@ import sys
 import tempfile
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from phase19_delivery_audit import valid_capacity, verifier, index_matches
+from phase19_delivery_audit import valid_capacity, verifier, index_matches, verify_git_batch
 
 class DeliveryAuditTests(unittest.TestCase):
     def good(self):
@@ -42,3 +42,14 @@ class DeliveryAuditTests(unittest.TestCase):
             with self.assertRaises(ValueError):index_matches(root)
             p.write_bytes(b'{}');(root/'extra.json').write_bytes(b'{}')
             with self.assertRaises(ValueError):index_matches(root)
+
+    def test_committed_lf_cannot_satisfy_hash_bound_crlf_evidence(self):
+        original=b'one\r\ntwo\r\n';converted=b'one\ntwo\n'
+        expected={'point':{'sha256':hashlib.sha256(original).hexdigest(),'bytes':len(original)}}
+        def batch(body):return b'abc blob '+str(len(body)).encode()+b'\n'+body+b'\n'
+        verify_git_batch(batch(original),expected)
+        with self.assertRaises(ValueError):verify_git_batch(batch(converted),expected)
+
+    def test_committed_missing_file_cannot_pass_working_tree_check(self):
+        expected={'missing':{'sha256':hashlib.sha256(b'x').hexdigest(),'bytes':1}}
+        with self.assertRaises(ValueError):verify_git_batch(b'HEAD:missing missing\n',expected)

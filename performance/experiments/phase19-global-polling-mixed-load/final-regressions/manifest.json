@@ -26,7 +26,7 @@
     "phase18_refund_verifier_fixture": 3,
     "ctest": 36,
     "vitest": 328,
-    "performance_python": 321,
+    "performance_python": 323,
     "protocol_node": 2,
     "phase19_overload_recovery_test": 1
   },
@@ -168,6 +168,6 @@
     "artifactsMatchEveryFormalAfterScene": true,
     "logs": "final-regressions/post-browser"
   },
-  "finalPerformanceLog": "final-regressions/python-final/phase19-final-performance-python-r3.log",
+  "finalPerformanceLog": "final-regressions/python-committed-audit/phase19-final-performance-python-r4.log",
   "previousPerformanceRunsRetained": true
 }
