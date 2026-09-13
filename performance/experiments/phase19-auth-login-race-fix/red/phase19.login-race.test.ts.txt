@@ -69,20 +69,3 @@ it('older login success cannot clear newer login loading',async()=>{
  const old=authState.login('a','pw');const current=authState.login('b','pw');a.resolve(A);await old
  expect(authState.currentUser.value).toBeNull();expect(authState.authLoading.value).toBe(true);b.resolve(B);await current;expect(authState.currentUser.value).toEqual(B)
 })
-
-it('late A failure cannot overwrite the current B error or loading state', async () => {
-  const a=deferred<CurrentUser>(), b=deferred<CurrentUser>()
-  vi.spyOn(ticketApi,'login').mockReturnValueOnce(a.promise).mockReturnValueOnce(b.promise)
-  const p=await page();await p.submit();authState.clearAuth();await p.submit()
-  b.reject(new TicketApiError('current B error','BAD_PASSWORD',401));await flushPromises()
-  expect(p.wrapper.text()).toContain('current B error')
-  a.reject(new TicketApiError('obsolete A error','BAD_PASSWORD',401));await flushPromises()
-  expect(p.wrapper.text()).toContain('current B error');expect(p.wrapper.text()).not.toContain('obsolete A error')
-  expect(p.wrapper.get('button[type=submit]').attributes('disabled')).toBeUndefined()
-})
-it('refreshMe during a pending login cannot adopt the previous cookie identity', async () => {
-  const a=deferred<CurrentUser>();vi.spyOn(ticketApi,'login').mockReturnValueOnce(a.promise)
-  const pending=authState.login('a','pw');vi.mocked(ticketApi.me).mockResolvedValueOnce(B)
-  expect(await authState.refreshMe()).toBeNull();expect(ticketApi.me).not.toHaveBeenCalled()
-  expect(authState.authLoading.value).toBe(true);a.resolve(A);await pending;expect(authState.currentUser.value).toEqual(A)
-})

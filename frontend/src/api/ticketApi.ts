@@ -1010,7 +1010,9 @@ export const ticketApi = {
           : (await http.post<CurrentUser>('/auth/login', { username, password })).data
       } catch (error) {
         // A failed replacement must not leave the previous browser session active.
-        await logoutTransport()
+        try { await logoutTransport() } catch (cleanupError) {
+          if (!(cleanupError instanceof TicketApiError && cleanupError.status === 401)) throw cleanupError
+        }
         throw error
       }
       // A discarded response can still set HttpOnly cookies. Clear it before B may start.
