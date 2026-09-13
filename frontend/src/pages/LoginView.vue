@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const showDemoCredentials = import.meta.env.DEV || import.meta.env.VITE_USE_MOCK_API === 'true'
-import { ref } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authState } from '../auth/authState'
 import { TicketApiError } from '../api/ticketApi'
@@ -14,19 +14,39 @@ const password = ref('')
 const busy = ref(false)
 const error = ref('')
 
+let mounted = true
+let attempt: { controller: AbortController; revision: number } | null = null
+onBeforeUnmount(() => { mounted = false; attempt?.controller.abort(); attempt = null })
+watch(authState.operation, () => {
+  if (attempt && attempt.revision !== authState.operation.value) {
+    attempt.controller.abort()
+    attempt = null
+    busy.value = false
+  }
+}, { flush: 'sync' })
+
 async function submit() {
+  const old = attempt
+  attempt = null
+  old?.controller.abort()
+  const controller = new AbortController()
   busy.value = true
   error.value = ''
+  const result = authState.login(username.value, password.value, { signal: controller.signal })
+  const own = { controller, revision: authState.operation.value }
+  attempt = own
+  const current = () => mounted && attempt === own && !controller.signal.aborted && own.revision === authState.operation.value
   try {
-    await authState.login(username.value, password.value)
+    const user = await result
+    if (!user || !current()) return
     const redirect = safeInternalRedirect(route.query.redirect)
       ? route.query.redirect
       : { name: routeNames.events }
     await router.replace(redirect)
   } catch (cause) {
-    error.value = cause instanceof TicketApiError ? cause.message : '登录失败，请稍后重试。'
+    if (current()) error.value = cause instanceof TicketApiError ? cause.message : '登录失败，请稍后重试。'
   } finally {
-    busy.value = false
+    if (current()) { busy.value = false; attempt = null }
   }
 }
 </script>

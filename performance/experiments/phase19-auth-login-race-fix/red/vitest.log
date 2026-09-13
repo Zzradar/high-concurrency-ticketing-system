@@ -1,0 +1,211 @@
+
+ RUN  v4.1.11 C:/Users/a12/AppData/Local/Temp/phase19-global-polling-mixed-load/frontend
+
+ × tests/phase19.login-race.test.ts > A pending then logout then A success stays anonymous, does not navigate or restart notification polling 49ms
+   → expected { id: 'A', username: 'a', …(2) } to be null
+ × tests/phase19.login-race.test.ts > A pending then B succeeds then A succeeds cannot replace B 1ms
+   → expected { id: 'A', username: 'a', …(2) } to be null
+ × tests/phase19.login-race.test.ts > leaving LoginView invalidates its pending login at global authState boundary 9ms
+   → expected { id: 'A', username: 'a', …(2) } to be null
+ × tests/phase19.login-race.test.ts > late A failure after B success cannot show its error, navigate, or clear B 8ms
+   → expected '演示数据User BWELCOME BACK登录票迹用户名密码obsole…' not to contain 'obsolete A failure'
+ ✓ tests/phase19.login-race.test.ts > valid login still publishes user, navigates and starts notification reads 11ms
+ × tests/phase19.login-race.test.ts > clearAuth rejects late login writes and initialization 1ms
+   → expected { id: 'A', username: 'a', …(2) } to be null
+ × tests/phase19.login-race.test.ts > cancel signal invalidates only its own pending login, not a newer B operation 4ms
+   → expected { id: 'A', username: 'a', …(2) } to deeply equal { id: 'B', username: 'b', …(2) }
+ × tests/phase19.login-race.test.ts > old me finally cannot clear loading or initialize a pending login 2ms
+   → expected false to be true // Object.is equality
+ ✓ tests/phase19.login-race.test.ts > old me after logout cannot restore the user 1ms
+ × tests/phase19.login-race.test.ts > older login success cannot clear newer login loading 1ms
+   → expected { id: 'A', username: 'a', …(2) } to be null
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/phase19.login-race.test.ts > A pending then logout then A success stays anonymous, does not navigate or restart notification polling
+AssertionError: expected { id: 'A', username: 'a', …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "displayName": "User A",
+  "id": "A",
+  "role": "CUSTOMER",
+  "username": "a",
+}
+
+ ❯ tests/phase19.login-race.test.ts:27:38
+     25|  const a=deferred<CurrentUser>();vi.spyOn(ticketApi,'login').mockRetur…
+     26|  const p=await page();await p.submit();await authState.logout();a.reso…
+     27|  expect(authState.currentUser.value).toBeNull();expect(p.router.curren…
+       |                                      ^
+     28| })
+     29| it('A pending then B succeeds then A succeeds cannot replace B',async(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/phase19.login-race.test.ts > A pending then B succeeds then A succeeds cannot replace B
+AssertionError: expected { id: 'A', username: 'a', …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "displayName": "User A",
+  "id": "A",
+  "role": "CUSTOMER",
+  "username": "a",
+}
+
+ ❯ tests/phase19.login-race.test.ts:31:101
+     29| it('A pending then B succeeds then A succeeds cannot replace B',async(…
+     30|  const a=deferred<CurrentUser>();vi.spyOn(ticketApi,'login').mockRetur…
+     31|  const old=authState.login('a','pw');await authState.login('b','pw');a…
+       |                                                                                                     ^
+     32| })
+     33| it('leaving LoginView invalidates its pending login at global authStat…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/phase19.login-race.test.ts > leaving LoginView invalidates its pending login at global authState boundary
+AssertionError: expected { id: 'A', username: 'a', …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "displayName": "User A",
+  "id": "A",
+  "role": "CUSTOMER",
+  "username": "a",
+}
+
+ ❯ tests/phase19.login-race.test.ts:36:38
+     34|  const a=deferred<CurrentUser>();vi.spyOn(ticketApi,'login').mockRetur…
+     35|  const p=await page();await p.submit();await p.router.push('/away');a.…
+     36|  expect(authState.currentUser.value).toBeNull();expect(p.router.curren…
+       |                                      ^
+     37| })
+     38| it('late A failure after B success cannot show its error, navigate, or…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/phase19.login-race.test.ts > late A failure after B success cannot show its error, navigate, or clear B
+AssertionError: expected '演示数据User BWELCOME BACK登录票迹用户名密码obsole…' not to contain 'obsolete A failure'
+
+Expected: "obsolete A failure"
+Received: "演示数据User BWELCOME BACK登录票迹用户名密码obsolete A failure登录开发演示账号：demo / Ticketing123!票迹 Ticket Trace发现活动 · 选择场次 · 在线选座"
+
+ ❯ tests/phase19.login-race.test.ts:41:78
+     39|  const a=deferred<CurrentUser>();vi.spyOn(ticketApi,'login').mockRetur…
+     40|  const p=await page();await p.submit();await authState.login('b','pw')…
+     41|  expect(authState.currentUser.value).toEqual(B);expect(p.wrapper.text(…
+       |                                                                              ^
+     42| })
+     43| it('valid login still publishes user, navigates and starts notificatio…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/phase19.login-race.test.ts > clearAuth rejects late login writes and initialization
+AssertionError: expected { id: 'A', username: 'a', …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "displayName": "User A",
+  "id": "A",
+  "role": "CUSTOMER",
+  "username": "a",
+}
+
+ ❯ tests/phase19.login-race.test.ts:50:91
+     48| it('clearAuth rejects late login writes and initialization',async()=>{
+     49|  const a=deferred<CurrentUser>();vi.spyOn(ticketApi,'login').mockRetur…
+     50|  const old=authState.login('a','pw');authState.clearAuth();a.resolve(A…
+       |                                                                                           ^
+     51| })
+     52| it('cancel signal invalidates only its own pending login, not a newer …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  tests/phase19.login-race.test.ts > cancel signal invalidates only its own pending login, not a newer B operation
+AssertionError: expected { id: 'A', username: 'a', …(2) } to deeply equal { id: 'B', username: 'b', …(2) }
+
+- Expected
++ Received
+
+  {
+-   "displayName": "User B",
+-   "id": "B",
++   "displayName": "User A",
++   "id": "A",
+    "role": "CUSTOMER",
+-   "username": "b",
++   "username": "a",
+  }
+
+ ❯ tests/phase19.login-race.test.ts:55:38
+     53|  const a=deferred<CurrentUser>();vi.spyOn(ticketApi,'login').mockRetur…
+     54|  const controller=new AbortController();const old=authState.login('a',…
+     55|  expect(authState.currentUser.value).toEqual(B)
+       |                                      ^
+     56| })
+     57| it('old me finally cannot clear loading or initialize a pending login'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  tests/phase19.login-race.test.ts > old me finally cannot clear loading or initialize a pending login
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/phase19.login-race.test.ts:61:38
+     59|  const refresh=authState.refreshMe();const a=deferred<CurrentUser>();v…
+     60|  const pending=authState.login('a','pw');me.resolve(B);await refresh
+     61|  expect(authState.authLoading.value).toBe(true);expect(authState.curre…
+       |                                      ^
+     62| })
+     63| it('old me after logout cannot restore the user',async()=>{
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  tests/phase19.login-race.test.ts > older login success cannot clear newer login loading
+AssertionError: expected { id: 'A', username: 'a', …(2) } to be null
+
+- Expected:
+null
+
++ Received:
+{
+  "displayName": "User A",
+  "id": "A",
+  "role": "CUSTOMER",
+  "username": "a",
+}
+
+ ❯ tests/phase19.login-race.test.ts:70:38
+     68|  const a=deferred<CurrentUser>();const b=deferred<CurrentUser>();vi.sp…
+     69|  const old=authState.login('a','pw');const current=authState.login('b'…
+     70|  expect(authState.currentUser.value).toBeNull();expect(authState.authL…
+       |                                      ^
+     71| })
+     72|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 2 passed (10)
+   Start at  00:50:03
+   Duration  1.23s (transform 253ms, setup 21ms, import 581ms, tests 88ms, environment 372ms)
+

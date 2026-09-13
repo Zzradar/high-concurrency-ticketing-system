@@ -1,0 +1,9 @@
+
+ RUN  v4.1.11 C:/Users/a12/AppData/Local/Temp/phase19-global-polling-mixed-load/frontend
+
+
+ Test Files  44 passed (44)
+      Tests  341 passed (341)
+   Start at  00:52:00
+   Duration  4.71s (transform 8.47s, setup 639ms, import 21.09s, tests 9.91s, environment 22.99s)
+

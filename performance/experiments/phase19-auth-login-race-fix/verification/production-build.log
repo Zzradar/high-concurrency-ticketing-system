@@ -1,0 +1,22 @@
+
+> frontend@0.0.0 build
+> vue-tsc -b && vite build
+
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 1971 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                 0.96 kB │ gzip:  0.57 kB
+dist/assets/adminApi-BzpU8YTP.css               2.40 kB │ gzip:  0.90 kB
+dist/assets/index-BEyvCYky.css                 30.54 kB │ gzip:  6.91 kB
+dist/assets/adminDateTime-D-syJO9q.js           0.80 kB │ gzip:  0.50 kB
+dist/assets/AdminEventListPage-DzI29Kxf.js      1.26 kB │ gzip:  0.73 kB
+dist/assets/AdminVenueListPage-CQ7xD6ZZ.js      1.37 kB │ gzip:  0.82 kB
+dist/assets/adminApi-Fboeoaj6.js                2.98 kB │ gzip:  1.55 kB
+dist/assets/WaitingRoomPage-MehI2mst.js         4.25 kB │ gzip:  2.10 kB
+dist/assets/AdminVenueEditorPage-D3F6Q69D.js    5.26 kB │ gzip:  2.10 kB
+dist/assets/AdminEventEditorPage-Dx-oaImk.js   12.52 kB │ gzip:  4.84 kB
+dist/assets/index-DTA-eYG6.js                 248.10 kB │ gzip: 87.33 kB
+
+✓ built in 4.74s

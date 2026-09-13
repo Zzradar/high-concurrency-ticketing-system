@@ -1,3 +1,4 @@
+import { mutateAuthentication, authenticationSettled } from './authTransport'
 import { isAdmissionSummary } from '../utils/admissionContract'
 import { isAvailabilitySync } from '../utils/availabilityContract'
 import { retryHint } from '../utils/pollingPolicy'
@@ -103,7 +104,7 @@ export function onUnauthenticated(handler: () => void) {
 http.interceptors.response.use(
   (response) => response,
   (error: unknown) => {
-    if (axios.isAxiosError(error) && error.response?.status === 401 && error.config && requestAuthentication.get(error.config) === authenticationEpoch) {
+    if (axios.isAxiosError(error) && error.response?.status === 401 && error.config && !['/auth/login', '/auth/logout'].includes(error.config.url ?? '') && requestAuthentication.get(error.config) === authenticationEpoch) {
       unauthenticatedHandler?.()
     }
     return Promise.reject(normalizeApiError(error))
@@ -987,6 +988,11 @@ async function getSeatAvailability(
     return normalizeSeatAvailabilityResponse(sessionId, response)
   }
 
+async function logoutTransport(): Promise<void> {
+  if (isMockMode) { await wait(); mockCurrentUser = null; return }
+  await http.post('/auth/logout')
+}
+
 export const ticketApi = {
   async createRefund(orderId: string): Promise<CreateRefundResult> {
     if (isMockMode) return mockCreateRefund(orderId)
@@ -996,11 +1002,24 @@ export const ticketApi = {
     if (isMockMode) return mockGetRefund(refundId)
     return (await http.get<Refund>('/refunds/' + refundId)).data
   },
-  async login(username: string, password: string): Promise<CurrentUser> {
-    if (isMockMode) return mockLogin(username, password)
-    return (await http.post<CurrentUser>('/auth/login', { username, password })).data
+  async login(username: string, password: string, options: { isCurrent?: () => boolean } = {}): Promise<CurrentUser> {
+    return mutateAuthentication(async () => {
+      let user: CurrentUser
+      try {
+        user = isMockMode ? await mockLogin(username, password)
+          : (await http.post<CurrentUser>('/auth/login', { username, password })).data
+      } catch (error) {
+        // A failed replacement must not leave the previous browser session active.
+        await logoutTransport()
+        throw error
+      }
+      // A discarded response can still set HttpOnly cookies. Clear it before B may start.
+      if (options.isCurrent && !options.isCurrent()) await logoutTransport()
+      return user
+    })
   },
   async me(): Promise<CurrentUser> {
+    await authenticationSettled()
     if (isMockMode) {
       await wait()
       if (!mockCurrentUser) throw new TicketApiError('请先登录。', 'UNAUTHENTICATED')
@@ -1009,12 +1028,7 @@ export const ticketApi = {
     return (await http.get<CurrentUser>('/auth/me')).data
   },
   async logout(): Promise<void> {
-    if (isMockMode) {
-      await wait()
-      mockCurrentUser = null
-      return
-    }
-    await http.post('/auth/logout')
+    await mutateAuthentication(logoutTransport)
   },
   async getEvents(): Promise<TicketEvent[]> {
     if (isMockMode) return mockGetEvents()

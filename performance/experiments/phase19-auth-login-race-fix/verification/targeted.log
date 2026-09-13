@@ -1,0 +1,30 @@
+
+ RUN  v4.1.11 C:/Users/a12/AppData/Local/Temp/phase19-global-polling-mixed-load/frontend
+
+ ✓ tests/phase19.auth-lifecycle.test.ts > Phase19 logout invalidates all user polling immediately > clears identity and its locator before a slow logout request completes 6ms
+ ✓ tests/phase19.auth-lifecycle.test.ts > Phase19 logout invalidates all user polling immediately > does not let an old logout completion erase a later authenticated identity 14ms
+ ✓ tests/phase19.auth-lifecycle.test.ts > a late HTTP 401 from an old account cannot clear a later login 102ms
+ ✓ tests/phase19.auth-lifecycle.test.ts > a current HTTP 401 still clears authentication and stops user polling 3ms
+ ✓ src/auth/authState.test.ts > authenticated account state > restores the current user and logs out through the server API 57ms
+ ✓ src/auth/authState.test.ts > authenticated account state > namespaces the checkout locator by authenticated user 32ms
+ ✓ tests/phase19.login-race.test.ts > A pending then logout then A success stays anonymous, does not navigate or restart notification polling 27ms
+ ✓ tests/phase19.login-race.test.ts > A pending then B succeeds then A succeeds cannot replace B 1ms
+ ✓ tests/phase19.login-race.test.ts > leaving LoginView invalidates its pending login at global authState boundary 8ms
+ ✓ tests/phase19.login-race.test.ts > late A failure after B success cannot show its error, navigate, or clear B 7ms
+ ✓ tests/phase19.login-race.test.ts > valid login still publishes user, navigates and starts notification reads 7ms
+ ✓ tests/phase19.login-race.test.ts > clearAuth rejects late login writes and initialization 0ms
+ ✓ tests/phase19.login-race.test.ts > cancel signal invalidates only its own pending login, not a newer B operation 0ms
+ ✓ tests/phase19.login-race.test.ts > old me finally cannot clear loading or initialize a pending login 0ms
+ ✓ tests/phase19.login-race.test.ts > old me after logout cannot restore the user 0ms
+ ✓ tests/phase19.login-race.test.ts > older login success cannot clear newer login loading 0ms
+ ✓ src/auth/authState.test.ts > logout success clears state and does not restore the server session 17ms
+ ✓ src/auth/authState.test.ts > logout 401 clears state and does not restore the server session 14ms
+ ✓ src/auth/authState.test.ts > logout timeout clears state and does not restore the server session 15ms
+ ✓ src/auth/authState.test.ts > logout network clears state and does not restore the server session 15ms
+ ✓ src/auth/authState.test.ts > ignores an in-flight me result after logout 31ms
+
+ Test Files  3 passed (3)
+      Tests  21 passed (21)
+   Start at  00:51:16
+   Duration  1.06s (transform 456ms, setup 56ms, import 1.21s, tests 360ms, environment 892ms)
+
