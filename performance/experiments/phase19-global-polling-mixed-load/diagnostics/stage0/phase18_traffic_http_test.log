@@ -1,0 +1,17 @@
+test_enforced_429_retry_and_observe_never_intercepts (__main__.TrafficHTTP) ... ok
+test_off_read_saturation_is_bounded_and_releases_permits (__main__.TrafficHTTP) ... ERROR
+
+======================================================================
+ERROR: test_off_read_saturation_is_bounded_and_releases_permits (__main__.TrafficHTTP)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<PHASE19_WORKTREE>\backend\tests\phase18_traffic_http_test.py", line 53, in test_off_read_saturation_is_bounded_and_releases_permits
+    observed=subprocess.run(['docker','exec','phase18-policy-api','cat','/proc/1/status'],capture_output=True,text=True,check=True).stdout
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['docker', 'exec', 'phase18-policy-api', 'cat', '/proc/1/status']' returned non-zero exit status 1.
+
+----------------------------------------------------------------------
+Ran 2 tests in 9.183s
+
+FAILED (errors=1)

@@ -1,0 +1,54 @@
+REGRESSION MODULE phase15_reservation_test
+test_concurrent_same_key_arbitrates_before_ended_preliminary_rejection (phase15_reservation_test.ReservationSalesTest) ... ok
+test_new_request_rejected_and_idempotent_replay_survives_end (phase15_reservation_test.ReservationSalesTest) ... ok
+test_not_started_and_static_unavailable_roll_back_new_insert (phase15_reservation_test.ReservationSalesTest) ... ok
+test_seat_lock_wait_crosses_end_without_inventory_or_outbox_writes (phase15_reservation_test.ReservationSalesTest) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 10.713s
+
+OK
+REGRESSION MODULE phase15_checkout_test
+test_checkout_create_both_closed_states_no_hold (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_millisecond_ttl_bounded_by_window_and_default (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_natural_expiry_converges_phase16_derived_model (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_replace_rejection_preserves_revision_and_ttl_empty_release_allowed (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_selecting_confirm_closes_and_releases_hold (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_submitting_formal_replay_and_reserved_confirm_after_end (phase15_checkout_test.CheckoutSalesTest) ... ok
+test_submitting_without_formal_result_closes_with_fenced_key (phase15_checkout_test.CheckoutSalesTest) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 23.848s
+
+OK
+REGRESSION MODULE phase15_read_api_test
+test_effective_end_clamped_to_session_and_last_session (phase15_read_api_test.SalesReadApiTest) ... ok
+test_time_states_and_static_independence (phase15_read_api_test.SalesReadApiTest) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 2.220s
+
+OK
+REGRESSION MODULE phase15_observation_test
+test_fixed_gate_count_independent_of_seat_count_and_replay_has_zero (phase15_observation_test.ObservationTest) ... FAIL
+test_only_external_entrypoint_is_counted_once (phase15_observation_test.ObservationTest) ... ok
+
+======================================================================
+FAIL: test_fixed_gate_count_independent_of_seat_count_and_replay_has_zero (phase15_observation_test.ObservationTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<PHASE19_WORKTREE>\backend\tests\phase15_observation_test.py", line 20, in test_fixed_gate_count_independent_of_seat_count_and_replay_has_zero
+    seats=[SESSION+'-'+x for x in labels];before=self.calls()
+  File "<PHASE19_WORKTREE>\backend\tests\phase15_observation_test.py", line 8, in calls
+    def calls(self):return int(sql("SELECT COALESCE(sum(calls),0) FROM pg_stat_statements WHERE query LIKE '%WITH sales_clock AS MATERIALIZED%' AND query NOT LIKE '%pg_stat_statements%';"))
+  File "<PHASE19_WORKTREE>\backend\tests\phase15_test_support.py", line 8, in sql
+    if ok and r.returncode:raise AssertionError(r.stderr)
+AssertionError: ERROR:  relation "pg_stat_statements" does not exist
+LINE 1: SELECT COALESCE(sum(calls),0) FROM pg_stat_statements WHERE ...
+                                           ^
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 3.747s
+
+FAILED (failures=1)

@@ -1,0 +1,42 @@
+{
+  "startedUtc": "2026-09-13T10:19:39.424489+00:00",
+  "actualVUsRequested": 1000,
+  "observationSeconds": 60,
+  "initialIdleSeconds": 15,
+  "protocolSha256": {
+    "calibrate.py": "83ca70510aeb32736a2d2855e7ea333c25e7ac7789df4a2acaa991e06d115f32",
+    "policy.mjs": "948e1af86c44926f9a59612b6db29a4fa9b28b6c0404bbd6e96e9ff361411ed3",
+    "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+    "resource_gate.py": "07869480d7946700e203f821ee65d05e011deac846e4f3fc9476d7e8d9764994",
+    "seed.py": "0c8cf9ddf39a887c17615aaaf431f78efff0628352552824350b75beb27d7e3e",
+    "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+    "test_policy.mjs": "8194df4fc26bf73b63ff09eda03373cb579b23861b7553f052314c550694e313",
+    "workload.js": "3a5a70fabfcc9213e01a17ed0fb8cd6702f76d4fbf7d0cf50742a987e813e395"
+  },
+  "images": {
+    "k6": {
+      "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+      "digests": [
+        "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+      ]
+    },
+    "stub": {
+      "id": "sha256:b64631e04e4920160c50fbe8d8df828f7f35f06f425cb44aa09bca53e708a35a",
+      "digests": [
+        "python@sha256:b64631e04e4920160c50fbe8d8df828f7f35f06f425cb44aa09bca53e708a35a"
+      ]
+    }
+  },
+  "limits": {
+    "generator": {
+      "cpus": 2,
+      "memoryBytes": 2147483648,
+      "pids": 256,
+      "nofile": 16384
+    },
+    "stub": {
+      "cpus": 1,
+      "memoryBytes": 268435456
+    }
+  }
+}

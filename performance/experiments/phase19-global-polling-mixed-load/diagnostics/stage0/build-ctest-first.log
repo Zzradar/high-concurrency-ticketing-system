@@ -1,0 +1,811 @@
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- The C compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- compiler: GNU
+-- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY
+-- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY - Success
+-- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY
+-- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY - Success
+-- Performing Test COMPILER_HAS_DEPRECATED_ATTR
+-- Performing Test COMPILER_HAS_DEPRECATED_ATTR - Success
+-- Looking for C++ include any
+-- Looking for C++ include any - found
+-- Looking for C++ include string_view
+-- Looking for C++ include string_view - found
+-- Looking for C++ include coroutine
+-- Looking for C++ include coroutine - found
+-- Trantor using SSL library: OpenSSL
+-- Found c-ares: /usr/include  
+-- c-ares found!
+-- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE) 
+-- Looking for C++ include filesystem
+-- Looking for C++ include filesystem - found
+-- Performing Test CXX_FILESYSTEM_NO_LINK_NEEDED
+-- Performing Test CXX_FILESYSTEM_NO_LINK_NEEDED - Success
+-- Found std::filesystem
+-- use c++20
+-- Found Jsoncpp: /usr/include/jsoncpp  
+-- jsoncpp version:1.9.5
+-- yaml-cpp not used
+-- Found UUID: /usr/lib/x86_64-linux-gnu/libuuid.so
+-- Found Brotli: /usr/lib/x86_64-linux-gnu/libbrotlidec.so  
+-- Brotli found
+-- Found PostgreSQL: /usr/lib/x86_64-linux-gnu/libpq.so (found version "16.15")  
+-- pg inc: /usr/include/postgresql
+-- Found pg: /usr/lib/x86_64-linux-gnu/libpq.so  
+-- libpq inc path:/usr/include/postgresql
+-- libpq lib:/usr/lib/x86_64-linux-gnu/libpq.so
+-- The libpq supports batch mode
+-- MySql was not found.
+-- sqlite3 was not found.
+-- Found Hiredis: /usr/lib/x86_64-linux-gnu/libhiredis.so  
+-- Found ZLIB: /usr/lib/x86_64-linux-gnu/libz.so (found version "1.3")  
+-- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE) 
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Configuring done (3.8s)
+-- Generating done (0.1s)
+-- Build files have been written to: /phase19-build
+[  0%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/utils/AsyncFileLogger.cc.o
+[  0%] Building CXX object CMakeFiles/stripe_config_unit.dir/tests/stripe_config_unit.cpp.o
+[  1%] Building CXX object CMakeFiles/stripe_config_unit.dir/src/payments/StripeConfig.cpp.o
+[  1%] Linking CXX executable stripe_config_unit
+[  1%] Built target stripe_config_unit
+[  2%] Building CXX object CMakeFiles/stripe_webhook_verifier_unit.dir/tests/stripe_webhook_verifier_unit.cpp.o
+[  2%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/utils/ConcurrentTaskQueue.cc.o
+[  2%] Building CXX object CMakeFiles/stripe_webhook_verifier_unit.dir/src/payments/StripeWebhookVerifier.cpp.o
+[  3%] Building CXX object CMakeFiles/stripe_webhook_verifier_unit.dir/src/security/Crypto.cpp.o
+[  4%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/utils/Date.cc.o
+[  4%] Linking CXX executable stripe_webhook_verifier_unit
+[  4%] Built target stripe_webhook_verifier_unit
+[  5%] Building CXX object CMakeFiles/password_hash_executor_unit.dir/tests/password_hash_executor_unit.cpp.o
+[  5%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/utils/LogStream.cc.o
+[  6%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/utils/Logger.cc.o
+[  6%] Building CXX object CMakeFiles/password_hash_executor_unit.dir/src/security/PasswordHashExecutor.cpp.o
+[  6%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/utils/MsgBuffer.cc.o
+[  7%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/utils/SerialTaskQueue.cc.o
+[  7%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/utils/TimingWheel.cc.o
+[  8%] Building CXX object CMakeFiles/password_hash_executor_unit.dir/src/security/PasswordHasher.cpp.o
+[  8%] Linking CXX executable password_hash_executor_unit
+[  9%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/utils/Utilities.cc.o
+[  9%] Built target password_hash_executor_unit
+[  9%] Building CXX object CMakeFiles/seat_map_compute_executor_unit.dir/tests/seat_map_compute_executor_unit.cpp.o
+[  9%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/EventLoop.cc.o
+[  9%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/EventLoopThread.cc.o
+[ 10%] Building CXX object CMakeFiles/seat_map_compute_executor_unit.dir/src/services/SeatMapComputeExecutor.cpp.o
+[ 11%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/EventLoopThreadPool.cc.o
+[ 11%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/InetAddress.cc.o
+[ 11%] Linking CXX executable seat_map_compute_executor_unit
+[ 11%] Built target seat_map_compute_executor_unit
+[ 12%] Building CXX object CMakeFiles/seat_display_status_unit.dir/tests/seat_display_status_unit.cpp.o
+[ 13%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/TcpClient.cc.o
+[ 13%] Building CXX object CMakeFiles/seat_display_status_unit.dir/src/services/SeatDisplayStatus.cpp.o
+[ 14%] Linking CXX executable seat_display_status_unit
+[ 14%] Built target seat_display_status_unit
+[ 15%] Building CXX object CMakeFiles/phase14_observation_unit.dir/tests/phase14_observation_unit.cpp.o
+[ 15%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/TcpServer.cc.o
+[ 15%] Linking CXX executable phase14_observation_unit
+[ 15%] Built target phase14_observation_unit
+[ 15%] Building CXX object CMakeFiles/phase18_bulkhead_unit.dir/tests/phase18_bulkhead_unit.cpp.o
+[ 16%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/Channel.cc.o
+[ 16%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/Acceptor.cc.o
+[ 17%] Linking CXX executable phase18_bulkhead_unit
+[ 17%] Built target phase18_bulkhead_unit
+[ 17%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/Connector.cc.o
+[ 18%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/Poller.cc.o
+[ 18%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/Socket.cc.o
+[ 19%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/MemBufferNode.cc.o
+[ 19%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/StreamBufferNode.cc.o
+[ 20%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/AsyncStreamBufferNode.cc.o
+[ 20%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/TcpConnectionImpl.cc.o
+[ 21%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/Timer.cc.o
+[ 21%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/TimerQueue.cc.o
+[ 21%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/poller/EpollPoller.cc.o
+[ 22%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/poller/KQueue.cc.o
+[ 22%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/poller/PollPoller.cc.o
+[ 23%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/FileBufferNodeUnix.cc.o
+[ 23%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/tlsprovider/OpenSSLProvider.cc.o
+[ 24%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/utils/crypto/openssl.cc.o
+[ 24%] Building CXX object _deps/drogon-build/trantor/CMakeFiles/trantor.dir/trantor/net/inner/AresResolver.cc.o
+[ 25%] Linking CXX static library libtrantor.a
+[ 25%] Built target trantor
+[ 25%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/AOPAdvice.cc.o
+[ 25%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/AccessLogger.cc.o
+[ 26%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/CacheFile.cc.o
+[ 26%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/ConfigAdapterManager.cc.o
+[ 27%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/ConfigLoader.cc.o
+[ 27%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/Cookie.cc.o
+[ 28%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/DrClassMap.cc.o
+[ 28%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/DrTemplateBase.cc.o
+[ 28%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/MiddlewaresFunction.cc.o
+[ 29%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/FixedWindowRateLimiter.cc.o
+[ 29%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/GlobalFilters.cc.o
+[ 30%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/Histogram.cc.o
+[ 30%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/Hodor.cc.o
+[ 31%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpAppFrameworkImpl.cc.o
+[ 31%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpBinder.cc.o
+[ 32%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpClientImpl.cc.o
+[ 32%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpConnectionLimit.cc.o
+[ 32%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpControllerBinder.cc.o
+[ 33%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpControllersRouter.cc.o
+[ 33%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpFileImpl.cc.o
+[ 34%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpFileUploadRequest.cc.o
+[ 34%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpRequestImpl.cc.o
+[ 35%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpRequestParser.cc.o
+[ 35%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/RequestStream.cc.o
+[ 35%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpResponseImpl.cc.o
+[ 36%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpResponseParser.cc.o
+[ 36%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpServer.cc.o
+[ 37%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpUtils.cc.o
+[ 37%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/HttpViewData.cc.o
+[ 38%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/IntranetIpFilter.cc.o
+[ 38%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/JsonConfigAdapter.cc.o
+[ 39%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/ListenerManager.cc.o
+[ 39%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/LocalHostFilter.cc.o
+[ 39%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/MultiPart.cc.o
+[ 40%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/MultipartStreamParser.cc.o
+[ 40%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/NotFound.cc.o
+[ 41%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/PluginsManager.cc.o
+[ 41%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/PromExporter.cc.o
+[ 42%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/RangeParser.cc.o
+[ 42%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/RateLimiter.cc.o
+[ 42%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/RealIpResolver.cc.o
+[ 43%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/SecureSSLRedirector.cc.o
+[ 43%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/Redirector.cc.o
+[ 44%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/SessionManager.cc.o
+[ 44%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/SlashRemover.cc.o
+[ 45%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/SlidingWindowRateLimiter.cc.o
+[ 45%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/StaticFileRouter.cc.o
+[ 46%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/TaskTimeoutFlag.cc.o
+[ 46%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/TokenBucketRateLimiter.cc.o
+[ 46%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/Utilities.cc.o
+[ 47%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/WebSocketClientImpl.cc.o
+[ 47%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/WebSocketConnectionImpl.cc.o
+[ 48%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/YamlConfigAdapter.cc.o
+[ 48%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/drogon_test.cc.o
+[ 49%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/lib/src/SharedLibManager.cc.o
+[ 49%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/postgresql_impl/PostgreSQLResultImpl.cc.o
+[ 50%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/postgresql_impl/PgListener.cc.o
+[ 50%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/postgresql_impl/PgBatchConnection.cc.o
+[ 50%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/nosql_lib/redis/src/RedisClientImpl.cc.o
+[ 51%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/nosql_lib/redis/src/RedisClientLockFree.cc.o
+[ 51%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/nosql_lib/redis/src/RedisClientManager.cc.o
+[ 52%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/nosql_lib/redis/src/RedisConnection.cc.o
+[ 52%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/nosql_lib/redis/src/RedisResult.cc.o
+[ 53%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/nosql_lib/redis/src/RedisTransactionImpl.cc.o
+/src/build/_deps/drogon-src/lib/src/HttpUtils.cc:62:10: warning: 'drogon::CT_APPLICATION_X_JAVASCRIPT' is deprecated: use CT_TEXT_JAVASCRIPT [-Wdeprecated-declarations]
+   62 |         {CT_APPLICATION_X_JAVASCRIPT,
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /src/build/_deps/drogon-src/lib/src/HttpUtils.h:18,
+                 from /src/build/_deps/drogon-src/lib/src/HttpUtils.cc:15:
+/src/build/_deps/drogon-src/lib/inc/drogon/HttpTypes.h:106:5: note: declared here
+  106 |     CT_APPLICATION_X_JAVASCRIPT [[deprecated("use CT_TEXT_JAVASCRIPT")]],
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/src/build/_deps/drogon-src/lib/src/HttpUtils.cc: In lambda function:
+/src/build/_deps/drogon-src/lib/src/HttpUtils.cc:733:23: warning: 'drogon::CT_APPLICATION_X_JAVASCRIPT' is deprecated: use CT_TEXT_JAVASCRIPT [-Wdeprecated-declarations]
+  733 |         extensionMap_[CT_APPLICATION_X_JAVASCRIPT] =
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/src/build/_deps/drogon-src/lib/inc/drogon/HttpTypes.h:106:5: note: declared here
+  106 |     CT_APPLICATION_X_JAVASCRIPT [[deprecated("use CT_TEXT_JAVASCRIPT")]],
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+[ 53%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/nosql_lib/redis/src/SubscribeContext.cc.o
+[ 53%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/nosql_lib/redis/src/RedisSubscriberImpl.cc.o
+[ 54%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/ArrayParser.cc.o
+[ 54%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/Criteria.cc.o
+[ 55%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/DbClient.cc.o
+[ 55%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/DbClientImpl.cc.o
+[ 56%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/DbClientLockFree.cc.o
+[ 56%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/DbConnection.cc.o
+[ 57%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/DbListener.cc.o
+[ 57%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/Exception.cc.o
+/phase19-src/src/repositories/ReservationRepository.cpp: In lambda function:
+[ 57%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/Field.cc.o
+[ 58%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/Result.cc.o
+[ 58%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/Row.cc.o
+[ 59%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/SqlBinder.cc.o
+[ 59%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/TransactionImpl.cc.o
+[ 60%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/RestfulController.cc.o
+[ 60%] Building CXX object _deps/drogon-build/CMakeFiles/drogon.dir/orm_lib/src/DbClientManager.cc.o
+[ 60%] Linking CXX static library libdrogon.a
+[ 60%] Built target drogon
+[ 61%] Building CXX object CMakeFiles/phase17_config_unit.dir/tests/phase17_config_unit.cpp.o
+[ 62%] Building CXX object CMakeFiles/ticketing_backend.dir/src/main.cpp.o
+[ 62%] Building CXX object CMakeFiles/phase17_config_unit.dir/src/admin/AdminCatalog.cpp.o
+[ 62%] Building CXX object CMakeFiles/ticketing_backend.dir/src/observability/Phase14Metrics.cpp.o
+[ 62%] Building CXX object CMakeFiles/ticketing_backend.dir/src/observability/PerformanceMetrics.cpp.o
+[ 62%] Building CXX object CMakeFiles/phase17_config_unit.dir/src/services/SeatMapComputeExecutor.cpp.o
+[ 63%] Linking CXX executable phase17_config_unit
+[ 63%] Built target phase17_config_unit
+/phase19-src/src/repositories/ReservationRepository.cpp:117:17: warning: missing initializer for member 'ticketing::TicketOrder::buyerRefund' [-Wmissing-field-initializers]
+[ 63%] Building CXX object CMakeFiles/phase18_policy_unit.dir/tests/phase18_policy_unit.cpp.o
+  117 |                 },
+      |                 ^
+[ 64%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/HealthController.cpp.o
+/phase19-src/src/repositories/ReservationRepository.cpp:117:17: warning: missing initializer for member 'ticketing::TicketOrder::refundEligibility' [-Wmissing-field-initializers]
+[ 65%] Building CXX object CMakeFiles/phase18_policy_unit.dir/src/admission/AdmissionPolicy.cpp.o
+/phase19-src/src/repositories/ReservationRepository.cpp: In lambda function:
+[ 65%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/EventController.cpp.o
+/phase19-src/src/repositories/ReservationRepository.cpp:475:13: warning: missing initializer for member 'ticketing::TicketOrder::buyerRefund' [-Wmissing-field-initializers]
+[ 65%] Building CXX object CMakeFiles/phase18_policy_unit.dir/src/admin/AdminCatalog.cpp.o
+[ 66%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/EventRepository.cpp.o
+  475 |             });
+      |             ^
+/phase19-src/src/repositories/ReservationRepository.cpp:475:13: warning: missing initializer for member 'ticketing::TicketOrder::refundEligibility' [-Wmissing-field-initializers]
+[ 66%] Building CXX object CMakeFiles/phase18_policy_unit.dir/src/services/SeatMapComputeExecutor.cpp.o
+[ 67%] Building CXX object CMakeFiles/phase18_policy_unit.dir/src/security/Crypto.cpp.o
+[ 67%] Linking CXX executable phase18_policy_unit
+[ 67%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/SalesWindowRepository.cpp.o
+[ 67%] Built target phase18_policy_unit
+[ 68%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/EventService.cpp.o
+[ 68%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/SessionController.cpp.o
+[ 68%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/SessionRepository.cpp.o
+[ 69%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/SessionService.cpp.o
+[ 69%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/SeatController.cpp.o
+[ 70%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/SeatRepository.cpp.o
+[ 70%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/SeatService.cpp.o
+[ 71%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/SeatDisplayStatus.cpp.o
+[ 71%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/SeatMapComputeExecutor.cpp.o
+[ 72%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/ReservationController.cpp.o
+[ 72%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/ReservationRepository.cpp.o
+[ 72%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/ReservationService.cpp.o
+[ 73%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/RefundController.cpp.o
+/phase19-src/src/services/ReservationService.cpp: In member function 'void ticketing::ReservationService::createReservation(ticketing::CreateReservationInput, Completion) const':
+/phase19-src/src/services/ReservationService.cpp:94:9: warning: missing initializer for member 'ticketing::CreateReservationResult::admissionResponse' [-Wmissing-field-initializers]
+   94 |         });
+      |         ^
+/phase19-src/src/services/ReservationService.cpp: In lambda function:
+/phase19-src/src/services/ReservationService.cpp:154:28: warning: missing initializer for member 'ticketing::CreateReservationResult::admissionResponse' [-Wmissing-field-initializers]
+  154 |                            });
+      |                            ^
+/phase19-src/src/services/ReservationService.cpp:175:24: warning: missing initializer for member 'ticketing::CreateReservationResult::admissionResponse' [-Wmissing-field-initializers]
+  175 |                        });
+      |                        ^
+/phase19-src/src/services/ReservationService.cpp:183:20: warning: missing initializer for member 'ticketing::CreateReservationResult::admissionResponse' [-Wmissing-field-initializers]
+  183 |                    });
+      |                    ^
+/phase19-src/src/services/ReservationService.cpp: In lambda function:
+/phase19-src/src/services/ReservationService.cpp:190:20: warning: missing initializer for member 'ticketing::CreateReservationResult::admissionResponse' [-Wmissing-field-initializers]
+  190 |                    });
+      |                    ^
+/phase19-src/src/services/ReservationService.cpp: In lambda function:
+/phase19-src/src/services/ReservationService.cpp:209:24: warning: missing initializer for member 'ticketing::CreateReservationResult::admissionResponse' [-Wmissing-field-initializers]
+  209 |                        });
+      |                        ^
+/phase19-src/src/services/ReservationService.cpp: In lambda function:
+/phase19-src/src/services/ReservationService.cpp:437:20: warning: missing initializer for member 'ticketing::CreateReservationResult::admissionResponse' [-Wmissing-field-initializers]
+[ 73%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/RefundRepository.cpp.o
+[ 74%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/RefundService.cpp.o
+[ 74%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/RefundLifecycleService.cpp.o
+[ 75%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/OrderController.cpp.o
+[ 75%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/PaymentController.cpp.o
+[ 75%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/StripeWebhookController.cpp.o
+[ 76%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/NotificationController.cpp.o
+[ 76%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/OrderRepository.cpp.o
+  437 |                    });
+      |                    ^
+/phase19-src/src/services/ReservationService.cpp:444:16: warning: missing initializer for member 'ticketing::CreateReservationResult::admissionResponse' [-Wmissing-field-initializers]
+  444 |                });
+      |                ^
+/phase19-src/src/services/ReservationService.cpp: In static member function 'static void ticketing::ReservationService::fail(const std::shared_ptr<FlowState>&, ticketing::CreateReservationOutcome)':
+/phase19-src/src/services/ReservationService.cpp:467:12: warning: missing initializer for member 'ticketing::CreateReservationResult::admissionResponse' [-Wmissing-field-initializers]
+  467 |            });
+      |            ^
+[ 77%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/PaymentRepository.cpp.o
+[ 77%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/ProviderEventRepository.cpp.o
+[ 78%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/NotificationRepository.cpp.o
+[ 78%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/OrderService.cpp.o
+/phase19-src/src/repositories/OrderRepository.cpp: In lambda function:
+/phase19-src/src/repositories/OrderRepository.cpp:127:13: warning: missing initializer for member 'ticketing::TicketOrder::buyerRefund' [-Wmissing-field-initializers]
+  127 |             };
+      |             ^
+/phase19-src/src/repositories/OrderRepository.cpp:127:13: warning: missing initializer for member 'ticketing::TicketOrder::refundEligibility' [-Wmissing-field-initializers]
+/phase19-src/src/repositories/OrderRepository.cpp: In lambda function:
+[ 79%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/OrderLifecycleService.cpp.o
+/phase19-src/src/repositories/OrderRepository.cpp:213:21: warning: missing initializer for member 'ticketing::TicketOrder::buyerRefund' [-Wmissing-field-initializers]
+  213 |                     });
+      |                     ^
+/phase19-src/src/repositories/OrderRepository.cpp:213:21: warning: missing initializer for member 'ticketing::TicketOrder::refundEligibility' [-Wmissing-field-initializers]
+[ 79%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/PaymentSimulation.cpp.o
+[ 79%] Building CXX object CMakeFiles/ticketing_backend.dir/src/payments/SimulationPaymentProvider.cpp.o
+[ 80%] Building CXX object CMakeFiles/ticketing_backend.dir/src/payments/StripeConfig.cpp.o
+[ 80%] Building CXX object CMakeFiles/ticketing_backend.dir/src/payments/StripePaymentProvider.cpp.o
+/phase19-src/src/services/OrderService.cpp: In member function 'void ticketing::OrderService::cancelOrder(const std::string&, const std::string&, std::function<void(ticketing::CancelOrderResult)>) const':
+/phase19-src/src/services/OrderService.cpp:104:19: warning: missing initializer for member 'ticketing::CancelOrderResult::disposition' [-Wmissing-field-initializers]
+  104 |         completion({CancelOrderOutcome::InvalidArgument, std::nullopt});
+      |         ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/OrderService.cpp: In lambda function:
+/phase19-src/src/services/OrderService.cpp:128:41: warning: missing initializer for member 'ticketing::CancelOrderResult::disposition' [-Wmissing-field-initializers]
+  128 |                         (*completionPtr)({CancelOrderOutcome::InternalError,
+      |                         ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  129 |                                           std::nullopt});
+      |                                           ~~~~~~~~~~~~~~
+/phase19-src/src/services/OrderService.cpp: In lambda function:
+/phase19-src/src/services/OrderService.cpp:140:29: warning: missing initializer for member 'ticketing::CancelOrderResult::disposition' [-Wmissing-field-initializers]
+  140 |             (*completionPtr)({mapped, std::nullopt});
+      |             ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/payments/SimulationPaymentProvider.cpp: In member function 'virtual void ticketing::SimulationPaymentProvider::createOrRecoverPayment(ticketing::CreatePaymentRequest, ticketing::PaymentProvider::PaymentCompletion)':
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:23:69: warning: missing initializer for member 'ticketing::ProviderPayment::clientSecret' [-Wmissing-field-initializers]
+   23 |                                       .providerStatus = "processing"};
+      |                                                                     ^
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:23:69: warning: missing initializer for member 'ticketing::ProviderPayment::failureCode' [-Wmissing-field-initializers]
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:23:69: warning: missing initializer for member 'ticketing::ProviderPayment::failureMessage' [-Wmissing-field-initializers]
+/phase19-src/src/payments/SimulationPaymentProvider.cpp: In lambda function:
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:34:53: warning: missing initializer for member 'ticketing::ProviderPayment::clientSecret' [-Wmissing-field-initializers]
+   34 |                                     .terminal = true};
+      |                                                     ^
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:34:53: warning: missing initializer for member 'ticketing::ProviderPayment::failureCode' [-Wmissing-field-initializers]
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:34:53: warning: missing initializer for member 'ticketing::ProviderPayment::failureMessage' [-Wmissing-field-initializers]
+/phase19-src/src/payments/SimulationPaymentProvider.cpp: In member function 'virtual void ticketing::SimulationPaymentProvider::createOrRecoverRefund(ticketing::CreateRefundRequest, ticketing::PaymentProvider::RefundCompletion)':
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:54:43: warning: missing initializer for member 'ticketing::ProviderRefund::failureCode' [-Wmissing-field-initializers]
+   54 |                           .terminal = true};
+      |                                           ^
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:54:43: warning: missing initializer for member 'ticketing::ProviderRefund::failureMessage' [-Wmissing-field-initializers]
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:54:43: warning: missing initializer for member 'ticketing::ProviderRefund::providerPaymentId' [-Wmissing-field-initializers]
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:54:43: warning: missing initializer for member 'ticketing::ProviderRefund::localRefundId' [-Wmissing-field-initializers]
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:54:43: warning: missing initializer for member 'ticketing::ProviderRefund::orderId' [-Wmissing-field-initializers]
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:54:43: warning: missing initializer for member 'ticketing::ProviderRefund::currency' [-Wmissing-field-initializers]
+/phase19-src/src/payments/SimulationPaymentProvider.cpp: In member function 'virtual void ticketing::SimulationPaymentProvider::retrieveRefund(ticketing::RetrieveRefundRequest, ticketing::PaymentProvider::RefundCompletion)':
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:73:43: warning: missing initializer for member 'ticketing::ProviderRefund::failureCode' [-Wmissing-field-initializers]
+   73 |                           .terminal = true};
+      |                                           ^
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:73:43: warning: missing initializer for member 'ticketing::ProviderRefund::failureMessage' [-Wmissing-field-initializers]
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:73:43: warning: missing initializer for member 'ticketing::ProviderRefund::providerPaymentId' [-Wmissing-field-initializers]
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:73:43: warning: missing initializer for member 'ticketing::ProviderRefund::localRefundId' [-Wmissing-field-initializers]
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:73:43: warning: missing initializer for member 'ticketing::ProviderRefund::orderId' [-Wmissing-field-initializers]
+/phase19-src/src/payments/SimulationPaymentProvider.cpp:73:43: warning: missing initializer for member 'ticketing::ProviderRefund::currency' [-Wmissing-field-initializers]
+/phase19-src/src/payments/StripePaymentProvider.cpp: In static member function 'static ticketing::ProviderResult<ticketing::ProviderPayment> ticketing::StripePaymentProvider::mapPayment(const Json::Value&, const ticketing::CreatePaymentRequest&)':
+/phase19-src/src/payments/StripePaymentProvider.cpp:149:78: warning: missing initializer for member 'ticketing::ProviderPayment::failureCode' [-Wmissing-field-initializers]
+  149 |                             .clientSecret = jsonString(json, "client_secret")};
+      |                                                                              ^
+/phase19-src/src/payments/StripePaymentProvider.cpp:149:78: warning: missing initializer for member 'ticketing::ProviderPayment::failureMessage' [-Wmissing-field-initializers]
+[ 81%] Building CXX object CMakeFiles/ticketing_backend.dir/src/payments/StripeWebhookVerifier.cpp.o
+/phase19-src/src/payments/StripePaymentProvider.cpp: In static member function 'static ticketing::ProviderResult<ticketing::ProviderRefund> ticketing::StripePaymentProvider::mapRefund(const Json::Value&, const ticketing::CreateRefundRequest&)':
+/phase19-src/src/payments/StripePaymentProvider.cpp:197:70: warning: missing initializer for member 'ticketing::ProviderRefund::failureCode' [-Wmissing-field-initializers]
+  197 |                           .providerStatus = json["status"].asString()};
+      |                                                                      ^
+/phase19-src/src/payments/StripePaymentProvider.cpp:197:70: warning: missing initializer for member 'ticketing::ProviderRefund::failureMessage' [-Wmissing-field-initializers]
+/phase19-src/src/payments/StripePaymentProvider.cpp:197:70: warning: missing initializer for member 'ticketing::ProviderRefund::providerPaymentId' [-Wmissing-field-initializers]
+[ 81%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/PaymentService.cpp.o
+[ 82%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/PaymentReconciliationService.cpp.o
+[ 82%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/NotificationService.cpp.o
+[ 82%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/OrderExpiryService.cpp.o
+[ 83%] Building CXX object CMakeFiles/ticketing_backend.dir/src/workers/OrderExpiryWorker.cpp.o
+[ 83%] Building CXX object CMakeFiles/ticketing_backend.dir/src/workers/PaymentReconciliationWorker.cpp.o
+[ 84%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/CheckoutSessionController.cpp.o
+[ 84%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/CheckoutSessionRepository.cpp.o
+/phase19-src/src/payments/StripePaymentProvider.cpp:197:70: warning: missing initializer for member 'ticketing::ProviderRefund::localRefundId' [-Wmissing-field-initializers]
+/phase19-src/src/payments/StripePaymentProvider.cpp:197:70: warning: missing initializer for member 'ticketing::ProviderRefund::orderId' [-Wmissing-field-initializers]
+/phase19-src/src/payments/StripePaymentProvider.cpp:197:70: warning: missing initializer for member 'ticketing::ProviderRefund::currency' [-Wmissing-field-initializers]
+/phase19-src/src/services/PaymentService.cpp: In member function 'void ticketing::PaymentService::handleProviderResult(const std::shared_ptr<StartState>&, ticketing::StartPaymentOutcome, ticketing::ProviderResult<ticketing::ProviderPayment>) const':
+/phase19-src/src/services/PaymentService.cpp:311:100: warning: missing initializer for member 'ticketing::PaymentTerminalSnapshot::leaseToken' [-Wmissing-field-initializers]
+  311 |             .failureReason = payment.failureCode.value_or("PROVIDER_PAYMENT_FAILED").substr(0, 200)};
+[ 85%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/CheckoutSessionService.cpp.o
+[ 85%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/SeatHoldService.cpp.o
+      |                                                                                                    ^
+/phase19-src/src/controllers/CheckoutSessionController.cpp: In member function 'void CheckoutSessionController::create(const drogon::HttpRequestPtr&, std::function<void(const std::shared_ptr<drogon::HttpResponse>&)>&&) const':
+/phase19-src/src/controllers/CheckoutSessionController.cpp:123:16: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+  123 |         respond(callbackPtr,
+      |         ~~~~~~~^~~~~~~~~~~~~
+  124 |                 {ticketing::CheckoutSessionOutcome::InvalidArgument,
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  125 |                  std::nullopt});
+      |                  ~~~~~~~~~~~~~~
+/phase19-src/src/controllers/CheckoutSessionController.cpp:123:16: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/controllers/CheckoutSessionController.cpp: In member function 'void CheckoutSessionController::replaceSeats(const drogon::HttpRequestPtr&, std::function<void(const std::shared_ptr<drogon::HttpResponse>&)>&&, std::string) const':
+/phase19-src/src/controllers/CheckoutSessionController.cpp:203:16: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+  203 |         respond(callbackPtr,
+      |         ~~~~~~~^~~~~~~~~~~~~
+  204 |                 {ticketing::CheckoutSessionOutcome::InvalidArgument,
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  205 |                  std::nullopt});
+      |                  ~~~~~~~~~~~~~~
+/phase19-src/src/controllers/CheckoutSessionController.cpp:203:16: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In function 'void ticketing::{anonymous}::admissionFailure(const std::shared_ptr<_Tp>&, const drogon::HttpResponsePtr&)':
+/phase19-src/src/services/CheckoutSessionService.cpp:94:2: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   94 |  if(state->finished)return;state->finished=true;
+      |  ^~
+/phase19-src/src/services/CheckoutSessionService.cpp:94:28: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   94 |  if(state->finished)return;state->finished=true;
+      |                            ^~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp: In member function 'void ticketing::CheckoutSessionService::create(std::string, Json::Value, Completion) const':
+/phase19-src/src/services/CheckoutSessionService.cpp:174:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+  174 |         completion({CheckoutSessionOutcome::InvalidArgument, std::nullopt});
+      |         ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:174:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp:180:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+  180 |         completion({CheckoutSessionOutcome::InvalidArgument, std::nullopt});
+      |         ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:180:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In lambda function:
+/phase19-src/src/services/CheckoutSessionService.cpp:323:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+  323 |         completion({CheckoutSessionOutcome::Created,
+      |         ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  324 |                     std::move(state->record.value)});
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:323:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In member function 'void ticketing::CheckoutSessionService::replaceSeats(std::string, std::string, Json::Value, Completion) const':
+/phase19-src/src/services/CheckoutSessionService.cpp:347:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+  347 |         completion({CheckoutSessionOutcome::InvalidArgument, std::nullopt});
+      |         ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:347:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In lambda function:
+/phase19-src/src/services/CheckoutSessionService.cpp:574:23: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+  574 |             completion({CheckoutSessionOutcome::Updated,
+      |             ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  575 |                         std::move(state->record.value)});
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:574:23: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In member function 'void ticketing::CheckoutSessionService::get(std::string, std::string, Completion) const':
+/phase19-src/src/services/CheckoutSessionService.cpp:585:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+  585 |         completion({CheckoutSessionOutcome::InvalidArgument, std::nullopt});
+      |         ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:585:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In lambda function:
+/phase19-src/src/services/CheckoutSessionService.cpp:599:33: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+  599 |                 (*completionPtr)(
+      |                 ~~~~~~~~~~~~~~~~^
+  600 |                     {CheckoutSessionOutcome::NotFound, std::nullopt});
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:599:33: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In lambda function:
+/phase19-src/src/services/CheckoutSessionService.cpp:608:29: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+  608 |             (*completionPtr)(
+      |             ~~~~~~~~~~~~~~~~^
+  609 |                 {CheckoutSessionOutcome::InternalError, std::nullopt});
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:608:29: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In member function 'void ticketing::CheckoutSessionService::confirm(std::string, std::string, Completion) const':
+/phase19-src/src/services/CheckoutSessionService.cpp:652:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+  652 |         completion({CheckoutSessionOutcome::InvalidArgument, std::nullopt});
+      |         ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:652:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In lambda function:
+/phase19-src/src/services/CheckoutSessionService.cpp:848:27: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+  848 |                 completion({state->businessFailure,std::nullopt});
+      |                 ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:848:27: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In lambda function:
+/phase19-src/src/services/CheckoutSessionService.cpp:963:35: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+  963 |                         completion({CheckoutSessionOutcome::Confirmed,
+      |                         ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  964 |                                     std::move(state->record.value),
+      |                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  965 |                                     state->disposition});
+      |                                     ~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp: In lambda function:
+/phase19-src/src/services/CheckoutSessionService.cpp:1021:27: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+ 1021 |                 completion({CheckoutSessionOutcome::Confirmed,
+      |                 ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 1022 |                             std::move(state->record.value),
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 1023 |                             state->disposition});
+      |                             ~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp: In lambda function:
+/phase19-src/src/services/CheckoutSessionService.cpp:1066:27: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+ 1066 |                 completion({state->businessFailure, std::nullopt});
+      |                 ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:1066:27: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In lambda function:
+/phase19-src/src/services/CheckoutSessionService.cpp:1125:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+ 1125 |         completion({state->businessFailure, std::nullopt});
+      |         ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:1125:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In member function 'void ticketing::CheckoutSessionService::resolveRecord(ticketing::CheckoutSessionRecord, ticketing::CheckoutSessionOutcome, Completion) const':
+/phase19-src/src/services/CheckoutSessionService.cpp:1139:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+ 1139 |         completion({successOutcome, std::move(record.value)});
+      |         ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:1139:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp:1144:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+ 1144 |         completion({CheckoutSessionOutcome::InternalError, std::nullopt});
+      |         ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:1144:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In member function 'void ticketing::CheckoutSessionService::resolveFoundFormalResult(const std::shared_ptr<ResolveState>&, std::optional<ticketing::ReservationResult>) const':
+/phase19-src/src/services/CheckoutSessionService.cpp:1172:23: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+ 1172 |             completion({state->successOutcome,
+      |             ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+ 1173 |                         std::move(state->record.value)});
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:1172:23: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In lambda function:
+/phase19-src/src/services/CheckoutSessionService.cpp:1296:23: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+ 1296 |             completion({state->successOutcome, std::move(state->record.value)});
+      |             ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:1296:23: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In member function 'void ticketing::CheckoutSessionService::abandon(std::string, std::string, Completion) const':
+/phase19-src/src/services/CheckoutSessionService.cpp:1306:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+ 1306 |         completion({CheckoutSessionOutcome::InvalidArgument, std::nullopt});
+      |         ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:1306:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In lambda function:
+/phase19-src/src/services/CheckoutSessionService.cpp:1346:27: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+ 1346 |                 completion({CheckoutSessionOutcome::Abandoned,
+      |                 ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 1347 |                             std::move(state->record.value)});
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:1346:27: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In lambda function:
+/phase19-src/src/services/CheckoutSessionService.cpp:1408:27: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+ 1408 |                 completion({CheckoutSessionOutcome::Abandoned,
+      |                 ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 1409 |                             std::move(state->record.value)});
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:1408:27: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In lambda function:
+/phase19-src/src/services/CheckoutSessionService.cpp:1454:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+ 1454 |         completion({outcome, std::nullopt});
+      |         ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:1454:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In lambda function:
+/phase19-src/src/services/CheckoutSessionService.cpp:1485:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+ 1485 |         completion({outcome, std::nullopt});
+      |         ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:1485:19: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In static member function 'static void ticketing::CheckoutSessionService::failConfirm(const std::shared_ptr<ConfirmState>&, ticketing::CheckoutSessionOutcome)':
+/phase19-src/src/services/CheckoutSessionService.cpp:1515:15: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+ 1515 |     completion({outcome, std::nullopt});
+      |     ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:1515:15: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In static member function 'static void ticketing::CheckoutSessionService::failResolve(const std::shared_ptr<ResolveState>&)':
+/phase19-src/src/services/CheckoutSessionService.cpp:1532:15: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+ 1532 |     completion({CheckoutSessionOutcome::InternalError, std::nullopt});
+      |     ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:1532:15: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+/phase19-src/src/services/CheckoutSessionService.cpp: In static member function 'static void ticketing::CheckoutSessionService::failAbandon(const std::shared_ptr<AbandonState>&, ticketing::CheckoutSessionOutcome)':
+/phase19-src/src/services/CheckoutSessionService.cpp:1550:15: warning: missing initializer for member 'ticketing::CheckoutSessionResult::disposition' [-Wmissing-field-initializers]
+ 1550 |     completion({outcome, std::nullopt});
+      |     ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/CheckoutSessionService.cpp:1550:15: warning: missing initializer for member 'ticketing::CheckoutSessionResult::admissionResponse' [-Wmissing-field-initializers]
+[ 86%] Building CXX object CMakeFiles/ticketing_backend.dir/src/security/AuthConfig.cpp.o
+[ 86%] Building CXX object CMakeFiles/ticketing_backend.dir/src/security/Crypto.cpp.o
+[ 86%] Building CXX object CMakeFiles/ticketing_backend.dir/src/security/PasswordHasher.cpp.o
+[ 87%] Building CXX object CMakeFiles/ticketing_backend.dir/src/security/PasswordHashExecutor.cpp.o
+[ 87%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/UserRepository.cpp.o
+[ 88%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/UserSessionRepository.cpp.o
+/phase19-src/src/services/AuthService.cpp: In member function 'void ticketing::AuthService::login(std::string, std::string, std::string, std::function<void(ticketing::LoginResult)>) const':
+[ 88%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/AuthSessionCache.cpp.o
+[ 89%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/AuthSessionService.cpp.o
+[ 89%] Building CXX object CMakeFiles/ticketing_backend.dir/src/security/AuthHttp.cpp.o
+[ 90%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/LoginRateLimiter.cpp.o
+[ 90%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/AuthService.cpp.o
+/phase19-src/src/services/AuthService.cpp:63:16: warning: missing initializer for member 'ticketing::LoginResult::session' [-Wmissing-field-initializers]
+   63 |         (*done)({LoginOutcome::InvalidArgument});
+      |         ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/AuthService.cpp:63:16: warning: missing initializer for member 'ticketing::LoginResult::rawToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp:63:16: warning: missing initializer for member 'ticketing::LoginResult::csrfToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp: In lambda function:
+/phase19-src/src/services/AuthService.cpp:72:24: warning: missing initializer for member 'ticketing::LoginResult::session' [-Wmissing-field-initializers]
+   72 |                 (*done)({LoginOutcome::TooManyAttempts});
+      |                 ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/AuthService.cpp:72:24: warning: missing initializer for member 'ticketing::LoginResult::rawToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp:72:24: warning: missing initializer for member 'ticketing::LoginResult::csrfToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp: In lambda function:
+/phase19-src/src/services/AuthService.cpp:92:53: warning: missing initializer for member 'ticketing::LoginResult::session' [-Wmissing-field-initializers]
+   92 |                                     [done] { (*done)({LoginOutcome::InvalidCredentials}); });
+      |                                              ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/AuthService.cpp:92:53: warning: missing initializer for member 'ticketing::LoginResult::rawToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp:92:53: warning: missing initializer for member 'ticketing::LoginResult::csrfToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp: In lambda function:
+/phase19-src/src/services/AuthService.cpp:112:52: warning: missing initializer for member 'ticketing::LoginResult::session' [-Wmissing-field-initializers]
+  112 |                                             (*done)({LoginOutcome::Unavailable});
+      |                                             ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/AuthService.cpp:112:52: warning: missing initializer for member 'ticketing::LoginResult::rawToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp:112:52: warning: missing initializer for member 'ticketing::LoginResult::csrfToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp: In lambda function:
+/phase19-src/src/services/AuthService.cpp:122:53: warning: missing initializer for member 'ticketing::LoginResult::session' [-Wmissing-field-initializers]
+  122 |                                     [done] { (*done)({LoginOutcome::Unavailable}); });
+      |                                              ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/AuthService.cpp:122:53: warning: missing initializer for member 'ticketing::LoginResult::rawToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp:122:53: warning: missing initializer for member 'ticketing::LoginResult::csrfToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp: In lambda function:
+/phase19-src/src/services/AuthService.cpp:126:40: warning: missing initializer for member 'ticketing::LoginResult::session' [-Wmissing-field-initializers]
+  126 |                                 (*done)({LoginOutcome::Unavailable});
+      |                                 ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/AuthService.cpp:126:40: warning: missing initializer for member 'ticketing::LoginResult::rawToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp:126:40: warning: missing initializer for member 'ticketing::LoginResult::csrfToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp: In lambda function:
+/phase19-src/src/services/AuthService.cpp:129:41: warning: missing initializer for member 'ticketing::LoginResult::session' [-Wmissing-field-initializers]
+  129 |                     if (!queued) (*done)({LoginOutcome::Busy});
+      |                                  ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/AuthService.cpp:129:41: warning: missing initializer for member 'ticketing::LoginResult::rawToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp:129:41: warning: missing initializer for member 'ticketing::LoginResult::csrfToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp: In lambda function:
+/phase19-src/src/services/AuthService.cpp:131:33: warning: missing initializer for member 'ticketing::LoginResult::session' [-Wmissing-field-initializers]
+  131 |                 [done] { (*done)({LoginOutcome::Unavailable}); });
+      |                          ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/phase19-src/src/services/AuthService.cpp:131:33: warning: missing initializer for member 'ticketing::LoginResult::rawToken' [-Wmissing-field-initializers]
+/phase19-src/src/services/AuthService.cpp:131:33: warning: missing initializer for member 'ticketing::LoginResult::csrfToken' [-Wmissing-field-initializers]
+[ 90%] Building CXX object CMakeFiles/ticketing_backend.dir/src/filters/AdminFilter.cpp.o
+[ 91%] Building CXX object CMakeFiles/ticketing_backend.dir/src/filters/AuthFilter.cpp.o
+[ 91%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/AuthController.cpp.o
+[ 92%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/CheckoutOwnershipCache.cpp.o
+[ 92%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/SeatAvailabilityReadModel.cpp.o
+[ 93%] Building CXX object CMakeFiles/ticketing_backend.dir/src/workers/SeatAvailabilityProjectionWorker.cpp.o
+[ 93%] Building CXX object CMakeFiles/ticketing_backend.dir/src/admin/AdminCatalog.cpp.o
+[ 93%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/AdminVenueRepository.cpp.o
+[ 94%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/AdminVenueService.cpp.o
+[ 94%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/AdminVenueController.cpp.o
+[ 95%] Building CXX object CMakeFiles/ticketing_backend.dir/src/repositories/AdminEventRepository.cpp.o
+[ 95%] Building CXX object CMakeFiles/ticketing_backend.dir/src/services/AdminEventService.cpp.o
+[ 96%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/AdminEventController.cpp.o
+[ 96%] Building CXX object CMakeFiles/ticketing_backend.dir/src/admission/AdmissionPolicy.cpp.o
+[ 97%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/AdmissionPolicyController.cpp.o
+[ 97%] Building CXX object CMakeFiles/ticketing_backend.dir/src/admission/RedisAdmissionStore.cpp.o
+[ 97%] Building CXX object CMakeFiles/ticketing_backend.dir/src/admission/AdmissionRuntime.cpp.o
+[ 98%] Building CXX object CMakeFiles/ticketing_backend.dir/src/filters/AdmissionReadFilter.cpp.o
+[ 98%] Building CXX object CMakeFiles/ticketing_backend.dir/src/admission/AdmissionService.cpp.o
+[ 99%] Building CXX object CMakeFiles/ticketing_backend.dir/src/controllers/AdmissionController.cpp.o
+[ 99%] Building CXX object CMakeFiles/ticketing_backend.dir/src/admission/TrafficControl.cpp.o
+[100%] Linking CXX executable ticketing_backend
+[100%] Built target ticketing_backend
+Internal ctest changing into directory: /phase19-build
+Test project /phase19-build
+      Start  1: phase12_source_contract
+ 1/36 Test  #1: phase12_source_contract ....................   Passed    0.17 sec
+      Start  2: schema_contract
+ 2/36 Test  #2: schema_contract ............................   Passed    0.09 sec
+      Start  3: read_api_source_contract
+ 3/36 Test  #3: read_api_source_contract ...................   Passed    0.11 sec
+      Start  4: phase3_schema_contract
+ 4/36 Test  #4: phase3_schema_contract .....................   Passed    0.08 sec
+      Start  5: reservation_source_contract
+ 5/36 Test  #5: reservation_source_contract ................   Passed    0.10 sec
+      Start  6: order_source_contract
+ 6/36 Test  #6: order_source_contract ......................   Passed    0.08 sec
+      Start  7: order_expiry_source_contract
+ 7/36 Test  #7: order_expiry_source_contract ...............   Passed    0.12 sec
+      Start  8: phase5_schema_contract
+ 8/36 Test  #8: phase5_schema_contract .....................   Passed    0.11 sec
+      Start  9: checkout_session_source_contract
+ 9/36 Test  #9: checkout_session_source_contract ...........   Passed    0.14 sec
+      Start 10: seat_hold_source_contract
+10/36 Test #10: seat_hold_source_contract ..................   Passed    0.10 sec
+      Start 11: seat_split_source_contract
+11/36 Test #11: seat_split_source_contract .................   Passed    0.10 sec
+      Start 12: phase8_schema_contract
+12/36 Test #12: phase8_schema_contract .....................   Passed    0.10 sec
+      Start 13: order_lifecycle_source_contract
+13/36 Test #13: order_lifecycle_source_contract ............   Passed    0.09 sec
+      Start 14: payment_source_contract
+14/36 Test #14: payment_source_contract ....................   Passed    0.11 sec
+      Start 15: phase9_auth_schema_contract
+15/36 Test #15: phase9_auth_schema_contract ................   Passed    0.10 sec
+      Start 16: auth_core_source_contract
+16/36 Test #16: auth_core_source_contract ..................   Passed    0.09 sec
+      Start 17: auth_http_source_contract
+17/36 Test #17: auth_http_source_contract ..................   Passed    0.10 sec
+      Start 18: authenticated_routes_source_contract
+18/36 Test #18: authenticated_routes_source_contract .......   Passed    0.13 sec
+      Start 19: order_recovery_source_contract
+19/36 Test #19: order_recovery_source_contract .............   Passed    0.10 sec
+      Start 20: operation_disposition_source_contract
+20/36 Test #20: operation_disposition_source_contract ......   Passed    0.09 sec
+      Start 21: performance_metrics_source_contract
+21/36 Test #21: performance_metrics_source_contract ........   Passed    0.10 sec
+      Start 22: phase11_payment_provider_source_contract
+22/36 Test #22: phase11_payment_provider_source_contract ...   Passed    0.12 sec
+      Start 23: phase11_schema_contract
+23/36 Test #23: phase11_schema_contract ....................   Passed    0.08 sec
+      Start 24: stripe_config_unit
+24/36 Test #24: stripe_config_unit .........................   Passed    0.00 sec
+      Start 25: stripe_webhook_verifier_unit
+25/36 Test #25: stripe_webhook_verifier_unit ...............   Passed    0.00 sec
+      Start 26: password_hash_executor_unit
+26/36 Test #26: password_hash_executor_unit ................   Passed    0.10 sec
+      Start 27: seat_map_compute_executor_unit
+27/36 Test #27: seat_map_compute_executor_unit .............   Passed    0.00 sec
+      Start 28: seat_display_status_unit
+28/36 Test #28: seat_display_status_unit ...................   Passed    0.00 sec
+      Start 29: phase14_observation_unit
+29/36 Test #29: phase14_observation_unit ...................   Passed    0.00 sec
+      Start 30: phase14_metrics_source_contract
+30/36 Test #30: phase14_metrics_source_contract ............   Passed    0.16 sec
+      Start 31: phase16_source_contract
+31/36 Test #31: phase16_source_contract ....................***Failed    0.11 sec
+test_all_fresh_database_stacks_install_phase16_before_seed (__main__.Phase16Contract.test_all_fresh_database_stacks_install_phase16_before_seed) ... ERROR
+test_config_variants_preserve_existing_capacity (__main__.Phase16Contract.test_config_variants_preserve_existing_capacity) ... ok
+test_migration_is_additive_and_atomic (__main__.Phase16Contract.test_migration_is_additive_and_atomic) ... ok
+test_worker_lease_and_atomic_model_boundaries (__main__.Phase16Contract.test_worker_lease_and_atomic_model_boundaries) ... ok
+
+======================================================================
+ERROR: test_all_fresh_database_stacks_install_phase16_before_seed (__main__.Phase16Contract.test_all_fresh_database_stacks_install_phase16_before_seed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/phase19-src/tests/phase16_source_contract_test.py", line 18, in test_all_fresh_database_stacks_install_phase16_before_seed
+    text=path.read_text(encoding='utf-8')
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1029, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/phase19-src/../performance/docker-compose.performance.yml'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.043s
+
+FAILED (errors=1)
+
+      Start 32: phase15_source_contract
+32/36 Test #32: phase15_source_contract ....................***Failed    0.10 sec
+test_fresh_init_installs_window_before_seed (__main__.SalesContracts.test_fresh_init_installs_window_before_seed) ... ERROR
+test_gate_uses_one_database_clock_without_global_write_lock (__main__.SalesContracts.test_gate_uses_one_database_clock_without_global_write_lock) ... ok
+test_hold_ttl_and_checkout_close_preserve_phase16_and_key_fences (__main__.SalesContracts.test_hold_ttl_and_checkout_close_preserve_phase16_and_key_fences) ... ok
+test_read_fields_remain_independent_of_static_status (__main__.SalesContracts.test_read_fields_remain_independent_of_static_status) ... ok
+
+======================================================================
+ERROR: test_fresh_init_installs_window_before_seed (__main__.SalesContracts.test_fresh_init_installs_window_before_seed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/phase19-src/tests/phase15_source_contract_test.py", line 12, in test_fresh_init_installs_window_before_seed
+    s=(ROOT/path).read_text(encoding='utf-8')
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1029, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/phase19-src/../performance/docker-compose.performance.yml'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.021s
+
+FAILED (errors=1)
+
+      Start 33: phase17_source_contract
+33/36 Test #33: phase17_source_contract ....................***Failed    0.12 sec
+test_active_validation_returns_role_in_same_query (__main__.Phase17SourceTest.test_active_validation_returns_role_in_same_query) ... ok
+test_admin_probe_is_opt_in (__main__.Phase17SourceTest.test_admin_probe_is_opt_in) ... ok
+test_filter_only_uses_verified_context (__main__.Phase17SourceTest.test_filter_only_uses_verified_context) ... ok
+test_initdb_order (__main__.Phase17SourceTest.test_initdb_order) ... ERROR
+test_zone_runtime_has_one_source_and_explicit_order (__main__.Phase17SourceTest.test_zone_runtime_has_one_source_and_explicit_order) ... ok
+
+======================================================================
+ERROR: test_initdb_order (__main__.Phase17SourceTest.test_initdb_order)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/phase19-src/tests/phase17_source_contract_test.py", line 28, in test_initdb_order
+    source=(ROOT/name).read_text()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1029, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/phase19-src/../performance/docker-compose.performance.yml'
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.029s
+
+FAILED (errors=1)
+
+      Start 34: phase17_config_unit
+34/36 Test #34: phase17_config_unit ........................   Passed    0.01 sec
+      Start 35: phase18_policy_unit
+35/36 Test #35: phase18_policy_unit ........................   Passed    0.01 sec
+      Start 36: phase18_bulkhead_unit
+36/36 Test #36: phase18_bulkhead_unit ......................   Passed    0.00 sec
+
+92% tests passed, 3 tests failed out of 36
+
+Total Test time (real) =   3.08 sec
+
+The following tests FAILED:
+	 31 - phase16_source_contract (Failed)
+	 32 - phase15_source_contract (Failed)
+	 33 - phase17_source_contract (Failed)
+Errors while running CTest

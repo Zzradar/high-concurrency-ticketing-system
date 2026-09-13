@@ -1,0 +1,373 @@
+{
+  "status": "STAGE0_CHECKPOINT_NOT_PHASE19_DELIVERY",
+  "capturedUtc": "2026-09-13T10:27:27.838693+00:00",
+  "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+  "productionTrees": {
+    "backend/src": "1530bcc058a0002760010f604f50697664579fa8",
+    "backend/config": "758d23f2a8168a6e6e3ba7fa44e2ebbd7be54b98",
+    "backend/db/migrations": "027f13b7c52b3156c00921cceadaddb05dbaf5ca",
+    "frontend/src": "5c182d9b7c547562db849c68483e61dcb52d2101",
+    "frontend/public": "a6c8ce8c108948bc23c54e4ac09632691b97f55d"
+  },
+  "priorEvidenceTrees": {
+    "phase16-availability": "5dd878f5669336c723715663ed714fd58872a22b",
+    "phase17-admin-publishing": "bb9e56985e3ae27e2999da3a583680b5009f0830",
+    "phase18-admission-overload": "0caf3c2f3db12159971fb2d9b887a5f365cacf6c"
+  },
+  "binarySha256": "d9082f28bdf8d5bb8312cee40c9e6a79345b559554d4cbd2a301e742fae0bad5",
+  "testCounts": {
+    "phase18_schema_test": 2,
+    "phase18_token_bucket_test": 3,
+    "phase18_waiting_room_test": 7,
+    "phase18_public_contract_test": 2,
+    "phase18_policy_http_test": 7,
+    "phase18_admission_http_test": 5,
+    "phase18_traffic_http_test": 2,
+    "phase18_metrics_http_test": 1,
+    "phase18_layout_http_test": 3,
+    "phase18_layout_revision_http_test": 7,
+    "phase18_layout_resolution_http_test": 1,
+    "phase18_inventory_fault_test": 1,
+    "phase18_checkout_crash_test": 1,
+    "phase18_availability_fault_test": 1,
+    "phase18_verifier_test": 1,
+    "phase11_stripe_integration_test": 11,
+    "phase11_crash_window_integration_test": 11,
+    "phase12_buyer_refund_integration_test": 38,
+    "phase18_multi_instance_test": 1,
+    "phase18_refund_verifier_fixture": 3,
+    "phase15_16_17_off_and_payment": 57,
+    "performance_python_baseline": 262
+  },
+  "ctest": {
+    "passed": 36,
+    "failed": 0
+  },
+  "vitest": {
+    "files": 36,
+    "passed": 288,
+    "failed": 0
+  },
+  "frontendProductionBuild": "PASS",
+  "executedGeneratorProtocol": {
+    "calibrate.py": "83ca70510aeb32736a2d2855e7ea333c25e7ac7789df4a2acaa991e06d115f32",
+    "resource_gate.py": "07869480d7946700e203f821ee65d05e011deac846e4f3fc9476d7e8d9764994",
+    "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+    "workload.js": "3a5a70fabfcc9213e01a17ed0fb8cd6702f76d4fbf7d0cf50742a987e813e395",
+    "policy.mjs": "948e1af86c44926f9a59612b6db29a4fa9b28b6c0404bbd6e96e9ff361411ed3"
+  },
+  "formalABProtocolFrozen": false,
+  "sutCapacityTestsExecuted": false,
+  "productionPollingChangesImplemented": false,
+  "pendingDecision": "Prompt requests Bulkhead OFF; frozen source keeps local Bulkheads active independently of event policy OFF.",
+  "rawArtifacts": [
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_schema_test.log",
+      "sha256": "4a3872d5bc8d2c37e738767139a1bf02e585cef845b6d57ed212e8bdb612fdb4",
+      "bytes": 269
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_token_bucket_test.log",
+      "sha256": "ca519f42adea2a0c241019f2bfa4f42f9f7bba918ef11f91cf9b7012bfa58ac7",
+      "bytes": 336
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_waiting_room_test.log",
+      "sha256": "fc198276861376dc2c54ccb96bb50eb9d775a5aabab32306b59b914332ff49b2",
+      "bytes": 670
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_public_contract_test.log",
+      "sha256": "674ee3a4e3120b9422ce1f6b21512192f99359292a6b292f87980bec757b7e05",
+      "bytes": 317
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_policy_http_test.log",
+      "sha256": "1c2a8fc7436c5f15860517b36e9f9a741ff07e14e24bebb35e2c16bc8842208e",
+      "bytes": 673
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_admission_http_test.log",
+      "sha256": "9477bf18dd44dc85955b5ae6859737be7ae520aaf54b3191767419b14fafa03b",
+      "bytes": 608
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_traffic_http_test-r2.log",
+      "sha256": "f6702bd8dd8343f2a2023b0e48ee52b0aba5f33cc788425369bf1b288d8186f1",
+      "bytes": 469
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_metrics_http_test-r2.log",
+      "sha256": "a349e3db8c0109761a058d574ab3a9c74de29d98c37074cfd1352a848c2db401",
+      "bytes": 296
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_layout_http_test-r2.log",
+      "sha256": "98706ca2bd8935fe03f3aeeb34e24e7b17e514c84e091e8f17407f5cd6c7c6ac",
+      "bytes": 512
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_layout_revision_http_test-r2.log",
+      "sha256": "190a51a70287495beae88609558d3499d8969f4d7185d64c49609d68179cda3c",
+      "bytes": 677
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_layout_resolution_http_test-r2.log",
+      "sha256": "b3a8697f395d86f23d9c0fd3bcf658f7bd9656e2564d0fb93976d26b7690c9ce",
+      "bytes": 195
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_inventory_fault_test-r2.log",
+      "sha256": "fcaeba6a3abc3f765409ad3bc8305e0ca60ecd0a393e7dd05a81c7325b0e9106",
+      "bytes": 371
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_checkout_crash_test-r2.log",
+      "sha256": "9e50143964d26641dc270e807ee38118346b0c6726023ed8c4383803ddb9b2b2",
+      "bytes": 309
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_availability_fault_test-r2.log",
+      "sha256": "c42309eba8ff0ce73bc4eb7c30060db33d6a13f7aad7228327a703622cd72d47",
+      "bytes": 321
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_verifier_test-r2.log",
+      "sha256": "686a90fd999602376591eff5c3fb27658e190d86857eb4ea555ac8208b4fd1b5",
+      "bytes": 179
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-financial-private/phase11_stripe_integration_test.log",
+      "sha256": "feb57a30b8a4a86578b749c78c790203be445f68302cc5a5897fa17e3a7da630",
+      "bytes": 1306
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-financial-private/phase11_crash_window_integration_test.log",
+      "sha256": "54b019d249ff3f37fe52c7a6444ae5d176a095d61c834e8963bd3ed3909f2138",
+      "bytes": 1446
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-financial-private/phase12_buyer_refund_integration_test.log",
+      "sha256": "45b1d40c6aba1d6551aace865431ae92112dcb03220ece7a2756d0a70972423d",
+      "bytes": 2912
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-financial-peer-private/phase18_multi_instance_test.log",
+      "sha256": "0a3d873e196b22111f09ff5b5fa73008670dcbe7b55eba527e2d1899651b9405",
+      "bytes": 360
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-financial-peer-private/phase18_refund_verifier_fixture.log",
+      "sha256": "b4cf984a7863f0e167ebd9b3e763f034c8250cd1e0240cc2d3d0e3cc7923c126",
+      "bytes": 506
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/off-regression-r2.log",
+      "sha256": "3e92a83bd4a6c9b6558464d05e3e1b26fcd190edcca8ebd6b11fffcc39fcfc74",
+      "bytes": 7095
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/build-ctest-r2.log",
+      "sha256": "ca6b37c8a7f2349ce049a9886073fc92bf6d2018899dc382d16927ae3d0c1966",
+      "bytes": 6263
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/ctest-r2.log",
+      "sha256": "fdad274638439ef540187a218769a8f48ea5b824242287d951c57565d8d8000a",
+      "bytes": 35211
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/seed-smoke-result.json",
+      "sha256": "2d6bdb6e6899bde681cca28b373264efea0e0850a707215a6a30dbda582c2c46",
+      "bytes": 852
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/build-ctest-first.log",
+      "sha256": "6ad4cec952cd84c6f9488c8e57b31ad886a831671ee3acd08abf4f97cbcaec27",
+      "bytes": 76111
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/off-regression-r1.log",
+      "sha256": "596bb73cbbd8fd21969c605e455ddd5a8cd1b051c9cf7b345fa510a0107b7479",
+      "bytes": 3509
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-stage0-private/phase18_traffic_http_test.log",
+      "sha256": "922f80d3520d00415e34093d2e24d2ef2c414f6c8bc42941a4fd18e4aa156d14",
+      "bytes": 1185
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-python-baseline.log",
+      "sha256": "ef4b4ad835f414deb1f23ff6ff23b6c11a2d75f62f885799c47f76543325e08d",
+      "bytes": 27664
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-vitest-baseline-authorized.log",
+      "sha256": "be16e5e7f9ee39992f1f6cab9c20d1c9cca66af19525a86ec17120a25c0295e8",
+      "bytes": 323
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-frontend-build-baseline-authorized.log",
+      "sha256": "e552d174412651636de4ba7382a2febd4d4a1d17a8e33ad76e1aa1e2313315db",
+      "bytes": 1142
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-100-r2/identity.json",
+      "sha256": "f8c9d75b092329c571c96f47fc25fe358191a9aad40d7b7be6bd9387b0d604e8",
+      "bytes": 1405
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-100-r2/result.json",
+      "sha256": "71ee128abf4f305813ad6f006f051e67961d31340b452d154e44376d7e04eb89",
+      "bytes": 604
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-100-r2/resource-samples.json",
+      "sha256": "9fa05a092585419839cf3704f6e494f837b4b4c87c887b6104f896b7206eb1f1",
+      "bytes": 37008
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-100-r2/k6-summary.json",
+      "sha256": "aa32a5bc4b503db9dc41645c039ada3fce7dfe84b1daad82bed42403581e5665",
+      "bytes": 6385
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-100-r2/k6.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-100-r2/stub.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-250-r2/identity.json",
+      "sha256": "4c49dac5a6f334659e328abb8556c260319ce722ccf72fde0c8983bb0d86c8e6",
+      "bytes": 1405
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-250-r2/result.json",
+      "sha256": "a2ea0fa6eac47a186d4e316d6c6790f17f28afddd49c60a94cccf7a19c829200",
+      "bytes": 605
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-250-r2/resource-samples.json",
+      "sha256": "dd782db76ceb5818d2caefe75a68b61cf39e04869a50de27a2bbf6d02c509d9b",
+      "bytes": 37000
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-250-r2/k6-summary.json",
+      "sha256": "b08e9bd98e833956d7ff5c9c28b666abca951d51b3c309461d5904297fb5c172",
+      "bytes": 6503
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-250-r2/k6.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-250-r2/stub.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-500-r2/identity.json",
+      "sha256": "76c6bf30e83b68180f09eb1cfbff1973b6118d80451210d16ab72e00e3fd4258",
+      "bytes": 1578
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-500-r2/result.json",
+      "sha256": "0623f86fe3db347ba2cf74d8a24c79da93beba1c339f44aca6c7786a451130ef",
+      "bytes": 607
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-500-r2/resource-samples.json",
+      "sha256": "b307ad75a1986f89acd0cd960503374e79ccc369b31e1df31342d21261da5090",
+      "bytes": 37550
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-500-r2/k6-summary.json",
+      "sha256": "aea02e2ae04ed374a95c34a68ae2c0133225a3d2930c8e2a3b0f661a3b825d6d",
+      "bytes": 6456
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-500-r2/k6.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-500-r2/stub.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-1000-r2/identity.json",
+      "sha256": "5709fe0dfdc2094b5b2230afa7c7fe9adc61124345d75f1e6a6f3987eb181aff",
+      "bytes": 1579
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-1000-r2/result.json",
+      "sha256": "624c3c27eb965543132b98650ba3218968b06e972f8da1f9001256a5c88d0617",
+      "bytes": 613
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-1000-r2/resource-samples.json",
+      "sha256": "cb0e65cacafd4529be1f86d53601529ad96f06ae3b91ad8849945ebc767fa33b",
+      "bytes": 37861
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-1000-r2/k6-summary.json",
+      "sha256": "6eaa1baa12c59d73c4c95ad189952cf89f709f4e9c03818782d6cb6a8b660949",
+      "bytes": 6488
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-1000-r2/k6.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-1000-r2/stub.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-100-r1/identity.json",
+      "sha256": "6aa5ae57d3c6c58462ecff2e02be00a4e394d16e0af77dcab6516467e1e32fb3",
+      "bytes": 1405
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-100-r1/k6-summary.json",
+      "sha256": "f5ddd8b43d46c927f088c3a9cedbfde9c8ba3a4e24a482ddba1f8e3cb07452ed",
+      "bytes": 6314
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-100-r1/k6.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-100-r1/resource-samples.json",
+      "sha256": "3df1683445435fca4a616ff061f4a3f9f1313f05e35269a87ead722898f3a368",
+      "bytes": 34790
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-calibration-100-r1/result.json",
+      "sha256": "44a94ccf67794762359a5353aa690c724bf94a78206bfdd412d765acaf1d200e",
+      "bytes": 544
+    },
+    {
+      "path": "<PRIVATE_OUTPUT_PARENT>/phase19-host.json",
+      "sha256": "50106785f5016d02612b7ea852b8c23ae9d1ea84a00f689a696b1d8a121f3749",
+      "bytes": 304
+    }
+  ],
+  "limitations": [
+    "Generator-only 100/250/500/1000 VUs are not SUT online-user results.",
+    "Resource peaks are sampled. Startup before first resource sample can be missed.",
+    "Full protocol directory grew while preparing unused SUT fixtures; executed five-file generator protocol is identical across retained qualification points.",
+    "Initial 100-VU observation omitted TCP, idle RSS and stderr capture; preserved only in diagnostics.",
+    "2000/3000 generator tiers not run: observed maximum marginal memory predicts exceeding the unchanged 2 GiB generator limit.",
+    "No browser A/B, mixed-load result, propagation latency, cumulative journeys or hotspot result yet."
+  ]
+}

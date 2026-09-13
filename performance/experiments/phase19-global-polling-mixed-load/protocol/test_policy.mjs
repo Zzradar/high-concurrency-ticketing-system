@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import { delayMs, compareCursor, flowKind, validateSync } from './policy.mjs';
+assert.equal(delayMs(5000, 3, 0, () => .5), 20000);
+assert.equal(delayMs(5000, 6, 0, () => 1), 30000);
+assert.equal(delayMs(2000, 0, 0, () => 0), 2000);
+assert.equal(delayMs(2000, 0, 1, () => 0, 20000), 20000);
+assert.equal(compareCursor('18446744073709551615-0', '18446744073709551614-99'), 1);
+assert.equal(compareCursor('1-2', '1-3'), -1);
+assert.throws(() => compareCursor('1', '1-0'));
+assert.deepEqual(Array.from({ length: 10 }, (_, i) => flowKind(i)), ['abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'adjust', 'adjust', 'cancel', 'cancel', 'expiry']);
+const valid = { sessionId: 's', zone: 'z', generation: 'g', cursor: '0-0', mode: 'delta', reset: false, hasMore: false, pollAfterMs: 2000, changes: [] };
+assert.equal(validateSync(valid, 's', 'z'), valid);
+assert.throws(() => validateSync({ ...valid, degraded: true }, 's', 'z'));
+assert.throws(() => validateSync({ ...valid, pollAfterMs: 0 }, 's', 'z'));
+assert.throws(() => validateSync(valid, 'other', 'z'));
+console.log('Phase19 workload policy assertions passed');

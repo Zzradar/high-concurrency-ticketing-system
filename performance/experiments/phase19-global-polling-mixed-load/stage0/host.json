@@ -1,0 +1,13 @@
+{
+  "hostTotalBytes": 33917235200,
+  "cpu": [
+    {
+      "Name": "Intel(R) Core(TM) Ultra 7 255H",
+      "NumberOfLogicalProcessors": 16
+    }
+  ],
+  "dockerCpus": 16,
+  "capturedUtc": "2026-09-13T10:22:56.4924446Z",
+  "hostAvailableBytes": 4492472320,
+  "dockerMemoryBytes": 16548249600
+}
