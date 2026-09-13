@@ -1,0 +1,319 @@
+{
+  "revision": "baseline",
+  "protocolSha256": "a5d6470272c1d126e03a78cb3d46f0edddedccc368141ec00e3a16bedd63a295",
+  "frontendTree": "5c182d9b7c547562db849c68483e61dcb52d2101",
+  "artifacts": {
+    ".openai/hosting.json": {
+      "sha256": "a449f6ac24b26a3447521292f92d3ef86d6ed2a6335d3b8cac2b642663c43f58",
+      "bytes": 66
+    },
+    "assets/adminApi-BzpU8YTP.css": {
+      "sha256": "23601929a91261bfe38d431947d6e01e339d5659441ed1b2eb5c9e9fa4b7c955",
+      "bytes": 2409
+    },
+    "assets/adminApi-D5cVGy_c.js": {
+      "sha256": "7a51f4ef9b0aedfa1ee62877fadbfb2c825b628fab6f7b3f65603f5cde6efadc",
+      "bytes": 2984
+    },
+    "assets/adminDateTime-D-syJO9q.js": {
+      "sha256": "f80aeb7126aafdc3d1ca24ce9fef95b10f367690237dadc098795eac037baf99",
+      "bytes": 805
+    },
+    "assets/AdminEventEditorPage-aMRxyCBY.js": {
+      "sha256": "3459c087118095bac01bacef0528a803fa5ebc690c0625459dda50c80d85c503",
+      "bytes": 12520
+    },
+    "assets/AdminEventListPage-DKbe_hXo.js": {
+      "sha256": "318a2c14569abc73fde5bc2ece1546c2a4cad6869324c8528d18c3f0c6e80f0a",
+      "bytes": 1261
+    },
+    "assets/AdminVenueEditorPage-lz64tfPH.js": {
+      "sha256": "f0f1569771c356d7441cedec9018bf5e5b4ee15f7ba7aa881bad0e3ad0a4a1ae",
+      "bytes": 5262
+    },
+    "assets/AdminVenueListPage-Bew2NI_t.js": {
+      "sha256": "fb9953997e017012b0d120f7e7c49db5e203b58ab382137ca828bfd97c204aed",
+      "bytes": 1379
+    },
+    "assets/index-aoJiY5Nd.js": {
+      "sha256": "74dbd9b2e8b8ddaa6af51431d1748e7d0f7569443419501ab2b5738c4969f34a",
+      "bytes": 241425
+    },
+    "assets/index-BEyvCYky.css": {
+      "sha256": "99b01be69aedc808d3af99ec9c3236be36d104f088432c6777e9522da0266579",
+      "bytes": 30543
+    },
+    "assets/WaitingRoomPage-DB-ugbDT.js": {
+      "sha256": "6519da327aa83430dccae7cf83a0a0fe8e4bde30c712a12d9f39f49028ee891f",
+      "bytes": 4253
+    },
+    "favicon.svg": {
+      "sha256": "93208bb26adbe1d0f4c18e95cc92a9445456d8597218947f47c7f1ba81594861",
+      "bytes": 284
+    },
+    "images/basketball-cover.png": {
+      "sha256": "58f742818970835628ffc781fec0baa279867c2b898d188eba4d19266cb81dc8",
+      "bytes": 2350032
+    },
+    "images/concert-cover.png": {
+      "sha256": "36f996a35295213d65823aaeb759327ad84c1a26af2598d5a59f81d2f4cd4bb9",
+      "bytes": 1882602
+    },
+    "index.html": {
+      "sha256": "0325a1a0fdd14e55572603f14cde5c6abe46b3751eb2e8ace76381d5b9191164",
+      "bytes": 963
+    },
+    "server/index.js": {
+      "sha256": "cff7643b114f820476a62bdf2f615327e9caff7181e2d3f2d3b7fbd3748c7b82",
+      "bytes": 405
+    }
+  },
+  "points": {
+    "events": {
+      "path": "polling-baseline/events/browser.json",
+      "sha256": "4b8d43b73caf5d6061b3f15f6a9e9e65812f9568d9044318fb72d48ab077b830",
+      "sourceCommit": "ca3b27ae1e2732338c545800759505357dd60faf",
+      "startedUtc": "2026-09-13T13:32:19.165Z",
+      "endedUtc": "2026-09-13T13:35:21.344Z",
+      "checks": {
+        "hiddenNewReads": 13,
+        "hiddenInflightFromBefore": 0,
+        "maxInflight": {
+          "notifications": 2,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "restoredImmediateCounts": {
+          "notifications": 2,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "logoutNewReads": 0,
+        "terminalObserved": true,
+        "readsAfterTerminalSettled": null,
+        "restorationFirstReadMs": {
+          "notifications": 31,
+          "availability": null,
+          "payment": null,
+          "checkout": null,
+          "order": null
+        }
+      }
+    },
+    "panel": {
+      "path": "polling-baseline/panel/browser.json",
+      "sha256": "de7872624629b9314f7a672b7a2598f545d531327f5e66ec5338807636fb1da7",
+      "sourceCommit": "ca3b27ae1e2732338c545800759505357dd60faf",
+      "startedUtc": "2026-09-13T13:35:22.995Z",
+      "endedUtc": "2026-09-13T13:38:25.108Z",
+      "checks": {
+        "hiddenNewReads": 12,
+        "hiddenInflightFromBefore": 0,
+        "maxInflight": {
+          "notifications": 2,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "restoredImmediateCounts": {
+          "notifications": 1,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "logoutNewReads": 0,
+        "terminalObserved": true,
+        "readsAfterTerminalSettled": null,
+        "restorationFirstReadMs": {
+          "notifications": 28,
+          "availability": null,
+          "payment": null,
+          "checkout": null,
+          "order": null
+        }
+      }
+    },
+    "seat": {
+      "path": "polling-baseline/seat/browser.json",
+      "sha256": "d8be0624ca713321f57e62eaa1b70293fb296452cb7b4170e9d75bd07b2ffbec",
+      "sourceCommit": "ca3b27ae1e2732338c545800759505357dd60faf",
+      "startedUtc": "2026-09-13T13:38:26.860Z",
+      "endedUtc": "2026-09-13T13:41:29.103Z",
+      "checks": {
+        "hiddenNewReads": 12,
+        "hiddenInflightFromBefore": 0,
+        "maxInflight": {
+          "notifications": 2,
+          "availability": 1,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "restoredImmediateCounts": {
+          "notifications": 3,
+          "availability": 1,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "logoutNewReads": 0,
+        "terminalObserved": true,
+        "readsAfterTerminalSettled": null,
+        "restorationFirstReadMs": {
+          "notifications": 79,
+          "availability": 36,
+          "payment": null,
+          "checkout": null,
+          "order": null
+        }
+      }
+    },
+    "payment": {
+      "path": "polling-baseline/payment/browser.json",
+      "sha256": "fc5e0c4548290bb9dd013b7f6945fd6430e1170013eccfa7aad09b9e6484d7ce",
+      "sourceCommit": "ca3b27ae1e2732338c545800759505357dd60faf",
+      "startedUtc": "2026-09-13T13:41:30.784Z",
+      "endedUtc": "2026-09-13T13:44:32.896Z",
+      "checks": {
+        "hiddenNewReads": 24,
+        "hiddenInflightFromBefore": 1,
+        "maxInflight": {
+          "notifications": 2,
+          "availability": 0,
+          "payment": 1,
+          "checkout": 0,
+          "order": 1
+        },
+        "restoredImmediateCounts": {
+          "notifications": 2,
+          "availability": 0,
+          "payment": 1,
+          "checkout": 0,
+          "order": 1
+        },
+        "logoutNewReads": 0,
+        "terminalObserved": true,
+        "readsAfterTerminalSettled": 0,
+        "restorationFirstReadMs": {
+          "notifications": 21,
+          "availability": null,
+          "payment": 118,
+          "checkout": null,
+          "order": 20
+        }
+      }
+    },
+    "refund": {
+      "path": "polling-baseline/refund/browser.json",
+      "sha256": "2ec52f05cca27f614da1f0f989af01b96608e22ee377c922a6773966152af18d",
+      "sourceCommit": "ca3b27ae1e2732338c545800759505357dd60faf",
+      "startedUtc": "2026-09-13T13:44:34.675Z",
+      "endedUtc": "2026-09-13T13:47:36.866Z",
+      "checks": {
+        "hiddenNewReads": 12,
+        "hiddenInflightFromBefore": 0,
+        "maxInflight": {
+          "notifications": 2,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 1
+        },
+        "restoredImmediateCounts": {
+          "notifications": 2,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 1
+        },
+        "logoutNewReads": 0,
+        "terminalObserved": true,
+        "readsAfterTerminalSettled": 0,
+        "restorationFirstReadMs": {
+          "notifications": 35,
+          "availability": null,
+          "payment": null,
+          "checkout": null,
+          "order": 32
+        }
+      }
+    },
+    "submitting": {
+      "path": "polling-baseline/submitting/browser.json",
+      "sha256": "665d6b21f97af692dc5e63a80929e9e5933645dd25f6aff11b983ea10732928c",
+      "sourceCommit": "ca3b27ae1e2732338c545800759505357dd60faf",
+      "startedUtc": "2026-09-13T13:47:38.609Z",
+      "endedUtc": "2026-09-13T13:50:40.674Z",
+      "checks": {
+        "hiddenNewReads": 16,
+        "hiddenInflightFromBefore": 0,
+        "maxInflight": {
+          "notifications": 2,
+          "availability": 1,
+          "payment": 0,
+          "checkout": 2,
+          "order": 1
+        },
+        "restoredImmediateCounts": {
+          "notifications": 1,
+          "availability": 1,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "logoutNewReads": 0,
+        "terminalObserved": true,
+        "readsAfterTerminalSettled": 0,
+        "restorationFirstReadMs": {
+          "notifications": 36,
+          "availability": 23,
+          "payment": null,
+          "checkout": null,
+          "order": 10195
+        }
+      }
+    },
+    "logout": {
+      "path": "polling-baseline/logout/browser.json",
+      "sha256": "aa5fa7e97eec8d61fe410e4ecc4c39facebea90bc5941a5c142a3073b06eb882",
+      "sourceCommit": "ca3b27ae1e2732338c545800759505357dd60faf",
+      "startedUtc": "2026-09-13T13:50:42.518Z",
+      "endedUtc": "2026-09-13T13:53:45.059Z",
+      "checks": {
+        "hiddenNewReads": 0,
+        "hiddenInflightFromBefore": 0,
+        "maxInflight": {
+          "notifications": 2,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "restoredImmediateCounts": {
+          "notifications": 0,
+          "availability": 0,
+          "payment": 0,
+          "checkout": 0,
+          "order": 0
+        },
+        "logoutNewReads": 0,
+        "terminalObserved": true,
+        "readsAfterTerminalSettled": null,
+        "restorationFirstReadMs": {
+          "notifications": null,
+          "availability": null,
+          "payment": null,
+          "checkout": null,
+          "order": null
+        }
+      }
+    }
+  },
+  "status": "COMPLETE_FORMAL_BROWSER_GROUP"
+}

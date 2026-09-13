@@ -1,0 +1,15 @@
+{
+  "point": "capacity-thousands/baseline/closed-3000",
+  "classification": "FIRST_OBSERVED_UNSTABLE",
+  "formal": true,
+  "valid": false,
+  "generatorQualified": true,
+  "unexpectedSnapshot503": 2,
+  "failedBusinessIterations": 2,
+  "interruptedIterations": 3000,
+  "resourceStopReason": null,
+  "k6ExitCode": 99,
+  "protection": "event policies OFF, local Bulkheads at default limits",
+  "nextAction": "No higher Closed tier; 2000 VU selected for ten-minute stable check",
+  "scope": "Local observation including warmup, not a theoretical production maximum"
+}

@@ -1,0 +1,179 @@
+
+ RUN  v4.1.11 C:/Users/a12/AppData/Local/Temp/phase19-frontend-proposal-check
+
+ ❯ src/pages/OrderPage.refund.test.ts (44 tests | 5 failed) 998ms
+     × serial polling waits two seconds AFTER the preceding request completes 13ms
+     × pauses on hidden, coalesces visibility/focus, and resumes immediately 12ms
+     × an in-flight read completing after blur does not restart polling 16ms
+     × transient polling errors do not turn PROCESSING into FAILED and are retried 32ms
+     × manual refresh invalidates a late poll and still serializes GETs 14ms
+ ❯ src/pages/OrderPage.test.ts (41 tests | 4 failed) 1622ms
+     × prepares a Payment Element before explicit confirmation and waits for Backend after success 65ms
+     × card_error waits through PROCESSING twice, cleans FAILED A, then creates B and reaches PAID 32ms
+     × card_error can converge to Backend success instead of being forced to failure 37ms
+     × late old Attempt reads cannot replace B or destroy its Element 31ms
+ ❯ src/utils/pollingPolicy.test.ts (4 tests | 1 failed) 11ms
+     × rejects coerced, fractional, nonfinite and out-of-range numeric hints 6ms
+ ❯ src/App.test.ts (25 tests | 1 failed) 2888ms
+     × refreshes account notifications on focus 58ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/App.test.ts > Phase 9 application shell and routes > refreshes account notifications on focus
+AssertionError: expected 1 to be greater than 1
+ ❯ src/App.test.ts:144:48
+    142|     window.dispatchEvent(new Event('focus'))
+    143|     await flushPromises()
+    144|     expect(getNotifications.mock.calls.length).toBeGreaterThan(callsBe…
+       |                                                ^
+    145|     wrapper.unmount()
+    146|     getNotifications.mockRestore()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  src/pages/OrderPage.refund.test.ts > Phase 12-2A buyer refund page > serial polling waits two seconds AFTER the preceding request completes
+AssertionError: expected "getOrder" to be called 2 times, but got 1 times
+ ❯ src/pages/OrderPage.refund.test.ts:155:32
+    153|     expect(ticketApi.getOrder).toHaveBeenCalledOnce()
+    154|     await vi.advanceTimersByTimeAsync(1)
+    155|     expect(ticketApi.getOrder).toHaveBeenCalledTimes(2)
+       |                                ^
+    156|     await vi.advanceTimersByTimeAsync(10000)
+    157|     expect(ticketApi.getOrder).toHaveBeenCalledTimes(2)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  src/pages/OrderPage.refund.test.ts > Phase 12-2A buyer refund page > pauses on hidden, coalesces visibility/focus, and resumes immediately
+AssertionError: expected "getOrder" to be called 3 times, but got 2 times
+ ❯ src/pages/OrderPage.refund.test.ts:176:32
+    174|     expect(ticketApi.getOrder).toHaveBeenCalledTimes(2)
+    175|     await vi.advanceTimersByTimeAsync(2000)
+    176|     expect(ticketApi.getOrder).toHaveBeenCalledTimes(3)
+       |                                ^
+    177|   })
+    178|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  src/pages/OrderPage.refund.test.ts > Phase 12-2A buyer refund page > an in-flight read completing after blur does not restart polling
+AssertionError: expected "getOrder" to be called 2 times, but got 1 times
+ ❯ src/pages/OrderPage.refund.test.ts:187:32
+    185|     pending.resolve(structuredClone(current)); await flushPromises()
+    186|     await vi.advanceTimersByTimeAsync(6000)
+    187|     expect(ticketApi.getOrder).toHaveBeenCalledTimes(2)
+       |                                ^
+    188|   })
+    189|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  src/pages/OrderPage.refund.test.ts > Phase 12-2A buyer refund page > transient polling errors do not turn PROCESSING into FAILED and are retried
+AssertionError: expected '我的订单O1 返回我的订单 YOUR ORDER订单详情 刷新状态 ORD…' to contain '订单加载失败'
+
+Expected: "订单加载失败"
+Received: "我的订单O1 返回我的订单 YOUR ORDER订单详情 刷新状态 ORDER STATUS支付成功订单已确认，电子票将在出票后发送至你的账户。退款测试场次  · 座位订单号O1预订金额¥128预订信息订单、预订与座位状态同步更新全额退款退款处理中，完成前订单和座位权益仍然有效。退款金额：¥128退款编号：RFD-test确认申请全额退款整单 ¥128 将原路退款。退款处理中，完成前订单和座位权益仍然有效。暂不退款确认退款 继续浏览活动"
+
+ ❯ src/pages/OrderPage.refund.test.ts:228:27
+    226|     vi.mocked(ticketApi.getOrder).mockRejectedValueOnce(new Error('pri…
+    227|     await vi.advanceTimersByTimeAsync(2000)
+    228|     expect(page().text()).toContain('订单加载失败')
+       |                           ^
+    229|     expect(refundText()).toContain('退款处理中')
+    230|     expect(page().text()).not.toContain('private provider error')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  src/pages/OrderPage.refund.test.ts > Phase 12-2A buyer refund page > manual refresh invalidates a late poll and still serializes GETs
+AssertionError: expected "getOrder" to be called 3 times, but got 2 times
+ ❯ src/pages/OrderPage.refund.test.ts:288:32
+    286|     current.buyerRefund = { ...summaryFixture, status: 'FAILED' }
+    287|     pending.resolve({ ...orderFixture }); await flushPromises()
+    288|     expect(ticketApi.getOrder).toHaveBeenCalledTimes(3)
+       |                                ^
+    289|     expect(refundText()).toContain('退款失败')
+    290|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+ FAIL  src/pages/OrderPage.test.ts > Phase11 payment page > prepares a Payment Element before explicit confirmation and waits for Backend after success
+AssertionError: expected '我的订单O1 返回我的订单 YOUR ORDER请确认并完成支付 刷新状态…' to contain '支付成功'
+
+Expected: "支付成功"
+Received: "我的订单O1 返回我的订单 YOUR ORDER请确认并完成支付 刷新状态 ORDER STATUS待支付座位已为你锁定，请在倒计时结束前完成支付。剩余支付时间14:59Test Event  · 座位订单号O1预订金额¥1预订信息订单、预订与座位状态同步更新全额退款订单当前不可退款。确认申请全额退款整单 ¥1 将原路退款。退款处理中，完成前订单和座位权益仍然有效。暂不退款确认退款 支付处理中… 取消订单支付方式当前支付尝试：P1正在同步服务器状态… 支付渠道处理中；你仍可主动取消订单，迟到成功将自动退款。 演示工具无需等待 15 分钟，立即演示订单到期后的状态。模拟订单超时"
+
+ ❯ src/pages/OrderPage.test.ts:173:29
+    171|     currentOrder.status = 'PAID'; attempt.status = 'SUCCEEDED'
+    172|     await vi.advanceTimersByTimeAsync(1000)
+    173|     expect(wrapper!.text()).toContain('支付成功')
+       |                             ^
+    174|     expect(wrapper!.findComponent(StripePaymentPanel).exists()).toBe(f…
+    175|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯
+
+ FAIL  src/pages/OrderPage.test.ts > declined payment recovery > card_error waits through PROCESSING twice, cleans FAILED A, then creates B and reaches PAID
+AssertionError: expected "getPaymentAttempt" to be called 2 times, but got 1 times
+ ❯ src/pages/OrderPage.test.ts:350:41
+    348|     expect(fake.instances[0]!.destroy).not.toHaveBeenCalled()
+    349|     await vi.advanceTimersByTimeAsync(1000)
+    350|     expect(ticketApi.getPaymentAttempt).toHaveBeenCalledTimes(2)
+       |                                         ^
+    351|     expect(wrapper!.get('.order-pay-button').attributes('disabled')).t…
+    352|     expect(wrapper!.get('.stripe-payment-panel button').attributes('di…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯
+
+ FAIL  src/pages/OrderPage.test.ts > declined payment recovery > card_error can converge to Backend success instead of being forced to failure
+AssertionError: expected '我的订单O1 返回我的订单 YOUR ORDER请确认并完成支付 刷新状态…' to contain '支付成功'
+
+Expected: "支付成功"
+Received: "我的订单O1 返回我的订单 YOUR ORDER请确认并完成支付 刷新状态 ORDER STATUS待支付座位已为你锁定，请在倒计时结束前完成支付。剩余支付时间14:59Test Event  · 座位订单号O1预订金额¥1预订信息订单、预订与座位状态同步更新全额退款订单当前不可退款。确认申请全额退款整单 ¥1 将原路退款。退款处理中，完成前订单和座位权益仍然有效。暂不退款确认退款 支付处理中… 取消订单支付方式当前支付尝试：P1卡片错误正在同步服务器状态… 支付渠道处理中；你仍可主动取消订单，迟到成功将自动退款。 演示工具无需等待 15 分钟，立即演示订单到期后的状态。模拟订单超时"
+
+ ❯ src/pages/OrderPage.test.ts:424:29
+    422|     attempt.status = 'SUCCEEDED'; currentOrder.status = 'PAID'
+    423|     await vi.advanceTimersByTimeAsync(1000)
+    424|     expect(wrapper!.text()).toContain('支付成功')
+       |                             ^
+    425|     expect(fake.instances[0]!.destroy).toHaveBeenCalledOnce()
+    426|     expect(ticketApi.payOrder).toHaveBeenCalledOnce()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯
+
+ FAIL  src/pages/OrderPage.test.ts > declined payment recovery > late old Attempt reads cannot replace B or destroy its Element
+Error: Cannot call props on an empty VueWrapper.
+ ❯ Object.get ../phase19-global-polling-mixed-load/frontend/node_modules/@vue/test-utils/dist/vue-test-utils.cjs.js:1479:27
+ ❯ src/pages/OrderPage.test.ts:452:54
+    450|     await start()
+    451|     resolveOld(failed); await flushPromises()
+    452|     expect(wrapper!.findComponent(StripePaymentPanel).props('paymentAt…
+       |                                                      ^
+    453|     expect(fake.instances[1]!.destroy).not.toHaveBeenCalled()
+    454|     expect(fake.instances[0]!.destroy).toHaveBeenCalledOnce()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯
+
+ FAIL  src/utils/pollingPolicy.test.ts > bounded server-directed polling > rejects coerced, fractional, nonfinite and out-of-range numeric hints
+AssertionError: expected undefined to be 30000 // Object.is equality
+
+- Expected:
+30000
+
++ Received:
+undefined
+
+ ❯ src/utils/pollingPolicy.test.ts:23:58
+     21|   expect(retryHint('2000','2',0)).toBe(2000)
+     22|   expect(retryHint(1000,'Thu, 01 Jan 1970 00:00:05 GMT',0)).toBe(5000)
+     23|   expect(retryHint(undefined,'999999999999999999999',0)).toBe(30000)
+       |                                                          ^
+     24|   expect(retryHint(undefined,'garbage')).toBeUndefined()
+     25|  })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯
+
+
+ Test Files  4 failed | 38 passed (42)
+      Tests  11 failed | 312 passed (323)
+   Start at  21:42:50
+   Duration  6.34s (transform 7.12s, setup 800ms, import 23.38s, tests 13.71s, environment 34.98s)
+

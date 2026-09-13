@@ -1,0 +1,9 @@
+
+ RUN  v4.1.11 C:/Users/a12/AppData/Local/Temp/phase19-frontend-proposal-check
+
+
+ Test Files  6 passed (6)
+      Tests  35 passed (35)
+   Start at  21:42:19
+   Duration  3.77s (transform 2.99s, setup 377ms, import 5.00s, tests 1.40s, environment 3.05s)
+

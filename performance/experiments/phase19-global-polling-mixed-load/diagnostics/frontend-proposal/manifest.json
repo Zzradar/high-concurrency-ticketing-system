@@ -1,0 +1,71 @@
+{
+  "status": "PROPOSAL_ONLY_NOT_APPLIED_TO_BASELINE",
+  "files": {
+    "src/App.test.ts": {
+      "baselineSha256": "4c0e00eb5ad0f3366ccd75dbd2d85d1176b96c1825803b5d0544d63c9122362d",
+      "proposalSha256": "90a75eeb7a98fb7ec447573b4d1db8eabfe9d5ab36afe094502133ea6100f255"
+    },
+    "src/App.vue": {
+      "baselineSha256": "7df3c6d74d3c0fb91ff79df8c02a2c1cec80dc6bd921492835944ce124c5d2b7",
+      "proposalSha256": "11e493bf441742d26afc6276b935b7c9acec88cd090d075e50d16b057ae67d43"
+    },
+    "src/auth/authState.ts": {
+      "baselineSha256": "00d51aabfaad32346f25a7e244d886a124400481ced567331d889d346046f875",
+      "proposalSha256": "43d670cf2f3f96f59c511def2a82d5641a70f154289be0f6955d9fd766fa57ee"
+    },
+    "src/pages/OrderPage.refund.test.ts": {
+      "baselineSha256": "e552f8fb1cdb0e8e84a63174b0ae3252875cd0bf6278161f64999cc1cbddf8ff",
+      "proposalSha256": "be35b608d6fb2abd50e3c133c58e948262910a79960b5663d7eed4dc5e200cb8"
+    },
+    "src/pages/OrderPage.test.ts": {
+      "baselineSha256": "7eae2d1ea36608677d502d1e7ac5fb797c4f19d970dcca2cdb6754b591f05aff",
+      "proposalSha256": "7dd535077f1b09f5795cfbea62ba4cee0d30bdbfaa8033e963d5f029bf647a3c"
+    },
+    "src/pages/OrderPage.vue": {
+      "baselineSha256": "5af7db9c250f3a7db82413d8775a5425407916c85de4bd80f870299cb735cdde",
+      "proposalSha256": "5d1f68ede1310fd4a46c2b8a03e073be3baf8551f8ef30f8286f9d748e257fa1"
+    },
+    "src/pages/SeatSelectionPage.vue": {
+      "baselineSha256": "9d3f9f7cf11ff96240c2b90b9e17c6aa2dac5bd68fda503793d34036fc1bfdc0",
+      "proposalSha256": "1e2b336e75660409fceca5534e5cc86ed5fa3571372da83eea27ddf5525f0bb7"
+    },
+    "src/utils/pollingPolicy.test.ts": {
+      "baselineSha256": "f5202c64eca8b442ed9e63a83db77b7a0bef86079dfc476be252d004ebd21d67",
+      "proposalSha256": "b99e3c72abc3ed91b3f9f60bb3bd41bad27b13146e39f4cd5ab9cf34f1b6a630"
+    },
+    "src/utils/pollingPolicy.ts": {
+      "baselineSha256": "35bcb3aac1b41071e01265177c8124d6095c1acd7e6bac9defbf6e27583aaf4e",
+      "proposalSha256": "f3811818db68ad1b0843c9dabf2bf6e224605014099e86e03ee12158dc2be823"
+    },
+    "src/utils/singleFlight.ts": {
+      "baselineSha256": null,
+      "proposalSha256": "00b1ca226acbddc99be6a819c61d9ac65fc21931c7b41b19e5f04b5d66e4872d"
+    }
+  },
+  "patchSha256": "56ed3d6f20d491c7cf0333f689e9bbfc15fd7fc7099a99e52586971ecbc2916c",
+  "privatePatch": "<PRIVATE_TEMP>/phase19-frontend-proposal.patch",
+  "logs": {
+    "phase19-proposal-contracts-r1.log": {
+      "sourceSha256": "4cf43125ba4a17a3b0005e6965914d4d25919c10a8af1190f5f5271182266714",
+      "sourceBytes": 263
+    },
+    "phase19-proposal-full-r1.log": {
+      "sourceSha256": "361c799fb1c374673c98b05851285e9270924595f6df75c4092a311aa7141338",
+      "sourceBytes": 11596
+    },
+    "phase19-proposal-full-r2.log": {
+      "sourceSha256": "9dd8ba948b6e626d3d30333c95ef1d9c88235e05d4610445062406f4ea740aa4",
+      "sourceBytes": 270
+    },
+    "phase19-proposal-build-r1.log": {
+      "sourceSha256": "ae1a72fa3ab7a50b8f62507594b0295dfffad86bdaca925d544f521b097c2579",
+      "sourceBytes": 1397
+    }
+  },
+  "validation": {
+    "contractTests": 35,
+    "fullTests": 323,
+    "testFiles": 42,
+    "httpProductionBuild": "PASS"
+  }
+}
