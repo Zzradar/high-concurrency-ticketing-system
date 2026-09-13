@@ -64,3 +64,21 @@ class ResolutionEvidence(unittest.TestCase):
   paths+=['performance/experiments/phase18-admission-overload/'+p for p in ['baseline','protocol','diagnostics','after','after-v2']]
   self.assertEqual(subprocess.check_output(['git','diff','--name-only','8a62d57','HEAD','--',*paths],cwd=ROOT),b'')
   self.assertEqual(sha(E/'history/8a62d57/phase18-delivery.json'),'b3690ca98faf5f588cd5428809a9ea98b4c42e0811bf104f3c752e1ea8ef1126')
+
+class CurrentV3Delivery(unittest.TestCase):
+ def test_delivery_manifest_report_and_all_identity_bindings(self):
+  m=read(E/'phase18-delivery.json');self.assertEqual(m['afterSutSha'],SUT);self.assertEqual(m['afterDirectory'],'after-v3');self.assertTrue(m['formalAbPassed'])
+  self.assertEqual(m['baselineSutSha'],'ed51447154418e05ed9e4c49728f3eb114713db9')
+  for p,h in m['artifacts'].items():self.assertEqual(sha(E/p),h,p)
+  for p,h in m['protocolHashes'].items():self.assertEqual(sha(E/'protocol'/p),h,p)
+  for p,h in m['analysis']['gitBlobSha256'].items():self.assertEqual(hashlib.sha256(subprocess.check_output(['git','show',m['analysis']['commit']+':'+p],cwd=ROOT)).hexdigest(),h)
+  hashes=read(E/'DELIVERY_HASHES.json');self.assertEqual(hashes['deliveryManifestSha256'],sha(E/'phase18-delivery.json'));self.assertEqual(hashes['baselineManifestSha256'],sha(E/'baseline/manifest.json'))
+  self.assertEqual(hashes['stage0DeliveryManifestSha256'],sha(E/'manifest.json'));self.assertEqual(hashes['afterManifestSha256'],sha(E/'after-v3/manifest.json'))
+  status=read(E/'AFTER_STATUS.json');self.assertIn('INVALIDATED',status['after']['status']);self.assertIn('INVALIDATED',status['after-v2']['status']);self.assertEqual(status['replacement']['sutSha'],SUT)
+ def test_new_k6_counts_bytes_and_reported_regressions(self):
+  r=read(E/'resource-and-payload-comparison-v3.json');self.assertEqual(r['before']['k6Requests'],121);self.assertEqual(r['after']['k6Requests'],121);self.assertEqual(r['after']['k6ErrorRate'],0)
+  self.assertEqual(r['after']['browserBytes'],104440);self.assertGreater(r['after']['browserBytes'],r['before']['browserBytes'])
+  c=read(E/'comparison-v3.json');small=c['layoutAndAvailability'][0]
+  self.assertGreater(small['afterLayout']['ordinary']['p50Ms'],small['beforeLayout']['ordinary']['p50Ms']);self.assertGreater(small['afterSnapshot']['p50Ms'],small['beforeSnapshot']['p50Ms'])
+  self.assertEqual(c['afterBrowser']['requestStartsByPhase'],{'visible':5,'hidden':0,'restored':3});self.assertEqual(c['afterBrowser']['restoreFirstRequestMs'],11)
+  text=(E/'FINAL_REPORT.md').read_text(encoding='utf-8');self.assertIn('退化',text);self.assertIn('不代表生产 SLA',text);self.assertIn('416→477',text);self.assertIn('197→220',text)

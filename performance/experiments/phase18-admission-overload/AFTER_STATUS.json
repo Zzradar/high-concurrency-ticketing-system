@@ -19,6 +19,8 @@
   },
   "replacement": {
     "directory": "after-v3",
-    "status": "PENDING_FULL_RECOLLECTION"
+    "status": "VALID_COMPLETE_AWAITING_INDEPENDENT_REVERIFICATION",
+    "sutSha": "3a9e0c1311add748c7faec956bb6c9266ed7d5ba",
+    "manifestSha256": "d1614a9761f8f0819be6e9da71677f096cc76d5beadf093e52915580f6f56440"
   }
 }

@@ -1,12 +1,12 @@
 # Phase18 当前交付
 
-Layout ETag缺陷已修复，完整after-v2与本地门禁通过，等待独立复验。默认OFF。
+migration016 search_path 遮蔽修复、完整回归及全新 after-v3 已通过，等待独立复验。默认 OFF。
 
-- [最终报告](FINAL_REPORT.md)：完整收益、退化、SQL、浏览器、资源与限制。
-- [当前交付Manifest](phase18-delivery.json)；[After状态](AFTER_STATUS.json)。
-- [正式after-v2](after-v2/manifest.json)，SUT `6807a01516a75cf834ca1fac46fb1ac9abcdc53e`。
-- [Stage0清单](manifest.json)与[baseline清单](baseline/manifest.json)均保持原字节，基线SUT `ed51447154418e05ed9e4c49728f3eb114713db9`。
-- 旧after/与SUT `4dd48c1` 已失效，仅保留历史证据；[旧报告/交付清单原字节归档](history/fc9e41a/README.md)。
-- [字段映射及数据库revision设计](../../../docs/phase18_layout_revision.md)、[最终回归](capabilities/layout-revision-final/manifest.json)。
+- [最终报告](FINAL_REPORT.md)：根因、全部收益/退化、SQL、Registry、真实浏览器时间线、资源和限制。
+- [交付 Manifest](phase18-delivery.json)、[独立哈希清单](DELIVERY_HASHES.json)、[After 状态](AFTER_STATUS.json)。
+- [正式 after-v3](after-v3/manifest.json)，SUT `3a9e0c1311add748c7faec956bb6c9266ed7d5ba`。
+- [Stage0](manifest.json) 与 [baseline](baseline/manifest.json) 原字节不变；baseline SUT `ed51447154418e05ed9e4c49728f3eb114713db9`。
+- after/ 因 ETag v1 缺陷失效；after-v2/ 因 search_path 遮蔽缺陷失效；全部原始字节保留，[上一交付归档](history/8a62d57/phase18-delivery.json)。
+- [函数审计](../../../docs/phase18_layout_resolution.md)、[新回归证据](capabilities/layout-resolution/manifest.json)、[91秒隐藏门禁](capabilities/final-hidden-v3/manifest.json)。
 
-旧checkpoint和失败诊断不是可部署版本。此单次共享主机结果不代表生产SLA；没有merge或创建PR。
+原反例已确认关闭；失败诊断保留并在报告说明，旧 checkpoint 和失效 After 不可部署。本轮共享主机结果不代表生产 SLA。未合并或创建 PR。

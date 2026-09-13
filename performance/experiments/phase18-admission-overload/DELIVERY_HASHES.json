@@ -1,0 +1,8 @@
+{
+  "deliveryManifestSha256": "977da4ff6b39a59bc9427d9166092568eadeecfbe2d9dd4c3d45865856829190",
+  "afterManifestSha256": "d1614a9761f8f0819be6e9da71677f096cc76d5beadf093e52915580f6f56440",
+  "stage0DeliveryManifestSha256": "19f394034d74e027a19e62f3e61f2ab82c9806b542604d666dc24d948640f338",
+  "baselineManifestSha256": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402",
+  "afterSutSha": "3a9e0c1311add748c7faec956bb6c9266ed7d5ba",
+  "note": "This independent sidecar is intentionally outside the delivery manifest artifact map to avoid a self-referential hash."
+}

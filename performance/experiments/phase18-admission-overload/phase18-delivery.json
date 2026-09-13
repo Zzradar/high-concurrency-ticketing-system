@@ -1,24 +1,33 @@
 {
   "status": "COMPLETE_AWAITING_INDEPENDENT_REVERIFICATION",
   "baselineSutSha": "ed51447154418e05ed9e4c49728f3eb114713db9",
-  "afterSutSha": "6807a01516a75cf834ca1fac46fb1ac9abcdc53e",
-  "afterDirectory": "after-v2",
-  "measurementRole": "AFTER_V2",
+  "afterSutSha": "3a9e0c1311add748c7faec956bb6c9266ed7d5ba",
+  "afterDirectory": "after-v3",
+  "measurementRole": "AFTER_V3",
   "branch": "phase18/admission-overload-control",
   "frozenManifests": {
     "manifest.json": "19f394034d74e027a19e62f3e61f2ab82c9806b542604d666dc24d948640f338",
     "baseline/manifest.json": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402"
   },
-  "afterManifestSha256": "67c848d55a499ec4d9fd898c2f34eb0fe6434e4bbd0926ebf68f4270b1117b33",
-  "invalidatedAfter": {
-    "status": "SUPERSEDED_INVALIDATED_BY_ETAG_DEFECT",
-    "sutSha": "4dd48c177516caf950103ce3f7751cc0fb056029",
-    "manifestSha256": "b1585c91e4cdb4e3aae915dc75552fb8ad2b591dd00fdf02d62af2716a7ac369",
-    "reason": "Direct PostgreSQL representation changes could retain v1 ETag and return stale 304; old after is historical evidence only."
+  "afterManifestSha256": "d1614a9761f8f0819be6e9da71677f096cc76d5beadf093e52915580f6f56440",
+  "invalidatedAfterVersions": {
+    "after": {
+      "status": "SUPERSEDED_INVALIDATED_BY_ETAG_DEFECT",
+      "sutSha": "4dd48c177516caf950103ce3f7751cc0fb056029",
+      "manifestSha256": "b1585c91e4cdb4e3aae915dc75552fb8ad2b591dd00fdf02d62af2716a7ac369",
+      "reason": "Direct PostgreSQL representation changes could retain v1 ETag and return stale 304; old after is historical evidence only."
+    },
+    "after-v2": {
+      "directory": "after-v2",
+      "status": "SUPERSEDED_INVALIDATED_BY_SEARCH_PATH_SHADOWING",
+      "sutSha": "6807a01516a75cf834ca1fac46fb1ac9abcdc53e",
+      "manifestSha256": "67c848d55a499ec4d9fd898c2f34eb0fe6434e4bbd0926ebf68f4270b1117b33",
+      "reason": "Temporary or preceding schema objects could redirect migration015 revision writes; retained immutable historical evidence only."
+    }
   },
   "archivedPriorDelivery": {
-    "path": "history/fc9e41a/phase18-delivery.json",
-    "sha256": "3526dd8424d4ae9a6f33959d2840e8643a480d7d4a07f61ecc960ee65e10fc59"
+    "path": "history/8a62d57/phase18-delivery.json",
+    "sha256": "b3690ca98faf5f588cd5428809a9ea98b4c42e0811bf104f3c752e1ea8ef1126"
   },
   "protocolHashes": {
     "browser-environment.json": "6fa7aafb6dc3d8e4206a387d846edb4301feb56e7d2c52765c185833ee5932ed",
@@ -37,40 +46,55 @@
   },
   "formalAbPassed": true,
   "analysis": {
-    "commit": "f654886f0467e684ba926663bbe4bc3d0857977c",
+    "commit": "3a9e0c1311add748c7faec956bb6c9266ed7d5ba",
     "gitBlobSha256": {
-      "performance/scripts/phase18_revision_analysis.py": "c8f0b2e30d7c2bb7faaff91f317a471cbe60ab61ac3b6d531f8d2623a82b1137",
-      "performance/scripts/phase18_ab_gate.py": "107db6ea29d831536e751507f0d1dbe242b0100093024cf2efcb349b07b8adf2"
+      "performance/scripts/phase18_ab_gate.py": "6a77aa6611ee771b95ce906147a88340d589de0e7fdf106c017e8a6fe6c9f48e",
+      "performance/scripts/phase18_revision_analysis.py": "c8f0b2e30d7c2bb7faaff91f317a471cbe60ab61ac3b6d531f8d2623a82b1137"
     }
   },
+  "deliveryValidation": {
+    "performanceTests": 262,
+    "ctest": 36,
+    "vitest": 288,
+    "productionBuild": true,
+    "offBusinessRegression": 57,
+    "stripe": 11,
+    "crashWindow": 11,
+    "buyerRefund": 38,
+    "refundVerifier": 3,
+    "multiInstance": 1,
+    "phase17AuthZone": 5,
+    "phase17NegativeVerifier": 3,
+    "nativeLongHidden": true
+  },
+  "limitations": [
+    "One identical OFF trial on a shared host, not production SLA.",
+    "PostgreSQL rows are returned rows from pg_stat_statements, not physical buffer-page scans.",
+    "OBSERVE/ENFORCED capability results are excluded from OFF improvements.",
+    "The frozen protocol retains its historical STAGE0_VALID manifest label; this comparison identifies the after SUT separately.",
+    "Ordinary Layout/5000 reads, browser decoded bytes, total SQL/Registry and thread regressions are reported explicitly.",
+    "Four-thread isolated capability rerun passed after an uncaptured first503; formal A/B retains original configuration."
+  ],
   "artifacts": {
     "manifest.json": "19f394034d74e027a19e62f3e61f2ab82c9806b542604d666dc24d948640f338",
     "baseline/manifest.json": "c0891851436eb997e3414c4d2b6b5525a72c38b7fe635a9cb582e46d77b2e402",
     "after/manifest.json": "b1585c91e4cdb4e3aae915dc75552fb8ad2b591dd00fdf02d62af2716a7ac369",
     "after-v2/manifest.json": "67c848d55a499ec4d9fd898c2f34eb0fe6434e4bbd0926ebf68f4270b1117b33",
-    "AFTER_STATUS.json": "7b7bcedd7c383b9da54a194f777c2db4f2f2234f461b68892ea8ecc447afa712",
-    "FINAL_REPORT.md": "5855aba913470431de736edf6affbeb7d5db1b6757188ad003b3158b2dd20324",
-    "README.md": "e9526bd56b27467416cfe0ffd92515f336637baf8bb8da8b82cf280bd2a60ec6",
-    "comparison-v2.json": "e158ba69da4db5cda0da4471f0994329511066305ab0c4ad31790ff75a04a15b",
-    "resource-and-payload-comparison-v2.json": "fb58bc6f6d8be5ce19e7f4bf63ee28e11b26b5b7279115320dacae2d6c0aec0a",
-    "query-feature-comparison-v2.json": "046dac57ce1c078998376c334ddec0a875bc2e48129160ac4cf460e8d9932dd7",
-    "after-v2-phase18-verifier.json": "a15d159893c1a73d81d584bb2430f8fce6987ff861056131892cb6395674ce21",
-    "history/fc9e41a/phase18-delivery.json": "3526dd8424d4ae9a6f33959d2840e8643a480d7d4a07f61ecc960ee65e10fc59",
-    "history/fc9e41a/FINAL_REPORT.md": "2b0ef28c175bfe72411cd03a8a7dec54e61bf2eb8783f60eeba290c38866be72",
-    "capabilities/layout-revision-final/manifest.json": "e49dff9fb20ccaebd9f7e8915c375e5ff0cb7197e5e1f844be61af94acb6b659",
-    "capabilities/final-hidden-v2/manifest.json": "6d09a3ff79e068808ca987a543906e443ff162cd52326973a4e96bc3dcc08e76"
-  },
-  "deliveryValidation": {
-    "performanceTests": 253,
-    "ctest": 36,
-    "vitest": 288,
-    "strictAbGate": true
-  },
-  "limitations": [
-    "Not production SLA; single shared-host OFF trial.",
-    "Actual k6 requests differ: 121 baseline versus 120 after, with identical offered settings.",
-    "Returned SQL rows are not physical scans; browser bytes are decoded bodies, not wire traffic.",
-    "Ordinary Layout/Delta latencies and metadata/registry cost can regress.",
-    "OBSERVE/ENFORCED and extended hidden gates are separate capability evidence."
-  ]
+    "after-v3/manifest.json": "d1614a9761f8f0819be6e9da71677f096cc76d5beadf093e52915580f6f56440",
+    "AFTER_STATUS.json": "2ec97868a1c293c30261382bcdea671a909544f6d0c1bf8057e7ff7b2cc75ff9",
+    "FINAL_REPORT.md": "5878157b22efb8eaade4c4ef8bbdc58979a8b6cd3a7cf35d44b611055668ccff",
+    "README.md": "c572ebc669e315876e7d496f8ff9e75cae4504c62462d813fe06c7ad158aaa7d",
+    "comparison-v3.json": "8382ffa24a8d44e715908bade22d8c1cae9d87b788696e5ac3846aba8275a7e5",
+    "resource-and-payload-comparison-v3.json": "9f7716a1a2cae971db55ca70c50fe0ce6a38341b88ce219542cbd820849c8e5a",
+    "query-feature-comparison-v3.json": "5ba526c50d48734ea5045eeb21d069da92dc83a85d74652409e8da26336bee83",
+    "layout-total-sql-v3.json": "c615056f39b7f88c3e153fe2f4844d2b3952ba3135d84092dcd7a094ff02ed54",
+    "after-v3-phase18-verifier.json": "2311f8a3c0222613b7e4df6da0f0256bf1b36055901fe8648fe6a0ef7cca9d0f",
+    "history/8a62d57/phase18-delivery.json": "b3690ca98faf5f588cd5428809a9ea98b4c42e0811bf104f3c752e1ea8ef1126",
+    "history/8a62d57/FINAL_REPORT.md": "5855aba913470431de736edf6affbeb7d5db1b6757188ad003b3158b2dd20324",
+    "history/8a62d57/README.md": "e9526bd56b27467416cfe0ffd92515f336637baf8bb8da8b82cf280bd2a60ec6",
+    "history/8a62d57/AFTER_STATUS.json": "7b7bcedd7c383b9da54a194f777c2db4f2f2234f461b68892ea8ecc447afa712",
+    "capabilities/layout-resolution/manifest.json": "4588c349baf9b680286d608457bb064adf0f9f65d0a650000b4ea98c9ca9b4aa",
+    "capabilities/final-hidden-v3/manifest.json": "1c8eea8fce5ac7945857e6086fe2d4e1dac8e1f63e5053581a47f0878ac7cc0e",
+    "delivery-validation-v3.log": "1d10652d292528f976dda675ee70a870129ee714825732ac0154822a7cbb92bf"
+  }
 }

@@ -46,3 +46,5 @@ performance/experiments/phase18-admission-overload/layout-total-sql-v3.json text
 performance/experiments/phase18-admission-overload/query-feature-comparison-v3.json text eol=lf
 performance/experiments/phase18-admission-overload/resource-and-payload-comparison-v3.json text eol=lf
 performance/experiments/phase18-admission-overload/after-v3-phase18-verifier.json text eol=lf
+performance/experiments/phase18-admission-overload/DELIVERY_HASHES.json text eol=lf
+performance/experiments/phase18-admission-overload/delivery-validation-v3.log -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
