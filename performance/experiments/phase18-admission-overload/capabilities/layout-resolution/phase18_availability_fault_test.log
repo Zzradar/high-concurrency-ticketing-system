@@ -1,0 +1,31 @@
+test_cold_projector_initializer_redis_and_pg_rollback (__main__.AvailabilityFault) ... cold singleflight PASS
+projector crash PASS
+initializer crash PASS
+ERROR
+
+======================================================================
+ERROR: test_cold_projector_initializer_redis_and_pg_rollback (__main__.AvailabilityFault)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_availability_fault_test.py", line 62, in test_cold_projector_initializer_redis_and_pg_rollback
+    degraded=request(query='&generation='+old['generation']+'&since='+str(old['cursor']));self.assertTrue(degraded['degraded'] and degraded['reset']);self.assertIsNone(degraded['generation']);self.assertIn({'id':SEAT,'status':'SOLD'},degraded['seats']);self.assertGreater(int(f.sql('SELECT count(*) FROM seat_availability_outbox')),0)
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_availability_fault_test.py", line 22, in request
+    return json.load(urllib.request.urlopen(at+'/sessions/'+SESSION+'/seat-availability?zone=Zone%200'+query,timeout=12))
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\urllib\request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\urllib\request.py", line 525, in open
+    response = meth(req, response)
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\urllib\request.py", line 634, in http_response
+    response = self.parent.error(
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\urllib\request.py", line 563, in error
+    return self._call_chain(*args)
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\urllib\request.py", line 496, in _call_chain
+    result = func(*args)
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\urllib\request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 503: Service Unavailable
+
+----------------------------------------------------------------------
+Ran 1 test in 30.133s
+
+FAILED (errors=1)

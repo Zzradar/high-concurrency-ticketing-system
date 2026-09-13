@@ -1,0 +1,6 @@
+test_real_namespace_audit_and_rollback_negative (__main__.Verifier) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 12.773s
+
+OK

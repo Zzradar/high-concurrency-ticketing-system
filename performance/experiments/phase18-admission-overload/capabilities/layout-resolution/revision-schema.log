@@ -1,0 +1,12 @@
+test_fresh_bulk_5000_10000_and_multi_session_once (__main__.LayoutRevisionSchema) ... ok
+test_fresh_constraints_and_policy_occ (__main__.LayoutRevisionSchema) ... ok
+test_session_id_reuse_and_inventory_truncate (__main__.LayoutRevisionSchema) ... ok
+test_targeting_and_noop (__main__.LayoutRevisionSchema) ... ok
+test_upgrade_backfill_repeat_and_failure_rollback (__main__.LayoutRevisionSchema) ... ok
+test_upgrade_preserves_business_and_absent_policy_is_off (__main__.LayoutRevisionSchema) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 45.587s
+
+OK
+Bulk 5000/10000: each INSERT/UPDATE causes one revision write per affected Session; shared-seat change targets two Sessions.

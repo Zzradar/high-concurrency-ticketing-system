@@ -1,0 +1,236 @@
+{
+  "before": {
+    "5000": {
+      "allTrackedCalls": 67,
+      "allTrackedReturnedRows": 210005,
+      "queries": [
+        {
+          "calls": 3,
+          "returnedRows": 0,
+          "query": "SELECT status, COUNT(*) AS count, COALESCE(MAX(EXTRACT($1 FROM clock_timestamp()-created_at)) FILTER (WHERE status=$2),$3) AS age FROM refunds GROUP BY status"
+        },
+        {
+          "calls": 1,
+          "returnedRows": 1,
+          "query": "SELECT xact_commit,xact_rollback,deadlocks,numbackends FROM pg_stat_database WHERE datname=$1"
+        },
+        {
+          "calls": 2,
+          "returnedRows": 4,
+          "query": "SELECT application_name,state,wait_event_type,wait_event,count(*) FROM pg_stat_activity WHERE datname=$1 GROUP BY 1,2,3,4"
+        },
+        {
+          "calls": 3,
+          "returnedRows": 0,
+          "query": "WITH claimed AS (\n            SELECT id, provider, object_kind, provider_object_id, local_reference_id\n            FROM payment_provider_events\n            WHERE status = $2 AND next_retry_at <= clock_timestamp()\n            ORDER BY received_at\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), wake_payments AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_payment_id = COALESCE(attempt.provider_payment_id, claimed.provider_object_id),\n                next_reconcile_at = CASE WHEN attempt.status IN ($3,$4)\n                                         THEN clock_timestamp() ELSE $5 END\n            FROM claimed\n            WHERE claimed.object_kind = $6\n              AND claimed.local_reference_id = attempt.id\n              AND claimed.provider = attempt.provider\n              AND (attempt.provider_payment_id IS NULL\n                   OR attempt.provider_payment_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        ), wake_refunds AS (\n            UPDATE refunds AS refund\n            SET next_reconcile_at = CASE WHEN refund.status = $7\n                                         THEN clock_timestamp() ELSE $8 END\n            FROM claimed\n            WHERE claimed.object_kind = $9\n              AND claimed.local_reference_id = refund.id\n              AND claimed.provider = refund.provider\n              AND (refund.provider_refund_id IS NULL\n                   OR refund.provider_refund_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        )\n        UPDATE payment_provider_events AS event\n        SET status = $10, processed_at = clock_timestamp(), last_error = $11\n        FROM claimed\n        WHERE event.id = claimed.id\n          AND (event.provider_object_id IS NULL\n               OR event.id IN (SELECT id FROM wake_payments)\n               OR event.id IN (SELECT id FROM wake_refunds))"
+        },
+        {
+          "calls": 3,
+          "returnedRows": 0,
+          "query": "WITH claimed AS (\n SELECT id, CASE WHEN reconciliation_lease_until IS NOT NULL THEN $4 ELSE $5 END AS recovery_reason\n FROM refunds WHERE status=$6 AND provider_terminal_at IS NULL AND next_reconcile_at <= clock_timestamp()\n AND (reconciliation_lease_until IS NULL OR reconciliation_lease_until <= clock_timestamp())\n ORDER BY next_reconcile_at,id FOR UPDATE SKIP LOCKED LIMIT $1\n ), leased AS (UPDATE refunds r SET provider_retry_count=provider_retry_count+$7,\n reconciliation_lease_token=$3,reconciliation_lease_until=clock_timestamp()+INTERVAL $8,\n next_reconcile_at=clock_timestamp()+LEAST($2,power($9,LEAST(provider_retry_count,$10)))*INTERVAL $11\n FROM claimed WHERE r.id=claimed.id RETURNING r.*,claimed.recovery_reason)\n SELECT leased.*,a.provider_payment_id FROM leased JOIN payment_attempts a ON a.id=leased.payment_attempt_id"
+        },
+        {
+          "calls": 9,
+          "returnedRows": 0,
+          "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version"
+        },
+        {
+          "calls": 1,
+          "returnedRows": 0,
+          "query": "SELECT id\n        FROM orders\n        WHERE status = $2\n          AND expires_at <= CURRENT_TIMESTAMP\n        ORDER BY expires_at ASC, id ASC\n        LIMIT $1"
+        },
+        {
+          "calls": 42,
+          "returnedRows": 210000,
+          "query": "SELECT\n            inventory.id,\n            seat.seat_label,\n            seat.row_no,\n            seat.seat_no,\n            zone.name AS zone,\n            inventory.price\n        FROM session_seats AS inventory\n        JOIN seats AS seat ON seat.id = inventory.seat_id\n        JOIN venue_zones AS zone ON zone.id = seat.zone_id AND zone.venue_id = seat.venue_id\n        WHERE inventory.session_id = $1 AND EXISTS(SELECT $2 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>$3 AND e.status<>$4)\n        ORDER BY zone.sort_order ASC,\n                 seat.row_no ASC,\n                 seat.seat_no ASC,\n                 inventory.id ASC"
+        },
+        {
+          "calls": 3,
+          "returnedRows": 0,
+          "query": "WITH claimed AS (\n            SELECT attempt.id,\n                   CASE WHEN attempt.provider_status IN ($4,$5)\n                        THEN $6\n                        WHEN attempt.next_reconcile_at IS NULL THEN $7\n                        WHEN attempt.reconciliation_lease_until IS NOT NULL THEN $8\n                        ELSE $9 END AS recovery_reason\n            FROM payment_attempts AS attempt\n            WHERE attempt.provider <> $10\n              AND attempt.status IN ($11, $12)\n              AND (attempt.reconciliation_lease_until IS NULL\n                   OR attempt.reconciliation_lease_until <= clock_timestamp())\n              AND (attempt.provider_status IN ($13,$14)\n                   OR attempt.next_reconcile_at IS NULL\n                   OR attempt.next_reconcile_at <= clock_timestamp())\n            ORDER BY (attempt.provider_status IN ($15,$16)) DESC NULLS LAST,\n                     attempt.next_reconcile_at NULLS FIRST, attempt.id\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), leased AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_retry_count = provider_retry_count + $17,\n                reconciliation_lease_token = $3,\n                reconciliation_lease_until = clock_timestamp() + INTERVAL $18,\n                next_reconcile_at = clock_timestamp() + LEAST($2, power($19, LEAST(provider_retry_count, $20))) * INTERVAL $21\n            FROM claimed WHERE attempt.id = claimed.id\n            RETURNING attempt.*, claimed.recovery_reason\n        )\n        SELECT leased.id, leased.order_id, leased.provider, leased.provider_payment_id,\n               ticket_order.total_amount, leased.currency, leased.recovery_reason\n        FROM leased JOIN orders AS ticket_order ON ticket_order.id = leased.order_id"
+        }
+      ]
+    },
+    "10000": {
+      "allTrackedCalls": 85,
+      "allTrackedReturnedRows": 420007,
+      "queries": [
+        {
+          "calls": 5,
+          "returnedRows": 0,
+          "query": "SELECT status, COUNT(*) AS count, COALESCE(MAX(EXTRACT($1 FROM clock_timestamp()-created_at)) FILTER (WHERE status=$2),$3) AS age FROM refunds GROUP BY status"
+        },
+        {
+          "calls": 1,
+          "returnedRows": 1,
+          "query": "SELECT xact_commit,xact_rollback,deadlocks,numbackends FROM pg_stat_database WHERE datname=$1"
+        },
+        {
+          "calls": 3,
+          "returnedRows": 6,
+          "query": "SELECT application_name,state,wait_event_type,wait_event,count(*) FROM pg_stat_activity WHERE datname=$1 GROUP BY 1,2,3,4"
+        },
+        {
+          "calls": 5,
+          "returnedRows": 0,
+          "query": "WITH claimed AS (\n            SELECT id, provider, object_kind, provider_object_id, local_reference_id\n            FROM payment_provider_events\n            WHERE status = $2 AND next_retry_at <= clock_timestamp()\n            ORDER BY received_at\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), wake_payments AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_payment_id = COALESCE(attempt.provider_payment_id, claimed.provider_object_id),\n                next_reconcile_at = CASE WHEN attempt.status IN ($3,$4)\n                                         THEN clock_timestamp() ELSE $5 END\n            FROM claimed\n            WHERE claimed.object_kind = $6\n              AND claimed.local_reference_id = attempt.id\n              AND claimed.provider = attempt.provider\n              AND (attempt.provider_payment_id IS NULL\n                   OR attempt.provider_payment_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        ), wake_refunds AS (\n            UPDATE refunds AS refund\n            SET next_reconcile_at = CASE WHEN refund.status = $7\n                                         THEN clock_timestamp() ELSE $8 END\n            FROM claimed\n            WHERE claimed.object_kind = $9\n              AND claimed.local_reference_id = refund.id\n              AND claimed.provider = refund.provider\n              AND (refund.provider_refund_id IS NULL\n                   OR refund.provider_refund_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        )\n        UPDATE payment_provider_events AS event\n        SET status = $10, processed_at = clock_timestamp(), last_error = $11\n        FROM claimed\n        WHERE event.id = claimed.id\n          AND (event.provider_object_id IS NULL\n               OR event.id IN (SELECT id FROM wake_payments)\n               OR event.id IN (SELECT id FROM wake_refunds))"
+        },
+        {
+          "calls": 5,
+          "returnedRows": 0,
+          "query": "WITH claimed AS (\n SELECT id, CASE WHEN reconciliation_lease_until IS NOT NULL THEN $4 ELSE $5 END AS recovery_reason\n FROM refunds WHERE status=$6 AND provider_terminal_at IS NULL AND next_reconcile_at <= clock_timestamp()\n AND (reconciliation_lease_until IS NULL OR reconciliation_lease_until <= clock_timestamp())\n ORDER BY next_reconcile_at,id FOR UPDATE SKIP LOCKED LIMIT $1\n ), leased AS (UPDATE refunds r SET provider_retry_count=provider_retry_count+$7,\n reconciliation_lease_token=$3,reconciliation_lease_until=clock_timestamp()+INTERVAL $8,\n next_reconcile_at=clock_timestamp()+LEAST($2,power($9,LEAST(provider_retry_count,$10)))*INTERVAL $11\n FROM claimed WHERE r.id=claimed.id RETURNING r.*,claimed.recovery_reason)\n SELECT leased.*,a.provider_payment_id FROM leased JOIN payment_attempts a ON a.id=leased.payment_attempt_id"
+        },
+        {
+          "calls": 17,
+          "returnedRows": 0,
+          "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version"
+        },
+        {
+          "calls": 2,
+          "returnedRows": 0,
+          "query": "SELECT id\n        FROM orders\n        WHERE status = $2\n          AND expires_at <= CURRENT_TIMESTAMP\n        ORDER BY expires_at ASC, id ASC\n        LIMIT $1"
+        },
+        {
+          "calls": 42,
+          "returnedRows": 420000,
+          "query": "SELECT\n            inventory.id,\n            seat.seat_label,\n            seat.row_no,\n            seat.seat_no,\n            zone.name AS zone,\n            inventory.price\n        FROM session_seats AS inventory\n        JOIN seats AS seat ON seat.id = inventory.seat_id\n        JOIN venue_zones AS zone ON zone.id = seat.zone_id AND zone.venue_id = seat.venue_id\n        WHERE inventory.session_id = $1 AND EXISTS(SELECT $2 FROM sessions s JOIN events e ON e.id=s.event_id WHERE s.id=$1 AND s.status<>$3 AND e.status<>$4)\n        ORDER BY zone.sort_order ASC,\n                 seat.row_no ASC,\n                 seat.seat_no ASC,\n                 inventory.id ASC"
+        },
+        {
+          "calls": 5,
+          "returnedRows": 0,
+          "query": "WITH claimed AS (\n            SELECT attempt.id,\n                   CASE WHEN attempt.provider_status IN ($4,$5)\n                        THEN $6\n                        WHEN attempt.next_reconcile_at IS NULL THEN $7\n                        WHEN attempt.reconciliation_lease_until IS NOT NULL THEN $8\n                        ELSE $9 END AS recovery_reason\n            FROM payment_attempts AS attempt\n            WHERE attempt.provider <> $10\n              AND attempt.status IN ($11, $12)\n              AND (attempt.reconciliation_lease_until IS NULL\n                   OR attempt.reconciliation_lease_until <= clock_timestamp())\n              AND (attempt.provider_status IN ($13,$14)\n                   OR attempt.next_reconcile_at IS NULL\n                   OR attempt.next_reconcile_at <= clock_timestamp())\n            ORDER BY (attempt.provider_status IN ($15,$16)) DESC NULLS LAST,\n                     attempt.next_reconcile_at NULLS FIRST, attempt.id\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), leased AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_retry_count = provider_retry_count + $17,\n                reconciliation_lease_token = $3,\n                reconciliation_lease_until = clock_timestamp() + INTERVAL $18,\n                next_reconcile_at = clock_timestamp() + LEAST($2, power($19, LEAST(provider_retry_count, $20))) * INTERVAL $21\n            FROM claimed WHERE attempt.id = claimed.id\n            RETURNING attempt.*, claimed.recovery_reason\n        )\n        SELECT leased.id, leased.order_id, leased.provider, leased.provider_payment_id,\n               ticket_order.total_amount, leased.currency, leased.recovery_reason\n        FROM leased JOIN orders AS ticket_order ON ticket_order.id = leased.order_id"
+        }
+      ]
+    }
+  },
+  "after": {
+    "5000": {
+      "allTrackedCalls": 85,
+      "allTrackedReturnedRows": 110069,
+      "queries": [
+        {
+          "calls": 2,
+          "returnedRows": 0,
+          "query": "SELECT status, COUNT(*) AS count, COALESCE(MAX(EXTRACT($1 FROM clock_timestamp()-created_at)) FILTER (WHERE status=$2),$3) AS age FROM refunds GROUP BY status"
+        },
+        {
+          "calls": 1,
+          "returnedRows": 1,
+          "query": "SELECT xact_commit,xact_rollback,deadlocks,numbackends FROM pg_stat_database WHERE datname=$1"
+        },
+        {
+          "calls": 2,
+          "returnedRows": 4,
+          "query": "SELECT application_name,state,wait_event_type,wait_event,count(*) FROM pg_stat_activity WHERE datname=$1 GROUP BY 1,2,3,4"
+        },
+        {
+          "calls": 22,
+          "returnedRows": 110000,
+          "query": "SELECT layout_identity.*, layout_rows.*\n        FROM (\n            SELECT s.id layout_session_id,s.venue_id,\n                (extract($2 FROM s.created_at)*$3)::bigint created,\n                coalesce((extract($4 FROM e.published_at)*$5)::bigint,$6) published,\n                r.revision layout_revision\n            FROM sessions s JOIN events e ON e.id=s.event_id\n            JOIN session_layout_revisions r ON r.session_id=s.id\n            WHERE s.id=$1 AND s.status<>$7 AND e.status<>$8\n        ) AS layout_identity\n        LEFT JOIN LATERAL (\n            SELECT inventory.id,seat.seat_label,seat.row_no,seat.seat_no,\n                   zone.name AS zone,inventory.price,zone.sort_order\n            FROM session_seats AS inventory\n            JOIN seats AS seat ON seat.id=inventory.seat_id\n            JOIN venue_zones AS zone ON zone.id=seat.zone_id AND zone.venue_id=seat.venue_id\n            WHERE inventory.session_id=layout_identity.layout_session_id\n        ) AS layout_rows ON $9\n        ORDER BY layout_rows.sort_order,layout_rows.row_no,layout_rows.seat_no,layout_rows.id"
+        },
+        {
+          "calls": 2,
+          "returnedRows": 0,
+          "query": "WITH claimed AS (\n            SELECT id, provider, object_kind, provider_object_id, local_reference_id\n            FROM payment_provider_events\n            WHERE status = $2 AND next_retry_at <= clock_timestamp()\n            ORDER BY received_at\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), wake_payments AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_payment_id = COALESCE(attempt.provider_payment_id, claimed.provider_object_id),\n                next_reconcile_at = CASE WHEN attempt.status IN ($3,$4)\n                                         THEN clock_timestamp() ELSE $5 END\n            FROM claimed\n            WHERE claimed.object_kind = $6\n              AND claimed.local_reference_id = attempt.id\n              AND claimed.provider = attempt.provider\n              AND (attempt.provider_payment_id IS NULL\n                   OR attempt.provider_payment_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        ), wake_refunds AS (\n            UPDATE refunds AS refund\n            SET next_reconcile_at = CASE WHEN refund.status = $7\n                                         THEN clock_timestamp() ELSE $8 END\n            FROM claimed\n            WHERE claimed.object_kind = $9\n              AND claimed.local_reference_id = refund.id\n              AND claimed.provider = refund.provider\n              AND (refund.provider_refund_id IS NULL\n                   OR refund.provider_refund_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        )\n        UPDATE payment_provider_events AS event\n        SET status = $10, processed_at = clock_timestamp(), last_error = $11\n        FROM claimed\n        WHERE event.id = claimed.id\n          AND (event.provider_object_id IS NULL\n               OR event.id IN (SELECT id FROM wake_payments)\n               OR event.id IN (SELECT id FROM wake_refunds))"
+        },
+        {
+          "calls": 2,
+          "returnedRows": 8,
+          "query": "SELECT e.id,e.status,\n  (extract($2 FROM e.sales_starts_at)*$3)::bigint starts,\n  (extract($4 FROM LEAST(e.sales_ends_at,coalesce((SELECT max(s.start_time) FROM sessions s WHERE s.event_id=e.id),e.sales_ends_at)))*$5)::bigint ends,\n  p.mode,p.queue_generation,p.policy_version,p.prequeue_seconds,p.max_active_users,p.admission_rate_per_second,p.lease_seconds,\n  r.generation initialized_generation FROM events e LEFT JOIN event_admission_policies p ON p.event_id=e.id\n  LEFT JOIN admission_runtime_generations r ON r.event_id=e.id ORDER BY e.id LIMIT $1::integer"
+        },
+        {
+          "calls": 2,
+          "returnedRows": 0,
+          "query": "WITH claimed AS (\n SELECT id, CASE WHEN reconciliation_lease_until IS NOT NULL THEN $4 ELSE $5 END AS recovery_reason\n FROM refunds WHERE status=$6 AND provider_terminal_at IS NULL AND next_reconcile_at <= clock_timestamp()\n AND (reconciliation_lease_until IS NULL OR reconciliation_lease_until <= clock_timestamp())\n ORDER BY next_reconcile_at,id FOR UPDATE SKIP LOCKED LIMIT $1\n ), leased AS (UPDATE refunds r SET provider_retry_count=provider_retry_count+$7,\n reconciliation_lease_token=$3,reconciliation_lease_until=clock_timestamp()+INTERVAL $8,\n next_reconcile_at=clock_timestamp()+LEAST($2,power($9,LEAST(provider_retry_count,$10)))*INTERVAL $11\n FROM claimed WHERE r.id=claimed.id RETURNING r.*,claimed.recovery_reason)\n SELECT leased.*,a.provider_payment_id FROM leased JOIN payment_attempts a ON a.id=leased.payment_attempt_id"
+        },
+        {
+          "calls": 6,
+          "returnedRows": 0,
+          "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version"
+        },
+        {
+          "calls": 42,
+          "returnedRows": 42,
+          "query": "SELECT s.id layout_session_id,s.venue_id,(extract($2 FROM s.created_at)*$3)::bigint created,coalesce((extract($4 FROM e.published_at)*$5)::bigint,$6) published,r.revision layout_revision FROM sessions s JOIN events e ON e.id=s.event_id JOIN session_layout_revisions r ON r.session_id=s.id WHERE s.id=$1 AND s.status<>$7 AND e.status<>$8"
+        },
+        {
+          "calls": 2,
+          "returnedRows": 14,
+          "query": "SELECT id,event_id FROM sessions ORDER BY id LIMIT $1::integer"
+        },
+        {
+          "calls": 2,
+          "returnedRows": 0,
+          "query": "WITH claimed AS (\n            SELECT attempt.id,\n                   CASE WHEN attempt.provider_status IN ($4,$5)\n                        THEN $6\n                        WHEN attempt.next_reconcile_at IS NULL THEN $7\n                        WHEN attempt.reconciliation_lease_until IS NOT NULL THEN $8\n                        ELSE $9 END AS recovery_reason\n            FROM payment_attempts AS attempt\n            WHERE attempt.provider <> $10\n              AND attempt.status IN ($11, $12)\n              AND (attempt.reconciliation_lease_until IS NULL\n                   OR attempt.reconciliation_lease_until <= clock_timestamp())\n              AND (attempt.provider_status IN ($13,$14)\n                   OR attempt.next_reconcile_at IS NULL\n                   OR attempt.next_reconcile_at <= clock_timestamp())\n            ORDER BY (attempt.provider_status IN ($15,$16)) DESC NULLS LAST,\n                     attempt.next_reconcile_at NULLS FIRST, attempt.id\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), leased AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_retry_count = provider_retry_count + $17,\n                reconciliation_lease_token = $3,\n                reconciliation_lease_until = clock_timestamp() + INTERVAL $18,\n                next_reconcile_at = clock_timestamp() + LEAST($2, power($19, LEAST(provider_retry_count, $20))) * INTERVAL $21\n            FROM claimed WHERE attempt.id = claimed.id\n            RETURNING attempt.*, claimed.recovery_reason\n        )\n        SELECT leased.id, leased.order_id, leased.provider, leased.provider_payment_id,\n               ticket_order.total_amount, leased.currency, leased.recovery_reason\n        FROM leased JOIN orders AS ticket_order ON ticket_order.id = leased.order_id"
+        }
+      ]
+    },
+    "10000": {
+      "allTrackedCalls": 95,
+      "allTrackedReturnedRows": 220080,
+      "queries": [
+        {
+          "calls": 3,
+          "returnedRows": 0,
+          "query": "SELECT status, COUNT(*) AS count, COALESCE(MAX(EXTRACT($1 FROM clock_timestamp()-created_at)) FILTER (WHERE status=$2),$3) AS age FROM refunds GROUP BY status"
+        },
+        {
+          "calls": 1,
+          "returnedRows": 1,
+          "query": "SELECT xact_commit,xact_rollback,deadlocks,numbackends FROM pg_stat_database WHERE datname=$1"
+        },
+        {
+          "calls": 2,
+          "returnedRows": 4,
+          "query": "SELECT application_name,state,wait_event_type,wait_event,count(*) FROM pg_stat_activity WHERE datname=$1 GROUP BY 1,2,3,4"
+        },
+        {
+          "calls": 22,
+          "returnedRows": 220000,
+          "query": "SELECT layout_identity.*, layout_rows.*\n        FROM (\n            SELECT s.id layout_session_id,s.venue_id,\n                (extract($2 FROM s.created_at)*$3)::bigint created,\n                coalesce((extract($4 FROM e.published_at)*$5)::bigint,$6) published,\n                r.revision layout_revision\n            FROM sessions s JOIN events e ON e.id=s.event_id\n            JOIN session_layout_revisions r ON r.session_id=s.id\n            WHERE s.id=$1 AND s.status<>$7 AND e.status<>$8\n        ) AS layout_identity\n        LEFT JOIN LATERAL (\n            SELECT inventory.id,seat.seat_label,seat.row_no,seat.seat_no,\n                   zone.name AS zone,inventory.price,zone.sort_order\n            FROM session_seats AS inventory\n            JOIN seats AS seat ON seat.id=inventory.seat_id\n            JOIN venue_zones AS zone ON zone.id=seat.zone_id AND zone.venue_id=seat.venue_id\n            WHERE inventory.session_id=layout_identity.layout_session_id\n        ) AS layout_rows ON $9\n        ORDER BY layout_rows.sort_order,layout_rows.row_no,layout_rows.seat_no,layout_rows.id"
+        },
+        {
+          "calls": 3,
+          "returnedRows": 0,
+          "query": "WITH claimed AS (\n            SELECT id, provider, object_kind, provider_object_id, local_reference_id\n            FROM payment_provider_events\n            WHERE status = $2 AND next_retry_at <= clock_timestamp()\n            ORDER BY received_at\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), wake_payments AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_payment_id = COALESCE(attempt.provider_payment_id, claimed.provider_object_id),\n                next_reconcile_at = CASE WHEN attempt.status IN ($3,$4)\n                                         THEN clock_timestamp() ELSE $5 END\n            FROM claimed\n            WHERE claimed.object_kind = $6\n              AND claimed.local_reference_id = attempt.id\n              AND claimed.provider = attempt.provider\n              AND (attempt.provider_payment_id IS NULL\n                   OR attempt.provider_payment_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        ), wake_refunds AS (\n            UPDATE refunds AS refund\n            SET next_reconcile_at = CASE WHEN refund.status = $7\n                                         THEN clock_timestamp() ELSE $8 END\n            FROM claimed\n            WHERE claimed.object_kind = $9\n              AND claimed.local_reference_id = refund.id\n              AND claimed.provider = refund.provider\n              AND (refund.provider_refund_id IS NULL\n                   OR refund.provider_refund_id = claimed.provider_object_id)\n            RETURNING claimed.id\n        )\n        UPDATE payment_provider_events AS event\n        SET status = $10, processed_at = clock_timestamp(), last_error = $11\n        FROM claimed\n        WHERE event.id = claimed.id\n          AND (event.provider_object_id IS NULL\n               OR event.id IN (SELECT id FROM wake_payments)\n               OR event.id IN (SELECT id FROM wake_refunds))"
+        },
+        {
+          "calls": 3,
+          "returnedRows": 12,
+          "query": "SELECT e.id,e.status,\n  (extract($2 FROM e.sales_starts_at)*$3)::bigint starts,\n  (extract($4 FROM LEAST(e.sales_ends_at,coalesce((SELECT max(s.start_time) FROM sessions s WHERE s.event_id=e.id),e.sales_ends_at)))*$5)::bigint ends,\n  p.mode,p.queue_generation,p.policy_version,p.prequeue_seconds,p.max_active_users,p.admission_rate_per_second,p.lease_seconds,\n  r.generation initialized_generation FROM events e LEFT JOIN event_admission_policies p ON p.event_id=e.id\n  LEFT JOIN admission_runtime_generations r ON r.event_id=e.id ORDER BY e.id LIMIT $1::integer"
+        },
+        {
+          "calls": 3,
+          "returnedRows": 0,
+          "query": "WITH claimed AS (\n SELECT id, CASE WHEN reconciliation_lease_until IS NOT NULL THEN $4 ELSE $5 END AS recovery_reason\n FROM refunds WHERE status=$6 AND provider_terminal_at IS NULL AND next_reconcile_at <= clock_timestamp()\n AND (reconciliation_lease_until IS NULL OR reconciliation_lease_until <= clock_timestamp())\n ORDER BY next_reconcile_at,id FOR UPDATE SKIP LOCKED LIMIT $1\n ), leased AS (UPDATE refunds r SET provider_retry_count=provider_retry_count+$7,\n reconciliation_lease_token=$3,reconciliation_lease_until=clock_timestamp()+INTERVAL $8,\n next_reconcile_at=clock_timestamp()+LEAST($2,power($9,LEAST(provider_retry_count,$10)))*INTERVAL $11\n FROM claimed WHERE r.id=claimed.id RETURNING r.*,claimed.recovery_reason)\n SELECT leased.*,a.provider_payment_id FROM leased JOIN payment_attempts a ON a.id=leased.payment_attempt_id"
+        },
+        {
+          "calls": 9,
+          "returnedRows": 0,
+          "query": "WITH candidates AS (\n            SELECT id FROM seat_availability_outbox\n            WHERE lease_until IS NULL OR lease_until<=CURRENT_TIMESTAMP\n            ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $1::integer\n        )\n        UPDATE seat_availability_outbox event\n        SET lease_token=$2,lease_until=CURRENT_TIMESTAMP+($3::double precision*interval $4)\n        FROM candidates WHERE event.id=candidates.id\n        RETURNING event.id,event.session_id,event.session_seat_id,event.formal_status,event.formal_version"
+        },
+        {
+          "calls": 42,
+          "returnedRows": 42,
+          "query": "SELECT s.id layout_session_id,s.venue_id,(extract($2 FROM s.created_at)*$3)::bigint created,coalesce((extract($4 FROM e.published_at)*$5)::bigint,$6) published,r.revision layout_revision FROM sessions s JOIN events e ON e.id=s.event_id JOIN session_layout_revisions r ON r.session_id=s.id WHERE s.id=$1 AND s.status<>$7 AND e.status<>$8"
+        },
+        {
+          "calls": 1,
+          "returnedRows": 0,
+          "query": "SELECT id\n        FROM orders\n        WHERE status = $2\n          AND expires_at <= CURRENT_TIMESTAMP\n        ORDER BY expires_at ASC, id ASC\n        LIMIT $1"
+        },
+        {
+          "calls": 3,
+          "returnedRows": 21,
+          "query": "SELECT id,event_id FROM sessions ORDER BY id LIMIT $1::integer"
+        },
+        {
+          "calls": 3,
+          "returnedRows": 0,
+          "query": "WITH claimed AS (\n            SELECT attempt.id,\n                   CASE WHEN attempt.provider_status IN ($4,$5)\n                        THEN $6\n                        WHEN attempt.next_reconcile_at IS NULL THEN $7\n                        WHEN attempt.reconciliation_lease_until IS NOT NULL THEN $8\n                        ELSE $9 END AS recovery_reason\n            FROM payment_attempts AS attempt\n            WHERE attempt.provider <> $10\n              AND attempt.status IN ($11, $12)\n              AND (attempt.reconciliation_lease_until IS NULL\n                   OR attempt.reconciliation_lease_until <= clock_timestamp())\n              AND (attempt.provider_status IN ($13,$14)\n                   OR attempt.next_reconcile_at IS NULL\n                   OR attempt.next_reconcile_at <= clock_timestamp())\n            ORDER BY (attempt.provider_status IN ($15,$16)) DESC NULLS LAST,\n                     attempt.next_reconcile_at NULLS FIRST, attempt.id\n            FOR UPDATE SKIP LOCKED\n            LIMIT $1\n        ), leased AS (\n            UPDATE payment_attempts AS attempt\n            SET provider_retry_count = provider_retry_count + $17,\n                reconciliation_lease_token = $3,\n                reconciliation_lease_until = clock_timestamp() + INTERVAL $18,\n                next_reconcile_at = clock_timestamp() + LEAST($2, power($19, LEAST(provider_retry_count, $20))) * INTERVAL $21\n            FROM claimed WHERE attempt.id = claimed.id\n            RETURNING attempt.*, claimed.recovery_reason\n        )\n        SELECT leased.id, leased.order_id, leased.provider, leased.provider_payment_id,\n               ticket_order.total_amount, leased.currency, leased.recovery_reason\n        FROM leased JOIN orders AS ticket_order ON ticket_order.id = leased.order_id"
+        }
+      ]
+    }
+  },
+  "meaning": "All pg_stat_statements deltas in the Layout interval, including scheduler/monitoring and nested SQL; not one-to-one HTTP statements or physical scanned rows."
+}

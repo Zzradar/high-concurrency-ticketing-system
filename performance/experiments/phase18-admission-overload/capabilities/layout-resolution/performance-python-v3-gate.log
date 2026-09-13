@@ -1,0 +1,17 @@
+..............................................................................................................................................................................................................................................................
+[PASS] offline session /auth/me: HTTP 200, userId=perf-user-000001
++ verify-observability (attempt 1/3)
+Observability stack has not converged yet; retrying in 5 seconds.
++ verify-observability (attempt 2/3)
++ verify-observability (attempt 1/2)
+Observability stack has not converged yet; retrying in 0 seconds.
++ verify-observability (attempt 2/2)
+Compose project: ticketing-phase10a
+Performance volumes selected for deletion:
+  - ticketing_phase10a_postgres_data
+Dataset profile after rebuild: smoke
+DRY RUN: no files, containers, or volumes were changed; pass --yes to execute.
+----------------------------------------------------------------------
+Ran 254 tests in 6.059s
+
+OK

@@ -1,0 +1,6 @@
+test_shadowed_revision_still_invalidates_public_etag (__main__.LayoutResolutionHTTP) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 3.863s
+
+OK

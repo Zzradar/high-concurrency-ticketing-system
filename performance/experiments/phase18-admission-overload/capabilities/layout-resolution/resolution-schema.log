@@ -1,0 +1,59 @@
+test_fresh_constraints_and_policy_occ (__main__.LayoutResolution) ... ok
+test_fresh_nonpublic_temp_and_ordinary_objects (__main__.LayoutResolution) ... ERROR
+test_installed015_upgrade_rollback_repeat_oid (__main__.LayoutResolution) ... ERROR
+test_minimal_role_sources_helper_and_late_failure (__main__.LayoutResolution) ... ERROR
+test_source_tables_and_transition_relations_cannot_be_shadowed (__main__.LayoutResolution) ... ERROR
+test_upgrade_preserves_business_and_absent_policy_is_off (__main__.LayoutResolution) ... ok
+
+======================================================================
+ERROR: test_fresh_nonpublic_temp_and_ordinary_objects (__main__.LayoutResolution)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_layout_resolution_schema_test.py", line 52, in test_fresh_nonpublic_temp_and_ordinary_objects
+    self.prepare();self.assert_safe();self.shadow_round();self.shadow_round(True)
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_layout_resolution_schema_test.py", line 14, in prepare
+    self.sql(p.read_text())
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\pathlib.py", line 1135, in read_text
+    return f.read()
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xaa in position 1751: illegal multibyte sequence
+
+======================================================================
+ERROR: test_installed015_upgrade_rollback_repeat_oid (__main__.LayoutResolution)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_layout_resolution_schema_test.py", line 26, in test_installed015_upgrade_rollback_repeat_oid
+    self.prepare(True);before=self.definitions();data=self.snapshot()
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_layout_resolution_schema_test.py", line 14, in prepare
+    self.sql(p.read_text())
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\pathlib.py", line 1135, in read_text
+    return f.read()
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xaa in position 1751: illegal multibyte sequence
+
+======================================================================
+ERROR: test_minimal_role_sources_helper_and_late_failure (__main__.LayoutResolution)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_layout_resolution_schema_test.py", line 54, in test_minimal_role_sources_helper_and_late_failure
+    self.prepare();s=self.schema;role=s+'_writer';evil=s+'_evil'
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_layout_resolution_schema_test.py", line 14, in prepare
+    self.sql(p.read_text())
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\pathlib.py", line 1135, in read_text
+    return f.read()
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xaa in position 1751: illegal multibyte sequence
+
+======================================================================
+ERROR: test_source_tables_and_transition_relations_cannot_be_shadowed (__main__.LayoutResolution)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_layout_resolution_schema_test.py", line 71, in test_source_tables_and_transition_relations_cannot_be_shadowed
+    self.prepare();s=self.schema
+  File "D:\Documents\vscode\high-concurrency-ticketing-system-phase18\backend\tests\phase18_layout_resolution_schema_test.py", line 14, in prepare
+    self.sql(p.read_text())
+  File "C:\Users\a12\AppData\Local\Programs\Python\Python310\lib\pathlib.py", line 1135, in read_text
+    return f.read()
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xaa in position 1751: illegal multibyte sequence
+
+----------------------------------------------------------------------
+Ran 6 tests in 25.394s
+
+FAILED (errors=4)

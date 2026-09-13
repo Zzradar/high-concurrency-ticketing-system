@@ -1,0 +1,24 @@
+{
+  "baseline": {
+    "files": 63,
+    "treeSha256": "746d48a3bdce8311ca59e0711179395b47cb1d899599973e1f2d9a00c6477c3f"
+  },
+  "protocol": {
+    "files": 8,
+    "treeSha256": "71aaa6f8ca5242b22c71b947f5b566af20cf21179babfe0b0e82ec59a33b6afa"
+  },
+  "diagnostics": {
+    "files": 91,
+    "treeSha256": "1f2b8e972beaf8309c28de205f4b7ce47805755773b2ef2368477f9549b9f413"
+  },
+  "after": {
+    "files": 66,
+    "treeSha256": "20d707ba60f59f4a6fcfd0cf6059d6702eb23ae7b122d4f2296bacaf638156df"
+  },
+  "after-v2": {
+    "files": 66,
+    "treeSha256": "aae3e31d0517521a78fe8f27a9f9d5961a036c9067faf8ea001e9d6ddb997eae"
+  },
+  "unchangedFromReviewedHead": true,
+  "priorDeliveryManifestSha256": "b3690ca98faf5f588cd5428809a9ea98b4c42e0811bf104f3c752e1ea8ef1126"
+}

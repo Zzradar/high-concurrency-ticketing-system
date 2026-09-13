@@ -1,0 +1,18 @@
+test_3ds_grace_skips_expiry_then_times_out_and_refunds (__main__.Phase11StripeIntegrationTest) ... ok
+test_backend_restart_recovers_processing_payment (__main__.Phase11StripeIntegrationTest) ...  Container phase18-financial-resolution-backend-1 Restarting 
+ Container phase18-financial-resolution-backend-1 Started 
+ok
+test_card_only_request_and_provider_deadline (__main__.Phase11StripeIntegrationTest) ... ok
+test_create_response_lost_and_webhook_lost_recover_by_scan (__main__.Phase11StripeIntegrationTest) ... ok
+test_duplicate_late_success_refunds_after_newer_attempt_paid (__main__.Phase11StripeIntegrationTest) ... ok
+test_expired_order_late_success_refunds_without_inventory_revival (__main__.Phase11StripeIntegrationTest) ... ok
+test_late_success_refund_response_lost_is_idempotent (__main__.Phase11StripeIntegrationTest) ... ok
+test_provider_500_is_retryable_and_recovers (__main__.Phase11StripeIntegrationTest) ... ok
+test_refund_terminal_failure_notifies (__main__.Phase11StripeIntegrationTest) ... ok
+test_webhook_duplicate_and_out_of_order_retrieve_latest (__main__.Phase11StripeIntegrationTest) ... ok
+test_webhook_inbox_database_failure_returns_5xx (__main__.Phase11StripeIntegrationTest) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 84.882s
+
+OK

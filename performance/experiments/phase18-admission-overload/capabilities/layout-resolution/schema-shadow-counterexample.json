@@ -1,0 +1,72 @@
+{
+  "session": "SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9",
+  "sql": "BEGIN;\nSHOW search_path;\nCREATE TEMP TABLE session_layout_revisions AS SELECT * FROM public.session_layout_revisions;\nUPDATE public.session_seats SET price=101 WHERE id='SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-1';\nSELECT 'public',revision FROM public.session_layout_revisions WHERE session_id='SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9';\nSELECT 'temporary',revision FROM pg_temp.session_layout_revisions WHERE session_id='SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9';\nCOMMIT;",
+  "sqlOutput": "\"$user\", public\npublic|5\ntemporary|4",
+  "before": {
+    "status": 200,
+    "headers": {
+      "content-length": "378",
+      "connection": "close",
+      "content-type": "application/json; charset=utf-8",
+      "server": "drogon/1.9.13",
+      "vary": "Accept-Encoding",
+      "cache-control": "public, max-age=60, stale-while-revalidate=15",
+      "etag": "W/\"seat-layout-v2-52ce24d4873d32cfee2b025b7abe4002d71a63df85e3bc47d5901e6b9d98e5a3\"",
+      "date": "Sun, 13 Sep 2026 03:06:10 GMT"
+    },
+    "etag": "W/\"seat-layout-v2-52ce24d4873d32cfee2b025b7abe4002d71a63df85e3bc47d5901e6b9d98e5a3\"",
+    "body": "{\"seats\":[{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-1\",\"label\":\"A001\",\"number\":1,\"price\":100,\"row\":\"A\",\"zone\":\"A\"},{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-2\",\"label\":\"A002\",\"number\":2,\"price\":100,\"row\":\"A\",\"zone\":\"A\"}],\"sessionId\":\"SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9\"}",
+    "sha256": "4c9a3c293f2987aca5c32b75be142da3a87d930a1597990e7bf844f7d292a86f"
+  },
+  "after": {
+    "status": 200,
+    "headers": {
+      "content-length": "378",
+      "connection": "close",
+      "content-type": "application/json; charset=utf-8",
+      "server": "drogon/1.9.13",
+      "vary": "Accept-Encoding",
+      "cache-control": "public, max-age=60, stale-while-revalidate=15",
+      "etag": "W/\"seat-layout-v2-a23e7b90f9360341ee92c981f97c3f7849f21f3ced250f5ed94bd1a2723ab567\"",
+      "date": "Sun, 13 Sep 2026 03:06:11 GMT"
+    },
+    "etag": "W/\"seat-layout-v2-a23e7b90f9360341ee92c981f97c3f7849f21f3ced250f5ed94bd1a2723ab567\"",
+    "body": "{\"seats\":[{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-1\",\"label\":\"A001\",\"number\":1,\"price\":101,\"row\":\"A\",\"zone\":\"A\"},{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-2\",\"label\":\"A002\",\"number\":2,\"price\":100,\"row\":\"A\",\"zone\":\"A\"}],\"sessionId\":\"SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9\"}",
+    "sha256": "4bb91504165e554f0c4ae6c78416ace3fe18d89aaf62798dbe0a1f9e096f0fe0"
+  },
+  "conditional": {
+    "status": 200,
+    "headers": {
+      "content-length": "378",
+      "connection": "close",
+      "content-type": "application/json; charset=utf-8",
+      "server": "drogon/1.9.13",
+      "vary": "Accept-Encoding",
+      "cache-control": "public, max-age=60, stale-while-revalidate=15",
+      "etag": "W/\"seat-layout-v2-a23e7b90f9360341ee92c981f97c3f7849f21f3ced250f5ed94bd1a2723ab567\"",
+      "date": "Sun, 13 Sep 2026 03:06:11 GMT"
+    },
+    "etag": "W/\"seat-layout-v2-a23e7b90f9360341ee92c981f97c3f7849f21f3ced250f5ed94bd1a2723ab567\"",
+    "body": "{\"seats\":[{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-1\",\"label\":\"A001\",\"number\":1,\"price\":101,\"row\":\"A\",\"zone\":\"A\"},{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-2\",\"label\":\"A002\",\"number\":2,\"price\":100,\"row\":\"A\",\"zone\":\"A\"}],\"sessionId\":\"SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9\"}",
+    "sha256": "4bb91504165e554f0c4ae6c78416ace3fe18d89aaf62798dbe0a1f9e096f0fe0"
+  },
+  "revisionBefore": 4,
+  "revisionAfter": 5,
+  "functions": "bump_session_layout_revisions|f|{search_path=pg_catalog}\nmaintain_layout_inventory_truncate|f|{search_path=pg_catalog}\nmaintain_layout_seats|f|{search_path=pg_catalog}\nmaintain_layout_session_seats|f|{search_path=pg_catalog}\nmaintain_layout_venue_zones|f|{search_path=pg_catalog}\nmaintain_session_layout_identity|f|{search_path=pg_catalog}",
+  "restored": {
+    "status": 200,
+    "headers": {
+      "content-length": "378",
+      "connection": "close",
+      "content-type": "application/json; charset=utf-8",
+      "server": "drogon/1.9.13",
+      "vary": "Accept-Encoding",
+      "cache-control": "public, max-age=60, stale-while-revalidate=15",
+      "etag": "W/\"seat-layout-v2-e0a699a6003d96e0b36fb83dcd8a427c1946c17fc1abe7ca7359f60453f3993c\"",
+      "date": "Sun, 13 Sep 2026 03:06:11 GMT"
+    },
+    "etag": "W/\"seat-layout-v2-e0a699a6003d96e0b36fb83dcd8a427c1946c17fc1abe7ca7359f60453f3993c\"",
+    "body": "{\"seats\":[{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-1\",\"label\":\"A001\",\"number\":1,\"price\":100,\"row\":\"A\",\"zone\":\"A\"},{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-2\",\"label\":\"A002\",\"number\":2,\"price\":100,\"row\":\"A\",\"zone\":\"A\"}],\"sessionId\":\"SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9\"}",
+    "sha256": "4c9a3c293f2987aca5c32b75be142da3a87d930a1597990e7bf844f7d292a86f"
+  }
+}

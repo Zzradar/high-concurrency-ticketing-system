@@ -1,0 +1,9 @@
+test_completed_buyer_refund_is_valid (phase16_refund_verifier_test.RefundVerifierTest) ... ok
+test_missing_refund_remains_invalid (phase16_refund_verifier_test.RefundVerifierTest) ... ok
+test_wrong_refund_amount_remains_invalid (phase16_refund_verifier_test.RefundVerifierTest) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 1.814s
+
+OK
+Real reservation -> payment -> BUYER refund SUCCEEDED; original positive/missing/wrong-amount verifier assertions

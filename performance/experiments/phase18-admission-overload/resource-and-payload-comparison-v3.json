@@ -1,0 +1,82 @@
+{
+  "before": {
+    "processObservedPeaks": {
+      "VmHWM": 237556,
+      "VmRSS": 173976,
+      "Threads": 155,
+      "cgroupMemoryBytes": 183541760,
+      "cgroupPids": 157
+    },
+    "samples": 46,
+    "browserBytes": 69296,
+    "k6Requests": 121,
+    "k6Checks": {
+      "rate": 1,
+      "passes": 242,
+      "fails": 0
+    },
+    "k6ErrorRate": 0,
+    "payloads": [
+      {
+        "seats": 5000,
+        "snapshotBytes": [
+          50536
+        ],
+        "deltaBytes": [
+          536
+        ],
+        "layoutWireBytes": 20513772
+      },
+      {
+        "seats": 10000,
+        "snapshotBytes": [
+          102537
+        ],
+        "deltaBytes": [
+          537
+        ],
+        "layoutWireBytes": 41435548
+      }
+    ]
+  },
+  "after": {
+    "processObservedPeaks": {
+      "VmHWM": 233892,
+      "VmRSS": 169964,
+      "Threads": 163,
+      "cgroupMemoryBytes": 179326976,
+      "cgroupPids": 165
+    },
+    "samples": 43,
+    "browserBytes": 104440,
+    "k6Requests": 121,
+    "k6Checks": {
+      "rate": 1,
+      "passes": 242,
+      "fails": 0
+    },
+    "k6ErrorRate": 0,
+    "payloads": [
+      {
+        "seats": 5000,
+        "snapshotBytes": [
+          50555
+        ],
+        "deltaBytes": [
+          555
+        ],
+        "layoutWireBytes": 10521052
+      },
+      {
+        "seats": 10000,
+        "snapshotBytes": [
+          102556
+        ],
+        "deltaBytes": [
+          556
+        ],
+        "layoutWireBytes": 21250808
+      }
+    ]
+  }
+}

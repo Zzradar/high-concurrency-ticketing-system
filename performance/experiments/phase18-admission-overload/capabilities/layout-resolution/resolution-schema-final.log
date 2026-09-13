@@ -1,0 +1,11 @@
+test_fresh_constraints_and_policy_occ (__main__.LayoutResolution) ... ok
+test_fresh_nonpublic_temp_and_ordinary_objects (__main__.LayoutResolution) ... ok
+test_installed015_upgrade_rollback_repeat_oid (__main__.LayoutResolution) ... ok
+test_minimal_role_sources_helper_and_late_failure (__main__.LayoutResolution) ... ok
+test_source_tables_and_transition_relations_cannot_be_shadowed (__main__.LayoutResolution) ... ok
+test_upgrade_preserves_business_and_absent_policy_is_off (__main__.LayoutResolution) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 42.106s
+
+OK

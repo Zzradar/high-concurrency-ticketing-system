@@ -1,0 +1,13 @@
+Original price 100->101 case PASS; old tag 200, new tag 304, v1 200; restored
+{
+  "beforeRevision": 4,
+  "afterRevision": 4,
+  "bodyChanged": true,
+  "etagChanged": false,
+  "conditionalStatus": 304,
+  "sqlOutput": "\"$user\", public\npublic|4\ntemporary|5"
+}
+Traceback (most recent call last):
+  File "C:\Users\a12\AppData\Local\Temp\phase18-search-path-fix\layout_independent.py", line 43, in <module>
+    assert conditional['status']==200 and actual['etag']!=baseline['etag'],'MAJOR: temporary table shadows revision updates; changed public Layout validates stale ETag'
+AssertionError: MAJOR: temporary table shadows revision updates; changed public Layout validates stale ETag

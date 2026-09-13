@@ -1,0 +1,8 @@
+test_date_range_drift_is_detected (__main__.VerifierTest) ... ok
+test_draft_inventory_is_detected (__main__.VerifierTest) ... ok
+test_published_price_drift_is_detected (__main__.VerifierTest) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.669s
+
+OK

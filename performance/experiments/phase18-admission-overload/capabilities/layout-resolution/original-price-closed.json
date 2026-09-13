@@ -1,0 +1,100 @@
+{
+  "before": {
+    "status": 200,
+    "headers": {
+      "content-length": "378",
+      "connection": "close",
+      "content-type": "application/json; charset=utf-8",
+      "server": "drogon/1.9.13",
+      "vary": "Accept-Encoding",
+      "cache-control": "public, max-age=60, stale-while-revalidate=15",
+      "etag": "W/\"seat-layout-v2-4b4a00b222626f8bc14f9c55fdad5c9b30d5ea8e5d132f0edfbd054254ad863d\"",
+      "date": "Sun, 13 Sep 2026 03:06:09 GMT"
+    },
+    "etag": "W/\"seat-layout-v2-4b4a00b222626f8bc14f9c55fdad5c9b30d5ea8e5d132f0edfbd054254ad863d\"",
+    "body": "{\"seats\":[{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-1\",\"label\":\"A001\",\"number\":1,\"price\":100,\"row\":\"A\",\"zone\":\"A\"},{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-2\",\"label\":\"A002\",\"number\":2,\"price\":100,\"row\":\"A\",\"zone\":\"A\"}],\"sessionId\":\"SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9\"}",
+    "sha256": "4c9a3c293f2987aca5c32b75be142da3a87d930a1597990e7bf844f7d292a86f"
+  },
+  "revisionBefore": 2,
+  "revisionAfter": 3,
+  "after": {
+    "status": 200,
+    "headers": {
+      "content-length": "378",
+      "connection": "close",
+      "content-type": "application/json; charset=utf-8",
+      "server": "drogon/1.9.13",
+      "vary": "Accept-Encoding",
+      "cache-control": "public, max-age=60, stale-while-revalidate=15",
+      "etag": "W/\"seat-layout-v2-00259c716270f634f443f8283692f865c62e633bcf0edebbb172e7138bec12f6\"",
+      "date": "Sun, 13 Sep 2026 03:06:10 GMT"
+    },
+    "etag": "W/\"seat-layout-v2-00259c716270f634f443f8283692f865c62e633bcf0edebbb172e7138bec12f6\"",
+    "body": "{\"seats\":[{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-1\",\"label\":\"A001\",\"number\":1,\"price\":101,\"row\":\"A\",\"zone\":\"A\"},{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-2\",\"label\":\"A002\",\"number\":2,\"price\":100,\"row\":\"A\",\"zone\":\"A\"}],\"sessionId\":\"SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9\"}",
+    "sha256": "4bb91504165e554f0c4ae6c78416ace3fe18d89aaf62798dbe0a1f9e096f0fe0"
+  },
+  "oldTag": {
+    "status": 200,
+    "headers": {
+      "content-length": "378",
+      "connection": "close",
+      "content-type": "application/json; charset=utf-8",
+      "server": "drogon/1.9.13",
+      "vary": "Accept-Encoding",
+      "cache-control": "public, max-age=60, stale-while-revalidate=15",
+      "etag": "W/\"seat-layout-v2-00259c716270f634f443f8283692f865c62e633bcf0edebbb172e7138bec12f6\"",
+      "date": "Sun, 13 Sep 2026 03:06:10 GMT"
+    },
+    "etag": "W/\"seat-layout-v2-00259c716270f634f443f8283692f865c62e633bcf0edebbb172e7138bec12f6\"",
+    "body": "{\"seats\":[{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-1\",\"label\":\"A001\",\"number\":1,\"price\":101,\"row\":\"A\",\"zone\":\"A\"},{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-2\",\"label\":\"A002\",\"number\":2,\"price\":100,\"row\":\"A\",\"zone\":\"A\"}],\"sessionId\":\"SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9\"}",
+    "sha256": "4bb91504165e554f0c4ae6c78416ace3fe18d89aaf62798dbe0a1f9e096f0fe0"
+  },
+  "newTag": {
+    "status": 304,
+    "headers": {
+      "content-length": "0",
+      "connection": "close",
+      "content-type": "text/html; charset=utf-8",
+      "server": "drogon/1.9.13",
+      "vary": "Accept-Encoding",
+      "cache-control": "public, max-age=60, stale-while-revalidate=15",
+      "etag": "W/\"seat-layout-v2-00259c716270f634f443f8283692f865c62e633bcf0edebbb172e7138bec12f6\"",
+      "date": "Sun, 13 Sep 2026 03:06:10 GMT"
+    },
+    "etag": "W/\"seat-layout-v2-00259c716270f634f443f8283692f865c62e633bcf0edebbb172e7138bec12f6\"",
+    "body": "",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "v1Tag": {
+    "status": 200,
+    "headers": {
+      "content-length": "378",
+      "connection": "close",
+      "content-type": "application/json; charset=utf-8",
+      "server": "drogon/1.9.13",
+      "vary": "Accept-Encoding",
+      "cache-control": "public, max-age=60, stale-while-revalidate=15",
+      "etag": "W/\"seat-layout-v2-00259c716270f634f443f8283692f865c62e633bcf0edebbb172e7138bec12f6\"",
+      "date": "Sun, 13 Sep 2026 03:06:10 GMT"
+    },
+    "etag": "W/\"seat-layout-v2-00259c716270f634f443f8283692f865c62e633bcf0edebbb172e7138bec12f6\"",
+    "body": "{\"seats\":[{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-1\",\"label\":\"A001\",\"number\":1,\"price\":101,\"row\":\"A\",\"zone\":\"A\"},{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-2\",\"label\":\"A002\",\"number\":2,\"price\":100,\"row\":\"A\",\"zone\":\"A\"}],\"sessionId\":\"SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9\"}",
+    "sha256": "4bb91504165e554f0c4ae6c78416ace3fe18d89aaf62798dbe0a1f9e096f0fe0"
+  },
+  "restored": {
+    "status": 200,
+    "headers": {
+      "content-length": "378",
+      "connection": "close",
+      "content-type": "application/json; charset=utf-8",
+      "server": "drogon/1.9.13",
+      "vary": "Accept-Encoding",
+      "cache-control": "public, max-age=60, stale-while-revalidate=15",
+      "etag": "W/\"seat-layout-v2-52ce24d4873d32cfee2b025b7abe4002d71a63df85e3bc47d5901e6b9d98e5a3\"",
+      "date": "Sun, 13 Sep 2026 03:06:10 GMT"
+    },
+    "etag": "W/\"seat-layout-v2-52ce24d4873d32cfee2b025b7abe4002d71a63df85e3bc47d5901e6b9d98e5a3\"",
+    "body": "{\"seats\":[{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-1\",\"label\":\"A001\",\"number\":1,\"price\":100,\"row\":\"A\",\"zone\":\"A\"},{\"id\":\"SS-SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9-VZ-51e7abc4-ba86-4729-8010-05ddf8541ac5-1-2\",\"label\":\"A002\",\"number\":2,\"price\":100,\"row\":\"A\",\"zone\":\"A\"}],\"sessionId\":\"SES-04d91ed4-f280-470b-abf6-eb04c77cc8f9\"}",
+    "sha256": "4c9a3c293f2987aca5c32b75be142da3a87d930a1597990e7bf844f7d292a86f"
+  }
+}

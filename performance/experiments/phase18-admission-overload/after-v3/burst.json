@@ -1,0 +1,61 @@
+{
+  "offered": 8,
+  "trials": 1,
+  "rows": [
+    {
+      "startEpoch": 1789270068.9791174,
+      "ms": 23.908100090920925,
+      "status": 409,
+      "code": "SEAT_CONFLICT"
+    },
+    {
+      "startEpoch": 1789270068.9796324,
+      "ms": 26.001200079917908,
+      "status": 409,
+      "code": "SEAT_CONFLICT"
+    },
+    {
+      "startEpoch": 1789270068.980161,
+      "ms": 25.749700143933296,
+      "status": 409,
+      "code": "SEAT_CONFLICT"
+    },
+    {
+      "startEpoch": 1789270068.9796324,
+      "ms": 21.036500111222267,
+      "status": 201,
+      "code": null
+    },
+    {
+      "startEpoch": 1789270068.980161,
+      "ms": 23.838300025090575,
+      "status": 409,
+      "code": "SEAT_CONFLICT"
+    },
+    {
+      "startEpoch": 1789270068.9796324,
+      "ms": 24.12499999627471,
+      "status": 409,
+      "code": "SEAT_CONFLICT"
+    },
+    {
+      "startEpoch": 1789270068.9807148,
+      "ms": 20.611200015991926,
+      "status": 409,
+      "code": "SEAT_CONFLICT"
+    },
+    {
+      "startEpoch": 1789270068.978586,
+      "ms": 22.44660002179444,
+      "status": 409,
+      "code": "SEAT_CONFLICT"
+    }
+  ],
+  "summary": {
+    "count": 8,
+    "errorRate": 0.875,
+    "p50Ms": 23.838300025090575,
+    "p95Ms": 26.001200079917908,
+    "p99Ms": 26.001200079917908
+  }
+}

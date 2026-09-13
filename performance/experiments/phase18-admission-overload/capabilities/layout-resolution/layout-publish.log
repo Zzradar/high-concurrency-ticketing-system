@@ -1,0 +1,8 @@
+{"seatsPerSession": 5000, "sessions": 2, "inventoryRows": 10000, "revisionRowUpdates": 2}
+{"seatsPerSession": 10000, "sessions": 2, "inventoryRows": 20000, "revisionRowUpdates": 2}
+test_5000_and_10000_seats_two_sessions (__main__.PublishRevision) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 7.327s
+
+OK

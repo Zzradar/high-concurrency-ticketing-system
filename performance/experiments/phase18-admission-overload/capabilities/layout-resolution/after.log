@@ -1,0 +1,9 @@
+Original price 100->101 case PASS; old tag 200, new tag 304, v1 200; restored
+{
+  "beforeRevision": 4,
+  "afterRevision": 5,
+  "bodyChanged": true,
+  "etagChanged": true,
+  "conditionalStatus": 200,
+  "sqlOutput": "\"$user\", public\npublic|5\ntemporary|4"
+}

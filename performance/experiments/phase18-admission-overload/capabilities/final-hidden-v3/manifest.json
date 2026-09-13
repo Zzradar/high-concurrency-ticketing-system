@@ -1,0 +1,13 @@
+{
+  "sourceSutSha": "3a9e0c1311add748c7faec956bb6c9266ed7d5ba",
+  "kind": "NATIVE_THREE_PERIOD_HIDDEN_CAPABILITY_NOT_OFF_AB",
+  "script": {
+    "path": "capabilities/cache-polling/long-hidden.mjs",
+    "sha256": "151fa7a95d2f2b55621ccd9624194a361d61bf631d3a7e829ff27122d0da4408"
+  },
+  "files": {
+    "browser.json": "f1243c1a8cecff22fca15fd57fc2341750873508753a05fb07d22a9c5044b670",
+    "browser.json.browser.log": "19d4d1cc1b19f434d4f1829dfbe1a9eec0b7457c36099fb498722129c3edaffc",
+    "run.log": "11ffa93f7c2712829a1cc9ca4b80fbb0a950ec1e7c06edbced1ce62aa39d6a84"
+  }
+}

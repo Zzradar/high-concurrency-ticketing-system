@@ -1,0 +1,15 @@
+{
+  "seed": 18,
+  "fixtures": [
+    {
+      "seatCount": 5000,
+      "zoneCount": 5,
+      "inventorySha256": "1387589764fc13eb7cc1d7bf0222663aa8db7cfa992f91756935db82efa31d82"
+    },
+    {
+      "seatCount": 10000,
+      "zoneCount": 5,
+      "inventorySha256": "f720116ea87fd806a194890ab0e1b70f140a572d7bc9c792e4da8cc67a8e9583"
+    }
+  ]
+}
