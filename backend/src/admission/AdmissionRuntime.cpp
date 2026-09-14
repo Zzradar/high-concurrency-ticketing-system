@@ -13,7 +13,7 @@ namespace ticketing::admission {
 namespace {
 std::mutex mutex;
 std::condition_variable wake;
-bool stopping=false,loaded=false,dirty=true;
+bool stopping=false,loaded=false,dirty=true,redisDirty=true;
 uint64_t invalidation=0;
 std::thread worker;
 std::unordered_map<std::string,RuntimePolicy> policies;
@@ -22,6 +22,13 @@ std::unordered_map<std::string,std::string> sessions;
 std::unordered_map<std::string,std::pair<double,double>> queueSizes;
 std::chrono::steady_clock::time_point refreshed;
 const std::string scheduleKey="ticketing:admission:schedule";
+// Redis scheduling health cannot invalidate authoritative OFF policy. Keep
+// policy invalidation separate so a policy change still fences stale entries.
+void redisUnavailable() {
+ std::lock_guard lock(mutex);
+ redisDirty=true;
+ for(auto &[id,p]:policies)p.redisReady=false;
+}
 void reset(const RuntimePolicy &p) {
  auto tx=drogon::app().getDbClient()->newTransaction();
  try {
@@ -74,7 +81,9 @@ void refresh(const Config &config) {
    // Cross-slot schedule publication is a separate idempotent step. Refresh repairs
    // a crash between per-event sync and this index update; status never writes it.
    const auto hash=RedisAdmissionStore::eventHash(p.eventId);
-   drogon::app().getRedisClient("traffic_control")->execCommandSync<int64_t>([](const drogon::nosql::RedisResult &r){return r.asInteger();},"ZADD %s NX 0 %s",scheduleKey.c_str(),hash.c_str());
+   try {
+    drogon::app().getRedisClient("traffic_control")->execCommandSync<int64_t>([](const drogon::nosql::RedisResult &r){return r.asInteger();},"ZADD %s NX 0 %s",scheduleKey.c_str(),hash.c_str());
+   }catch(...) {redisHealthy=false;p.redisReady=false;}
   }
   next.emplace(p.eventId,std::move(p));
  }
@@ -83,7 +92,7 @@ void refresh(const Config &config) {
  for(const auto &row:sessionRows)nextSessions.emplace(row["id"].as<std::string>(),row["event_id"].as<std::string>());
  std::lock_guard lock(mutex);
  if(epoch!=invalidation)return;
- policies=std::move(next);sessions=std::move(nextSessions);loaded=true;dirty=false;refreshed=std::chrono::steady_clock::now();
+ policies=std::move(next);sessions=std::move(nextSessions);loaded=true;dirty=false;redisDirty=!redisHealthy;refreshed=std::chrono::steady_clock::now();
 }
 void tick(const Config &config) {
  TrafficControl::sample();
@@ -105,7 +114,7 @@ void tick(const Config &config) {
   const auto found=byHash.find(hash);
   if(found==byHash.end()){queueSizes.erase(hash);redis->execCommandSync<int64_t>([](const drogon::nosql::RedisResult &r){return r.asInteger();},"ZREM %s %s",scheduleKey.c_str(),hash.c_str());continue;}
   const auto result=RedisAdmissionStore::run(found->second,"tick");
-  if(result.size()<2 || (result[0]!="OK"&&result[0]!="PAUSED")){AdmissionRuntime::invalidate();return;}
+  if(result.size()<2 || (result[0]!="OK"&&result[0]!="PAUSED")){redisUnavailable();return;}
   AdmissionMetrics::count("ticketing_admission_scheduler_runs_total",{result.size()>6?result[6]:"OK"});
   if(result.size()>2)AdmissionMetrics::count("ticketing_admission_expirations_total",{},std::stod(result[2]));
   if(result.size()>5)queueSizes[hash]={std::stod(result[4]),std::stod(result[5])};
@@ -122,8 +131,9 @@ void AdmissionRuntime::start() {
  worker=std::thread([config]{
   while(true) {
    bool shouldRefresh;
-   {std::lock_guard lock(mutex);if(stopping)break;shouldRefresh=dirty||!loaded||std::chrono::steady_clock::now()-refreshed>std::chrono::milliseconds(config.policyRefreshMs);}
-   try{if(shouldRefresh)refresh(config);tick(config);}catch(...){std::lock_guard lock(mutex);dirty=true;}
+   {std::lock_guard lock(mutex);if(stopping)break;shouldRefresh=dirty||redisDirty||!loaded||std::chrono::steady_clock::now()-refreshed>std::chrono::milliseconds(config.policyRefreshMs);}
+   try{if(shouldRefresh)refresh(config);}catch(...){std::lock_guard lock(mutex);dirty=true;}
+   try{tick(config);}catch(...){redisUnavailable();}
    std::unique_lock lock(mutex);wake.wait_for(lock,std::chrono::milliseconds(config.schedulerMs),[]{return stopping;});
   }
  });

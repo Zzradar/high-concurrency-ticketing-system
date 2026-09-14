@@ -26,24 +26,35 @@ class TrafficHTTP(unittest.TestCase):
    else:self.assertEqual(status,200,body);self.assertEqual(body['state'],'NOT_REQUIRED')
  def test_off_read_saturation_is_bounded_and_releases_permits(self):
   self.policy('OFF')
-  # Hold only this fixture's relation for a short bounded interval. No other phase resources.
+  # Keep the relation locked until all sixteen deliberate rejections arrive.
+  # Release is driven by observed completion, never a sleep duration.
   blocker=subprocess.Popen(['docker','exec','-i',fixture.PG,'psql','-U','postgres','-qAt','-v','ON_ERROR_STOP=1'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
-  self.addCleanup(lambda: (blocker.wait(timeout=10),blocker.stdout.close(),blocker.stderr.close()))
-  blocker.stdin.write("BEGIN; LOCK TABLE session_seats IN ACCESS EXCLUSIVE MODE; SELECT pg_sleep(3); ROLLBACK;\n");blocker.stdin.close()
-  fixture.until(lambda:fixture.sql("SELECT count(*) FROM pg_stat_activity WHERE query LIKE 'SELECT pg_sleep(3)%' AND state='active'")=='1')
+  def release():
+   if not blocker.stdin.closed:
+    blocker.stdin.write("ROLLBACK;\n");blocker.stdin.close()
+  def cleanup():
+   release();blocker.wait(timeout=10);blocker.stdout.close();blocker.stderr.close()
+  self.addCleanup(cleanup)
+  blocker.stdin.write("BEGIN; LOCK TABLE session_seats IN ACCESS EXCLUSIVE MODE; SELECT 'LOCKED';\n");blocker.stdin.flush()
+  self.assertEqual(blocker.stdout.readline().strip(),'LOCKED')
   samples=[]
   with concurrent.futures.ThreadPoolExecutor(max_workers=40) as pool:
    reads=[pool.submit(anonymous_request,'/sessions/'+self.s+'/seats') for _ in range(32)]
-   fixture.until(lambda:metric('ticketing_traffic_inflight','AVAILABILITY')==16,seconds=2)
-   samples.append(metric('ticketing_traffic_inflight','AVAILABILITY'))
+   fixture.until(lambda:sum(f.done() for f in reads)==16,seconds=10)
+   for completed in (f for f in reads if f.done()):
+    self.assertEqual(completed.result()[0],503)
+   # The converged high-water metric below verifies the maximum. Do not hold
+   # SQL requests waiting for PromExporter to expire its five-second cache.
    financial=pool.submit(self.u.request,'/orders')
    recovery=pool.submit(self.u.request,'/checkout-sessions?recoverable=true&sessionId='+self.s)
+   release()
    results=[f.result(timeout=15) for f in reads]
    self.assertEqual(financial.result(timeout=15)[0],200)
    self.assertEqual(recovery.result(timeout=15)[0],200)
   blocker.wait(timeout=10);self.assertEqual(blocker.returncode,0)
   rejected=[r for r in results if r[0]==503]
-  self.assertGreater(len(rejected),0)
+  self.assertEqual(len(rejected),16)
+  self.assertEqual(sum(status==200 for status,_,_ in results),16)
   for _,body,headers in rejected:
    self.assertEqual(body['code'],'SYSTEM_OVERLOADED',body);self.assertEqual(body['resource'],'AVAILABILITY')
    self.assertGreater(body['retryAfterMs'],0)
