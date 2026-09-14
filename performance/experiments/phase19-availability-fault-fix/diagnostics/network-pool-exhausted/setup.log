@@ -1,0 +1,8 @@
+ Network phase19-avfix-financial_default Creating 
+ Network phase19-avfix-financial_default Creating 
+ Network phase19-avfix-financial_default Error Error response from daemon: all predefined address pools have been fully subnetted
+ network:default failed to create network phase19-avfix-financial_default: Error response from daemon: all predefined address pools have been fully subnetted 
+ Container phase19-avfix-financial-redis-1 Creating 
+ Container phase19-avfix-financial-fake-stripe-1 Creating 
+ Container phase19-avfix-financial-postgres-1 Creating 
+failed to create network phase19-avfix-financial_default: Error response from daemon: all predefined address pools have been fully subnetted

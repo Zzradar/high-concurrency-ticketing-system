@@ -1,0 +1,2 @@
+# Preserve hash-bound repair evidence exactly on all checkouts.
+** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol

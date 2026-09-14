@@ -1,0 +1,13 @@
+
+> frontend@0.0.0 test
+> vitest run
+
+
+ RUN  v4.1.11 <PHASE19_WORKTREE>/frontend
+
+
+ Test Files  45 passed (45)
+      Tests  344 passed (344)
+   Start at  09:52:48
+   Duration  14.41s (transform 8.69s, setup 973ms, import 38.78s, tests 10.90s, environment 140.62s)
+

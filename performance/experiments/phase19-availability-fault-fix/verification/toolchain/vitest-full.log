@@ -1,0 +1,5 @@
+npm error Missing script: "test:unit"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: <USER_HOME>\AppData\Local\npm-cache\_logs\2026-09-14T01_52_14_401Z-debug-0.log

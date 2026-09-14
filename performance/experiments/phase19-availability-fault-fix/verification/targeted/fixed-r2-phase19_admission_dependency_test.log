@@ -1,0 +1,9 @@
+test_schedule_publication_failure_isolated (__main__.AdmissionDependencyIsolation) ... Redis denied zadd: unrelated OFF=200; protected session=401
+ok
+test_scheduler_failure_isolated (__main__.AdmissionDependencyIsolation) ... Redis denied zrangebyscore: unrelated OFF=200; protected session=401
+ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 5.762s
+
+OK

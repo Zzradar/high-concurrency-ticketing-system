@@ -1,0 +1,35 @@
+test_schedule_publication_failure_isolated (__main__.AdmissionDependencyIsolation) ... FAIL
+test_scheduler_failure_isolated (__main__.AdmissionDependencyIsolation) ... FAIL
+
+======================================================================
+FAIL: test_schedule_publication_failure_isolated (__main__.AdmissionDependencyIsolation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<PHASE19_WORKTREE>\backend\tests\phase19_admission_dependency_test.py", line 70, in test_schedule_publication_failure_isolated
+    self.check_failure('zadd')
+  File "<PHASE19_WORKTREE>\backend\tests\phase19_admission_dependency_test.py", line 52, in check_failure
+    restart()
+  File "<PHASE19_WORKTREE>\backend\tests\phase19_admission_dependency_test.py", line 43, in restart
+    fixture.until(healthy, seconds=25)
+  File "<PHASE19_WORKTREE>\backend\tests\phase18_admission_http_test.py", line 22, in until
+    raise AssertionError('Phase18 isolated convergence timeout')
+AssertionError: Phase18 isolated convergence timeout
+
+======================================================================
+FAIL: test_scheduler_failure_isolated (__main__.AdmissionDependencyIsolation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<PHASE19_WORKTREE>\backend\tests\phase19_admission_dependency_test.py", line 73, in test_scheduler_failure_isolated
+    self.check_failure('zrangebyscore')
+  File "<PHASE19_WORKTREE>\backend\tests\phase19_admission_dependency_test.py", line 52, in check_failure
+    restart()
+  File "<PHASE19_WORKTREE>\backend\tests\phase19_admission_dependency_test.py", line 43, in restart
+    fixture.until(healthy, seconds=25)
+  File "<PHASE19_WORKTREE>\backend\tests\phase18_admission_http_test.py", line 22, in until
+    raise AssertionError('Phase18 isolated convergence timeout')
+AssertionError: Phase18 isolated convergence timeout
+
+----------------------------------------------------------------------
+Ran 2 tests in 57.189s
+
+FAILED (failures=2)

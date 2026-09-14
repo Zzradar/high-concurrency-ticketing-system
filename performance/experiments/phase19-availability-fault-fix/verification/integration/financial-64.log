@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "<PHASE19_WORKTREE>\backend\tests\phase18_financial_regression.py", line 33, in <module>
+    run(['docker','compose','up','-d'],'setup.log')
+  File "<PHASE19_WORKTREE>\backend\tests\phase18_financial_regression.py", line 31, in run
+    if result.returncode:raise RuntimeError(log+' failed; inspect sanitized local diagnostic')
+RuntimeError: setup.log failed; inspect sanitized local diagnostic

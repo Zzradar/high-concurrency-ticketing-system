@@ -1,0 +1,7 @@
+START open-l3-r2
+END open-l3-r2 exit=0
+START journeys-5001
+END journeys-5001 exit=0
+START hotspot-1000
+END hotspot-1000 exit=0
+REMAINING CAPACITY POINTS PASSED

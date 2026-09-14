@@ -1,0 +1,18 @@
+test_schedule_publication_failure_isolated (__main__.AdmissionDependencyIsolation) ... Redis denied zadd: unrelated OFF=200; protected session=401
+ok
+test_scheduler_failure_isolated (__main__.AdmissionDependencyIsolation) ... FAIL
+
+======================================================================
+FAIL: test_scheduler_failure_isolated (__main__.AdmissionDependencyIsolation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<PHASE19_WORKTREE>\backend\tests\phase19_admission_dependency_test.py", line 74, in test_scheduler_failure_isolated
+    self.check_failure('zrangebyscore')
+  File "<PHASE19_WORKTREE>\backend\tests\phase19_admission_dependency_test.py", line 60, in check_failure
+    self.assertFalse(body['degraded'])
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 2 tests in 5.852s
+
+FAILED (failures=1)

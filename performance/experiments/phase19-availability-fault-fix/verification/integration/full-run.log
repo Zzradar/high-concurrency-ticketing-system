@@ -1,0 +1,20 @@
+ordered-off exit=0
+ordered-phase18_schema_test exit=0
+ordered-phase18_token_bucket_test exit=0
+ordered-phase18_waiting_room_test exit=0
+ordered-phase18_public_contract_test exit=0
+ordered-phase18_policy_http_test exit=0
+ordered-phase18_admission_http_test exit=0
+ordered-phase18_traffic_http_test exit=0
+ordered-phase18_metrics_http_test exit=0
+ordered-phase18_layout_http_test exit=0
+ordered-phase18_layout_revision_http_test exit=0
+ordered-phase18_layout_resolution_http_test exit=0
+ordered-phase18_inventory_fault_test exit=0
+ordered-phase18_checkout_crash_test exit=0
+ordered-availability exit=0
+ordered-phase18_verifier_test exit=0
+financial-64 exit=1
+
+Financial setup resumed on explicit non-overlapping subnets; see financial-resume.log.
+FULL 166 GATES PASSED

@@ -1,0 +1,89 @@
+{
+  "sourceCommit": "98e3d2aa22d6015664bb995708c23800f1e1a456",
+  "previousCommit": "0eabaf5125ddd337770de43f15355350a91d0bf7",
+  "frozenReviewCommit": "5bee9e7ea400814e8e487bf4075677a4a4311880",
+  "backendBinarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+  "previousBackendBinarySha256": "d9082f28bdf8d5bb8312cee40c9e6a79345b559554d4cbd2a301e742fae0bad5",
+  "productionFixRounds": 1,
+  "integrationTests": {
+    "ordered-availability.log": 1,
+    "ordered-off.log": 57,
+    "ordered-phase18_admission_http_test.log": 5,
+    "ordered-phase18_checkout_crash_test.log": 1,
+    "ordered-phase18_inventory_fault_test.log": 1,
+    "ordered-phase18_layout_http_test.log": 3,
+    "ordered-phase18_layout_resolution_http_test.log": 1,
+    "ordered-phase18_layout_revision_http_test.log": 7,
+    "ordered-phase18_metrics_http_test.log": 1,
+    "ordered-phase18_policy_http_test.log": 7,
+    "ordered-phase18_public_contract_test.log": 2,
+    "ordered-phase18_schema_test.log": 2,
+    "ordered-phase18_token_bucket_test.log": 3,
+    "ordered-phase18_traffic_http_test.log": 2,
+    "ordered-phase18_verifier_test.log": 1,
+    "ordered-phase18_waiting_room_test.log": 7,
+    "phase19-avfix-financial-r2/phase11_crash_window_integration_test.log": 11,
+    "phase19-avfix-financial-r2/phase11_stripe_integration_test.log": 11,
+    "phase19-avfix-financial-r2/phase12_buyer_refund_integration_test.log": 38,
+    "phase19-avfix-financial-r2/phase18_multi_instance_test.log": 1,
+    "phase19-avfix-financial-r2/phase18_refund_verifier_fixture.log": 3,
+    "phase19-avfix-overload/phase19_overload_recovery_test.log": 1
+  },
+  "integrationTotal": 166,
+  "ctest": 36,
+  "vitest": 344,
+  "python": 323,
+  "nodeProtocol": 2,
+  "newDeterministicIntegrationTests": 2,
+  "postFixFullFaultSequenceRepetitions": 3,
+  "coldOriginalSequencePasses": 4,
+  "orderedOriginalSequencePasses": 1,
+  "originalSequenceWith16Policies": {
+    "runs": 3,
+    "passed": 2,
+    "failed": 1,
+    "failureCode": "ADMISSION_UNAVAILABLE",
+    "failureLine": 63
+  },
+  "generatorQualification": {
+    "path": "../phase19-global-polling-mixed-load/generator-calibration/candidate-4g/2000/result.json",
+    "sha256": "9c2c94b60feaf1fb929ec98cdc9cc22faefeefbd2c8f2c9dfa843e76192b0d6f",
+    "unchangedGeneratorAndProtocol": true
+  },
+  "capacityPoints": [
+    "closed-2000-10m",
+    "open-precheck",
+    "open-l1",
+    "open-l2",
+    "open-l3-r2",
+    "journeys-5001",
+    "hotspot-1000"
+  ],
+  "protectionCondition": "Event policies OFF; original default local Bulkhead; generator 2 CPU / 4 GiB",
+  "networkRecovery": "Default Docker address pool exhausted before financial tests started; fresh explicit 10.253.19.0/24 and 10.253.20.0/24 networks; all prior containers and data preserved",
+  "identityNote": "Frozen capacity protocol baseCommit remains the Phase18 ancestor; sourceCommit and binarySha256 above identify the actual repaired backend.",
+  "openL3Attempts": {
+    "first": {
+      "valid": false,
+      "availabilityOverloadRejections": 8,
+      "peakAvailabilityInflight": 16,
+      "postAbortInventoryConverged": true,
+      "evidence": "diagnostics/capacity/open-l3-r1"
+    },
+    "second": {
+      "valid": true,
+      "sameBinaryConfigurationProtocolAndOffProtection": true,
+      "evidence": "capacity/open-l3-r2"
+    }
+  },
+  "unchangedOriginalAvailabilityTestGitBlob": "687a4e183a50d4a77fdc12217b1a3ab2b938274d",
+  "verificationLogs": {
+    "ctest": "verification/toolchain/ctest.log",
+    "vitest": "verification/toolchain/vitest-full-r2.log",
+    "python": "verification/toolchain/python-full.log",
+    "node": "verification/toolchain/node-protocol.log",
+    "frontendBuild": "verification/toolchain/frontend-build.log",
+    "deterministicTests": "verification/targeted/fixed-r2-phase19_admission_dependency_test.log",
+    "saturation": "verification/targeted/fixed-r2-phase18_traffic_http_test.log"
+  }
+}

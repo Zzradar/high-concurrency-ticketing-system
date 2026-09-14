@@ -1,0 +1,2378 @@
+{
+  "closed-2000-10m": {
+    "identity": {
+      "startedUtc": "2026-09-14T02:18:28.394122+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-avfix-capacity",
+        "apiPort": 18462,
+        "frontendPort": 18463,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "98e3d2aa22d6015664bb995708c23800f1e1a456"
+      },
+      "runtimeConfigSha256": "fa8d1bd8305491367d15152795f05d90e4cbe940dfe72f6ec931537b13f3b838",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "closed",
+      "actualVUsRequested": 2000,
+      "warmupSeconds": 30,
+      "observeSeconds": 600,
+      "targetDeltaIterationsPerSecond": null,
+      "targetStateTransitionsPerSecond": null,
+      "plannedReadIterationsTotal": null,
+      "bootstrapSnapshotsPlanned": 0,
+      "bootstrapSnapshotRate": null,
+      "plannedWriteFlowsTotal": null,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 49522,
+      "completedBusinessIterations": 49522,
+      "k6CompletedIterations": 49522,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 49522,
+      "cursorAdvances": 0,
+      "initializedActiveVUs": 2000,
+      "endedUtc": "2026-09-14T02:29:43.745142+00:00",
+      "rawPointsSha256": "26aa0d4f9e7609172a75b87191ce8a2eb8ccbc8c272adc8822257f86b26b1dc6",
+      "rawPointsBytes": 10107674,
+      "inventoryChanges": {
+        "formalGenerated": 0,
+        "formalProjected": 0,
+        "allStreamEntriesAdded": 0,
+        "temporaryVisibleEntriesAdded": 0,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 0,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {},
+        "startedByKind": {
+          "closed": 49522
+        },
+        "completedByKind": {
+          "closed": 49522
+        },
+        "startedByScenario": {
+          "readers": 49522
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET delta|observe|200": {
+        "samples": 43324,
+        "p50": 2.036423,
+        "p95": 2.840818,
+        "p99": 3.359215,
+        "max": 20.383954
+      }
+    },
+    "observeSuccessfulHttp": 43324.0,
+    "observeSuccessfulHttpPerSecond": 72.20666666666666,
+    "observeDeltaRequests": 43324.0,
+    "observeDeltaReqPerSecond": 72.20666666666666,
+    "observeHttpStatusCounts": {
+      "200": 43324.0,
+      "201": 0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 0,
+    "observeHttpWriteReqPerSecond": 0.0,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 1115279360,
+        "rss": 1075564544,
+        "rssPeak": 1075564544,
+        "fd": 2007,
+        "tcpTableEntries": 2001,
+        "threads": 9,
+        "pids": 11,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.6637531280142442,
+        "cpuQuotaFractionPeak": 0.3318765640071221,
+        "minWslAvailableBytes": 13389254656,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 87732224,
+        "rss": 72450048,
+        "rssPeak": 72450048,
+        "fd": 2460,
+        "tcpTableEntries": 2065,
+        "threads": 147,
+        "pids": 149,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.35002607872049085,
+        "cpuQuotaFractionPeak": 0.17501303936024543,
+        "minWslAvailableBytes": 13388419072,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 185122816,
+        "rss": 29904896,
+        "rssPeak": 29904896,
+        "fd": 11,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 13,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.07604282352941177,
+        "cpuQuotaFractionPeak": 0.07604282352941177,
+        "minWslAvailableBytes": 13389254656,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 23961600,
+        "rss": 17420288,
+        "rssPeak": 19435520,
+        "fd": 17,
+        "tcpTableEntries": 94,
+        "threads": 6,
+        "pids": 14,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.5737196752514279,
+        "cpuQuotaFractionPeak": 0.5737196752514279,
+        "minWslAvailableBytes": 13392629760,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "closed": 45324.0
+    }
+  },
+  "open-precheck": {
+    "identity": {
+      "startedUtc": "2026-09-14T02:29:54.210390+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-avfix-capacity",
+        "apiPort": 18462,
+        "frontendPort": 18463,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "98e3d2aa22d6015664bb995708c23800f1e1a456"
+      },
+      "runtimeConfigSha256": "fa8d1bd8305491367d15152795f05d90e4cbe940dfe72f6ec931537b13f3b838",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 0,
+      "observeSeconds": 30,
+      "targetDeltaIterationsPerSecond": 50,
+      "targetStateTransitionsPerSecond": 5,
+      "plannedReadIterationsTotal": 1500,
+      "bootstrapSnapshotsPlanned": 0,
+      "bootstrapSnapshotRate": null,
+      "plannedWriteFlowsTotal": 53.57142857142857,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 1562,
+      "completedBusinessIterations": 1562,
+      "k6CompletedIterations": 1562,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 1751,
+      "cursorAdvances": 288,
+      "initializedActiveVUs": 154,
+      "endedUtc": "2026-09-14T02:30:51.188761+00:00",
+      "rawPointsSha256": "cce07666b253bbc1f09f711eb052737cce35c388a17727ff0b9ccf4def9a430b",
+      "rawPointsBytes": 415052,
+      "inventoryChanges": {
+        "formalGenerated": 20,
+        "formalProjected": 20,
+        "allStreamEntriesAdded": 148,
+        "temporaryVisibleEntriesAdded": 128,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 148,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 1500,
+          "writerFlowsNominal": 53.57142857142857,
+          "bootstrapSnapshots": 0
+        },
+        "startedByKind": {
+          "read": 1508,
+          "abandon": 29,
+          "adjust": 10,
+          "cancel": 10,
+          "expiry": 5
+        },
+        "completedByKind": {
+          "read": 1508,
+          "abandon": 29,
+          "adjust": 10,
+          "cancel": 10,
+          "expiry": 5
+        },
+        "startedByScenario": {
+          "readers0": 151,
+          "writers": 54,
+          "readers1": 151,
+          "readers2": 150,
+          "readers3": 151,
+          "readers4": 151,
+          "readers5": 151,
+          "readers6": 151,
+          "readers7": 150,
+          "readers8": 151,
+          "readers9": 151
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET snapshot|observe|200": {
+        "samples": 100,
+        "p50": 9.901102,
+        "p95": 11.021831,
+        "p99": 11.502084,
+        "max": 11.646062
+      },
+      "GET delta|observe|200": {
+        "samples": 1508,
+        "p50": 2.259227,
+        "p95": 3.049409,
+        "p99": 3.537219,
+        "max": 4.247077
+      },
+      "POST checkout|observe|201": {
+        "samples": 54,
+        "p50": 6.465469,
+        "p95": 10.804078,
+        "p99": 24.542275,
+        "max": 24.542275
+      },
+      "POST abandon|observe|200": {
+        "samples": 39,
+        "p50": 2.456872,
+        "p95": 4.442508,
+        "p99": 8.085837,
+        "max": 8.085837
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 10,
+        "p50": 4.156167,
+        "p95": 6.274701,
+        "p99": 6.274701,
+        "max": 6.274701
+      },
+      "POST confirm|observe|200": {
+        "samples": 10,
+        "p50": 9.919433,
+        "p95": 16.428811,
+        "p99": 16.428811,
+        "max": 16.428811
+      },
+      "GET order|observe|200": {
+        "samples": 10,
+        "p50": 1.880697,
+        "p95": 4.606027,
+        "p99": 4.606027,
+        "max": 4.606027
+      },
+      "POST cancel|observe|200": {
+        "samples": 10,
+        "p50": 5.655585,
+        "p95": 12.580988,
+        "p99": 12.580988,
+        "max": 12.580988
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 5,
+        "p50": 9.918479,
+        "p95": 14.548691,
+        "p99": 14.548691,
+        "max": 14.548691
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 5,
+        "p50": 3.623589,
+        "p95": 5.565485,
+        "p99": 5.565485,
+        "max": 5.565485
+      }
+    },
+    "observeSuccessfulHttp": 1751.0,
+    "observeSuccessfulHttpPerSecond": 58.36666666666667,
+    "observeDeltaRequests": 1508.0,
+    "observeDeltaReqPerSecond": 50.266666666666666,
+    "observeHttpStatusCounts": {
+      "200": 1697.0,
+      "201": 54.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 128.0,
+    "observeHttpWriteReqPerSecond": 4.266666666666667,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 110649344,
+        "rss": 133353472,
+        "rssPeak": 133353472,
+        "fd": 161,
+        "tcpTableEntries": 155,
+        "threads": 8,
+        "pids": 10,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.17203761604129494,
+        "cpuQuotaFractionPeak": 0.08601880802064747,
+        "minWslAvailableBytes": 14369079296,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 81670144,
+        "rss": 74047488,
+        "rssPeak": 74047488,
+        "fd": 637,
+        "tcpTableEntries": 241,
+        "threads": 155,
+        "pids": 157,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.1723634587183529,
+        "cpuQuotaFractionPeak": 0.08618172935917645,
+        "minWslAvailableBytes": 14370934784,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 186793984,
+        "rss": 29904896,
+        "rssPeak": 29904896,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 12,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.06362821134017704,
+        "cpuQuotaFractionPeak": 0.06362821134017704,
+        "minWslAvailableBytes": 14369337344,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 24195072,
+        "rss": 17485824,
+        "rssPeak": 19435520,
+        "fd": 16,
+        "tcpTableEntries": 118,
+        "threads": 6,
+        "pids": 8,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.22070999508077022,
+        "cpuQuotaFractionPeak": 0.22070999508077022,
+        "minWslAvailableBytes": 14369079296,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "read": 1508.0,
+      "abandon": 29.0,
+      "adjust": 10.0,
+      "cancel": 10.0,
+      "expiry": 5.0
+    }
+  },
+  "open-l1": {
+    "identity": {
+      "startedUtc": "2026-09-14T02:31:01.668177+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-avfix-capacity",
+        "apiPort": 18462,
+        "frontendPort": 18463,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "98e3d2aa22d6015664bb995708c23800f1e1a456"
+      },
+      "runtimeConfigSha256": "fa8d1bd8305491367d15152795f05d90e4cbe940dfe72f6ec931537b13f3b838",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 30,
+      "observeSeconds": 60,
+      "targetDeltaIterationsPerSecond": 100,
+      "targetStateTransitionsPerSecond": 10,
+      "plannedReadIterationsTotal": 6000,
+      "bootstrapSnapshotsPlanned": 200,
+      "bootstrapSnapshotRate": 50,
+      "plannedWriteFlowsTotal": 214.28571428571428,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 6424,
+      "completedBusinessIterations": 6424,
+      "k6CompletedIterations": 6424,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 6786,
+      "cursorAdvances": 1268,
+      "initializedActiveVUs": 200,
+      "endedUtc": "2026-09-14T02:32:58.638920+00:00",
+      "rawPointsSha256": "d08f606bf2c70f1093de58bdb0e956677c83ef2638a5234495c165b81b0439ae",
+      "rawPointsBytes": 1592711,
+      "inventoryChanges": {
+        "formalGenerated": 84,
+        "formalProjected": 84,
+        "allStreamEntriesAdded": 598,
+        "temporaryVisibleEntriesAdded": 514,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 598,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 6000,
+          "writerFlowsNominal": 214.28571428571428,
+          "bootstrapSnapshots": 200
+        },
+        "startedByKind": {
+          "bootstrap": 200,
+          "read": 6009,
+          "abandon": 110,
+          "adjust": 42,
+          "cancel": 42,
+          "expiry": 21
+        },
+        "completedByKind": {
+          "bootstrap": 200,
+          "read": 6009,
+          "abandon": 110,
+          "adjust": 42,
+          "cancel": 42,
+          "expiry": 21
+        },
+        "startedByScenario": {
+          "bootstrap": 200,
+          "readers0": 600,
+          "writers": 215,
+          "readers1": 601,
+          "readers2": 601,
+          "readers3": 601,
+          "readers4": 601,
+          "readers5": 601,
+          "readers6": 601,
+          "readers7": 601,
+          "readers8": 601,
+          "readers9": 601
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET delta|observe|200": {
+        "samples": 6009,
+        "p50": 2.00521,
+        "p95": 2.619272,
+        "p99": 3.013536,
+        "max": 6.947243
+      },
+      "POST checkout|observe|201": {
+        "samples": 215,
+        "p50": 5.004802,
+        "p95": 6.908357,
+        "p99": 7.11019,
+        "max": 7.66235
+      },
+      "POST abandon|observe|200": {
+        "samples": 152,
+        "p50": 2.443613,
+        "p95": 3.894126,
+        "p99": 4.151174,
+        "max": 4.223492
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 42,
+        "p50": 3.548341,
+        "p95": 5.024361,
+        "p99": 6.623321,
+        "max": 6.623321
+      },
+      "POST confirm|observe|200": {
+        "samples": 42,
+        "p50": 7.960597,
+        "p95": 11.776666,
+        "p99": 12.051846,
+        "max": 12.051846
+      },
+      "GET order|observe|200": {
+        "samples": 42,
+        "p50": 1.35601,
+        "p95": 1.962042,
+        "p99": 2.438853,
+        "max": 2.438853
+      },
+      "POST cancel|observe|200": {
+        "samples": 42,
+        "p50": 4.116179,
+        "p95": 6.323832,
+        "p99": 7.392704,
+        "max": 7.392704
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 21,
+        "p50": 9.892137,
+        "p95": 11.541996,
+        "p99": 13.721333,
+        "max": 13.721333
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 21,
+        "p50": 3.613058,
+        "p95": 5.416604,
+        "p99": 7.48217,
+        "max": 7.48217
+      }
+    },
+    "observeSuccessfulHttp": 6586.0,
+    "observeSuccessfulHttpPerSecond": 109.76666666666667,
+    "observeDeltaRequests": 6009.0,
+    "observeDeltaReqPerSecond": 100.15,
+    "observeHttpStatusCounts": {
+      "200": 6371.0,
+      "201": 215.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 514.0,
+    "observeHttpWriteReqPerSecond": 8.566666666666666,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 123293696,
+        "rss": 145248256,
+        "rssPeak": 145248256,
+        "fd": 207,
+        "tcpTableEntries": 201,
+        "threads": 8,
+        "pids": 10,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.1715977517031564,
+        "cpuQuotaFractionPeak": 0.0857988758515782,
+        "minWslAvailableBytes": 14360031232,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 82419712,
+        "rss": 74428416,
+        "rssPeak": 74428416,
+        "fd": 683,
+        "tcpTableEntries": 288,
+        "threads": 155,
+        "pids": 157,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.16887500000913322,
+        "cpuQuotaFractionPeak": 0.08443750000456661,
+        "minWslAvailableBytes": 14358372352,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 189329408,
+        "rss": 29904896,
+        "rssPeak": 29904896,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 12,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.06844868034891506,
+        "cpuQuotaFractionPeak": 0.06844868034891506,
+        "minWslAvailableBytes": 14358224896,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 24707072,
+        "rss": 17506304,
+        "rssPeak": 19435520,
+        "fd": 17,
+        "tcpTableEntries": 123,
+        "threads": 6,
+        "pids": 14,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.35915186101894386,
+        "cpuQuotaFractionPeak": 0.35915186101894386,
+        "minWslAvailableBytes": 14358224896,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "bootstrap": 0,
+      "read": 6009.0,
+      "abandon": 110.0,
+      "adjust": 42.0,
+      "cancel": 42.0,
+      "expiry": 21.0
+    }
+  },
+  "open-l2": {
+    "identity": {
+      "startedUtc": "2026-09-14T02:33:09.067371+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-avfix-capacity",
+        "apiPort": 18462,
+        "frontendPort": 18463,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "98e3d2aa22d6015664bb995708c23800f1e1a456"
+      },
+      "runtimeConfigSha256": "fa8d1bd8305491367d15152795f05d90e4cbe940dfe72f6ec931537b13f3b838",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 30,
+      "observeSeconds": 120,
+      "targetDeltaIterationsPerSecond": 250,
+      "targetStateTransitionsPerSecond": 25,
+      "plannedReadIterationsTotal": 30000,
+      "bootstrapSnapshotsPlanned": 200,
+      "bootstrapSnapshotRate": 50,
+      "plannedWriteFlowsTotal": 1071.4285714285713,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 31280,
+      "completedBusinessIterations": 31280,
+      "k6CompletedIterations": 31280,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 33101,
+      "cursorAdvances": 6007,
+      "initializedActiveVUs": 200,
+      "endedUtc": "2026-09-14T02:36:08.583690+00:00",
+      "rawPointsSha256": "994d5adec6fa25b2b3f3d0691064cd1d1a069a02339430734263ae5d0a339765",
+      "rawPointsBytes": 7671019,
+      "inventoryChanges": {
+        "formalGenerated": 428,
+        "formalProjected": 428,
+        "allStreamEntriesAdded": 2980,
+        "temporaryVisibleEntriesAdded": 2552,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 2980,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 30000,
+          "writerFlowsNominal": 1071.4285714285713,
+          "bootstrapSnapshots": 200
+        },
+        "startedByKind": {
+          "bootstrap": 200,
+          "read": 30008,
+          "abandon": 537,
+          "adjust": 214,
+          "cancel": 214,
+          "expiry": 107
+        },
+        "completedByKind": {
+          "bootstrap": 200,
+          "read": 30008,
+          "abandon": 537,
+          "adjust": 214,
+          "cancel": 214,
+          "expiry": 107
+        },
+        "startedByScenario": {
+          "bootstrap": 200,
+          "readers0": 3001,
+          "writers": 1072,
+          "readers1": 3001,
+          "readers2": 3001,
+          "readers3": 3000,
+          "readers4": 3000,
+          "readers5": 3001,
+          "readers6": 3001,
+          "readers7": 3001,
+          "readers8": 3001,
+          "readers9": 3001
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET delta|observe|200": {
+        "samples": 30008,
+        "p50": 1.531049,
+        "p95": 2.262241,
+        "p99": 3.194771,
+        "max": 19.037541
+      },
+      "POST checkout|observe|201": {
+        "samples": 1072,
+        "p50": 3.885719,
+        "p95": 5.382458,
+        "p99": 6.876809,
+        "max": 11.417969
+      },
+      "POST abandon|observe|200": {
+        "samples": 751,
+        "p50": 2.395445,
+        "p95": 3.725855,
+        "p99": 4.601681,
+        "max": 7.510673
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 214,
+        "p50": 3.316954,
+        "p95": 5.008117,
+        "p99": 6.494036,
+        "max": 8.716127
+      },
+      "POST confirm|observe|200": {
+        "samples": 214,
+        "p50": 8.019743,
+        "p95": 12.399597,
+        "p99": 13.36997,
+        "max": 16.318993
+      },
+      "GET order|observe|200": {
+        "samples": 214,
+        "p50": 1.321353,
+        "p95": 2.127288,
+        "p99": 2.79235,
+        "max": 3.154918
+      },
+      "POST cancel|observe|200": {
+        "samples": 214,
+        "p50": 4.148796,
+        "p95": 6.059949,
+        "p99": 6.935468,
+        "max": 7.78004
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 107,
+        "p50": 9.631042,
+        "p95": 12.044751,
+        "p99": 13.71718,
+        "max": 14.135005
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 107,
+        "p50": 3.5966,
+        "p95": 5.353507,
+        "p99": 6.64896,
+        "max": 7.667956
+      }
+    },
+    "observeSuccessfulHttp": 32901.0,
+    "observeSuccessfulHttpPerSecond": 274.175,
+    "observeDeltaRequests": 30008.0,
+    "observeDeltaReqPerSecond": 250.06666666666666,
+    "observeHttpStatusCounts": {
+      "200": 31829.0,
+      "201": 1072.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 2572.0,
+    "observeHttpWriteReqPerSecond": 21.433333333333334,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 130375680,
+        "rss": 153337856,
+        "rssPeak": 153337856,
+        "fd": 207,
+        "tcpTableEntries": 201,
+        "threads": 9,
+        "pids": 11,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.26787292276444297,
+        "cpuQuotaFractionPeak": 0.13393646138222148,
+        "minWslAvailableBytes": 14348644352,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 83349504,
+        "rss": 75096064,
+        "rssPeak": 75096064,
+        "fd": 684,
+        "tcpTableEntries": 288,
+        "threads": 155,
+        "pids": 157,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.22953053248426827,
+        "cpuQuotaFractionPeak": 0.11476526624213414,
+        "minWslAvailableBytes": 14348636160,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 196775936,
+        "rss": 29904896,
+        "rssPeak": 29904896,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 12,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.10923945710929783,
+        "cpuQuotaFractionPeak": 0.10923945710929783,
+        "minWslAvailableBytes": 14348636160,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 24076288,
+        "rss": 17829888,
+        "rssPeak": 19435520,
+        "fd": 18,
+        "tcpTableEntries": 121,
+        "threads": 6,
+        "pids": 13,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.3571880846536054,
+        "cpuQuotaFractionPeak": 0.3571880846536054,
+        "minWslAvailableBytes": 14348636160,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "bootstrap": 0,
+      "read": 30008.0,
+      "abandon": 537.0,
+      "adjust": 214.0,
+      "cancel": 214.0,
+      "expiry": 107.0
+    }
+  },
+  "open-l3-r2": {
+    "identity": {
+      "startedUtc": "2026-09-14T02:43:26.649085+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-avfix-capacity",
+        "apiPort": 18462,
+        "frontendPort": 18463,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "98e3d2aa22d6015664bb995708c23800f1e1a456"
+      },
+      "runtimeConfigSha256": "fa8d1bd8305491367d15152795f05d90e4cbe940dfe72f6ec931537b13f3b838",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 30,
+      "observeSeconds": 120,
+      "targetDeltaIterationsPerSecond": 500,
+      "targetStateTransitionsPerSecond": 50,
+      "plannedReadIterationsTotal": 60000,
+      "bootstrapSnapshotsPlanned": 200,
+      "bootstrapSnapshotRate": 50,
+      "plannedWriteFlowsTotal": 2142.8571428571427,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 62347,
+      "completedBusinessIterations": 62347,
+      "k6CompletedIterations": 62347,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 65988,
+      "cursorAdvances": 12001,
+      "initializedActiveVUs": 200,
+      "endedUtc": "2026-09-14T02:46:28.488245+00:00",
+      "rawPointsSha256": "ab672709de713b1eb3c2ac28eeaf35a7df090a8875d9cccb0204b7c313be9e30",
+      "rawPointsBytes": 15220344,
+      "inventoryChanges": {
+        "formalGenerated": 856,
+        "formalProjected": 856,
+        "allStreamEntriesAdded": 5977,
+        "temporaryVisibleEntriesAdded": 5121,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 5977,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 60000,
+          "writerFlowsNominal": 2142.8571428571427,
+          "bootstrapSnapshots": 200
+        },
+        "startedByKind": {
+          "bootstrap": 200,
+          "read": 60004,
+          "abandon": 1073,
+          "adjust": 428,
+          "cancel": 428,
+          "expiry": 214
+        },
+        "completedByKind": {
+          "bootstrap": 200,
+          "read": 60004,
+          "abandon": 1073,
+          "adjust": 428,
+          "cancel": 428,
+          "expiry": 214
+        },
+        "startedByScenario": {
+          "bootstrap": 200,
+          "readers0": 6000,
+          "writers": 2143,
+          "readers1": 6001,
+          "readers2": 6000,
+          "readers3": 6001,
+          "readers4": 6000,
+          "readers5": 6000,
+          "readers6": 6000,
+          "readers7": 6001,
+          "readers8": 6001,
+          "readers9": 6000
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET delta|observe|200": {
+        "samples": 60004,
+        "p50": 1.453804,
+        "p95": 2.293454,
+        "p99": 5.215402,
+        "max": 24.408544
+      },
+      "POST checkout|observe|201": {
+        "samples": 2143,
+        "p50": 4.120179,
+        "p95": 5.588099,
+        "p99": 6.908569,
+        "max": 15.521913
+      },
+      "POST abandon|observe|200": {
+        "samples": 1501,
+        "p50": 2.835604,
+        "p95": 4.013039,
+        "p99": 5.046833,
+        "max": 18.09487
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 428,
+        "p50": 3.8921,
+        "p95": 5.608055,
+        "p99": 7.096516,
+        "max": 11.300001
+      },
+      "POST confirm|observe|200": {
+        "samples": 428,
+        "p50": 9.181735,
+        "p95": 12.086065,
+        "p99": 14.314097,
+        "max": 17.244328
+      },
+      "GET order|observe|200": {
+        "samples": 428,
+        "p50": 1.483761,
+        "p95": 2.150855,
+        "p99": 2.77219,
+        "max": 3.710221
+      },
+      "POST cancel|observe|200": {
+        "samples": 428,
+        "p50": 4.728442,
+        "p95": 6.572276,
+        "p99": 7.982787,
+        "max": 8.720246
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 214,
+        "p50": 9.973073,
+        "p95": 11.659891,
+        "p99": 13.093486,
+        "max": 21.060386
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 214,
+        "p50": 3.642383,
+        "p95": 5.445086,
+        "p99": 16.039819,
+        "max": 26.5868
+      }
+    },
+    "observeSuccessfulHttp": 65788.0,
+    "observeSuccessfulHttpPerSecond": 548.2333333333333,
+    "observeDeltaRequests": 60004.0,
+    "observeDeltaReqPerSecond": 500.03333333333336,
+    "observeHttpStatusCounts": {
+      "200": 63645.0,
+      "201": 2143.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 5142.0,
+    "observeHttpWriteReqPerSecond": 42.85,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 137437184,
+        "rss": 160288768,
+        "rssPeak": 160288768,
+        "fd": 207,
+        "tcpTableEntries": 201,
+        "threads": 8,
+        "pids": 10,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.4422159579318692,
+        "cpuQuotaFractionPeak": 0.2211079789659346,
+        "minWslAvailableBytes": 14367244288,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 84246528,
+        "rss": 76173312,
+        "rssPeak": 76173312,
+        "fd": 686,
+        "tcpTableEntries": 265,
+        "threads": 156,
+        "pids": 158,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.4228018691331182,
+        "cpuQuotaFractionPeak": 0.2114009345665591,
+        "minWslAvailableBytes": 14366765056,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 207114240,
+        "rss": 29904896,
+        "rssPeak": 29904896,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 12,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.21860697232184348,
+        "cpuQuotaFractionPeak": 0.21860697232184348,
+        "minWslAvailableBytes": 14366158848,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 24502272,
+        "rss": 18186240,
+        "rssPeak": 19435520,
+        "fd": 17,
+        "tcpTableEntries": 98,
+        "threads": 6,
+        "pids": 14,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.3537016361921304,
+        "cpuQuotaFractionPeak": 0.3537016361921304,
+        "minWslAvailableBytes": 14365495296,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "bootstrap": 0,
+      "read": 60004.0,
+      "abandon": 1073.0,
+      "adjust": 428.0,
+      "cancel": 428.0,
+      "expiry": 214.0
+    }
+  },
+  "journeys-5001": {
+    "identity": {
+      "startedUtc": "2026-09-14T02:46:38.919062+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-avfix-capacity",
+        "apiPort": 18462,
+        "frontendPort": 18463,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "98e3d2aa22d6015664bb995708c23800f1e1a456"
+      },
+      "runtimeConfigSha256": "fa8d1bd8305491367d15152795f05d90e4cbe940dfe72f6ec931537b13f3b838",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "journeys",
+      "actualVUsRequested": 100,
+      "warmupSeconds": 0,
+      "observeSeconds": 250,
+      "targetDeltaIterationsPerSecond": null,
+      "targetStateTransitionsPerSecond": null,
+      "plannedReadIterationsTotal": null,
+      "bootstrapSnapshotsPlanned": 0,
+      "bootstrapSnapshotRate": null,
+      "plannedWriteFlowsTotal": null,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 5001,
+      "completedBusinessIterations": 5001,
+      "k6CompletedIterations": 5001,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 21955,
+      "cursorAdvances": 0,
+      "initializedActiveVUs": 100,
+      "endedUtc": "2026-09-14T02:51:02.365972+00:00",
+      "rawPointsSha256": "fb483a55013f72b3730a1b84b50f978644320978696380d757e3244f0bc8e35f",
+      "rawPointsBytes": 2717889,
+      "inventoryChanges": {
+        "formalGenerated": 800,
+        "formalProjected": 800,
+        "allStreamEntriesAdded": 3197,
+        "temporaryVisibleEntriesAdded": 2397,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 0,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 100,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 619,
+          "phase19-session-001-005/Zone-1": 620,
+          "phase19-session-001-005/Zone-2": 619,
+          "phase19-session-001-005/Zone-3": 620,
+          "phase19-session-001-005/Zone-4": 619
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "journeysNominal": 5000
+        },
+        "startedByKind": {
+          "journey_browse": 3751,
+          "journey_hold": 750,
+          "journey_order_cancel": 400,
+          "journey_hotspot": 100
+        },
+        "completedByKind": {
+          "journey_browse": 3751,
+          "journey_hold": 750,
+          "journey_order_cancel": 400,
+          "journey_hotspot": 100
+        },
+        "startedByScenario": {
+          "journeys": 5001
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      },
+      "journeyHotspotGroups": {
+        "0": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "1": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "2": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "3": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "4": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "5": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "6": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "7": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "8": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "9": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "10": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "11": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "12": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "13": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "14": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "15": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "16": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "17": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "18": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "19": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "20": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "21": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "22": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "23": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "24": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "25": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "26": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "27": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "28": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "29": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "30": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "31": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "32": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "33": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "34": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "35": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "36": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "37": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "38": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "39": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "40": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "41": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "42": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "43": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "44": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "45": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "46": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "47": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "48": {
+          "contenders": 2.0,
+          "winners": 1.0
+        },
+        "49": {
+          "contenders": 2.0,
+          "winners": 1.0
+        }
+      },
+      "plannedJourneysNominal": 5000
+    },
+    "observeHttpLatencyMs": {
+      "GET events|observe|200": {
+        "samples": 3751,
+        "p50": 1.18753,
+        "p95": 10.868638,
+        "p99": 13.108874,
+        "max": 16.746783
+      },
+      "GET sessions|observe|200": {
+        "samples": 3751,
+        "p50": 25.643919,
+        "p95": 28.559197,
+        "p99": 34.295782,
+        "max": 75.310935
+      },
+      "GET layout|observe|200": {
+        "samples": 3751,
+        "p50": 22.298224,
+        "p95": 26.099795,
+        "p99": 35.912265,
+        "max": 97.798115
+      },
+      "GET journey snapshot|observe|200": {
+        "samples": 3751,
+        "p50": 16.865063,
+        "p95": 19.381776,
+        "p99": 21.494714,
+        "max": 33.333157
+      },
+      "GET journey delta|observe|200": {
+        "samples": 3751,
+        "p50": 1.94138,
+        "p95": 2.517473,
+        "p99": 3.355785,
+        "max": 25.674164
+      },
+      "POST journey checkout|observe|201": {
+        "samples": 1150,
+        "p50": 6.268438,
+        "p95": 8.294328,
+        "p99": 9.504364,
+        "max": 22.004145
+      },
+      "POST journey abandon|observe|200": {
+        "samples": 750,
+        "p50": 2.662159,
+        "p95": 4.311686,
+        "p99": 9.664702,
+        "max": 10.904474
+      },
+      "POST journey confirm|observe|200": {
+        "samples": 400,
+        "p50": 8.305186,
+        "p95": 11.474512,
+        "p99": 13.69402,
+        "max": 14.945812
+      },
+      "GET journey order|observe|200": {
+        "samples": 400,
+        "p50": 1.417452,
+        "p95": 2.16886,
+        "p99": 2.947765,
+        "max": 3.682006
+      },
+      "POST journey cancel|observe|200": {
+        "samples": 400,
+        "p50": 4.263924,
+        "p95": 6.018154,
+        "p99": 7.053354,
+        "max": 8.881293
+      },
+      "POST hotspot|observe|201": {
+        "samples": 50,
+        "p50": 5.897322,
+        "p95": 7.347105,
+        "p99": 11.273373,
+        "max": 11.273373
+      },
+      "POST hotspot|observe|409": {
+        "samples": 50,
+        "p50": 5.055169,
+        "p95": 6.066753,
+        "p99": 6.213084,
+        "max": 6.213084
+      }
+    },
+    "observeSuccessfulHttp": 21905.0,
+    "observeSuccessfulHttpPerSecond": 87.62,
+    "observeDeltaRequests": 0,
+    "observeDeltaReqPerSecond": 0.0,
+    "observeHttpStatusCounts": {
+      "200": 20705.0,
+      "201": 1200.0,
+      "409": 50.0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 2800.0,
+    "observeHttpWriteReqPerSecond": 11.2,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 88477696,
+        "rss": 112578560,
+        "rssPeak": 112578560,
+        "fd": 107,
+        "tcpTableEntries": 101,
+        "threads": 8,
+        "pids": 10,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.26180558229324546,
+        "cpuQuotaFractionPeak": 0.13090279114662273,
+        "minWslAvailableBytes": 14387097600,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 145584128,
+        "rss": 138518528,
+        "rssPeak": 138518528,
+        "fd": 598,
+        "tcpTableEntries": 187,
+        "threads": 160,
+        "pids": 162,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.8089119345604302,
+        "cpuQuotaFractionPeak": 0.4044559672802151,
+        "minWslAvailableBytes": 14392815616,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 223498240,
+        "rss": 29904896,
+        "rssPeak": 29904896,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 12,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.8137382645142509,
+        "cpuQuotaFractionPeak": 0.8137382645142509,
+        "minWslAvailableBytes": 14394171392,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 24559616,
+        "rss": 19079168,
+        "rssPeak": 19435520,
+        "fd": 18,
+        "tcpTableEntries": 119,
+        "threads": 6,
+        "pids": 9,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.202465623524156,
+        "cpuQuotaFractionPeak": 0.202465623524156,
+        "minWslAvailableBytes": 14387998720,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "journey_browse": 3751.0,
+      "journey_hold": 750.0,
+      "journey_order_cancel": 400.0,
+      "journey_hotspot": 100.0
+    }
+  },
+  "hotspot-1000": {
+    "identity": {
+      "startedUtc": "2026-09-14T02:51:12.931155+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-avfix-capacity",
+        "apiPort": 18462,
+        "frontendPort": 18463,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "98e3d2aa22d6015664bb995708c23800f1e1a456"
+      },
+      "runtimeConfigSha256": "fa8d1bd8305491367d15152795f05d90e4cbe940dfe72f6ec931537b13f3b838",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "hotspot",
+      "actualVUsRequested": 1000,
+      "warmupSeconds": 0,
+      "observeSeconds": 30,
+      "targetDeltaIterationsPerSecond": null,
+      "targetStateTransitionsPerSecond": null,
+      "plannedReadIterationsTotal": null,
+      "bootstrapSnapshotsPlanned": 0,
+      "bootstrapSnapshotRate": null,
+      "plannedWriteFlowsTotal": null,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 1000,
+      "completedBusinessIterations": 1000,
+      "k6CompletedIterations": 1000,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 1000,
+      "cursorAdvances": 0,
+      "initializedActiveVUs": 1000,
+      "endedUtc": "2026-09-14T02:51:30.823913+00:00",
+      "rawPointsSha256": "2a649f21321c93062380fc33c088cd475a576e284f6395bcc320a033b3d84357",
+      "rawPointsBytes": 178914,
+      "inventoryChanges": {
+        "formalGenerated": 0,
+        "formalProjected": 0,
+        "allStreamEntriesAdded": 2,
+        "temporaryVisibleEntriesAdded": 2,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 0,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 2,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {},
+        "startedByKind": {
+          "hotspot": 1000
+        },
+        "completedByKind": {
+          "hotspot": 1000
+        },
+        "startedByScenario": {
+          "wave": 1000
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      },
+      "hotspotWinners": 1,
+      "controlProbeFailures": 0
+    },
+    "observeHttpLatencyMs": {
+      "POST hotspot|observe|409": {
+        "samples": 999,
+        "p50": 402.614905,
+        "p95": 702.644613,
+        "p99": 723.145154,
+        "max": 728.538165
+      },
+      "POST hotspot|observe|201": {
+        "samples": 1,
+        "p50": 29.323414,
+        "p95": 29.323414,
+        "p99": 29.323414,
+        "max": 29.323414
+      }
+    },
+    "observeSuccessfulHttp": 1.0,
+    "observeSuccessfulHttpPerSecond": 0.03333333333333333,
+    "observeDeltaRequests": 0,
+    "observeDeltaReqPerSecond": 0.0,
+    "observeHttpStatusCounts": {
+      "200": 0,
+      "201": 1.0,
+      "409": 999.0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 1000.0,
+    "observeHttpWriteReqPerSecond": 33.333333333333336,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 269848576,
+        "rss": 292061184,
+        "rssPeak": 292061184,
+        "fd": 7,
+        "tcpTableEntries": 1,
+        "threads": 7,
+        "pids": 9,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.028893353173722224,
+        "cpuQuotaFractionPeak": 0.014446676586861112,
+        "minWslAvailableBytes": 14166622208,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 127967232,
+        "rss": 120856576,
+        "rssPeak": 138055680,
+        "fd": 501,
+        "tcpTableEntries": 139,
+        "threads": 161,
+        "pids": 163,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.0151785,
+        "cpuQuotaFractionPeak": 0.00758925,
+        "minWslAvailableBytes": 14162235392,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 216760320,
+        "rss": 29904896,
+        "rssPeak": 29904896,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 12,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.023751697382127353,
+        "cpuQuotaFractionPeak": 0.023751697382127353,
+        "minWslAvailableBytes": 14160576512,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 22114304,
+        "rss": 18980864,
+        "rssPeak": 19435520,
+        "fd": 16,
+        "tcpTableEntries": 116,
+        "threads": 6,
+        "pids": 9,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.034810394610545345,
+        "cpuQuotaFractionPeak": 0.034810394610545345,
+        "minWslAvailableBytes": 14157127680,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "hotspot": 1000.0
+    }
+  }
+}

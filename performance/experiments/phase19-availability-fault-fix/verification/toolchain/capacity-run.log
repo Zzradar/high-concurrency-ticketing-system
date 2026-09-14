@@ -1,0 +1,14 @@
+phase18-phase19-avfix-full-api
+phase18-phase19-avfix-full-no-secret-api
+phase18-phase19-avfix-full-postgres
+phase18-phase19-avfix-full-redis
+START closed-2000-10m
+END closed-2000-10m exit=0
+START open-precheck
+END open-precheck exit=0
+START open-l1
+END open-l1 exit=0
+START open-l2
+END open-l2 exit=0
+START open-l3
+END open-l3 exit=1
