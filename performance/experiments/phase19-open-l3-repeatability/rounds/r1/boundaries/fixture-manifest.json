@@ -1,0 +1,10 @@
+{
+  "registeredUsers": 5000,
+  "activeAuthSessions": 5000,
+  "sessions": 5,
+  "seatsPerSession": 5000,
+  "totalSessionSeats": 25000,
+  "inventorySha256": "4e34c05f72d80e7111bad80a0972227c97956b9ac2e39f9f77c049d2e13ac574",
+  "profileSha256": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+  "credentialExport": "private output only; raw credentials must not be committed"
+}

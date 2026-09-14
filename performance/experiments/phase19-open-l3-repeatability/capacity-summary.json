@@ -1,0 +1,4007 @@
+{
+  "r1/precheck": {
+    "identity": {
+      "startedUtc": "2026-09-14T06:49:39.288501+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-l3-independent-r1",
+        "apiPort": 18502,
+        "frontendPort": 18503,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "ee8ed47c6e8cce02c67113e6c4a5e126cdda9894"
+      },
+      "runtimeConfigSha256": "1cbe2597a322554516780cebfa618b920244022a2ac36edcc96fc94d04691311",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 0,
+      "observeSeconds": 30,
+      "targetDeltaIterationsPerSecond": 50,
+      "targetStateTransitionsPerSecond": 5,
+      "plannedReadIterationsTotal": 1500,
+      "bootstrapSnapshotsPlanned": 0,
+      "bootstrapSnapshotRate": null,
+      "plannedWriteFlowsTotal": 53.57142857142857,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 1562,
+      "completedBusinessIterations": 1562,
+      "k6CompletedIterations": 1562,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 1751,
+      "cursorAdvances": 272,
+      "initializedActiveVUs": 154,
+      "endedUtc": "2026-09-14T06:50:36.268723+00:00",
+      "rawPointsSha256": "93dd48375080f3ce3d25bbfe1b00d05445daa412dafdab1838d80f20419e7f99",
+      "rawPointsBytes": 414712,
+      "inventoryChanges": {
+        "formalGenerated": 20,
+        "formalProjected": 20,
+        "allStreamEntriesAdded": 148,
+        "temporaryVisibleEntriesAdded": 128,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 148,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 1500,
+          "writerFlowsNominal": 53.57142857142857,
+          "bootstrapSnapshots": 0
+        },
+        "startedByKind": {
+          "read": 1508,
+          "abandon": 29,
+          "adjust": 10,
+          "cancel": 10,
+          "expiry": 5
+        },
+        "completedByKind": {
+          "read": 1508,
+          "abandon": 29,
+          "adjust": 10,
+          "cancel": 10,
+          "expiry": 5
+        },
+        "startedByScenario": {
+          "readers0": 151,
+          "writers": 54,
+          "readers1": 151,
+          "readers2": 150,
+          "readers3": 151,
+          "readers4": 151,
+          "readers5": 151,
+          "readers6": 151,
+          "readers7": 151,
+          "readers8": 151,
+          "readers9": 150
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET snapshot|observe|200": {
+        "samples": 100,
+        "p50": 9.519685,
+        "p95": 10.861224,
+        "p99": 16.72591,
+        "max": 37.031496
+      },
+      "GET delta|observe|200": {
+        "samples": 1508,
+        "p50": 2.195971,
+        "p95": 2.963576,
+        "p99": 3.393896,
+        "max": 5.271529
+      },
+      "POST checkout|observe|201": {
+        "samples": 54,
+        "p50": 5.137226,
+        "p95": 11.063172,
+        "p99": 23.941269,
+        "max": 23.941269
+      },
+      "POST abandon|observe|200": {
+        "samples": 39,
+        "p50": 2.88208,
+        "p95": 6.779083,
+        "p99": 8.917371,
+        "max": 8.917371
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 10,
+        "p50": 3.852805,
+        "p95": 6.294942,
+        "p99": 6.294942,
+        "max": 6.294942
+      },
+      "POST confirm|observe|200": {
+        "samples": 10,
+        "p50": 10.053533,
+        "p95": 18.177417,
+        "p99": 18.177417,
+        "max": 18.177417
+      },
+      "GET order|observe|200": {
+        "samples": 10,
+        "p50": 2.012013,
+        "p95": 4.343103,
+        "p99": 4.343103,
+        "max": 4.343103
+      },
+      "POST cancel|observe|200": {
+        "samples": 10,
+        "p50": 4.82423,
+        "p95": 9.258194,
+        "p99": 9.258194,
+        "max": 9.258194
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 5,
+        "p50": 9.867775,
+        "p95": 12.53043,
+        "p99": 12.53043,
+        "max": 12.53043
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 5,
+        "p50": 4.130117,
+        "p95": 9.977388,
+        "p99": 9.977388,
+        "max": 9.977388
+      }
+    },
+    "observeSuccessfulHttp": 1751.0,
+    "observeSuccessfulHttpPerSecond": 58.36666666666667,
+    "observeDeltaRequests": 1508.0,
+    "observeDeltaReqPerSecond": 50.266666666666666,
+    "observeHttpStatusCounts": {
+      "200": 1697.0,
+      "201": 54.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 128.0,
+    "observeHttpWriteReqPerSecond": 4.266666666666667,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 112541696,
+        "rss": 135028736,
+        "rssPeak": 135028736,
+        "fd": 161,
+        "tcpTableEntries": 155,
+        "threads": 8,
+        "pids": 10,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.1881491875745461,
+        "cpuQuotaFractionPeak": 0.09407459378727305,
+        "minWslAvailableBytes": 14375665664,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 57057280,
+        "rss": 51310592,
+        "rssPeak": 51310592,
+        "fd": 637,
+        "tcpTableEntries": 244,
+        "threads": 155,
+        "pids": 157,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.1572662401659857,
+        "cpuQuotaFractionPeak": 0.07863312008299285,
+        "minWslAvailableBytes": 14377816064,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 184438784,
+        "rss": 29757440,
+        "rssPeak": 29757440,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 12,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.061094522544458366,
+        "cpuQuotaFractionPeak": 0.061094522544458366,
+        "minWslAvailableBytes": 14377578496,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 21979136,
+        "rss": 17555456,
+        "rssPeak": 19591168,
+        "fd": 16,
+        "tcpTableEntries": 127,
+        "threads": 6,
+        "pids": 14,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.22739423546426032,
+        "cpuQuotaFractionPeak": 0.22739423546426032,
+        "minWslAvailableBytes": 14375919616,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "read": 1508.0,
+      "abandon": 29.0,
+      "adjust": 10.0,
+      "cancel": 10.0,
+      "expiry": 5.0
+    }
+  },
+  "r1/l1": {
+    "identity": {
+      "startedUtc": "2026-09-14T06:50:47.886089+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-l3-independent-r1",
+        "apiPort": 18502,
+        "frontendPort": 18503,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "ee8ed47c6e8cce02c67113e6c4a5e126cdda9894"
+      },
+      "runtimeConfigSha256": "1cbe2597a322554516780cebfa618b920244022a2ac36edcc96fc94d04691311",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 30,
+      "observeSeconds": 60,
+      "targetDeltaIterationsPerSecond": 100,
+      "targetStateTransitionsPerSecond": 10,
+      "plannedReadIterationsTotal": 6000,
+      "bootstrapSnapshotsPlanned": 200,
+      "bootstrapSnapshotRate": 50,
+      "plannedWriteFlowsTotal": 214.28571428571428,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 6425,
+      "completedBusinessIterations": 6425,
+      "k6CompletedIterations": 6425,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 6787,
+      "cursorAdvances": 1149,
+      "initializedActiveVUs": 200,
+      "endedUtc": "2026-09-14T06:52:45.020847+00:00",
+      "rawPointsSha256": "1543d1c911e06bb5a0c379e3422c0013a4b78f0c5653ef64f610d29c8c4ed8f7",
+      "rawPointsBytes": 1591184,
+      "inventoryChanges": {
+        "formalGenerated": 84,
+        "formalProjected": 84,
+        "allStreamEntriesAdded": 598,
+        "temporaryVisibleEntriesAdded": 514,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 598,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 6000,
+          "writerFlowsNominal": 214.28571428571428,
+          "bootstrapSnapshots": 200
+        },
+        "startedByKind": {
+          "bootstrap": 200,
+          "read": 6010,
+          "abandon": 110,
+          "adjust": 42,
+          "cancel": 42,
+          "expiry": 21
+        },
+        "completedByKind": {
+          "bootstrap": 200,
+          "read": 6010,
+          "abandon": 110,
+          "adjust": 42,
+          "cancel": 42,
+          "expiry": 21
+        },
+        "startedByScenario": {
+          "bootstrap": 200,
+          "readers0": 601,
+          "writers": 215,
+          "readers1": 601,
+          "readers2": 601,
+          "readers3": 601,
+          "readers4": 601,
+          "readers5": 601,
+          "readers6": 601,
+          "readers7": 601,
+          "readers8": 601,
+          "readers9": 601
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET delta|observe|200": {
+        "samples": 6010,
+        "p50": 1.998711,
+        "p95": 2.680882,
+        "p99": 3.111872,
+        "max": 8.615497
+      },
+      "POST checkout|observe|201": {
+        "samples": 215,
+        "p50": 4.849428,
+        "p95": 6.487988,
+        "p99": 9.054449,
+        "max": 34.719875
+      },
+      "POST abandon|observe|200": {
+        "samples": 152,
+        "p50": 2.654935,
+        "p95": 3.990463,
+        "p99": 7.208631,
+        "max": 84.730704
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 42,
+        "p50": 4.027319,
+        "p95": 5.323265,
+        "p99": 5.743895,
+        "max": 5.743895
+      },
+      "POST confirm|observe|200": {
+        "samples": 42,
+        "p50": 8.706868,
+        "p95": 13.023393,
+        "p99": 14.536846,
+        "max": 14.536846
+      },
+      "GET order|observe|200": {
+        "samples": 42,
+        "p50": 1.637781,
+        "p95": 2.333699,
+        "p99": 4.227437,
+        "max": 4.227437
+      },
+      "POST cancel|observe|200": {
+        "samples": 42,
+        "p50": 4.41413,
+        "p95": 6.979682,
+        "p99": 8.492666,
+        "max": 8.492666
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 21,
+        "p50": 10.074281,
+        "p95": 12.403654,
+        "p99": 13.279583,
+        "max": 13.279583
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 21,
+        "p50": 3.923136,
+        "p95": 6.436334,
+        "p99": 7.447915,
+        "max": 7.447915
+      }
+    },
+    "observeSuccessfulHttp": 6587.0,
+    "observeSuccessfulHttpPerSecond": 109.78333333333333,
+    "observeDeltaRequests": 6010.0,
+    "observeDeltaReqPerSecond": 100.16666666666667,
+    "observeHttpStatusCounts": {
+      "200": 6372.0,
+      "201": 215.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 514.0,
+    "observeHttpWriteReqPerSecond": 8.566666666666666,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 124702720,
+        "rss": 147030016,
+        "rssPeak": 147030016,
+        "fd": 207,
+        "tcpTableEntries": 201,
+        "threads": 8,
+        "pids": 10,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.16402363368130052,
+        "cpuQuotaFractionPeak": 0.08201181684065026,
+        "minWslAvailableBytes": 14355800064,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 62361600,
+        "rss": 56860672,
+        "rssPeak": 56860672,
+        "fd": 683,
+        "tcpTableEntries": 289,
+        "threads": 155,
+        "pids": 157,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.15109020369174722,
+        "cpuQuotaFractionPeak": 0.07554510184587361,
+        "minWslAvailableBytes": 14352805888,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 191557632,
+        "rss": 29757440,
+        "rssPeak": 29757440,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 12,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.07292439515499165,
+        "cpuQuotaFractionPeak": 0.07292439515499165,
+        "minWslAvailableBytes": 14349189120,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 24186880,
+        "rss": 17534976,
+        "rssPeak": 19591168,
+        "fd": 16,
+        "tcpTableEntries": 126,
+        "threads": 6,
+        "pids": 14,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.3536464646616731,
+        "cpuQuotaFractionPeak": 0.3536464646616731,
+        "minWslAvailableBytes": 14348836864,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "bootstrap": 0,
+      "read": 6010.0,
+      "abandon": 110.0,
+      "adjust": 42.0,
+      "cancel": 42.0,
+      "expiry": 21.0
+    }
+  },
+  "r1/l2": {
+    "identity": {
+      "startedUtc": "2026-09-14T06:52:56.549689+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-l3-independent-r1",
+        "apiPort": 18502,
+        "frontendPort": 18503,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "ee8ed47c6e8cce02c67113e6c4a5e126cdda9894"
+      },
+      "runtimeConfigSha256": "1cbe2597a322554516780cebfa618b920244022a2ac36edcc96fc94d04691311",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 30,
+      "observeSeconds": 120,
+      "targetDeltaIterationsPerSecond": 250,
+      "targetStateTransitionsPerSecond": 25,
+      "plannedReadIterationsTotal": 30000,
+      "bootstrapSnapshotsPlanned": 200,
+      "bootstrapSnapshotRate": 50,
+      "plannedWriteFlowsTotal": 1071.4285714285713,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 31280,
+      "completedBusinessIterations": 31280,
+      "k6CompletedIterations": 31280,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 33101,
+      "cursorAdvances": 6307,
+      "initializedActiveVUs": 200,
+      "endedUtc": "2026-09-14T06:55:56.326929+00:00",
+      "rawPointsSha256": "ee8a343864cbc1234476288a60fd4d1cbf85a84abd2731859f07f987c490adca",
+      "rawPointsBytes": 7690614,
+      "inventoryChanges": {
+        "formalGenerated": 428,
+        "formalProjected": 428,
+        "allStreamEntriesAdded": 2994,
+        "temporaryVisibleEntriesAdded": 2566,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 2994,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 30000,
+          "writerFlowsNominal": 1071.4285714285713,
+          "bootstrapSnapshots": 200
+        },
+        "startedByKind": {
+          "bootstrap": 200,
+          "read": 30008,
+          "abandon": 537,
+          "adjust": 214,
+          "cancel": 214,
+          "expiry": 107
+        },
+        "completedByKind": {
+          "bootstrap": 200,
+          "read": 30008,
+          "abandon": 537,
+          "adjust": 214,
+          "cancel": 214,
+          "expiry": 107
+        },
+        "startedByScenario": {
+          "bootstrap": 200,
+          "readers0": 3001,
+          "writers": 1072,
+          "readers1": 3000,
+          "readers2": 3000,
+          "readers3": 3001,
+          "readers4": 3001,
+          "readers5": 3001,
+          "readers6": 3001,
+          "readers7": 3001,
+          "readers8": 3001,
+          "readers9": 3001
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET delta|observe|200": {
+        "samples": 30008,
+        "p50": 1.520692,
+        "p95": 2.280137,
+        "p99": 3.191019,
+        "max": 11.025833
+      },
+      "POST checkout|observe|201": {
+        "samples": 1072,
+        "p50": 3.961881,
+        "p95": 5.435067,
+        "p99": 7.32388,
+        "max": 30.416679
+      },
+      "POST abandon|observe|200": {
+        "samples": 751,
+        "p50": 2.517138,
+        "p95": 4.066737,
+        "p99": 6.23196,
+        "max": 38.021712
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 214,
+        "p50": 3.573225,
+        "p95": 5.433101,
+        "p99": 6.72467,
+        "max": 8.266001
+      },
+      "POST confirm|observe|200": {
+        "samples": 214,
+        "p50": 8.450396,
+        "p95": 12.311179,
+        "p99": 13.381029,
+        "max": 15.455548
+      },
+      "GET order|observe|200": {
+        "samples": 214,
+        "p50": 1.355575,
+        "p95": 2.532055,
+        "p99": 3.228289,
+        "max": 3.926341
+      },
+      "POST cancel|observe|200": {
+        "samples": 214,
+        "p50": 4.204415,
+        "p95": 6.36165,
+        "p99": 7.905708,
+        "max": 11.495243
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 107,
+        "p50": 9.488854,
+        "p95": 12.153548,
+        "p99": 15.17815,
+        "max": 15.388105
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 107,
+        "p50": 3.747067,
+        "p95": 6.076525,
+        "p99": 8.245615,
+        "max": 59.080123
+      }
+    },
+    "observeSuccessfulHttp": 32901.0,
+    "observeSuccessfulHttpPerSecond": 274.175,
+    "observeDeltaRequests": 30008.0,
+    "observeDeltaReqPerSecond": 250.06666666666666,
+    "observeHttpStatusCounts": {
+      "200": 31829.0,
+      "201": 1072.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 2572.0,
+    "observeHttpWriteReqPerSecond": 21.433333333333334,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 130150400,
+        "rss": 152489984,
+        "rssPeak": 152489984,
+        "fd": 207,
+        "tcpTableEntries": 201,
+        "threads": 9,
+        "pids": 11,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.2862545717063836,
+        "cpuQuotaFractionPeak": 0.1431272858531918,
+        "minWslAvailableBytes": 14352474112,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 65871872,
+        "rss": 59555840,
+        "rssPeak": 59555840,
+        "fd": 684,
+        "tcpTableEntries": 288,
+        "threads": 155,
+        "pids": 157,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.2360425023831554,
+        "cpuQuotaFractionPeak": 0.1180212511915777,
+        "minWslAvailableBytes": 14351835136,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 202534912,
+        "rss": 29757440,
+        "rssPeak": 29757440,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 18,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.11623628489046274,
+        "cpuQuotaFractionPeak": 0.11623628489046274,
+        "minWslAvailableBytes": 14354239488,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 24371200,
+        "rss": 17760256,
+        "rssPeak": 19591168,
+        "fd": 17,
+        "tcpTableEntries": 123,
+        "threads": 6,
+        "pids": 14,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.3583016732477244,
+        "cpuQuotaFractionPeak": 0.3583016732477244,
+        "minWslAvailableBytes": 14351040512,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "bootstrap": 0,
+      "read": 30008.0,
+      "abandon": 537.0,
+      "adjust": 214.0,
+      "cancel": 214.0,
+      "expiry": 107.0
+    }
+  },
+  "r1/l3": {
+    "identity": {
+      "startedUtc": "2026-09-14T06:56:07.750935+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-l3-independent-r1",
+        "apiPort": 18502,
+        "frontendPort": 18503,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "ee8ed47c6e8cce02c67113e6c4a5e126cdda9894"
+      },
+      "runtimeConfigSha256": "1cbe2597a322554516780cebfa618b920244022a2ac36edcc96fc94d04691311",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 30,
+      "observeSeconds": 120,
+      "targetDeltaIterationsPerSecond": 500,
+      "targetStateTransitionsPerSecond": 50,
+      "plannedReadIterationsTotal": 60000,
+      "bootstrapSnapshotsPlanned": 200,
+      "bootstrapSnapshotRate": 50,
+      "plannedWriteFlowsTotal": 2142.8571428571427,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 62353,
+      "completedBusinessIterations": 62353,
+      "k6CompletedIterations": 62353,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 65994,
+      "cursorAdvances": 12608,
+      "initializedActiveVUs": 200,
+      "endedUtc": "2026-09-14T06:59:11.178391+00:00",
+      "rawPointsSha256": "042ba01909cc16b99e476db200476e0a830a8e26f859c76197fa4acdef04ac84",
+      "rawPointsBytes": 15223224,
+      "inventoryChanges": {
+        "formalGenerated": 856,
+        "formalProjected": 856,
+        "allStreamEntriesAdded": 5954,
+        "temporaryVisibleEntriesAdded": 5098,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 5954,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 60000,
+          "writerFlowsNominal": 2142.8571428571427,
+          "bootstrapSnapshots": 200
+        },
+        "startedByKind": {
+          "bootstrap": 200,
+          "read": 60010,
+          "abandon": 1073,
+          "adjust": 428,
+          "cancel": 428,
+          "expiry": 214
+        },
+        "completedByKind": {
+          "bootstrap": 200,
+          "read": 60010,
+          "abandon": 1073,
+          "adjust": 428,
+          "cancel": 428,
+          "expiry": 214
+        },
+        "startedByScenario": {
+          "bootstrap": 200,
+          "readers0": 6001,
+          "writers": 2143,
+          "readers1": 6001,
+          "readers2": 6001,
+          "readers3": 6001,
+          "readers4": 6001,
+          "readers5": 6001,
+          "readers6": 6001,
+          "readers7": 6001,
+          "readers8": 6001,
+          "readers9": 6001
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET delta|observe|200": {
+        "samples": 60010,
+        "p50": 1.41967,
+        "p95": 2.249993,
+        "p99": 5.049522,
+        "max": 19.050895
+      },
+      "POST checkout|observe|201": {
+        "samples": 2143,
+        "p50": 4.021288,
+        "p95": 5.301805,
+        "p99": 7.184015,
+        "max": 131.531083
+      },
+      "POST abandon|observe|200": {
+        "samples": 1501,
+        "p50": 2.77322,
+        "p95": 4.020126,
+        "p99": 5.600842,
+        "max": 75.348251
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 428,
+        "p50": 3.827161,
+        "p95": 5.486678,
+        "p99": 7.511078,
+        "max": 65.662486
+      },
+      "POST confirm|observe|200": {
+        "samples": 428,
+        "p50": 9.12133,
+        "p95": 12.01853,
+        "p99": 16.220996,
+        "max": 22.054948
+      },
+      "GET order|observe|200": {
+        "samples": 428,
+        "p50": 1.4672,
+        "p95": 2.141732,
+        "p99": 3.183943,
+        "max": 4.575251
+      },
+      "POST cancel|observe|200": {
+        "samples": 428,
+        "p50": 4.699088,
+        "p95": 6.418509,
+        "p99": 8.477929,
+        "max": 15.742157
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 214,
+        "p50": 9.735894,
+        "p95": 11.393244,
+        "p99": 13.038114,
+        "max": 14.753593
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 214,
+        "p50": 3.506513,
+        "p95": 5.1581,
+        "p99": 5.867635,
+        "max": 21.529564
+      }
+    },
+    "observeSuccessfulHttp": 65794.0,
+    "observeSuccessfulHttpPerSecond": 548.2833333333333,
+    "observeDeltaRequests": 60010.0,
+    "observeDeltaReqPerSecond": 500.0833333333333,
+    "observeHttpStatusCounts": {
+      "200": 63651.0,
+      "201": 2143.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 5142.0,
+    "observeHttpWriteReqPerSecond": 42.85,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 139653120,
+        "rss": 161955840,
+        "rssPeak": 161955840,
+        "fd": 207,
+        "tcpTableEntries": 201,
+        "threads": 9,
+        "pids": 11,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.4526456542413808,
+        "cpuQuotaFractionPeak": 0.2263228271206904,
+        "minWslAvailableBytes": 14362808320,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 67502080,
+        "rss": 61358080,
+        "rssPeak": 61358080,
+        "fd": 683,
+        "tcpTableEntries": 288,
+        "threads": 155,
+        "pids": 157,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.43292979946659915,
+        "cpuQuotaFractionPeak": 0.21646489973329958,
+        "minWslAvailableBytes": 14363807744,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 220749824,
+        "rss": 29757440,
+        "rssPeak": 29757440,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 12,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.190480420244601,
+        "cpuQuotaFractionPeak": 0.190480420244601,
+        "minWslAvailableBytes": 14358974464,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 24719360,
+        "rss": 18173952,
+        "rssPeak": 19591168,
+        "fd": 17,
+        "tcpTableEntries": 127,
+        "threads": 6,
+        "pids": 14,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.35581045431983865,
+        "cpuQuotaFractionPeak": 0.35581045431983865,
+        "minWslAvailableBytes": 14358966272,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "bootstrap": 0,
+      "read": 60010.0,
+      "abandon": 1073.0,
+      "adjust": 428.0,
+      "cancel": 428.0,
+      "expiry": 214.0
+    }
+  },
+  "r2/precheck": {
+    "identity": {
+      "startedUtc": "2026-09-14T06:59:46.468510+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-l3-independent-r2",
+        "apiPort": 18504,
+        "frontendPort": 18505,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "ee8ed47c6e8cce02c67113e6c4a5e126cdda9894"
+      },
+      "runtimeConfigSha256": "c49f2102114ce6ed213e18c9277a3cc449296952deef7a9a18a090df08a649a4",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 0,
+      "observeSeconds": 30,
+      "targetDeltaIterationsPerSecond": 50,
+      "targetStateTransitionsPerSecond": 5,
+      "plannedReadIterationsTotal": 1500,
+      "bootstrapSnapshotsPlanned": 0,
+      "bootstrapSnapshotRate": null,
+      "plannedWriteFlowsTotal": 53.57142857142857,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 1564,
+      "completedBusinessIterations": 1564,
+      "k6CompletedIterations": 1564,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 1753,
+      "cursorAdvances": 286,
+      "initializedActiveVUs": 154,
+      "endedUtc": "2026-09-14T07:00:43.405954+00:00",
+      "rawPointsSha256": "c819a1db49a31c1ba5902f776a229cccf0fc52eaf08af6fa9eb1000ece97b8d3",
+      "rawPointsBytes": 415426,
+      "inventoryChanges": {
+        "formalGenerated": 20,
+        "formalProjected": 20,
+        "allStreamEntriesAdded": 148,
+        "temporaryVisibleEntriesAdded": 128,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 148,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 1500,
+          "writerFlowsNominal": 53.57142857142857,
+          "bootstrapSnapshots": 0
+        },
+        "startedByKind": {
+          "read": 1510,
+          "abandon": 29,
+          "adjust": 10,
+          "cancel": 10,
+          "expiry": 5
+        },
+        "completedByKind": {
+          "read": 1510,
+          "abandon": 29,
+          "adjust": 10,
+          "cancel": 10,
+          "expiry": 5
+        },
+        "startedByScenario": {
+          "readers0": 151,
+          "writers": 54,
+          "readers1": 151,
+          "readers2": 151,
+          "readers3": 151,
+          "readers4": 151,
+          "readers5": 151,
+          "readers6": 151,
+          "readers7": 151,
+          "readers8": 151,
+          "readers9": 151
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET snapshot|observe|200": {
+        "samples": 100,
+        "p50": 9.372346,
+        "p95": 11.954403,
+        "p99": 16.143068,
+        "max": 28.741858
+      },
+      "GET delta|observe|200": {
+        "samples": 1510,
+        "p50": 2.117501,
+        "p95": 2.850566,
+        "p99": 3.306625,
+        "max": 11.145055
+      },
+      "POST checkout|observe|201": {
+        "samples": 54,
+        "p50": 5.291143,
+        "p95": 13.466221,
+        "p99": 20.310657,
+        "max": 20.310657
+      },
+      "POST abandon|observe|200": {
+        "samples": 39,
+        "p50": 2.582649,
+        "p95": 5.170581,
+        "p99": 7.739939,
+        "max": 7.739939
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 10,
+        "p50": 4.054827,
+        "p95": 6.726865,
+        "p99": 6.726865,
+        "max": 6.726865
+      },
+      "POST confirm|observe|200": {
+        "samples": 10,
+        "p50": 9.657934,
+        "p95": 16.84955,
+        "p99": 16.84955,
+        "max": 16.84955
+      },
+      "GET order|observe|200": {
+        "samples": 10,
+        "p50": 1.660207,
+        "p95": 6.147452,
+        "p99": 6.147452,
+        "max": 6.147452
+      },
+      "POST cancel|observe|200": {
+        "samples": 10,
+        "p50": 4.843361,
+        "p95": 6.943682,
+        "p99": 6.943682,
+        "max": 6.943682
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 5,
+        "p50": 10.053897,
+        "p95": 12.383648,
+        "p99": 12.383648,
+        "max": 12.383648
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 5,
+        "p50": 4.474523,
+        "p95": 5.244699,
+        "p99": 5.244699,
+        "max": 5.244699
+      }
+    },
+    "observeSuccessfulHttp": 1753.0,
+    "observeSuccessfulHttpPerSecond": 58.43333333333333,
+    "observeDeltaRequests": 1510.0,
+    "observeDeltaReqPerSecond": 50.333333333333336,
+    "observeHttpStatusCounts": {
+      "200": 1699.0,
+      "201": 54.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 128.0,
+    "observeHttpWriteReqPerSecond": 4.266666666666667,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 113491968,
+        "rss": 136278016,
+        "rssPeak": 136278016,
+        "fd": 161,
+        "tcpTableEntries": 155,
+        "threads": 8,
+        "pids": 10,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.18605862237234383,
+        "cpuQuotaFractionPeak": 0.09302931118617191,
+        "minWslAvailableBytes": 14409781248,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 55877632,
+        "rss": 50634752,
+        "rssPeak": 50634752,
+        "fd": 637,
+        "tcpTableEntries": 244,
+        "threads": 155,
+        "pids": 157,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.15502117182189012,
+        "cpuQuotaFractionPeak": 0.07751058591094506,
+        "minWslAvailableBytes": 14409469952,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 186597376,
+        "rss": 30076928,
+        "rssPeak": 30076928,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 12,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.06243022136731432,
+        "cpuQuotaFractionPeak": 0.06243022136731432,
+        "minWslAvailableBytes": 14409211904,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 23678976,
+        "rss": 17768448,
+        "rssPeak": 19808256,
+        "fd": 16,
+        "tcpTableEntries": 128,
+        "threads": 6,
+        "pids": 8,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.22713652394439054,
+        "cpuQuotaFractionPeak": 0.22713652394439054,
+        "minWslAvailableBytes": 14405562368,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "read": 1510.0,
+      "abandon": 29.0,
+      "adjust": 10.0,
+      "cancel": 10.0,
+      "expiry": 5.0
+    }
+  },
+  "r2/l1": {
+    "identity": {
+      "startedUtc": "2026-09-14T07:00:55.011734+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-l3-independent-r2",
+        "apiPort": 18504,
+        "frontendPort": 18505,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "ee8ed47c6e8cce02c67113e6c4a5e126cdda9894"
+      },
+      "runtimeConfigSha256": "c49f2102114ce6ed213e18c9277a3cc449296952deef7a9a18a090df08a649a4",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 30,
+      "observeSeconds": 60,
+      "targetDeltaIterationsPerSecond": 100,
+      "targetStateTransitionsPerSecond": 10,
+      "plannedReadIterationsTotal": 6000,
+      "bootstrapSnapshotsPlanned": 200,
+      "bootstrapSnapshotRate": 50,
+      "plannedWriteFlowsTotal": 214.28571428571428,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 6424,
+      "completedBusinessIterations": 6424,
+      "k6CompletedIterations": 6424,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 6786,
+      "cursorAdvances": 1268,
+      "initializedActiveVUs": 200,
+      "endedUtc": "2026-09-14T07:02:51.640403+00:00",
+      "rawPointsSha256": "209eb2387860680bc0f38c4672cdb24c153221b9d8c7927fa42644a3e44fa7c0",
+      "rawPointsBytes": 1593312,
+      "inventoryChanges": {
+        "formalGenerated": 84,
+        "formalProjected": 84,
+        "allStreamEntriesAdded": 598,
+        "temporaryVisibleEntriesAdded": 514,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 598,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 6000,
+          "writerFlowsNominal": 214.28571428571428,
+          "bootstrapSnapshots": 200
+        },
+        "startedByKind": {
+          "bootstrap": 200,
+          "read": 6009,
+          "abandon": 110,
+          "adjust": 42,
+          "cancel": 42,
+          "expiry": 21
+        },
+        "completedByKind": {
+          "bootstrap": 200,
+          "read": 6009,
+          "abandon": 110,
+          "adjust": 42,
+          "cancel": 42,
+          "expiry": 21
+        },
+        "startedByScenario": {
+          "bootstrap": 200,
+          "readers0": 601,
+          "writers": 215,
+          "readers1": 601,
+          "readers2": 601,
+          "readers3": 601,
+          "readers4": 601,
+          "readers5": 601,
+          "readers6": 600,
+          "readers7": 601,
+          "readers8": 601,
+          "readers9": 601
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET delta|observe|200": {
+        "samples": 6009,
+        "p50": 1.922724,
+        "p95": 2.562635,
+        "p99": 2.990817,
+        "max": 7.121111
+      },
+      "POST checkout|observe|201": {
+        "samples": 215,
+        "p50": 4.596989,
+        "p95": 6.237767,
+        "p99": 6.911979,
+        "max": 7.053099
+      },
+      "POST abandon|observe|200": {
+        "samples": 152,
+        "p50": 2.55798,
+        "p95": 3.798153,
+        "p99": 4.773241,
+        "max": 5.060085
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 42,
+        "p50": 3.668241,
+        "p95": 5.075766,
+        "p99": 5.532703,
+        "max": 5.532703
+      },
+      "POST confirm|observe|200": {
+        "samples": 42,
+        "p50": 8.467223,
+        "p95": 10.049542,
+        "p99": 10.895922,
+        "max": 10.895922
+      },
+      "GET order|observe|200": {
+        "samples": 42,
+        "p50": 1.404348,
+        "p95": 1.995247,
+        "p99": 2.688986,
+        "max": 2.688986
+      },
+      "POST cancel|observe|200": {
+        "samples": 42,
+        "p50": 4.153426,
+        "p95": 5.527437,
+        "p99": 6.371221,
+        "max": 6.371221
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 21,
+        "p50": 9.680838,
+        "p95": 10.715299,
+        "p99": 11.99657,
+        "max": 11.99657
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 21,
+        "p50": 3.638116,
+        "p95": 5.708505,
+        "p99": 6.333015,
+        "max": 6.333015
+      }
+    },
+    "observeSuccessfulHttp": 6586.0,
+    "observeSuccessfulHttpPerSecond": 109.76666666666667,
+    "observeDeltaRequests": 6009.0,
+    "observeDeltaReqPerSecond": 100.15,
+    "observeHttpStatusCounts": {
+      "200": 6371.0,
+      "201": 215.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 514.0,
+    "observeHttpWriteReqPerSecond": 8.566666666666666,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 123813888,
+        "rss": 146386944,
+        "rssPeak": 146386944,
+        "fd": 207,
+        "tcpTableEntries": 201,
+        "threads": 8,
+        "pids": 10,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.1675347119487238,
+        "cpuQuotaFractionPeak": 0.0837673559743619,
+        "minWslAvailableBytes": 14322995200,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 61796352,
+        "rss": 56045568,
+        "rssPeak": 56045568,
+        "fd": 683,
+        "tcpTableEntries": 289,
+        "threads": 155,
+        "pids": 157,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.14943380556762983,
+        "cpuQuotaFractionPeak": 0.07471690278381492,
+        "minWslAvailableBytes": 14322995200,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 195051520,
+        "rss": 30076928,
+        "rssPeak": 30076928,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 18,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.0647405,
+        "cpuQuotaFractionPeak": 0.0647405,
+        "minWslAvailableBytes": 14330200064,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 25468928,
+        "rss": 17924096,
+        "rssPeak": 19808256,
+        "fd": 17,
+        "tcpTableEntries": 123,
+        "threads": 6,
+        "pids": 13,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.35470423230264797,
+        "cpuQuotaFractionPeak": 0.35470423230264797,
+        "minWslAvailableBytes": 14326542336,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "bootstrap": 0,
+      "read": 6009.0,
+      "abandon": 110.0,
+      "adjust": 42.0,
+      "cancel": 42.0,
+      "expiry": 21.0
+    }
+  },
+  "r2/l2": {
+    "identity": {
+      "startedUtc": "2026-09-14T07:03:02.969196+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-l3-independent-r2",
+        "apiPort": 18504,
+        "frontendPort": 18505,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "ee8ed47c6e8cce02c67113e6c4a5e126cdda9894"
+      },
+      "runtimeConfigSha256": "c49f2102114ce6ed213e18c9277a3cc449296952deef7a9a18a090df08a649a4",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 30,
+      "observeSeconds": 120,
+      "targetDeltaIterationsPerSecond": 250,
+      "targetStateTransitionsPerSecond": 25,
+      "plannedReadIterationsTotal": 30000,
+      "bootstrapSnapshotsPlanned": 200,
+      "bootstrapSnapshotRate": 50,
+      "plannedWriteFlowsTotal": 1071.4285714285713,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 31281,
+      "completedBusinessIterations": 31281,
+      "k6CompletedIterations": 31281,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 33102,
+      "cursorAdvances": 6008,
+      "initializedActiveVUs": 200,
+      "endedUtc": "2026-09-14T07:06:03.444508+00:00",
+      "rawPointsSha256": "6c712760ee2878fbe924e6293d08acd6df68019e72c5baa9d5693a831b313230",
+      "rawPointsBytes": 7664706,
+      "inventoryChanges": {
+        "formalGenerated": 428,
+        "formalProjected": 428,
+        "allStreamEntriesAdded": 2990,
+        "temporaryVisibleEntriesAdded": 2562,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 2990,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 30000,
+          "writerFlowsNominal": 1071.4285714285713,
+          "bootstrapSnapshots": 200
+        },
+        "startedByKind": {
+          "bootstrap": 200,
+          "read": 30009,
+          "abandon": 537,
+          "adjust": 214,
+          "cancel": 214,
+          "expiry": 107
+        },
+        "completedByKind": {
+          "bootstrap": 200,
+          "read": 30009,
+          "abandon": 537,
+          "adjust": 214,
+          "cancel": 214,
+          "expiry": 107
+        },
+        "startedByScenario": {
+          "bootstrap": 200,
+          "readers0": 3001,
+          "writers": 1072,
+          "readers1": 3001,
+          "readers2": 3001,
+          "readers3": 3000,
+          "readers4": 3001,
+          "readers5": 3001,
+          "readers6": 3001,
+          "readers7": 3001,
+          "readers8": 3001,
+          "readers9": 3001
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET delta|observe|200": {
+        "samples": 30009,
+        "p50": 1.482281,
+        "p95": 2.241868,
+        "p99": 3.027502,
+        "max": 11.128124
+      },
+      "POST checkout|observe|201": {
+        "samples": 1072,
+        "p50": 3.965041,
+        "p95": 5.714195,
+        "p99": 7.149274,
+        "max": 12.633247
+      },
+      "POST abandon|observe|200": {
+        "samples": 751,
+        "p50": 2.400016,
+        "p95": 3.867491,
+        "p99": 4.829961,
+        "max": 17.989293
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 214,
+        "p50": 3.320921,
+        "p95": 5.068135,
+        "p99": 5.834187,
+        "max": 5.962276
+      },
+      "POST confirm|observe|200": {
+        "samples": 214,
+        "p50": 8.323725,
+        "p95": 12.164932,
+        "p99": 15.445098,
+        "max": 19.661824
+      },
+      "GET order|observe|200": {
+        "samples": 214,
+        "p50": 1.326299,
+        "p95": 2.201804,
+        "p99": 3.386374,
+        "max": 3.775541
+      },
+      "POST cancel|observe|200": {
+        "samples": 214,
+        "p50": 4.232336,
+        "p95": 6.162659,
+        "p99": 7.10766,
+        "max": 8.739891
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 107,
+        "p50": 9.285182,
+        "p95": 11.143922,
+        "p99": 14.460762,
+        "max": 14.814597
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 107,
+        "p50": 3.501517,
+        "p95": 6.563861,
+        "p99": 8.521693,
+        "max": 10.238415
+      }
+    },
+    "observeSuccessfulHttp": 32902.0,
+    "observeSuccessfulHttpPerSecond": 274.18333333333334,
+    "observeDeltaRequests": 30009.0,
+    "observeDeltaReqPerSecond": 250.075,
+    "observeHttpStatusCounts": {
+      "200": 31830.0,
+      "201": 1072.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 2572.0,
+    "observeHttpWriteReqPerSecond": 21.433333333333334,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 130486272,
+        "rss": 152989696,
+        "rssPeak": 152989696,
+        "fd": 207,
+        "tcpTableEntries": 201,
+        "threads": 9,
+        "pids": 11,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.26709553832293415,
+        "cpuQuotaFractionPeak": 0.13354776916146707,
+        "minWslAvailableBytes": 14351261696,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 65052672,
+        "rss": 59183104,
+        "rssPeak": 59183104,
+        "fd": 683,
+        "tcpTableEntries": 288,
+        "threads": 155,
+        "pids": 157,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.24076236664390496,
+        "cpuQuotaFractionPeak": 0.12038118332195248,
+        "minWslAvailableBytes": 14350602240,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 200343552,
+        "rss": 30076928,
+        "rssPeak": 30076928,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 12,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.11783536883125827,
+        "cpuQuotaFractionPeak": 0.11783536883125827,
+        "minWslAvailableBytes": 14350491648,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 24993792,
+        "rss": 18079744,
+        "rssPeak": 19808256,
+        "fd": 17,
+        "tcpTableEntries": 126,
+        "threads": 6,
+        "pids": 14,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.36267807538576746,
+        "cpuQuotaFractionPeak": 0.36267807538576746,
+        "minWslAvailableBytes": 14350491648,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "bootstrap": 0,
+      "read": 30009.0,
+      "abandon": 537.0,
+      "adjust": 214.0,
+      "cancel": 214.0,
+      "expiry": 107.0
+    }
+  },
+  "r2/l3": {
+    "identity": {
+      "startedUtc": "2026-09-14T07:06:14.819193+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-l3-independent-r2",
+        "apiPort": 18504,
+        "frontendPort": 18505,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "ee8ed47c6e8cce02c67113e6c4a5e126cdda9894"
+      },
+      "runtimeConfigSha256": "c49f2102114ce6ed213e18c9277a3cc449296952deef7a9a18a090df08a649a4",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 30,
+      "observeSeconds": 120,
+      "targetDeltaIterationsPerSecond": 500,
+      "targetStateTransitionsPerSecond": 50,
+      "plannedReadIterationsTotal": 60000,
+      "bootstrapSnapshotsPlanned": 200,
+      "bootstrapSnapshotRate": 50,
+      "plannedWriteFlowsTotal": 2142.8571428571427,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 62348,
+      "completedBusinessIterations": 62348,
+      "k6CompletedIterations": 62348,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 65989,
+      "cursorAdvances": 12603,
+      "initializedActiveVUs": 200,
+      "endedUtc": "2026-09-14T07:09:16.692091+00:00",
+      "rawPointsSha256": "e72a46f73f070cac7414ab18c1720fba1c96787ed455f169e4c8fbda67b2a4b6",
+      "rawPointsBytes": 15223898,
+      "inventoryChanges": {
+        "formalGenerated": 856,
+        "formalProjected": 856,
+        "allStreamEntriesAdded": 5921,
+        "temporaryVisibleEntriesAdded": 5065,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 5921,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 60000,
+          "writerFlowsNominal": 2142.8571428571427,
+          "bootstrapSnapshots": 200
+        },
+        "startedByKind": {
+          "bootstrap": 200,
+          "read": 60005,
+          "abandon": 1073,
+          "adjust": 428,
+          "cancel": 428,
+          "expiry": 214
+        },
+        "completedByKind": {
+          "bootstrap": 200,
+          "read": 60005,
+          "abandon": 1073,
+          "adjust": 428,
+          "cancel": 428,
+          "expiry": 214
+        },
+        "startedByScenario": {
+          "bootstrap": 200,
+          "readers0": 6000,
+          "writers": 2143,
+          "readers1": 6001,
+          "readers2": 6000,
+          "readers3": 6000,
+          "readers4": 6001,
+          "readers5": 6001,
+          "readers6": 6001,
+          "readers7": 6001,
+          "readers8": 6000,
+          "readers9": 6000
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET delta|observe|200": {
+        "samples": 60005,
+        "p50": 1.425723,
+        "p95": 2.253625,
+        "p99": 4.760837,
+        "max": 17.419145
+      },
+      "POST checkout|observe|201": {
+        "samples": 2143,
+        "p50": 4.035927,
+        "p95": 5.257391,
+        "p99": 6.351511,
+        "max": 10.488161
+      },
+      "POST abandon|observe|200": {
+        "samples": 1501,
+        "p50": 2.769359,
+        "p95": 3.961213,
+        "p99": 5.288445,
+        "max": 11.701829
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 428,
+        "p50": 3.993577,
+        "p95": 5.35071,
+        "p99": 7.612281,
+        "max": 11.041906
+      },
+      "POST confirm|observe|200": {
+        "samples": 428,
+        "p50": 9.084654,
+        "p95": 11.896033,
+        "p99": 14.194729,
+        "max": 22.042455
+      },
+      "GET order|observe|200": {
+        "samples": 428,
+        "p50": 1.429054,
+        "p95": 2.044411,
+        "p99": 2.76548,
+        "max": 3.142836
+      },
+      "POST cancel|observe|200": {
+        "samples": 428,
+        "p50": 4.619933,
+        "p95": 6.196718,
+        "p99": 7.303109,
+        "max": 15.253328
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 214,
+        "p50": 9.779341,
+        "p95": 12.15561,
+        "p99": 13.147045,
+        "max": 14.262726
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 214,
+        "p50": 3.60604,
+        "p95": 5.908075,
+        "p99": 8.472709,
+        "max": 9.608347
+      }
+    },
+    "observeSuccessfulHttp": 65789.0,
+    "observeSuccessfulHttpPerSecond": 548.2416666666667,
+    "observeDeltaRequests": 60005.0,
+    "observeDeltaReqPerSecond": 500.0416666666667,
+    "observeHttpStatusCounts": {
+      "200": 63646.0,
+      "201": 2143.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 5142.0,
+    "observeHttpWriteReqPerSecond": 42.85,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 138420224,
+        "rss": 160452608,
+        "rssPeak": 160452608,
+        "fd": 207,
+        "tcpTableEntries": 201,
+        "threads": 9,
+        "pids": 11,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.4478932086856406,
+        "cpuQuotaFractionPeak": 0.2239466043428203,
+        "minWslAvailableBytes": 14351798272,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 71426048,
+        "rss": 61382656,
+        "rssPeak": 61382656,
+        "fd": 683,
+        "tcpTableEntries": 288,
+        "threads": 155,
+        "pids": 157,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.43348997133822176,
+        "cpuQuotaFractionPeak": 0.21674498566911088,
+        "minWslAvailableBytes": 14351286272,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 223420416,
+        "rss": 30076928,
+        "rssPeak": 30076928,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 17,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.18855523943465555,
+        "cpuQuotaFractionPeak": 0.18855523943465555,
+        "minWslAvailableBytes": 14351568896,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 23949312,
+        "rss": 18378752,
+        "rssPeak": 19808256,
+        "fd": 16,
+        "tcpTableEntries": 127,
+        "threads": 6,
+        "pids": 8,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.37327747923417287,
+        "cpuQuotaFractionPeak": 0.37327747923417287,
+        "minWslAvailableBytes": 14357311488,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "bootstrap": 0,
+      "read": 60005.0,
+      "abandon": 1073.0,
+      "adjust": 428.0,
+      "cancel": 428.0,
+      "expiry": 214.0
+    }
+  },
+  "r3/precheck": {
+    "identity": {
+      "startedUtc": "2026-09-14T07:09:51.556604+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-l3-independent-r3",
+        "apiPort": 18506,
+        "frontendPort": 18507,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "ee8ed47c6e8cce02c67113e6c4a5e126cdda9894"
+      },
+      "runtimeConfigSha256": "469a2bcb97944e7534eb80393510e520a709ca58731306c90d85a2993e7f81bc",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 0,
+      "observeSeconds": 30,
+      "targetDeltaIterationsPerSecond": 50,
+      "targetStateTransitionsPerSecond": 5,
+      "plannedReadIterationsTotal": 1500,
+      "bootstrapSnapshotsPlanned": 0,
+      "bootstrapSnapshotRate": null,
+      "plannedWriteFlowsTotal": 53.57142857142857,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 1562,
+      "completedBusinessIterations": 1562,
+      "k6CompletedIterations": 1562,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 1751,
+      "cursorAdvances": 287,
+      "initializedActiveVUs": 154,
+      "endedUtc": "2026-09-14T07:10:47.168808+00:00",
+      "rawPointsSha256": "931a4e7ca48331a54642d3bcb7d7c91fa9af8112aa8117299c9713882d4c37a9",
+      "rawPointsBytes": 414864,
+      "inventoryChanges": {
+        "formalGenerated": 20,
+        "formalProjected": 20,
+        "allStreamEntriesAdded": 148,
+        "temporaryVisibleEntriesAdded": 128,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 148,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 1500,
+          "writerFlowsNominal": 53.57142857142857,
+          "bootstrapSnapshots": 0
+        },
+        "startedByKind": {
+          "read": 1508,
+          "abandon": 29,
+          "adjust": 10,
+          "cancel": 10,
+          "expiry": 5
+        },
+        "completedByKind": {
+          "read": 1508,
+          "abandon": 29,
+          "adjust": 10,
+          "cancel": 10,
+          "expiry": 5
+        },
+        "startedByScenario": {
+          "readers0": 150,
+          "writers": 54,
+          "readers1": 151,
+          "readers2": 151,
+          "readers3": 151,
+          "readers4": 151,
+          "readers5": 151,
+          "readers6": 151,
+          "readers7": 150,
+          "readers8": 151,
+          "readers9": 151
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET snapshot|observe|200": {
+        "samples": 100,
+        "p50": 9.576596,
+        "p95": 10.413848,
+        "p99": 21.677975,
+        "max": 31.35144
+      },
+      "GET delta|observe|200": {
+        "samples": 1508,
+        "p50": 2.179581,
+        "p95": 2.955631,
+        "p99": 3.385661,
+        "max": 7.46439
+      },
+      "POST checkout|observe|201": {
+        "samples": 54,
+        "p50": 5.592282,
+        "p95": 12.201544,
+        "p99": 24.333063,
+        "max": 24.333063
+      },
+      "POST abandon|observe|200": {
+        "samples": 39,
+        "p50": 2.919583,
+        "p95": 5.433133,
+        "p99": 10.927568,
+        "max": 10.927568
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 10,
+        "p50": 4.402031,
+        "p95": 5.419631,
+        "p99": 5.419631,
+        "max": 5.419631
+      },
+      "POST confirm|observe|200": {
+        "samples": 10,
+        "p50": 10.139998,
+        "p95": 19.505972,
+        "p99": 19.505972,
+        "max": 19.505972
+      },
+      "GET order|observe|200": {
+        "samples": 10,
+        "p50": 1.686359,
+        "p95": 2.885113,
+        "p99": 2.885113,
+        "max": 2.885113
+      },
+      "POST cancel|observe|200": {
+        "samples": 10,
+        "p50": 4.75043,
+        "p95": 6.487686,
+        "p99": 6.487686,
+        "max": 6.487686
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 5,
+        "p50": 10.340207,
+        "p95": 11.658487,
+        "p99": 11.658487,
+        "max": 11.658487
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 5,
+        "p50": 3.721198,
+        "p95": 4.527292,
+        "p99": 4.527292,
+        "max": 4.527292
+      }
+    },
+    "observeSuccessfulHttp": 1751.0,
+    "observeSuccessfulHttpPerSecond": 58.36666666666667,
+    "observeDeltaRequests": 1508.0,
+    "observeDeltaReqPerSecond": 50.266666666666666,
+    "observeHttpStatusCounts": {
+      "200": 1697.0,
+      "201": 54.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 128.0,
+    "observeHttpWriteReqPerSecond": 4.266666666666667,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 112590848,
+        "rss": 135307264,
+        "rssPeak": 135307264,
+        "fd": 161,
+        "tcpTableEntries": 155,
+        "threads": 8,
+        "pids": 10,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.1765000000095456,
+        "cpuQuotaFractionPeak": 0.0882500000047728,
+        "minWslAvailableBytes": 14389198848,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 56156160,
+        "rss": 51007488,
+        "rssPeak": 51007488,
+        "fd": 637,
+        "tcpTableEntries": 244,
+        "threads": 155,
+        "pids": 157,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.159676514035718,
+        "cpuQuotaFractionPeak": 0.079838257017859,
+        "minWslAvailableBytes": 14392692736,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 185618432,
+        "rss": 30183424,
+        "rssPeak": 30183424,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 12,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.05894485475254331,
+        "cpuQuotaFractionPeak": 0.05894485475254331,
+        "minWslAvailableBytes": 14395334656,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 24715264,
+        "rss": 17575936,
+        "rssPeak": 19558400,
+        "fd": 18,
+        "tcpTableEntries": 127,
+        "threads": 6,
+        "pids": 14,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.23091269843232637,
+        "cpuQuotaFractionPeak": 0.23091269843232637,
+        "minWslAvailableBytes": 14392569856,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "read": 1508.0,
+      "abandon": 29.0,
+      "adjust": 10.0,
+      "cancel": 10.0,
+      "expiry": 5.0
+    }
+  },
+  "r3/l1": {
+    "identity": {
+      "startedUtc": "2026-09-14T07:10:58.472427+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-l3-independent-r3",
+        "apiPort": 18506,
+        "frontendPort": 18507,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "ee8ed47c6e8cce02c67113e6c4a5e126cdda9894"
+      },
+      "runtimeConfigSha256": "469a2bcb97944e7534eb80393510e520a709ca58731306c90d85a2993e7f81bc",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 30,
+      "observeSeconds": 60,
+      "targetDeltaIterationsPerSecond": 100,
+      "targetStateTransitionsPerSecond": 10,
+      "plannedReadIterationsTotal": 6000,
+      "bootstrapSnapshotsPlanned": 200,
+      "bootstrapSnapshotRate": 50,
+      "plannedWriteFlowsTotal": 214.28571428571428,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 6423,
+      "completedBusinessIterations": 6423,
+      "k6CompletedIterations": 6423,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 6785,
+      "cursorAdvances": 1267,
+      "initializedActiveVUs": 200,
+      "endedUtc": "2026-09-14T07:12:55.164226+00:00",
+      "rawPointsSha256": "6debec8f16fe9f5eb15197e3f3c568bfbe59adfca647ee42792ef3f8bd6699ea",
+      "rawPointsBytes": 1593257,
+      "inventoryChanges": {
+        "formalGenerated": 84,
+        "formalProjected": 84,
+        "allStreamEntriesAdded": 598,
+        "temporaryVisibleEntriesAdded": 514,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 598,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 6000,
+          "writerFlowsNominal": 214.28571428571428,
+          "bootstrapSnapshots": 200
+        },
+        "startedByKind": {
+          "bootstrap": 200,
+          "read": 6008,
+          "abandon": 110,
+          "adjust": 42,
+          "cancel": 42,
+          "expiry": 21
+        },
+        "completedByKind": {
+          "bootstrap": 200,
+          "read": 6008,
+          "abandon": 110,
+          "adjust": 42,
+          "cancel": 42,
+          "expiry": 21
+        },
+        "startedByScenario": {
+          "bootstrap": 200,
+          "readers0": 601,
+          "writers": 215,
+          "readers1": 601,
+          "readers2": 600,
+          "readers3": 601,
+          "readers4": 600,
+          "readers5": 601,
+          "readers6": 601,
+          "readers7": 601,
+          "readers8": 601,
+          "readers9": 601
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET delta|observe|200": {
+        "samples": 6008,
+        "p50": 1.919143,
+        "p95": 2.537067,
+        "p99": 2.993771,
+        "max": 6.070949
+      },
+      "POST checkout|observe|201": {
+        "samples": 215,
+        "p50": 4.94435,
+        "p95": 6.401747,
+        "p99": 7.032758,
+        "max": 108.746112
+      },
+      "POST abandon|observe|200": {
+        "samples": 152,
+        "p50": 2.542277,
+        "p95": 3.783101,
+        "p99": 4.371839,
+        "max": 4.658972
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 42,
+        "p50": 3.548154,
+        "p95": 5.100355,
+        "p99": 6.34951,
+        "max": 6.34951
+      },
+      "POST confirm|observe|200": {
+        "samples": 42,
+        "p50": 8.018992,
+        "p95": 11.417331,
+        "p99": 12.892247,
+        "max": 12.892247
+      },
+      "GET order|observe|200": {
+        "samples": 42,
+        "p50": 1.451623,
+        "p95": 2.645144,
+        "p99": 5.808559,
+        "max": 5.808559
+      },
+      "POST cancel|observe|200": {
+        "samples": 42,
+        "p50": 4.472432,
+        "p95": 6.801937,
+        "p99": 7.362056,
+        "max": 7.362056
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 21,
+        "p50": 9.735339,
+        "p95": 12.684232,
+        "p99": 14.822853,
+        "max": 14.822853
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 21,
+        "p50": 3.500024,
+        "p95": 5.768056,
+        "p99": 6.307668,
+        "max": 6.307668
+      }
+    },
+    "observeSuccessfulHttp": 6585.0,
+    "observeSuccessfulHttpPerSecond": 109.75,
+    "observeDeltaRequests": 6008.0,
+    "observeDeltaReqPerSecond": 100.13333333333334,
+    "observeHttpStatusCounts": {
+      "200": 6370.0,
+      "201": 215.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 514.0,
+    "observeHttpWriteReqPerSecond": 8.566666666666666,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 124592128,
+        "rss": 146546688,
+        "rssPeak": 146546688,
+        "fd": 207,
+        "tcpTableEntries": 201,
+        "threads": 8,
+        "pids": 10,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.17664533463428467,
+        "cpuQuotaFractionPeak": 0.08832266731714233,
+        "minWslAvailableBytes": 14360879104,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 61263872,
+        "rss": 55271424,
+        "rssPeak": 55271424,
+        "fd": 683,
+        "tcpTableEntries": 288,
+        "threads": 155,
+        "pids": 157,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.15192909896909196,
+        "cpuQuotaFractionPeak": 0.07596454948454598,
+        "minWslAvailableBytes": 14362300416,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 195416064,
+        "rss": 30183424,
+        "rssPeak": 30183424,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 18,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.06834375000580932,
+        "cpuQuotaFractionPeak": 0.06834375000580932,
+        "minWslAvailableBytes": 14358519808,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 24313856,
+        "rss": 17764352,
+        "rssPeak": 19558400,
+        "fd": 16,
+        "tcpTableEntries": 124,
+        "threads": 6,
+        "pids": 14,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.35375183194565313,
+        "cpuQuotaFractionPeak": 0.35375183194565313,
+        "minWslAvailableBytes": 14364291072,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "bootstrap": 0,
+      "read": 6008.0,
+      "abandon": 110.0,
+      "adjust": 42.0,
+      "cancel": 42.0,
+      "expiry": 21.0
+    }
+  },
+  "r3/l2": {
+    "identity": {
+      "startedUtc": "2026-09-14T07:13:06.400515+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-l3-independent-r3",
+        "apiPort": 18506,
+        "frontendPort": 18507,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "ee8ed47c6e8cce02c67113e6c4a5e126cdda9894"
+      },
+      "runtimeConfigSha256": "469a2bcb97944e7534eb80393510e520a709ca58731306c90d85a2993e7f81bc",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 30,
+      "observeSeconds": 120,
+      "targetDeltaIterationsPerSecond": 250,
+      "targetStateTransitionsPerSecond": 25,
+      "plannedReadIterationsTotal": 30000,
+      "bootstrapSnapshotsPlanned": 200,
+      "bootstrapSnapshotRate": 50,
+      "plannedWriteFlowsTotal": 1071.4285714285713,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 31282,
+      "completedBusinessIterations": 31282,
+      "k6CompletedIterations": 31282,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 33103,
+      "cursorAdvances": 6308,
+      "initializedActiveVUs": 200,
+      "endedUtc": "2026-09-14T07:16:07.051206+00:00",
+      "rawPointsSha256": "f9b991c52bbbc66a020d353182b69d9005b210826a07fabe229c9a399ed31746",
+      "rawPointsBytes": 7675874,
+      "inventoryChanges": {
+        "formalGenerated": 428,
+        "formalProjected": 428,
+        "allStreamEntriesAdded": 2988,
+        "temporaryVisibleEntriesAdded": 2560,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 2988,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 30000,
+          "writerFlowsNominal": 1071.4285714285713,
+          "bootstrapSnapshots": 200
+        },
+        "startedByKind": {
+          "bootstrap": 200,
+          "read": 30010,
+          "abandon": 537,
+          "adjust": 214,
+          "cancel": 214,
+          "expiry": 107
+        },
+        "completedByKind": {
+          "bootstrap": 200,
+          "read": 30010,
+          "abandon": 537,
+          "adjust": 214,
+          "cancel": 214,
+          "expiry": 107
+        },
+        "startedByScenario": {
+          "bootstrap": 200,
+          "readers0": 3001,
+          "writers": 1072,
+          "readers1": 3001,
+          "readers2": 3001,
+          "readers3": 3001,
+          "readers4": 3001,
+          "readers5": 3001,
+          "readers6": 3001,
+          "readers7": 3001,
+          "readers8": 3001,
+          "readers9": 3001
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET delta|observe|200": {
+        "samples": 30010,
+        "p50": 1.527646,
+        "p95": 2.327127,
+        "p99": 3.139359,
+        "max": 15.015815
+      },
+      "POST checkout|observe|201": {
+        "samples": 1072,
+        "p50": 4.028451,
+        "p95": 5.687946,
+        "p99": 7.22932,
+        "max": 12.593865
+      },
+      "POST abandon|observe|200": {
+        "samples": 751,
+        "p50": 2.477299,
+        "p95": 4.110465,
+        "p99": 6.308816,
+        "max": 8.863359
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 214,
+        "p50": 3.465681,
+        "p95": 5.404536,
+        "p99": 6.252385,
+        "max": 6.894135
+      },
+      "POST confirm|observe|200": {
+        "samples": 214,
+        "p50": 8.293163,
+        "p95": 11.721303,
+        "p99": 13.576466,
+        "max": 14.772642
+      },
+      "GET order|observe|200": {
+        "samples": 214,
+        "p50": 1.343858,
+        "p95": 2.366686,
+        "p99": 3.010719,
+        "max": 3.895956
+      },
+      "POST cancel|observe|200": {
+        "samples": 214,
+        "p50": 4.077193,
+        "p95": 6.010265,
+        "p99": 6.626423,
+        "max": 7.115739
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 107,
+        "p50": 9.229769,
+        "p95": 11.191952,
+        "p99": 12.003321,
+        "max": 14.566486
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 107,
+        "p50": 3.652175,
+        "p95": 6.325357,
+        "p99": 6.87618,
+        "max": 7.22981
+      }
+    },
+    "observeSuccessfulHttp": 32903.0,
+    "observeSuccessfulHttpPerSecond": 274.19166666666666,
+    "observeDeltaRequests": 30010.0,
+    "observeDeltaReqPerSecond": 250.08333333333334,
+    "observeHttpStatusCounts": {
+      "200": 31831.0,
+      "201": 1072.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 2572.0,
+    "observeHttpWriteReqPerSecond": 21.433333333333334,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 132452352,
+        "rss": 154337280,
+        "rssPeak": 154337280,
+        "fd": 207,
+        "tcpTableEntries": 201,
+        "threads": 8,
+        "pids": 10,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.28093600763538096,
+        "cpuQuotaFractionPeak": 0.14046800381769048,
+        "minWslAvailableBytes": 14339211264,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 66580480,
+        "rss": 58851328,
+        "rssPeak": 58851328,
+        "fd": 683,
+        "tcpTableEntries": 289,
+        "threads": 155,
+        "pids": 163,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.2502430221391373,
+        "cpuQuotaFractionPeak": 0.12512151106956865,
+        "minWslAvailableBytes": 14341074944,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 200536064,
+        "rss": 30183424,
+        "rssPeak": 30183424,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 12,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.113751193885071,
+        "cpuQuotaFractionPeak": 0.113751193885071,
+        "minWslAvailableBytes": 14340722688,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 24809472,
+        "rss": 17981440,
+        "rssPeak": 19558400,
+        "fd": 16,
+        "tcpTableEntries": 122,
+        "threads": 6,
+        "pids": 14,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.3533180263765319,
+        "cpuQuotaFractionPeak": 0.3533180263765319,
+        "minWslAvailableBytes": 14340059136,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "bootstrap": 0,
+      "read": 30010.0,
+      "abandon": 537.0,
+      "adjust": 214.0,
+      "cancel": 214.0,
+      "expiry": 107.0
+    }
+  },
+  "r3/l3": {
+    "identity": {
+      "startedUtc": "2026-09-14T07:16:18.453073+00:00",
+      "diagnostic": false,
+      "stack": {
+        "prefix": "phase19-l3-independent-r3",
+        "apiPort": 18506,
+        "frontendPort": 18507,
+        "baseCommit": "2c680e78d532eace9e7f28862e7efb6ef2bdf4fb",
+        "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+        "images": {
+          "api": {
+            "id": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+            "digests": [
+              "phase14-engineering-build@sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c"
+            ]
+          },
+          "postgres": {
+            "id": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+            "digests": [
+              "postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+            ]
+          },
+          "redis": {
+            "id": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+            "digests": [
+              "redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf"
+            ]
+          },
+          "frontend": {
+            "id": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+            "digests": [
+              "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+            ]
+          },
+          "k6": {
+            "id": "sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6",
+            "digests": [
+              "grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6"
+            ]
+          }
+        },
+        "bulkheadCondition": "event policies OFF; process-local Bulkheads at production defaults",
+        "sourceCommit": "ee8ed47c6e8cce02c67113e6c4a5e126cdda9894"
+      },
+      "runtimeConfigSha256": "469a2bcb97944e7534eb80393510e520a709ca58731306c90d85a2993e7f81bc",
+      "protocolSha256": {
+        "browser-environment.json": "bccf7e0ce5d61490674cb3d038db65f5762126a4fd05c7c5bc1d080f25e3178b",
+        "browser-fixture.mjs": "3fc13802f10ab82b43864e779f8b17bb9c362237584071c8206079919adaac56",
+        "browser.mjs": "cde5c813d6d9e7e83f92617fb97ac0a1cc0f1474fc5bac818717a3a0530e21ba",
+        "calibrate.py": "0084f25ac095aab077603fb23e9067a3bed78277a8c4b062c8240c2d3b6d0877",
+        "harness.py": "897f7486e53a4fbdcd708dd651ea7a7fd2bf1c3c77f836a870a542c2945a43ae",
+        "layout_probe.py": "47c285fe95c03c1ad88a7ce534f1cf8a04d9c7e65d531c39f569ce87071be6bc",
+        "measure.py": "c167b930f044e8fb6e05e54228d8b598e591dab0746604829bafc4fbaa9c8e09",
+        "policy.mjs": "d392e8d27f36c633546ba4ea8b81a2f7a58fe67ecd07a7229f1f060ba3e3fa30",
+        "profile.json": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+        "propagation.py": "7d34629aba56f7e7202ddad8d4afbbfa8002573251638fd98472385ac2775abd",
+        "PROTOCOL.md": "0d8456fc8ef4b7cfc96a132f1f71d0899edef79d5e6a67230913f8d872b88c2c",
+        "report_tables.py": "d26149b07ab6b7d4502b0e4fef9741bbaf05fe0c55e3414209f5c5c9ea708934",
+        "resource_gate.py": "b7b91ca599cff747a9c905547cb6517ace3ebee416aa55e83cfec9fac820bf5a",
+        "seed.py": "02e803ec81925cca6712eec54a4043ed43b1a1617febdb265197206bd468160e",
+        "stub.py": "e548bfcfa6ee6c3c746bbd193977d3e95c28c6f2f8133d60ec6e691d406600d3",
+        "test_browser_fixture.mjs": "ce577631d460a7903e1b9b5e5373dc14ca064ebc94e250b46a53864f0a9c7c30",
+        "test_policy.mjs": "015676ba526e4d626f2c592beb6027943d3d020101dde306daec7a48ff008f30",
+        "workload.js": "1b0125476d89978e217a2e32536dc9cc7b17c8c018eb258cc0f47a96139c80cf"
+      },
+      "model": "open",
+      "actualVUsRequested": 200,
+      "warmupSeconds": 30,
+      "observeSeconds": 120,
+      "targetDeltaIterationsPerSecond": 500,
+      "targetStateTransitionsPerSecond": 50,
+      "plannedReadIterationsTotal": 60000,
+      "bootstrapSnapshotsPlanned": 200,
+      "bootstrapSnapshotRate": 50,
+      "plannedWriteFlowsTotal": 2142.8571428571427,
+      "generatorLimits": {
+        "cpus": 2,
+        "memoryBytes": 4294967296,
+        "nofile": 16384,
+        "pids": 256
+      },
+      "rawPoints": "private point output/k6-points.jsonl.gz; native lossless k6 gzip; no auth headers, bodies or high-cardinality identifiers in metric tags"
+    },
+    "result": {
+      "metricSummaryAvailable": true,
+      "rawPointsFormat": "gzip JSONL; native k6 lossless export",
+      "valid": true,
+      "diagnostic": false,
+      "reason": null,
+      "exitCode": 0,
+      "observerErrors": [],
+      "startedIterations": 62348,
+      "completedBusinessIterations": 62348,
+      "k6CompletedIterations": 62348,
+      "interruptedIterations": 0,
+      "droppedIterations": 0,
+      "httpRequestCount": 65989,
+      "cursorAdvances": 12004,
+      "initializedActiveVUs": 200,
+      "endedUtc": "2026-09-14T07:19:21.232240+00:00",
+      "rawPointsSha256": "5cddb5c1623b66e2f0526f74767de6031c73a0c47e80048e37e7808748e85dca",
+      "rawPointsBytes": 15227983,
+      "inventoryChanges": {
+        "formalGenerated": 856,
+        "formalProjected": 856,
+        "allStreamEntriesAdded": 5909,
+        "temporaryVisibleEntriesAdded": 5053,
+        "streamEntriesBySessionZone": {
+          "phase19-session-001-001/Zone-0": 0,
+          "phase19-session-001-001/Zone-1": 0,
+          "phase19-session-001-001/Zone-2": 0,
+          "phase19-session-001-001/Zone-3": 0,
+          "phase19-session-001-001/Zone-4": 0,
+          "phase19-session-001-002/Zone-0": 5909,
+          "phase19-session-001-002/Zone-1": 0,
+          "phase19-session-001-002/Zone-2": 0,
+          "phase19-session-001-002/Zone-3": 0,
+          "phase19-session-001-002/Zone-4": 0,
+          "phase19-session-001-003/Zone-0": 0,
+          "phase19-session-001-003/Zone-1": 0,
+          "phase19-session-001-003/Zone-2": 0,
+          "phase19-session-001-003/Zone-3": 0,
+          "phase19-session-001-003/Zone-4": 0,
+          "phase19-session-001-004/Zone-0": 0,
+          "phase19-session-001-004/Zone-1": 0,
+          "phase19-session-001-004/Zone-2": 0,
+          "phase19-session-001-004/Zone-3": 0,
+          "phase19-session-001-004/Zone-4": 0,
+          "phase19-session-001-005/Zone-0": 0,
+          "phase19-session-001-005/Zone-1": 0,
+          "phase19-session-001-005/Zone-2": 0,
+          "phase19-session-001-005/Zone-3": 0,
+          "phase19-session-001-005/Zone-4": 0
+        },
+        "generationsUnchanged": true,
+        "scope": "entire point including drain and separately logged cleanup; not just observe window"
+      },
+      "accounting": {
+        "planned": {
+          "readerIterationsNominal": 60000,
+          "writerFlowsNominal": 2142.8571428571427,
+          "bootstrapSnapshots": 200
+        },
+        "startedByKind": {
+          "bootstrap": 200,
+          "read": 60005,
+          "abandon": 1073,
+          "adjust": 428,
+          "cancel": 428,
+          "expiry": 214
+        },
+        "completedByKind": {
+          "bootstrap": 200,
+          "read": 60005,
+          "abandon": 1073,
+          "adjust": 428,
+          "cancel": 428,
+          "expiry": 214
+        },
+        "startedByScenario": {
+          "bootstrap": 200,
+          "readers0": 6001,
+          "writers": 2143,
+          "readers1": 6000,
+          "readers2": 6000,
+          "readers3": 6001,
+          "readers4": 6000,
+          "readers5": 6001,
+          "readers6": 6001,
+          "readers7": 6000,
+          "readers8": 6001,
+          "readers9": 6000
+        },
+        "errors": [],
+        "boundaryRule": "retain nominal plan; constant arrival can schedule one additional boundary iteration per stream"
+      }
+    },
+    "observeHttpLatencyMs": {
+      "GET delta|observe|200": {
+        "samples": 60004,
+        "p50": 1.450906,
+        "p95": 2.305724,
+        "p99": 4.929752,
+        "max": 15.498861
+      },
+      "POST checkout|observe|201": {
+        "samples": 2143,
+        "p50": 4.059206,
+        "p95": 5.287866,
+        "p99": 6.588073,
+        "max": 13.042159
+      },
+      "POST abandon|observe|200": {
+        "samples": 1501,
+        "p50": 2.800416,
+        "p95": 4.019969,
+        "p99": 5.055375,
+        "max": 20.880744
+      },
+      "PUT checkout seats|observe|200": {
+        "samples": 428,
+        "p50": 3.942012,
+        "p95": 5.414878,
+        "p99": 6.131046,
+        "max": 11.428039
+      },
+      "POST confirm|observe|200": {
+        "samples": 428,
+        "p50": 9.153265,
+        "p95": 12.006521,
+        "p99": 14.0269,
+        "max": 18.330813
+      },
+      "GET order|observe|200": {
+        "samples": 428,
+        "p50": 1.481382,
+        "p95": 2.23658,
+        "p99": 3.076299,
+        "max": 5.275584
+      },
+      "POST cancel|observe|200": {
+        "samples": 428,
+        "p50": 4.663421,
+        "p95": 6.181618,
+        "p99": 7.202924,
+        "max": 9.378524
+      },
+      "GET expiry snapshot|observe|200": {
+        "samples": 214,
+        "p50": 9.78283,
+        "p95": 12.435489,
+        "p99": 14.25541,
+        "max": 16.792772
+      },
+      "POST expired checkout cleanup|observe|200": {
+        "samples": 214,
+        "p50": 3.715509,
+        "p95": 5.758017,
+        "p99": 6.831713,
+        "max": 53.718837
+      }
+    },
+    "observeSuccessfulHttp": 65788.0,
+    "observeSuccessfulHttpPerSecond": 548.2333333333333,
+    "observeDeltaRequests": 60004.0,
+    "observeDeltaReqPerSecond": 500.03333333333336,
+    "observeHttpStatusCounts": {
+      "200": 63645.0,
+      "201": 2143.0,
+      "409": 0,
+      "429": 0,
+      "503": 0,
+      "0": 0
+    },
+    "observeHttpWriteRequests": 5142.0,
+    "observeHttpWriteReqPerSecond": 42.85,
+    "resourcePeaks": {
+      "generator": {
+        "memory": 139567104,
+        "rss": 162508800,
+        "rssPeak": 162508800,
+        "fd": 207,
+        "tcpTableEntries": 201,
+        "threads": 9,
+        "pids": 11,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.46249596966734396,
+        "cpuQuotaFractionPeak": 0.23124798483367198,
+        "minWslAvailableBytes": 14346919936,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "backend": {
+        "memory": 66584576,
+        "rss": 60493824,
+        "rssPeak": 60493824,
+        "fd": 683,
+        "tcpTableEntries": 288,
+        "threads": 155,
+        "pids": 157,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.4251085308319563,
+        "cpuQuotaFractionPeak": 0.21255426541597816,
+        "minWslAvailableBytes": 14349328384,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "postgres": {
+        "memory": 220852224,
+        "rss": 30183424,
+        "rssPeak": 30183424,
+        "fd": 10,
+        "tcpTableEntries": 7,
+        "threads": 1,
+        "pids": 18,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.1872074441566208,
+        "cpuQuotaFractionPeak": 0.1872074441566208,
+        "minWslAvailableBytes": 14349418496,
+        "sampledOom": false,
+        "sampledRestart": false
+      },
+      "redis": {
+        "memory": 24727552,
+        "rss": 18264064,
+        "rssPeak": 19558400,
+        "fd": 16,
+        "tcpTableEntries": 121,
+        "threads": 6,
+        "pids": 14,
+        "swapOutPages": 0,
+        "cpuCoresPeak": 0.3621841190832638,
+        "cpuQuotaFractionPeak": 0.3621841190832638,
+        "minWslAvailableBytes": 14348431360,
+        "sampledOom": false,
+        "sampledRestart": false
+      }
+    },
+    "limits": [
+      "HTTP rates use the fixed observe window; inventory counters include drain and cleanup.",
+      "Main-process RSS/FD differs from full cgroup memory; PG workers are included only by cgroup.",
+      "CPU peaks are sampled, not dedicated-host capacity or guaranteed sub-sample peaks."
+    ],
+    "observeFlowCompletions": {
+      "bootstrap": 0,
+      "read": 60005.0,
+      "abandon": 1073.0,
+      "adjust": 428.0,
+      "cancel": 428.0,
+      "expiry": 214.0
+    }
+  }
+}

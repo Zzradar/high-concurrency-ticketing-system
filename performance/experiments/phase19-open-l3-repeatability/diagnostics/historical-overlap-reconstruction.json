@@ -1,0 +1,50 @@
+[
+  {
+    "rejectionCompletionUtc": "2026-09-14T02:38:07.622942077Z",
+    "overlappingHttpIntervals": 17,
+    "overlappingStatus200": 16,
+    "method": "client completion minus http_req_duration, microsecond arithmetic; not a direct server permit observation"
+  },
+  {
+    "rejectionCompletionUtc": "2026-09-14T02:38:08.302544908Z",
+    "overlappingHttpIntervals": 17,
+    "overlappingStatus200": 16,
+    "method": "client completion minus http_req_duration, microsecond arithmetic; not a direct server permit observation"
+  },
+  {
+    "rejectionCompletionUtc": "2026-09-14T02:38:08.304265768Z",
+    "overlappingHttpIntervals": 17,
+    "overlappingStatus200": 16,
+    "method": "client completion minus http_req_duration, microsecond arithmetic; not a direct server permit observation"
+  },
+  {
+    "rejectionCompletionUtc": "2026-09-14T02:38:08.307014832Z",
+    "overlappingHttpIntervals": 17,
+    "overlappingStatus200": 16,
+    "method": "client completion minus http_req_duration, microsecond arithmetic; not a direct server permit observation"
+  },
+  {
+    "rejectionCompletionUtc": "2026-09-14T02:38:08.308550306Z",
+    "overlappingHttpIntervals": 17,
+    "overlappingStatus200": 16,
+    "method": "client completion minus http_req_duration, microsecond arithmetic; not a direct server permit observation"
+  },
+  {
+    "rejectionCompletionUtc": "2026-09-14T02:38:08.31129349Z",
+    "overlappingHttpIntervals": 17,
+    "overlappingStatus200": 16,
+    "method": "client completion minus http_req_duration, microsecond arithmetic; not a direct server permit observation"
+  },
+  {
+    "rejectionCompletionUtc": "2026-09-14T02:38:08.313098828Z",
+    "overlappingHttpIntervals": 17,
+    "overlappingStatus200": 16,
+    "method": "client completion minus http_req_duration, microsecond arithmetic; not a direct server permit observation"
+  },
+  {
+    "rejectionCompletionUtc": "2026-09-14T02:38:08.31397388Z",
+    "overlappingHttpIntervals": 17,
+    "overlappingStatus200": 16,
+    "method": "client completion minus http_req_duration, microsecond arithmetic; not a direct server permit observation"
+  }
+]

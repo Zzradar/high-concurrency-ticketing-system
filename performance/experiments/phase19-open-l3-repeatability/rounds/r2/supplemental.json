@@ -1,0 +1,1260 @@
+[
+  {
+    "utc": "2026-09-14T07:06:15.743184+00:00",
+    "apiCpuStat": {
+      "usage_usec": 37598245,
+      "user_usec": 22907553,
+      "system_usec": 14690691,
+      "nice_usec": 0,
+      "nr_periods": 3250,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 23230950,
+      "user_usec": 13210637,
+      "system_usec": 10020313,
+      "nice_usec": 0,
+      "nr_periods": 3159,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 39133453,
+      "user_usec": 29513121,
+      "system_usec": 9620332,
+      "nice_usec": 0,
+      "nr_periods": 3929,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:06:26.582181+00:00",
+    "apiCpuStat": {
+      "usage_usec": 38271081,
+      "user_usec": 23540190,
+      "system_usec": 14730891,
+      "nice_usec": 0,
+      "nr_periods": 3333,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 23466233,
+      "user_usec": 13330030,
+      "system_usec": 10136202,
+      "nice_usec": 0,
+      "nr_periods": 3231,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 40419193,
+      "user_usec": 30762972,
+      "system_usec": 9656220,
+      "nice_usec": 0,
+      "nr_periods": 4026,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:06:37.403201+00:00",
+    "apiCpuStat": {
+      "usage_usec": 38426344,
+      "user_usec": 23655079,
+      "system_usec": 14771264,
+      "nice_usec": 0,
+      "nr_periods": 3391,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 23673308,
+      "user_usec": 13431770,
+      "system_usec": 10241538,
+      "nice_usec": 0,
+      "nr_periods": 3291,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 40766427,
+      "user_usec": 30975183,
+      "system_usec": 9791243,
+      "nice_usec": 0,
+      "nr_periods": 4112,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:06:48.229831+00:00",
+    "apiCpuStat": {
+      "usage_usec": 39594332,
+      "user_usec": 24336262,
+      "system_usec": 15258070,
+      "nice_usec": 0,
+      "nr_periods": 3465,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 24371913,
+      "user_usec": 13827330,
+      "system_usec": 10544583,
+      "nice_usec": 0,
+      "nr_periods": 3363,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 41882325,
+      "user_usec": 31731146,
+      "system_usec": 10151179,
+      "nice_usec": 0,
+      "nr_periods": 4207,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:06:59.125500+00:00",
+    "apiCpuStat": {
+      "usage_usec": 43472917,
+      "user_usec": 26593126,
+      "system_usec": 16879790,
+      "nice_usec": 0,
+      "nr_periods": 3574,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 25940617,
+      "user_usec": 14686597,
+      "system_usec": 11254020,
+      "nice_usec": 0,
+      "nr_periods": 3472,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 44413165,
+      "user_usec": 33774464,
+      "system_usec": 10638700,
+      "nice_usec": 0,
+      "nr_periods": 4315,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:07:10.017622+00:00",
+    "apiCpuStat": {
+      "usage_usec": 47585819,
+      "user_usec": 28988806,
+      "system_usec": 18597012,
+      "nice_usec": 0,
+      "nr_periods": 3683,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 27600968,
+      "user_usec": 15573139,
+      "system_usec": 12027829,
+      "nice_usec": 0,
+      "nr_periods": 3581,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 47216421,
+      "user_usec": 35962969,
+      "system_usec": 11253452,
+      "nice_usec": 0,
+      "nr_periods": 4424,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:07:20.904884+00:00",
+    "apiCpuStat": {
+      "usage_usec": 51685885,
+      "user_usec": 31413962,
+      "system_usec": 20271923,
+      "nice_usec": 0,
+      "nr_periods": 3792,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 29236683,
+      "user_usec": 16500619,
+      "system_usec": 12736063,
+      "nice_usec": 0,
+      "nr_periods": 3690,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 50000558,
+      "user_usec": 38097235,
+      "system_usec": 11903323,
+      "nice_usec": 0,
+      "nr_periods": 4533,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:07:31.774744+00:00",
+    "apiCpuStat": {
+      "usage_usec": 55622819,
+      "user_usec": 33735899,
+      "system_usec": 21886919,
+      "nice_usec": 0,
+      "nr_periods": 3900,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 30825963,
+      "user_usec": 17359013,
+      "system_usec": 13466950,
+      "nice_usec": 0,
+      "nr_periods": 3798,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 52733910,
+      "user_usec": 40273166,
+      "system_usec": 12460743,
+      "nice_usec": 0,
+      "nr_periods": 4642,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:07:42.675529+00:00",
+    "apiCpuStat": {
+      "usage_usec": 59648931,
+      "user_usec": 35982330,
+      "system_usec": 23666600,
+      "nice_usec": 0,
+      "nr_periods": 4009,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 32467836,
+      "user_usec": 18289537,
+      "system_usec": 14178299,
+      "nice_usec": 0,
+      "nr_periods": 3907,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 55542668,
+      "user_usec": 42498637,
+      "system_usec": 13044030,
+      "nice_usec": 0,
+      "nr_periods": 4751,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:07:53.571663+00:00",
+    "apiCpuStat": {
+      "usage_usec": 63767117,
+      "user_usec": 38416296,
+      "system_usec": 25350820,
+      "nice_usec": 0,
+      "nr_periods": 4118,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 34168120,
+      "user_usec": 19151059,
+      "system_usec": 15017061,
+      "nice_usec": 0,
+      "nr_periods": 4016,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 58288337,
+      "user_usec": 44723953,
+      "system_usec": 13564384,
+      "nice_usec": 0,
+      "nr_periods": 4860,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:08:04.465164+00:00",
+    "apiCpuStat": {
+      "usage_usec": 67965913,
+      "user_usec": 40878097,
+      "system_usec": 27087816,
+      "nice_usec": 0,
+      "nr_periods": 4227,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 35846799,
+      "user_usec": 20095377,
+      "system_usec": 15751422,
+      "nice_usec": 0,
+      "nr_periods": 4125,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 61113395,
+      "user_usec": 46940510,
+      "system_usec": 14172884,
+      "nice_usec": 0,
+      "nr_periods": 4969,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:08:15.346645+00:00",
+    "apiCpuStat": {
+      "usage_usec": 71998223,
+      "user_usec": 43189702,
+      "system_usec": 28808520,
+      "nice_usec": 0,
+      "nr_periods": 4336,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 37473497,
+      "user_usec": 20913479,
+      "system_usec": 16560018,
+      "nice_usec": 0,
+      "nr_periods": 4234,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 63875605,
+      "user_usec": 49070482,
+      "system_usec": 14805123,
+      "nice_usec": 0,
+      "nr_periods": 5077,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:08:26.204793+00:00",
+    "apiCpuStat": {
+      "usage_usec": 76123792,
+      "user_usec": 45740793,
+      "system_usec": 30382998,
+      "nice_usec": 0,
+      "nr_periods": 4444,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 39117266,
+      "user_usec": 21792541,
+      "system_usec": 17324725,
+      "nice_usec": 0,
+      "nr_periods": 4342,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 66618479,
+      "user_usec": 51338071,
+      "system_usec": 15280408,
+      "nice_usec": 0,
+      "nr_periods": 5186,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:08:37.068562+00:00",
+    "apiCpuStat": {
+      "usage_usec": 80302752,
+      "user_usec": 48047361,
+      "system_usec": 32255390,
+      "nice_usec": 0,
+      "nr_periods": 4553,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 40754388,
+      "user_usec": 22594071,
+      "system_usec": 18160317,
+      "nice_usec": 0,
+      "nr_periods": 4451,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 69436396,
+      "user_usec": 53473655,
+      "system_usec": 15962740,
+      "nice_usec": 0,
+      "nr_periods": 5295,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:08:47.940324+00:00",
+    "apiCpuStat": {
+      "usage_usec": 83548866,
+      "user_usec": 49988200,
+      "system_usec": 33560665,
+      "nice_usec": 0,
+      "nr_periods": 4662,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 42062048,
+      "user_usec": 23311624,
+      "system_usec": 18750423,
+      "nice_usec": 0,
+      "nr_periods": 4553,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 71540159,
+      "user_usec": 55118866,
+      "system_usec": 16421292,
+      "nice_usec": 0,
+      "nr_periods": 5400,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:08:58.780530+00:00",
+    "apiCpuStat": {
+      "usage_usec": 83844404,
+      "user_usec": 50154291,
+      "system_usec": 33690112,
+      "nice_usec": 0,
+      "nr_periods": 4749,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 42261623,
+      "user_usec": 23434396,
+      "system_usec": 18827226,
+      "nice_usec": 0,
+      "nr_periods": 4621,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 72010746,
+      "user_usec": 55427861,
+      "system_usec": 16582884,
+      "nice_usec": 0,
+      "nr_periods": 5501,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  },
+  {
+    "utc": "2026-09-14T07:09:09.618655+00:00",
+    "apiCpuStat": {
+      "usage_usec": 84023646,
+      "user_usec": 50291385,
+      "system_usec": 33732261,
+      "nice_usec": 0,
+      "nr_periods": 4810,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "postgresCpuStat": {
+      "usage_usec": 42594489,
+      "user_usec": 23610607,
+      "system_usec": 18983882,
+      "nice_usec": 0,
+      "nr_periods": 4679,
+      "nr_throttled": 2,
+      "throttled_usec": 11350,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisCpuStat": {
+      "usage_usec": 72843771,
+      "user_usec": 56044129,
+      "system_usec": 16799641,
+      "nice_usec": 0,
+      "nr_periods": 5599,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "redisSlowlog": [
+      {
+        "id": 5,
+        "unixSeconds": 1789369383,
+        "durationMicroseconds": 14254,
+        "command": "EVAL"
+      },
+      {
+        "id": 4,
+        "unixSeconds": 1789369166,
+        "durationMicroseconds": 48305,
+        "command": "EVAL"
+      },
+      {
+        "id": 3,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51474,
+        "command": "EVAL"
+      },
+      {
+        "id": 2,
+        "unixSeconds": 1789369165,
+        "durationMicroseconds": 51907,
+        "command": "EVAL"
+      },
+      {
+        "id": 1,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 50311,
+        "command": "EVAL"
+      },
+      {
+        "id": 0,
+        "unixSeconds": 1789369164,
+        "durationMicroseconds": 52462,
+        "command": "EVAL"
+      }
+    ]
+  }
+]

@@ -1,0 +1,356 @@
+[
+  {
+    "round": 1,
+    "containers": {
+      "api": {
+        "name": "/phase19-l3-independent-r1-api",
+        "id": "7fec876f75ebbe4dbfdc5625ad0e9a40c92c10306d020ad292e745fbf2f3b0fc",
+        "created": "2026-09-14T06:49:14.368108536Z",
+        "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+        "limits": {
+          "NanoCpus": 2000000000,
+          "Memory": 1073741824,
+          "PidsLimit": 256,
+          "Ulimits": [
+            {
+              "Name": "nofile",
+              "Hard": 4096,
+              "Soft": 4096
+            }
+          ]
+        },
+        "restartCount": 0,
+        "oomKilled": false,
+        "volumeNames": []
+      },
+      "postgres": {
+        "name": "/phase19-l3-independent-r1-postgres",
+        "id": "cb7816b24c556889f24bb61f845da387be02d8f03809ce17d1a9242bf65d4ede",
+        "created": "2026-09-14T06:49:06.084458421Z",
+        "imageId": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+        "limits": {
+          "NanoCpus": 1000000000,
+          "Memory": 536870912,
+          "PidsLimit": 128,
+          "Ulimits": [
+            {
+              "Name": "nofile",
+              "Hard": 4096,
+              "Soft": 4096
+            }
+          ]
+        },
+        "restartCount": 0,
+        "oomKilled": false,
+        "volumeNames": [
+          "phase19-l3-independent-r1-postgres-data"
+        ]
+      },
+      "redis": {
+        "name": "/phase19-l3-independent-r1-redis",
+        "id": "9621d4521c8e9fc159812f265af89f220fce2da515d3d28dd38296503cc8ea6a",
+        "created": "2026-09-14T06:49:06.444963996Z",
+        "imageId": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+        "limits": {
+          "NanoCpus": 1000000000,
+          "Memory": 536870912,
+          "PidsLimit": 128,
+          "Ulimits": [
+            {
+              "Name": "nofile",
+              "Hard": 4096,
+              "Soft": 4096
+            }
+          ]
+        },
+        "restartCount": 0,
+        "oomKilled": false,
+        "volumeNames": [
+          "6686133e4dfa16299ae05d0ab4408b316804ec85d2294480382f939b630ac3fe"
+        ]
+      },
+      "frontend": {
+        "name": "/phase19-l3-independent-r1-frontend",
+        "id": "83994ce5524e23f6639b283c446d7295a1bb981f9837b1c01ecbaa88b71396fb",
+        "created": "2026-09-14T06:49:14.968177204Z",
+        "imageId": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+        "limits": {
+          "NanoCpus": 500000000,
+          "Memory": 134217728,
+          "PidsLimit": 64,
+          "Ulimits": [
+            {
+              "Name": "nofile",
+              "Hard": 4096,
+              "Soft": 4096
+            }
+          ]
+        },
+        "restartCount": 0,
+        "oomKilled": false,
+        "volumeNames": []
+      }
+    },
+    "networks": [
+      {
+        "name": "phase19-l3-independent-r1-data",
+        "id": "11707df69b147a2d9a4b7207448b992d525677adcf79556e7f87a1bd8f6cf5e1",
+        "internal": true,
+        "ipam": [
+          {
+            "Subnet": "10.253.32.0/24",
+            "Gateway": "10.253.32.1"
+          }
+        ]
+      },
+      {
+        "name": "phase19-l3-independent-r1-ingress",
+        "id": "4fef18e1f4f6bc30c4d7892f7898e21ba379d89f78663e66ddfed3bde1e4aa9a",
+        "internal": false,
+        "ipam": [
+          {
+            "Subnet": "10.253.33.0/24",
+            "Gateway": "10.253.33.1"
+          }
+        ]
+      }
+    ],
+    "runtimeBinarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a"
+  },
+  {
+    "round": 2,
+    "containers": {
+      "api": {
+        "name": "/phase19-l3-independent-r2-api",
+        "id": "49b5902a6da11e027705c1f2e4407693c9734d9a750a0ed4ece0555a49eb15ef",
+        "created": "2026-09-14T06:59:22.175510378Z",
+        "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+        "limits": {
+          "NanoCpus": 2000000000,
+          "Memory": 1073741824,
+          "PidsLimit": 256,
+          "Ulimits": [
+            {
+              "Name": "nofile",
+              "Hard": 4096,
+              "Soft": 4096
+            }
+          ]
+        },
+        "restartCount": 0,
+        "oomKilled": false,
+        "volumeNames": []
+      },
+      "postgres": {
+        "name": "/phase19-l3-independent-r2-postgres",
+        "id": "3bd83da3fda2e834cf2604c85c92c9bc01340ddd689c48d7ef002d0a7fa6151c",
+        "created": "2026-09-14T06:59:13.939095263Z",
+        "imageId": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+        "limits": {
+          "NanoCpus": 1000000000,
+          "Memory": 536870912,
+          "PidsLimit": 128,
+          "Ulimits": [
+            {
+              "Name": "nofile",
+              "Hard": 4096,
+              "Soft": 4096
+            }
+          ]
+        },
+        "restartCount": 0,
+        "oomKilled": false,
+        "volumeNames": [
+          "phase19-l3-independent-r2-postgres-data"
+        ]
+      },
+      "redis": {
+        "name": "/phase19-l3-independent-r2-redis",
+        "id": "bc7e6e3ba6702b39f92e0bcd3d098187841212b7d4ee7014321c12782b6636ef",
+        "created": "2026-09-14T06:59:14.292851532Z",
+        "imageId": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+        "limits": {
+          "NanoCpus": 1000000000,
+          "Memory": 536870912,
+          "PidsLimit": 128,
+          "Ulimits": [
+            {
+              "Name": "nofile",
+              "Hard": 4096,
+              "Soft": 4096
+            }
+          ]
+        },
+        "restartCount": 0,
+        "oomKilled": false,
+        "volumeNames": [
+          "c480f3b0918ca5a22631ab84ba631c009d65220b6d3701fb9197bbde336b249d"
+        ]
+      },
+      "frontend": {
+        "name": "/phase19-l3-independent-r2-frontend",
+        "id": "179cbdf1cb3e8d4ca044ba582f61a8730bb943bb6544c9d9f889e4ffeaf2488c",
+        "created": "2026-09-14T06:59:22.798451353Z",
+        "imageId": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+        "limits": {
+          "NanoCpus": 500000000,
+          "Memory": 134217728,
+          "PidsLimit": 64,
+          "Ulimits": [
+            {
+              "Name": "nofile",
+              "Hard": 4096,
+              "Soft": 4096
+            }
+          ]
+        },
+        "restartCount": 0,
+        "oomKilled": false,
+        "volumeNames": []
+      }
+    },
+    "networks": [
+      {
+        "name": "phase19-l3-independent-r2-data",
+        "id": "1bcccb74f8e56c731c6666fc048cd2dd872cbd10595bfc1d0d5dc21501261f09",
+        "internal": true,
+        "ipam": [
+          {
+            "Subnet": "10.253.34.0/24",
+            "Gateway": "10.253.34.1"
+          }
+        ]
+      },
+      {
+        "name": "phase19-l3-independent-r2-ingress",
+        "id": "7695f9170073172b402d71455054378493986917756eeeaf3bf232aac3b53b57",
+        "internal": false,
+        "ipam": [
+          {
+            "Subnet": "10.253.35.0/24",
+            "Gateway": "10.253.35.1"
+          }
+        ]
+      }
+    ],
+    "runtimeBinarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a"
+  },
+  {
+    "round": 3,
+    "containers": {
+      "api": {
+        "name": "/phase19-l3-independent-r3-api",
+        "id": "cb62b58aa9c751ccd7810150cd9d95f626b199ccbda0838620dbf98a2914d03f",
+        "created": "2026-09-14T07:09:27.520298427Z",
+        "imageId": "sha256:1feca82a0a3e38d7ee21269d87998a5e2d8f5a430e975dde0ee15e0ce6a4554c",
+        "limits": {
+          "NanoCpus": 2000000000,
+          "Memory": 1073741824,
+          "PidsLimit": 256,
+          "Ulimits": [
+            {
+              "Name": "nofile",
+              "Hard": 4096,
+              "Soft": 4096
+            }
+          ]
+        },
+        "restartCount": 0,
+        "oomKilled": false,
+        "volumeNames": []
+      },
+      "postgres": {
+        "name": "/phase19-l3-independent-r3-postgres",
+        "id": "71923fe787f3367e4fdacca9f07c213ce8da9eda3d9fda49e0199c9faf997d28",
+        "created": "2026-09-14T07:09:19.473977623Z",
+        "imageId": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+        "limits": {
+          "NanoCpus": 1000000000,
+          "Memory": 536870912,
+          "PidsLimit": 128,
+          "Ulimits": [
+            {
+              "Name": "nofile",
+              "Hard": 4096,
+              "Soft": 4096
+            }
+          ]
+        },
+        "restartCount": 0,
+        "oomKilled": false,
+        "volumeNames": [
+          "phase19-l3-independent-r3-postgres-data"
+        ]
+      },
+      "redis": {
+        "name": "/phase19-l3-independent-r3-redis",
+        "id": "984f033f96bdb7b11d3dbd7046ca3c588776f099e73075f7c02ff5fc797c202d",
+        "created": "2026-09-14T07:09:19.846563717Z",
+        "imageId": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+        "limits": {
+          "NanoCpus": 1000000000,
+          "Memory": 536870912,
+          "PidsLimit": 128,
+          "Ulimits": [
+            {
+              "Name": "nofile",
+              "Hard": 4096,
+              "Soft": 4096
+            }
+          ]
+        },
+        "restartCount": 0,
+        "oomKilled": false,
+        "volumeNames": [
+          "40ba3e1645aa8e7d6de048f711fb454ae8d0f87b1d187741ce86f0506314bbd2"
+        ]
+      },
+      "frontend": {
+        "name": "/phase19-l3-independent-r3-frontend",
+        "id": "cc0d30a96d8211df03a391efee3e9a5a9a1847ed6d559cf05a2e569682cefbb3",
+        "created": "2026-09-14T07:09:28.136703743Z",
+        "imageId": "sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+        "limits": {
+          "NanoCpus": 500000000,
+          "Memory": 134217728,
+          "PidsLimit": 64,
+          "Ulimits": [
+            {
+              "Name": "nofile",
+              "Hard": 4096,
+              "Soft": 4096
+            }
+          ]
+        },
+        "restartCount": 0,
+        "oomKilled": false,
+        "volumeNames": []
+      }
+    },
+    "networks": [
+      {
+        "name": "phase19-l3-independent-r3-data",
+        "id": "cd5abc3cafd8bc25d935b015a451d8b2fb6638233d74a604ecec36b9d1f87941",
+        "internal": true,
+        "ipam": [
+          {
+            "Subnet": "10.253.36.0/24",
+            "Gateway": "10.253.36.1"
+          }
+        ]
+      },
+      {
+        "name": "phase19-l3-independent-r3-ingress",
+        "id": "b0476ff02572dc38d97d07f826a6e62cf18c0226339f78924977c019cfe9c7ce",
+        "internal": false,
+        "ipam": [
+          {
+            "Subnet": "10.253.37.0/24",
+            "Gateway": "10.253.37.1"
+          }
+        ]
+      }
+    ],
+    "runtimeBinarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a"
+  }
+]

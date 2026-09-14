@@ -1,0 +1,191 @@
+[
+  {
+    "prefix": "phase19-l3-independent-r1",
+    "initialStateSha256": "1d0b6036dc96f2755d06c301e592e74cd6908a93f9872fffec0ccc9097ac00b4",
+    "initialVerifierPassed": true,
+    "points": [
+      {
+        "name": "precheck",
+        "valid": true,
+        "dropped": 0,
+        "interrupted": 0,
+        "unexpectedErrors": 0.0,
+        "http503": 0,
+        "deltaPerSecond": 50.266666666666666,
+        "writePerSecond": 4.266666666666667,
+        "inventoryPassed": true,
+        "observeHttpRequests": 1751.0,
+        "observe503": 0,
+        "observe503ErrorRate": 0.0
+      },
+      {
+        "name": "l1",
+        "valid": true,
+        "dropped": 0,
+        "interrupted": 0,
+        "unexpectedErrors": 0.0,
+        "http503": 0,
+        "deltaPerSecond": 100.16666666666667,
+        "writePerSecond": 8.566666666666666,
+        "inventoryPassed": true,
+        "observeHttpRequests": 6587.0,
+        "observe503": 0,
+        "observe503ErrorRate": 0.0
+      },
+      {
+        "name": "l2",
+        "valid": true,
+        "dropped": 0,
+        "interrupted": 0,
+        "unexpectedErrors": 0.0,
+        "http503": 0,
+        "deltaPerSecond": 250.06666666666666,
+        "writePerSecond": 21.433333333333334,
+        "inventoryPassed": true,
+        "observeHttpRequests": 32901.0,
+        "observe503": 0,
+        "observe503ErrorRate": 0.0
+      },
+      {
+        "name": "l3",
+        "valid": true,
+        "dropped": 0,
+        "interrupted": 0,
+        "unexpectedErrors": 0.0,
+        "http503": 0,
+        "deltaPerSecond": 500.0833333333333,
+        "writePerSecond": 42.85,
+        "inventoryPassed": true,
+        "observeHttpRequests": 65794.0,
+        "observe503": 0,
+        "observe503ErrorRate": 0.0
+      }
+    ]
+  },
+  {
+    "prefix": "phase19-l3-independent-r2",
+    "initialStateSha256": "1d0b6036dc96f2755d06c301e592e74cd6908a93f9872fffec0ccc9097ac00b4",
+    "initialVerifierPassed": true,
+    "points": [
+      {
+        "name": "precheck",
+        "valid": true,
+        "dropped": 0,
+        "interrupted": 0,
+        "unexpectedErrors": 0.0,
+        "http503": 0,
+        "deltaPerSecond": 50.333333333333336,
+        "writePerSecond": 4.266666666666667,
+        "inventoryPassed": true,
+        "observeHttpRequests": 1753.0,
+        "observe503": 0,
+        "observe503ErrorRate": 0.0
+      },
+      {
+        "name": "l1",
+        "valid": true,
+        "dropped": 0,
+        "interrupted": 0,
+        "unexpectedErrors": 0.0,
+        "http503": 0,
+        "deltaPerSecond": 100.15,
+        "writePerSecond": 8.566666666666666,
+        "inventoryPassed": true,
+        "observeHttpRequests": 6586.0,
+        "observe503": 0,
+        "observe503ErrorRate": 0.0
+      },
+      {
+        "name": "l2",
+        "valid": true,
+        "dropped": 0,
+        "interrupted": 0,
+        "unexpectedErrors": 0.0,
+        "http503": 0,
+        "deltaPerSecond": 250.075,
+        "writePerSecond": 21.433333333333334,
+        "inventoryPassed": true,
+        "observeHttpRequests": 32902.0,
+        "observe503": 0,
+        "observe503ErrorRate": 0.0
+      },
+      {
+        "name": "l3",
+        "valid": true,
+        "dropped": 0,
+        "interrupted": 0,
+        "unexpectedErrors": 0.0,
+        "http503": 0,
+        "deltaPerSecond": 500.0416666666667,
+        "writePerSecond": 42.85,
+        "inventoryPassed": true,
+        "observeHttpRequests": 65789.0,
+        "observe503": 0,
+        "observe503ErrorRate": 0.0
+      }
+    ]
+  },
+  {
+    "prefix": "phase19-l3-independent-r3",
+    "initialStateSha256": "1d0b6036dc96f2755d06c301e592e74cd6908a93f9872fffec0ccc9097ac00b4",
+    "initialVerifierPassed": true,
+    "points": [
+      {
+        "name": "precheck",
+        "valid": true,
+        "dropped": 0,
+        "interrupted": 0,
+        "unexpectedErrors": 0.0,
+        "http503": 0,
+        "deltaPerSecond": 50.266666666666666,
+        "writePerSecond": 4.266666666666667,
+        "inventoryPassed": true,
+        "observeHttpRequests": 1751.0,
+        "observe503": 0,
+        "observe503ErrorRate": 0.0
+      },
+      {
+        "name": "l1",
+        "valid": true,
+        "dropped": 0,
+        "interrupted": 0,
+        "unexpectedErrors": 0.0,
+        "http503": 0,
+        "deltaPerSecond": 100.13333333333334,
+        "writePerSecond": 8.566666666666666,
+        "inventoryPassed": true,
+        "observeHttpRequests": 6585.0,
+        "observe503": 0,
+        "observe503ErrorRate": 0.0
+      },
+      {
+        "name": "l2",
+        "valid": true,
+        "dropped": 0,
+        "interrupted": 0,
+        "unexpectedErrors": 0.0,
+        "http503": 0,
+        "deltaPerSecond": 250.08333333333334,
+        "writePerSecond": 21.433333333333334,
+        "inventoryPassed": true,
+        "observeHttpRequests": 32903.0,
+        "observe503": 0,
+        "observe503ErrorRate": 0.0
+      },
+      {
+        "name": "l3",
+        "valid": true,
+        "dropped": 0,
+        "interrupted": 0,
+        "unexpectedErrors": 0.0,
+        "http503": 0,
+        "deltaPerSecond": 500.03333333333336,
+        "writePerSecond": 42.85,
+        "inventoryPassed": true,
+        "observeHttpRequests": 65788.0,
+        "observe503": 0,
+        "observe503ErrorRate": 0.0
+      }
+    ]
+  }
+]

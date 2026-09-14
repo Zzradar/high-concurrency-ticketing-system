@@ -1,0 +1,111 @@
+{
+  "source": "<PRIVATE_TEMP>/phase19-l3-repeatability/r3-points/l2",
+  "normalization": "UTF-8 newline and private-path redaction; gzip is lossless with mtime=0",
+  "classification": "Result fields are preserved verbatim, including invalid outcomes",
+  "files": {
+    "aggregate.json": {
+      "sourceSha256": "764beef7538021925aaba12ac7e013a8dcfb0c6c4c78cb9cd3624d22cd930a72",
+      "sourceBytes": 14050,
+      "normalizedSha256": "0c885155cc04e778f987e45a1707425b15f4d461f00746f145b7b5f4dbbdd9fe",
+      "normalizedBytes": 13874,
+      "storedAs": "aggregate.json",
+      "storedSha256": "0c885155cc04e778f987e45a1707425b15f4d461f00746f145b7b5f4dbbdd9fe",
+      "storedBytes": 13874
+    },
+    "identity.json": {
+      "sourceSha256": "a9f739a2bb124b3fcb062c87895cb6bc0b0df3432fff30d74b8bfb88e86f09d8",
+      "sourceBytes": 4139,
+      "normalizedSha256": "92ae872761d42be2d3a0c8bf9c59ac392c4f7a09d4055011dfea5993e6c8c366",
+      "normalizedBytes": 4056,
+      "storedAs": "identity.json",
+      "storedSha256": "92ae872761d42be2d3a0c8bf9c59ac392c4f7a09d4055011dfea5993e6c8c366",
+      "storedBytes": 4056
+    },
+    "inventory-after.json": {
+      "sourceSha256": "004e807cce257b9a4552d486fc8356d65119f3490fe211b8acae159f08603b29",
+      "sourceBytes": 4078,
+      "normalizedSha256": "10650284cf6bc18338fe30e994be2f0726b92602b540e24069d776ff3af1c598",
+      "normalizedBytes": 3939,
+      "storedAs": "inventory-after.json",
+      "storedSha256": "10650284cf6bc18338fe30e994be2f0726b92602b540e24069d776ff3af1c598",
+      "storedBytes": 3939
+    },
+    "inventory-before.json": {
+      "sourceSha256": "74024fb1cb2aced436c02855b9618958d1843d16cd24699bddc45d6c647bec63",
+      "sourceBytes": 4076,
+      "normalizedSha256": "eff81837f68476777464acfd04a3634e2e86e904304c7ae58f62f2c3f866242a",
+      "normalizedBytes": 3937,
+      "storedAs": "inventory-before.json",
+      "storedSha256": "eff81837f68476777464acfd04a3634e2e86e904304c7ae58f62f2c3f866242a",
+      "storedBytes": 3937
+    },
+    "k6-summary.json": {
+      "sourceSha256": "aafb520492cf7f480238ce35fb30d8657af5fbbb8a49656eed3cc2df3f555e78",
+      "sourceBytes": 7291,
+      "normalizedSha256": "aafb520492cf7f480238ce35fb30d8657af5fbbb8a49656eed3cc2df3f555e78",
+      "normalizedBytes": 7291,
+      "storedAs": "k6-summary.json",
+      "storedSha256": "aafb520492cf7f480238ce35fb30d8657af5fbbb8a49656eed3cc2df3f555e78",
+      "storedBytes": 7291
+    },
+    "k6.log": {
+      "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceBytes": 0,
+      "normalizedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalizedBytes": 0,
+      "storedAs": "k6.log",
+      "storedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "storedBytes": 0
+    },
+    "resources.json": {
+      "sourceSha256": "403ab6000497dba237aaf36524ca6621482e0490cf19731d32934a1daadd9a58",
+      "sourceBytes": 227255,
+      "normalizedSha256": "0c09856f8268ae5af4e577887ab952ac3f057a5e960a854933109beae8a225fd",
+      "normalizedBytes": 219135,
+      "storedAs": "resources.json",
+      "storedSha256": "0c09856f8268ae5af4e577887ab952ac3f057a5e960a854933109beae8a225fd",
+      "storedBytes": 219135
+    },
+    "result.json": {
+      "sourceSha256": "7bd6a473d78b95d38dfcd5add06cdbc33960645eb7973c7c223f07a2311e4ed2",
+      "sourceBytes": 3064,
+      "normalizedSha256": "8e6e1535464c77c311cd11f8c70630925a3c09d6510a60299bc7076fc33d4049",
+      "normalizedBytes": 2970,
+      "storedAs": "result.json",
+      "storedSha256": "8e6e1535464c77c311cd11f8c70630925a3c09d6510a60299bc7076fc33d4049",
+      "storedBytes": 2970
+    },
+    "system-observations.json": {
+      "sourceSha256": "9eddb11dd17968423473e6c4ce3bf868e5a7e354c492e2b4d90c44d6f4409e51",
+      "sourceBytes": 11106157,
+      "normalizedSha256": "5d3844ec360ed2b820439089068ee21dc4dcc72c6d84bc27dbb88b62f55d2c3e",
+      "normalizedBytes": 11093146,
+      "storedAs": "system-observations.json.gz",
+      "storedSha256": "f1167082bdc672ce43d18e1a7c7d1f0f6e5bd639c0e2b8a36c67a807a48139bc",
+      "storedBytes": 621323
+    },
+    "verifier-after.json": {
+      "sourceSha256": "30c0e640ba8a00ecc0133a3256856b6c336eea9958e9cb0731f1ef4aa07fe9a0",
+      "sourceBytes": 719,
+      "normalizedSha256": "f141a87e0271a0570a728174041f8acf4f5edc3e4fb922762aa89dbaafb74f53",
+      "normalizedBytes": 696,
+      "storedAs": "verifier-after.json",
+      "storedSha256": "f141a87e0271a0570a728174041f8acf4f5edc3e4fb922762aa89dbaafb74f53",
+      "storedBytes": 696
+    },
+    "verifier-before.json": {
+      "sourceSha256": "768023282e1933764895675b8275a12c4054ed92f94319e226b7053692f45425",
+      "sourceBytes": 719,
+      "normalizedSha256": "61d7d7e74c7378d56a297991a420bf748e92e90220c2e9d853c5ba759ee98a16",
+      "normalizedBytes": 696,
+      "storedAs": "verifier-before.json",
+      "storedSha256": "61d7d7e74c7378d56a297991a420bf748e92e90220c2e9d853c5ba759ee98a16",
+      "storedBytes": 696
+    }
+  },
+  "privateRawPoints": {
+    "path": "<PRIVATE_TEMP>/phase19-l3-repeatability/r3-points/l2/k6-points.jsonl.gz",
+    "sha256": "f9b991c52bbbc66a020d353182b69d9005b210826a07fabe229c9a399ed31746",
+    "bytes": 7675874
+  }
+}

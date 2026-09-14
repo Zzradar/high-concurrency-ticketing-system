@@ -1,0 +1,125 @@
+{
+  "fixture": {
+    "registeredUsers": 5000,
+    "activeAuthSessions": 5000,
+    "sessions": 5,
+    "seatsPerSession": 5000,
+    "totalSessionSeats": 25000,
+    "inventorySha256": "4e34c05f72d80e7111bad80a0972227c97956b9ac2e39f9f77c049d2e13ac574",
+    "profileSha256": "8cf1546dc1a017766cc8315d01bcd50289ed06c57132c8d3c19a23dc1c8a960d",
+    "credentialExport": "private output only; raw credentials must not be committed"
+  },
+  "formalVersionSum": 0,
+  "projectedFormalVersionSum": 0,
+  "readyGenerations": {
+    "phase19-session-001-001": true,
+    "phase19-session-001-002": true,
+    "phase19-session-001-003": true,
+    "phase19-session-001-004": true,
+    "phase19-session-001-005": true
+  },
+  "streams": {
+    "phase19-session-001-001/Zone-0": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-001/Zone-1": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-001/Zone-2": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-001/Zone-3": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-001/Zone-4": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-002/Zone-0": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-002/Zone-1": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-002/Zone-2": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-002/Zone-3": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-002/Zone-4": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-003/Zone-0": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-003/Zone-1": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-003/Zone-2": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-003/Zone-3": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-003/Zone-4": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-004/Zone-0": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-004/Zone-1": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-004/Zone-2": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-004/Zone-3": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-004/Zone-4": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-005/Zone-0": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-005/Zone-1": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-005/Zone-2": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-005/Zone-3": {
+      "length": 1,
+      "entries-added": 1
+    },
+    "phase19-session-001-005/Zone-4": {
+      "length": 1,
+      "entries-added": 1
+    }
+  },
+  "normalizedConfigSha256": "7eea5eb40150c59abc353af9a1a9da0075424dcf4491cd00c6460a7d612b94ae",
+  "binarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a"
+}

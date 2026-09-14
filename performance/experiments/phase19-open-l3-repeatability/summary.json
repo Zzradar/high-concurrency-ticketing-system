@@ -1,0 +1,22 @@
+{
+  "backendProductionSourceCommit": "98e3d2aa22d6015664bb995708c23800f1e1a456",
+  "backendGitTree": "d182daec4d6726f0ed1a0e1e1762b0f1896b2b4d",
+  "checkoutCommitAtAllThreeSetups": "ee8ed47c6e8cce02c67113e6c4a5e126cdda9894",
+  "qualificationToolingCommit": "e8d1489549b4741695c993c988bac3e4511ff1c0",
+  "backendBinarySha256": "0db6f0c3850ac0c91e40a271dc9ca60f021fda315e7c80a9b2fcb427c67f067a",
+  "productionSourceAndBinaryUnchanged": true,
+  "priorManifestSha256": "c93868ebd45367b4afc70bffe03066c80e9464421f533a5405e137410b18a686",
+  "frozenProtocolManifestSha256": "a5d6470272c1d126e03a78cb3d46f0edddedccc368141ec00e3a16bedd63a295",
+  "roundsPlanned": 3,
+  "roundsExecuted": 3,
+  "qualified": true,
+  "newGateTests": 12,
+  "performancePythonTests": 335,
+  "protection": "all event policies OFF; process-local Availability Bulkhead 16 unchanged",
+  "generator": "2 CPU / 4 GiB; existing qualified identity unchanged",
+  "sequence": "precheck -> L1 -> L2 -> L3; each point exactly once per fresh environment",
+  "initialNormalization": "Only fresh generation UUIDs, stream timestamp IDs, observation UTC, and round-specific frontend origin normalized. Inventory/profile fingerprints, model readiness, stream lengths/counts, formal versions, all remaining runtime config and binary hash retained. No old application cache/data/process reused. OS page cache and host scheduling are not controlled.",
+  "newObservation": "Same additional read-only cpu.stat and filtered Redis SLOWLOG sampling for each L3, every 10 seconds; frozen load generation unchanged. No Redis arguments/credentials recorded.",
+  "reuseOfEarlierGates": "Backend 166/166 closed by user. Existing 2000 VU 10 min, 5001 business iterations, 1000 VU hotspot and overload/financial gates use identical production source tree and binary and are not rerun.",
+  "historicalLimits": "Exact Zone and server admission-time queue/pool trace were not recorded. Old failure direct condition is 16 occupied Availability permits; ultimate source of transient latency is not uniquely established."
+}
